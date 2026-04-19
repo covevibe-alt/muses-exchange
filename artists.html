@@ -3,23 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Artists — Muse Exchange</title>
-<meta name="description" content="Browse every artist trading on Muse. Pop, hip-hop, Latin, indie, afropop, and more — all priced by streams, views, and cultural momentum.">
-<meta property="og:title" content="Artists on Muse">
+<title>Artists — Muses Exchange</title>
+<meta name="description" content="Browse every artist trading on Muses. Pop, hip-hop, Latin, indie, afropop, and more — all priced by streams, views, and cultural momentum.">
+<meta property="og:title" content="Artists on Muses">
 <meta property="og:description" content="Every artist, every genre, priced by culture.">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Muse">
+<meta property="og:site_name" content="Muses">
 <meta property="og:url" content="https://muses.exchange/artists">
 <meta property="og:image" content="https://muses.exchange/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/png">
-<meta property="og:image:alt" content="Muse — a stock market for music, priced by streams.">
+<meta property="og:image:alt" content="Muses — a stock market for music, priced by streams.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Artists on Muse">
+<meta name="twitter:title" content="Artists on Muses">
 <meta name="twitter:description" content="Every artist, every genre, priced by culture.">
 <meta name="twitter:image" content="https://muses.exchange/og-image.png">
-<meta name="twitter:image:alt" content="Muse — a stock market for music, priced by streams.">
+<meta name="twitter:image:alt" content="Muses — a stock market for music, priced by streams.">
 <meta name="theme-color" content="#0b0910">
 <link rel="canonical" href="https://muses.exchange/artists">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
@@ -311,7 +311,7 @@ function fmtPrice(price){return'€'+(+price||0).toFixed(2);}
 function fmtPct(pct){const v=(+pct||0).toFixed(2);return(pct>=0?'+':'')+v+'%';}
 function pickTag(live){const c=live.chg24h||0;if((live.followers||0)>25e6)return'Blue chip';if(c>4)return'Rising';if(c<-3)return'Volatile';if(Math.abs(c)>2)return'Trending';return'Stable';}
 
-/* --- Muse price model (ported from Exchange Prototype) ------------------
+/* --- Muses price model (ported from Exchange Prototype) ------------------
    The raw `price` in app/prices.js is the backend's 1M-shares scale. The
    Exchange recomputes display prices from monthlyListeners using a
    market-share formula, so prices.js → Exchange is a ~100× jump. Mirror
@@ -331,7 +331,7 @@ function museFairPrice(live, totalListeners, totalCap){
 
 function liveToArtist(live, totalListeners, totalCap){
   const h=hashTicker(live.ticker);
-  // Use the Muse market-share formula (same as Exchange) instead of the
+  // Use the Muses market-share formula (same as Exchange) instead of the
   // raw `live.price` field, which is on a legacy 1M-shares scale.
   const price = museFairPrice(live, totalListeners, totalCap);
   const monthly = (typeof live.monthlyListeners === 'number' && live.monthlyListeners > 0)

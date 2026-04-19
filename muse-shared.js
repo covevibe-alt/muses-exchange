@@ -1,5 +1,5 @@
 /* =========================================================
-   Muse — shared nav + footer + reveal for marketing pages
+   Muses — shared nav + footer + reveal for marketing pages
    ========================================================= */
 
 (function () {
@@ -52,7 +52,7 @@
       <nav class="nav">
         <a class="brand" href="/">
           <div class="brand-mark"><svg><use href="#i-logo"/></svg></div>
-          <div class="brand-name">Muse<sup>Exchange</sup></div>
+          <div class="brand-name">Muses<sup>Exchange</sup></div>
         </a>
         <ul class="nav-links">
           <li><a href="/how-it-works" data-page="how">How it works</a></li>
@@ -98,7 +98,7 @@
         <div class="foot-brand">
           <a class="brand" href="/">
             <div class="brand-mark"><svg><use href="#i-logo"/></svg></div>
-            <div class="brand-name">Muse<sup>Exchange</sup></div>
+            <div class="brand-name">Muses<sup>Exchange</sup></div>
           </a>
           <p class="foot-tag">A paper-trading prototype where artists trade like stocks, priced by real Spotify and YouTube data. Independently built in the Netherlands.</p>
         </div>
@@ -133,8 +133,8 @@
         </div>
       </div>
       <div class="foot-bottom">
-        <div>© 2026 Muse · muses.exchange</div>
-        <div class="disclaimer">Muse is a paper-trading prototype. Prices track real streaming data; money is virtual. Muse is not a regulated investment service, not a broker-dealer, and does not hold client funds.</div>
+        <div>© 2026 Muses · muses.exchange</div>
+        <div class="disclaimer">Muses is a paper-trading prototype. Prices track real streaming data; money is virtual. Muses is not a regulated investment service, not a broker-dealer, and does not hold client funds.</div>
       </div>
     </footer>
   `;
@@ -159,7 +159,7 @@
     const stickyCta = document.createElement('a');
     stickyCta.className = 'mobile-sticky-cta';
     stickyCta.href = '/waitlist';
-    stickyCta.setAttribute('aria-label', 'Join the Muse waitlist');
+    stickyCta.setAttribute('aria-label', 'Join the Muses waitlist');
     stickyCta.textContent = 'Join the waitlist';
     document.body.appendChild(stickyCta);
     let ticking = false;

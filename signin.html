@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sign in — Muse</title>
-<meta name="description" content="Sign in to your Muse account to paper-trade artist stocks, check your portfolio, and track the market.">
+<title>Sign in — Muses</title>
+<meta name="description" content="Sign in to your Muses account to paper-trade artist stocks, check your portfolio, and track the market.">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#0b0910">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
@@ -54,7 +54,7 @@
   </a>
 
   <div class="signup-eyebrow"><span class="dot"></span>Welcome back</div>
-  <h1 class="signup-title">Sign in to <em>Muse.</em></h1>
+  <h1 class="signup-title">Sign in to <em>Muses.</em></h1>
   <p class="signup-lede">Pick up where you left off — check your portfolio, trade the market, and see what's moving.</p>
 
   <div id="auth-alert" class="auth-alert"></div>
@@ -107,7 +107,7 @@
     // If already logged in, go straight to the app
     const existing = window.netlifyIdentity.currentUser();
     if (existing){
-      window.location.href = 'Muse - Exchange Prototype.html';
+      window.location.href = 'Muses - Exchange Prototype.html';
       return;
     }
 
@@ -132,7 +132,7 @@
         await gotrue.login(email, password, true); // remember = true
         showAlert('ok', 'Signed in. Loading the exchange…');
         setTimeout(() => {
-          window.location.href = 'Muse - Exchange Prototype.html';
+          window.location.href = 'Muses - Exchange Prototype.html';
         }, 400);
       } catch (err){
         const msg = (err && err.json && err.json.error_description)

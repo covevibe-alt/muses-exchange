@@ -1,4 +1,4 @@
-// Muse service worker — minimal offline shell
+// Muses service worker — minimal offline shell
 const CACHE = 'muse-v1';
 const ASSETS = [
   './',

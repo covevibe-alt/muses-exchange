@@ -14,9 +14,9 @@
     <polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/>
   </svg>
 
-  <!-- "Muse" in Fraunces serif -->
+  <!-- "Muses" in Fraunces serif -->
   <text x="68" y="52" font-family="'Fraunces',Georgia,serif"
-        font-weight="600" font-size="42" fill="#f7f3ea" letter-spacing="-0.5">Muse</text>
+        font-weight="600" font-size="42" fill="#f7f3ea" letter-spacing="-0.5">Muses</text>
 
   <!-- "EXCHANGE" small caps -->
   <text x="222" y="50" font-family="'Inter',-apple-system,sans-serif"
