@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bGrad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+    <linearGradient id="bBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c0a18"/>
+      <stop offset="100%" stop-color="#050507"/>
+    </linearGradient>
+    <radialGradient id="bGlow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="bBlur">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bBg)"/>
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bGlow)"/>
+  <rect x="16" y="16" width="480" height="480" rx="108"
+        stroke="#8B5CF6" stroke-opacity="0.1" stroke-width="1.5" fill="none"/>
+
+  <!-- Geometric M as connected line strokes (like a chart with 2 peaks) -->
+  <!-- Glow -->
+  <polyline points="90,380 170,130 256,280 342,100 412,380"
+            stroke="#8B5CF6" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"
+            fill="none" opacity="0.12" filter="url(#bBlur)"/>
+
+  <!-- Main M stroke -->
+  <polyline points="90,380 170,130 256,280 342,100 412,380"
+            stroke="url(#bGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+            fill="none"/>
+
+  <!-- Dot accents at peaks -->
+  <circle cx="170" cy="130" r="5" fill="#A78BFA" opacity="0.7"/>
+  <circle cx="342" cy="100" r="6" fill="#A78BFA"/>
+  <circle cx="342" cy="100" r="12" fill="#8B5CF6" opacity="0.15" filter="url(#bBlur)"/>
+
+  <!-- Subtle horizontal baseline hint -->
+  <line x1="75" y1="380" x2="427" y2="380" stroke="#8B5CF6" stroke-opacity="0.08" stroke-width="1"/>
+</svg>

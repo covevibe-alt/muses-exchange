@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign in — Muse</title>
+<meta name="description" content="Sign in to your Muse account to paper-trade artist stocks, check your portfolio, and track the market.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0910">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="muse-shared.css">
+<style>
+  .signin-forgot{
+    display:block; text-align:right; font-family:var(--sans);
+    font-size:12px; font-weight:500; color:var(--violet);
+    text-decoration:none; margin-top:-8px; margin-bottom:8px;
+    cursor:pointer; background:none; border:0; padding:0;
+  }
+  .signin-forgot:hover{text-decoration:underline;}
+  .auth-alert{
+    padding:12px 14px; border-radius:10px;
+    font-family:var(--sans); font-size:13px; line-height:1.45;
+    margin-bottom:16px; display:none;
+  }
+  .auth-alert.ok{
+    background:rgba(99,230,190,.08); border:1px solid rgba(99,230,190,.3); color:#8df0cf;
+  }
+  .auth-alert.err{
+    background:rgba(255,110,140,.08); border:1px solid rgba(255,110,140,.3); color:#ffb3c3;
+  }
+  .auth-alert.show{display:block;}
+</style>
+</head>
+<body data-page="signin">
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+  </defs>
+</svg>
+
+<main class="signup-shell">
+  <a class="signup-back-link" href="index.html">
+    <svg width="14" height="14"><use href="#i-arrow-left"/></svg>
+    Back to muses.exchange
+  </a>
+
+  <div class="signup-eyebrow"><span class="dot"></span>Welcome back</div>
+  <h1 class="signup-title">Sign in to <em>Muse.</em></h1>
+  <p class="signup-lede">Pick up where you left off — check your portfolio, trade the market, and see what's moving.</p>
+
+  <div id="auth-alert" class="auth-alert"></div>
+
+  <form id="signin-form">
+    <div class="signup-field">
+      <label class="signup-label" for="email">Email address</label>
+      <input class="signup-input" type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
+    </div>
+
+    <div class="signup-field">
+      <label class="signup-label" for="password">Password</label>
+      <input class="signup-input" type="password" id="password" placeholder="Your password" autocomplete="current-password" required>
+    </div>
+
+    <button type="button" class="signin-forgot" id="forgot-link">Forgot your password?</button>
+
+    <div class="signup-actions" style="margin-top:28px;">
+      <button type="submit" class="signup-btn primary" id="signin-submit">Sign in</button>
+    </div>
+  </form>
+
+  <p class="signup-foot-hint">Don't have an account? <a href="signup.html">Create one →</a></p>
+</main>
+
+<!-- Netlify Identity widget -->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+(function(){
+  const form = document.getElementById('signin-form');
+  const alertBox = document.getElementById('auth-alert');
+  const submitBtn = document.getElementById('signin-submit');
+  const forgotBtn = document.getElementById('forgot-link');
+
+  function showAlert(kind, msg){
+    alertBox.className = 'auth-alert show ' + kind;
+    alertBox.textContent = msg;
+    alertBox.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  function onReady(cb){
+    if (window.netlifyIdentity) cb();
+    else window.addEventListener('load', cb, {once:true});
+  }
+
+  onReady(() => {
+    if (!window.netlifyIdentity) return;
+    window.netlifyIdentity.init({ locale: 'en' });
+
+    // If already logged in, go straight to the app
+    const existing = window.netlifyIdentity.currentUser();
+    if (existing){
+      window.location.href = 'Muse - Exchange Prototype.html';
+      return;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!email || !password){
+        showAlert('err', 'Please enter both your email and password.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in…';
+
+      try {
+        const gotrue = window.netlifyIdentity.gotrue;
+        if (!gotrue){
+          throw new Error('Identity service is not available. Make sure Netlify Identity is enabled for this site.');
+        }
+        await gotrue.login(email, password, true); // remember = true
+        showAlert('ok', 'Signed in. Loading the exchange…');
+        setTimeout(() => {
+          window.location.href = 'Muse - Exchange Prototype.html';
+        }, 400);
+      } catch (err){
+        const msg = (err && err.json && err.json.error_description)
+          || (err && err.json && err.json.msg)
+          || (err && err.message)
+          || 'Could not sign in. Check your email and password.';
+        showAlert('err', msg);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign in';
+      }
+    });
+
+    forgotBtn.addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      if (!email){
+        showAlert('err', 'Enter your email above first, then click "Forgot your password?" again.');
+        return;
+      }
+      try {
+        const gotrue = window.netlifyIdentity.gotrue;
+        await gotrue.requestPasswordRecovery(email);
+        showAlert('ok', 'If an account exists for ' + email + ', we just emailed a reset link.');
+      } catch (err){
+        showAlert('err', 'Could not send reset link. Please try again in a moment.');
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

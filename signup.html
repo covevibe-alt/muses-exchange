@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Create your Muse account — Muse</title>
+<meta name="description" content="Create your Muse account to start paper-trading artist stocks. €100,000 in virtual credits to begin — no deposit, no KYC, no credit card.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0b0910">
+<link rel="canonical" href="https://muses.exchange/signup.html">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="muse-shared.css">
+<style>
+  .auth-alert{
+    padding:12px 14px; border-radius:10px;
+    font-family:var(--sans); font-size:13px; line-height:1.45;
+    margin-bottom:16px; display:none;
+  }
+  .auth-alert.ok{
+    background:rgba(99,230,190,.08); border:1px solid rgba(99,230,190,.3); color:#8df0cf;
+  }
+  .auth-alert.err{
+    background:rgba(255,110,140,.08); border:1px solid rgba(255,110,140,.3); color:#ffb3c3;
+  }
+  .auth-alert.show{display:block;}
+  .auth-hint{
+    font-family:var(--sans); font-size:12.5px; color:var(--ink-faint);
+    margin-top:8px; line-height:1.5;
+  }
+</style>
+</head>
+<body data-page="signup">
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  </defs>
+</svg>
+
+<main class="signup-shell">
+  <a class="signup-back-link" href="index.html">
+    <svg width="14" height="14"><use href="#i-arrow-left"/></svg>
+    Back to muses.exchange
+  </a>
+
+  <div class="signup-eyebrow"><span class="dot"></span>Create account</div>
+  <h1 class="signup-title">Join <em>Muse.</em></h1>
+  <p class="signup-lede">Paper-trade artist stocks with prices driven by real Spotify and YouTube data. You start with €100,000 in virtual credits.</p>
+
+  <div id="auth-alert" class="auth-alert"></div>
+
+  <form id="signup-form">
+    <div class="signup-field">
+      <label class="signup-label" for="name">Display name</label>
+      <input class="signup-input" type="text" id="name" placeholder="How you'll appear on leaderboards" autocomplete="nickname" required maxlength="40">
+    </div>
+
+    <div class="signup-field">
+      <label class="signup-label" for="email">Email address</label>
+      <input class="signup-input" type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
+    </div>
+
+    <div class="signup-field">
+      <label class="signup-label" for="password">Password</label>
+      <input class="signup-input" type="password" id="password" placeholder="At least 8 characters" autocomplete="new-password" required minlength="8">
+      <div class="auth-hint">You'll confirm your email before you can sign in.</div>
+    </div>
+
+    <div class="signup-actions" style="margin-top:28px;">
+      <button type="submit" class="signup-btn primary" id="signup-submit">Create account</button>
+    </div>
+    <p class="signup-foot-hint" style="margin-top:16px;">By creating an account you agree to our <a href="privacy.html">privacy policy</a> and <a href="terms.html">terms</a>.</p>
+  </form>
+
+  <p class="signup-foot-hint">Already have an account? <a href="signin.html">Sign in →</a></p>
+</main>
+
+<!-- Netlify Identity widget (handles account creation, email confirmation, password reset) -->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+(function(){
+  const form = document.getElementById('signup-form');
+  const alertBox = document.getElementById('auth-alert');
+  const submitBtn = document.getElementById('signup-submit');
+
+  function showAlert(kind, msg){
+    alertBox.className = 'auth-alert show ' + kind;
+    alertBox.textContent = msg;
+    alertBox.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  // Ensure the widget has loaded before we call its API
+  function onReady(cb){
+    if (window.netlifyIdentity) cb();
+    else window.addEventListener('load', cb, {once:true});
+  }
+
+  onReady(() => {
+    if (!window.netlifyIdentity) return;
+    window.netlifyIdentity.init({ locale: 'en' });
+
+    // If already logged in, skip the form
+    const existing = window.netlifyIdentity.currentUser();
+    if (existing){
+      window.location.href = 'Muse - Exchange Prototype.html';
+      return;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!name || !email || password.length < 8){
+        showAlert('err', 'Please fill in every field. Password must be at least 8 characters.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account…';
+
+      try {
+        // Netlify Identity's GoTrue client is exposed on the widget
+        const gotrue = window.netlifyIdentity.gotrue;
+        if (!gotrue){
+          throw new Error('Identity service is not available. Make sure Netlify Identity is enabled for this site.');
+        }
+        await gotrue.signup(email, password, { full_name: name });
+        showAlert('ok', 'Account created. Check your inbox — we just sent a confirmation link to ' + email + '. Click it to activate your account, then sign in.');
+        submitBtn.textContent = 'Check your email';
+      } catch (err){
+        const msg = (err && err.json && err.json.msg) || (err && err.message) || 'Could not create account. Please try again.';
+        showAlert('err', msg);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create account';
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

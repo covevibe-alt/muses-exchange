@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How it works — Muse</title>
+<meta name="description" content="How Muse turns Spotify listeners and YouTube stats into a live, paper-traded price for 105 artists. The data, the formula, the honest caveats.">
+<meta property="og:title" content="How Muse works">
+<meta property="og:description" content="The pricing formula, data sources, and the honest status of the Muse prototype.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Muse">
+<meta property="og:url" content="https://muses.exchange/how-it-works.html">
+<meta property="og:image" content="https://muses.exchange/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Muse — a stock market for music, priced by streams.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How Muse works">
+<meta name="twitter:description" content="The pricing engine, data sources, and mechanics behind the exchange for culture.">
+<meta name="twitter:image" content="https://muses.exchange/og-image.png">
+<meta name="twitter:image:alt" content="Muse — a stock market for music, priced by streams.">
+<meta name="theme-color" content="#0b0910">
+<link rel="canonical" href="https://muses.exchange/how-it-works.html">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="muse-shared.css">
+</head>
+<body data-page="how">
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<!-- SVG sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.5A3 3 0 0 0 12 8c-1.7 0-3 1-3 2.2 0 1.3 1.1 1.8 3 2.3s3 1 3 2.3C15 16 13.7 17 12 17a3 3 0 0 1-3-1.5"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></symbol>
+    <symbol id="i-portfolio" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+    <symbol id="i-data" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-x-social" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005.8 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.84-.1z"/></symbol>
+    <symbol id="i-discord" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.84 19.84 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></symbol>
+  </defs>
+</svg>
+
+<div id="nav-mount"></div>
+
+<!-- ============ HERO ============ -->
+<section class="page-hero">
+  <div class="page-hero-inner">
+    <div class="section-eyebrow reveal"><span class="eyebrow-dot"></span>How it works</div>
+    <h1 class="page-hero-title reveal">From stream<br>to <em>portfolio.</em></h1>
+    <p class="page-hero-lede reveal">
+      Four steps between you and a virtual portfolio of artist "stocks." Here's the honest picture — the data Muse uses, the formula that sets the price, and what the prototype does and doesn't do today.
+    </p>
+    <div class="page-hero-cta reveal">
+      <a class="btn-primary" href="Muse - Exchange Prototype.html">Launch the prototype <svg><use href="#i-arrow-up-right"/></svg></a>
+      <a class="btn-ghost" href="#engine">See the pricing engine</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HERO IMAGE BAND ============ -->
+<section class="image-band" style="--bg-image:url('lifestyle/concert-silhouettes-purple-stage.jpg')">
+  <div class="image-band-caption">
+    <div class="eyebrow">The Market</div>
+    <h3>"You're not investing in a chart.<br>You're investing in a crowd."</h3>
+  </div>
+</section>
+
+<!-- ============ FOUR STEPS ============ -->
+<section class="block" id="steps">
+  <div class="section-eyebrow reveal">The flow</div>
+  <h2 class="section-title reveal">Four steps. Zero jargon.</h2>
+
+  <div class="big-steps">
+    <div class="big-step reveal">
+      <div class="bs-body">
+        <div class="how-icon"><svg><use href="#i-search"/></svg></div>
+        <div class="bs-step-num">Step 01</div>
+        <h3>Discover</h3>
+        <p>Browse <span data-listed-count>105</span> hand-picked artists across pop, hip-hop, indie, and more. Each profile shows monthly Spotify listeners, YouTube channel stats, price history, and the signals that moved the price. Watchlist the ones you're weighing.</p>
+        <ul class="bs-checks">
+          <li><svg><use href="#i-check"/></svg>Price history since the artist was listed</li>
+          <li><svg><use href="#i-check"/></svg>Live Spotify + YouTube data</li>
+          <li><svg><use href="#i-check"/></svg>Chart and radio boost signals</li>
+        </ul>
+      </div>
+      <div class="bs-visual">
+        <div class="bs-card">
+          <div class="bs-card-head">
+            <div class="mini-avatar" data-ticker="SABR" style="background: linear-gradient(135deg, #ff8a65, #c084fc);">S</div>
+            <div>
+              <div class="bs-card-name">Sabrina Carpenter</div>
+              <div class="bs-card-ticker">$SABR · Pop</div>
+            </div>
+          </div>
+          <div class="bs-card-price">€142.80 <span class="up">▲ 8.42%</span></div>
+          <svg class="bs-spark" viewBox="0 0 300 60" preserveAspectRatio="none">
+            <path d="M0 44 L30 48 L60 38 L90 42 L120 28 L150 32 L180 20 L210 18 L240 12 L270 8 L300 6" fill="none" stroke="#6effb8" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="big-step reverse reveal">
+      <div class="bs-body">
+        <div class="how-icon"><svg><use href="#i-coin"/></svg></div>
+        <div class="bs-step-num">Step 02</div>
+        <h3>Invest</h3>
+        <p>Buy shares at the current price with a market order. Each account starts with €100,000 in virtual credits — no sign-up, no deposit, nothing real at risk. Buy as little or as much as you want and build the portfolio you'd build if this were real.</p>
+        <ul class="bs-checks">
+          <li><svg><use href="#i-check"/></svg>Market orders (more types on the roadmap)</li>
+          <li><svg><use href="#i-check"/></svg>€100,000 in virtual credits to start</li>
+          <li><svg><use href="#i-check"/></svg>No account, no KYC, no deposit</li>
+        </ul>
+      </div>
+      <div class="bs-visual">
+        <div class="bs-card">
+          <div class="bs-order-tabs"><span class="active">Buy</span><span>Sell</span></div>
+          <div class="bs-order-row"><span>Amount</span><strong>€250.00</strong></div>
+          <div class="bs-order-row"><span>Shares</span><strong>1.751</strong></div>
+          <div class="bs-order-row"><span>Type</span><strong>Market</strong></div>
+          <button class="bs-order-btn">Review order →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="big-step reveal">
+      <div class="bs-body">
+        <div class="how-icon"><svg><use href="#i-trend"/></svg></div>
+        <div class="bs-step-num">Step 03</div>
+        <h3>Track</h3>
+        <p>Prices refresh every 30 minutes, 24/7 — driven by Spotify monthly listeners and YouTube channel stats, with boosts for chart position and radio play. Your virtual portfolio is saved in your browser so you can come back and see how it's holding up.</p>
+        <ul class="bs-checks">
+          <li><svg><use href="#i-check"/></svg>Live price + P&amp;L, updated every 30 min</li>
+          <li><svg><use href="#i-check"/></svg>Full price history per artist</li>
+          <li><svg><use href="#i-check"/></svg>Portfolio saved locally in your browser</li>
+        </ul>
+      </div>
+      <div class="bs-visual">
+        <div class="bs-card bs-card-wide">
+          <div class="bs-card-head">
+            <div class="bs-card-name">Your portfolio</div>
+            <div class="up">+ €412.88 today</div>
+          </div>
+          <svg class="bs-spark tall" viewBox="0 0 300 100" preserveAspectRatio="none">
+            <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a855f7" stop-opacity="0.4"/><stop offset="1" stop-color="#a855f7" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0 80 L30 72 L60 78 L90 64 L120 68 L150 50 L180 54 L210 40 L240 36 L270 24 L300 18 L300 100 L0 100 Z" fill="url(#pg)"/>
+            <path d="M0 80 L30 72 L60 78 L90 64 L120 68 L150 50 L180 54 L210 40 L240 36 L270 24 L300 18" fill="none" stroke="#a855f7" stroke-width="2.2"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="big-step reverse reveal">
+      <div class="bs-body">
+        <div class="how-icon"><svg><use href="#i-portfolio"/></svg></div>
+        <div class="bs-step-num">Step 04</div>
+        <h3>Compare</h3>
+        <p>Sell any position at any time to lock in a virtual gain or cut a virtual loss. Watch how your picks perform against the market, against other artists, and against your own earlier self. It's a sandbox for the thesis: <em>could I actually spot a rising artist before the charts do?</em></p>
+        <ul class="bs-checks">
+          <li><svg><use href="#i-check"/></svg>Sell any time — no delays, no lock-ups</li>
+          <li><svg><use href="#i-check"/></svg>Track cumulative P&amp;L since you started</li>
+          <li><svg><use href="#i-check"/></svg>Honest caveat: this is paper trading</li>
+        </ul>
+      </div>
+      <div class="bs-visual">
+        <div class="bs-card">
+          <div class="bs-card-head"><div class="bs-card-name">Portfolio snapshot</div></div>
+          <div class="bs-order-row"><span>Starting balance</span><strong>€100,000.00</strong></div>
+          <div class="bs-order-row"><span>Current value</span><strong>€104,812.40</strong></div>
+          <div class="bs-order-row"><span>P&amp;L</span><strong class="up">+ €4,812.40</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ENGINE IMAGE BAND ============ -->
+<section class="image-band" style="--bg-image:url('lifestyle/engineer-console-purple-live.jpg')">
+  <div class="image-band-caption">
+    <div class="eyebrow">Under the hood</div>
+    <h3>"The console never lies.<br>Neither does the tape."</h3>
+  </div>
+</section>
+
+<!-- ============ PRICING ENGINE ============ -->
+<section class="block dark-band" id="engine">
+  <div class="section-eyebrow reveal">Under the hood</div>
+  <h2 class="section-title reveal">The <em>pricing engine.</em></h2>
+  <p class="section-lede reveal">Every artist's price comes from a simple, readable formula. No black box. Here's exactly how the number on screen is built.</p>
+
+  <div class="engine-grid">
+    <div class="engine-card reveal">
+      <div class="engine-num">01</div>
+      <h3>Raw ingest</h3>
+      <p>A cron job pulls Spotify monthly listeners and YouTube channel stats (subscribers, total views) for every listed artist every 30 minutes, 24/7. That's the entire feed today.</p>
+    </div>
+    <div class="engine-card reveal">
+      <div class="engine-num">02</div>
+      <h3>Base formula</h3>
+      <p>Price per share = monthly listeners × €0.03 per 1,000,000. So an artist with 30M monthly listeners sits around €0.90 before boosts. Bigger audience = higher price.</p>
+    </div>
+    <div class="engine-card reveal">
+      <div class="engine-num">03</div>
+      <h3>Boost multipliers</h3>
+      <p>YouTube scale adds a small premium. Chart position on major streaming charts and recent radio airplay add bounded boosts on top. All multipliers are capped so a single viral moment can't lift a price by 10x overnight.</p>
+    </div>
+    <div class="engine-card reveal">
+      <div class="engine-num">04</div>
+      <h3>Smoothing</h3>
+      <p>Raw values go through an exponential moving average so the price doesn't whiplash on every data refresh. Over time, an artist's trajectory shows up cleanly instead of as noise.</p>
+    </div>
+  </div>
+
+  <div class="data-sources reveal">
+    <div class="data-sources-label">Data sources today</div>
+    <div class="data-sources-logos">
+      <span>Spotify</span><span>YouTube</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COST ============ -->
+<section class="block" id="fees">
+  <div class="two-col">
+    <div class="reveal">
+      <div class="section-eyebrow">What it costs</div>
+      <h2 class="section-title">Nothing —<br><em>it's paper.</em></h2>
+      <p class="section-lede">Muse is a prototype, not a brokerage. There's no sign-up, no deposit, no real money, and no real fees. If Muse ever becomes a real product, the cost model will be public before anything charges a cent.</p>
+    </div>
+    <div class="fee-table reveal">
+      <div class="fee-row"><span>Starting balance</span><strong>€100,000 virtual</strong></div>
+      <div class="fee-row"><span>Trading fees</span><strong>None (paper)</strong></div>
+      <div class="fee-row"><span>Deposits / withdrawals</span><strong>N/A</strong></div>
+      <div class="fee-row"><span>Account minimum</span><strong>None</strong></div>
+      <div class="fee-row"><span>Sign-up required</span><strong>No</strong></div>
+      <div class="fee-row"><span>Data refresh cadence</span><strong>Every 30 min</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HONEST STATUS ============ -->
+<section class="block dark-band" id="security">
+  <div class="section-eyebrow reveal">Status today</div>
+  <h2 class="section-title reveal">What Muse is,<br><em>and isn't.</em></h2>
+
+  <div class="sec-grid">
+    <div class="sec-card reveal">
+      <div class="how-icon"><svg><use href="#i-shield"/></svg></div>
+      <h3>Paper trading only</h3>
+      <p>No real money is accepted, held, or at risk. Your balance is virtual. You can't win or lose actual euros here.</p>
+    </div>
+    <div class="sec-card reveal">
+      <div class="how-icon"><svg><use href="#i-data"/></svg></div>
+      <h3>Real data, honest formula</h3>
+      <p>Prices come from real Spotify and YouTube numbers, refreshed on a public 30-minute cadence. The formula is small and readable — no black box.</p>
+    </div>
+    <div class="sec-card reveal">
+      <div class="how-icon"><svg><use href="#i-zap"/></svg></div>
+      <h3>Independently built</h3>
+      <p>Muse is a long-running, self-funded product — not venture-backed. Bugs happen. Data outages happen. The roadmap moves deliberately, not against quarterly targets.</p>
+    </div>
+    <div class="sec-card reveal">
+      <div class="how-icon"><svg><use href="#i-trend"/></svg></div>
+      <h3>Not a regulated exchange</h3>
+      <p>Muse is not a broker, not a fund, not a securities exchange. If that ever changes it will be obvious, loud, and licensed first.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<div class="cta-strip">
+  <div class="cta-card">
+    <div class="cta-inner">
+      <div>
+        <h2 class="cta-title reveal">Ready to<br><em>trade the taste?</em></h2>
+        <p class="cta-sub reveal">Launch the prototype and get €100,000 in virtual credits. No sign-up, no deposit, no strings.</p>
+      </div>
+      <div class="cta-actions reveal">
+        <a class="btn-primary" href="Muse - Exchange Prototype.html">Launch the prototype <svg><use href="#i-arrow-up-right"/></svg></a>
+        <a class="btn-ghost" href="artists.html">Browse artists</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-mount"></div>
+
+<script src="muse-shared.js"></script>
+<script src="app/prices.js" defer onerror="console.warn('app/prices.js not found — run app/fetch-prices.py to generate it')"></script>
+<script>
+/* Sync artist count from live prices if available */
+(function(){
+  const apply = (n) => {
+    if (!n || n < 1) return;
+    document.querySelectorAll('[data-listed-count]').forEach(el => { el.textContent = n; });
+  };
+  const check = () => {
+    if (window.__MUSE_PRICES && window.__MUSE_PRICES.artists) {
+      apply(window.__MUSE_PRICES.artists.length);
+      return true;
+    }
+    return false;
+  };
+  if (!check()) {
+    let tries = 0;
+    const t = setInterval(() => { tries++; if (check() || tries > 40) clearInterval(t); }, 250);
+  }
+})();
+</script>
+</body>
+</html>

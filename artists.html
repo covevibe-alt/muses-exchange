@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Artists — Muse Exchange</title>
+<meta name="description" content="Browse every artist trading on Muse. Pop, hip-hop, Latin, indie, afropop, and more — all priced by streams, views, and cultural momentum.">
+<meta property="og:title" content="Artists on Muse">
+<meta property="og:description" content="Every artist, every genre, priced by culture.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Muse">
+<meta property="og:url" content="https://muses.exchange/artists.html">
+<meta property="og:image" content="https://muses.exchange/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Muse — a stock market for music, priced by streams.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Artists on Muse">
+<meta name="twitter:description" content="Every artist, every genre, priced by culture.">
+<meta name="twitter:image" content="https://muses.exchange/og-image.png">
+<meta name="twitter:image:alt" content="Muse — a stock market for music, priced by streams.">
+<meta name="theme-color" content="#0b0910">
+<link rel="canonical" href="https://muses.exchange/artists.html">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="muse-shared.css">
+<!-- Live roster from the fetcher. Works via file:// because it's a <script>
+     tag, not a fetch() call. See app/fetch-prices.py. -->
+<script src="app/prices.js" onerror="console.warn('app/prices.js not found — run app/fetch-prices.py to generate it')"></script>
+</head>
+<body data-page="artists">
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s4 4 4 8a4 4 0 0 1-8 0c0-1.5.6-2.8 1.3-3.8C10 4 12 2 12 2zm0 20a7 7 0 0 0 7-7c0-3-2-5-3-6 0 2-1 3-2 3s-1-1-1-3c0 0-5 3-5 8a4 4 0 0 0 4 5z"/></symbol>
+    <symbol id="i-x-social" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005.8 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1.84-.1z"/></symbol>
+    <symbol id="i-discord" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.84 19.84 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></symbol>
+  </defs>
+</svg>
+
+<div id="nav-mount"></div>
+
+<!-- ============ HERO ============ -->
+<section class="page-hero">
+  <div class="section-eyebrow reveal"><span class="eyebrow-dot"></span>Now trading · <span data-listed-count>105</span> featured</div>
+  <h1 class="page-hero-title reveal">Every artist.<br>Every <em>genre.</em></h1>
+  <p class="page-hero-lede reveal">
+    <span data-listed-count>105</span> listed artists across pop, hip-hop, Latin, indie, afropop, R&amp;B, and more — each priced live by streaming data and cultural momentum. Browse, compare, and find the next one before everyone else does.
+  </p>
+</section>
+
+<!-- ============ HERO IMAGE BAND ============ -->
+<section class="image-band" style="--bg-image:url('lifestyle/guitar-live-performance-crowd.jpg')">
+  <div class="image-band-caption">
+    <div class="eyebrow">Now trading · <span data-listed-count>105</span> listings</div>
+    <h3>"Nine genres. One order book.<br>The market for taste."</h3>
+  </div>
+</section>
+
+<!-- ============ DIRECTORY ============ -->
+<section class="block" style="padding-top: 30px;">
+  <style>
+    .art-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    #resetFilters { cursor: pointer; color: var(--ink-dim); font: 600 12px var(--sans); letter-spacing: 0.04em; }
+    #resetFilters:hover { color: var(--ink); border-color: var(--line-strong); }
+    .art-view-toggle {
+      display: inline-flex; background: var(--card); border: 1px solid var(--line);
+      border-radius: 10px; padding: 3px;
+    }
+    .art-view-toggle button {
+      background: transparent; border: 0; color: var(--ink-dim);
+      font: 600 12px var(--sans); padding: 6px 12px; border-radius: 7px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      letter-spacing: 0.04em;
+    }
+    .art-view-toggle button.active {
+      background: var(--ink); color: #0b0910;
+    }
+    .art-view-toggle svg { width: 14px; height: 14px; }
+
+    /* Search input — matches select chrome */
+    .art-search {
+      position: relative; display: inline-flex; align-items: center;
+    }
+    .art-search input {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 10px; padding: 8px 12px 8px 34px;
+      color: var(--ink); font: 500 13px var(--sans);
+      width: 220px; outline: none; transition: border-color 0.18s, background 0.18s;
+    }
+    .art-search input::placeholder { color: var(--ink-faint); }
+    .art-search input:focus { border-color: var(--line-strong); background: rgba(168, 85, 247, 0.04); }
+    .art-search svg {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      width: 14px; height: 14px; color: var(--ink-faint); pointer-events: none;
+    }
+    @media (max-width: 600px) { .art-search input { width: 100%; } .art-search { width: 100%; } }
+
+    /* Result count — "X of Y artists" */
+    .art-count {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 14px; font: 500 12px var(--sans); color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+    .art-count strong { color: var(--ink-dim); font-weight: 700; }
+
+    /* List view — compact horizontal rows */
+    .art-list {
+      display: flex; flex-direction: column;
+      border: 1px solid var(--line); border-radius: 18px;
+      background: var(--card); overflow: hidden; margin-top: 16px;
+    }
+    .al-head {
+      display: grid;
+      grid-template-columns: 36px 2.4fr 1.1fr 1fr 1fr 140px 1fr;
+      gap: 16px; align-items: center;
+      padding: 14px 22px; border-bottom: 1px solid var(--line);
+      font: 600 10px var(--sans); letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ink-faint); background: rgba(255,255,255,0.015);
+    }
+    .al-head .right { text-align: right; }
+    .al-row {
+      display: grid;
+      grid-template-columns: 36px 2.4fr 1.1fr 1fr 1fr 140px 1fr;
+      gap: 16px; align-items: center;
+      padding: 14px 22px; border-bottom: 1px solid var(--line);
+      transition: background 0.18s; cursor: pointer;
+    }
+    .al-row:last-child { border-bottom: 0; }
+    .al-row:hover { background: rgba(168, 85, 247, 0.05); }
+    .al-rank { color: var(--ink-faint); font: 500 12px var(--mono, ui-monospace, monospace); }
+    .al-artist { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .al-artist .ac-avatar {
+      width: 40px; height: 40px; border-radius: 12px; font-size: 16px;
+    }
+    .al-name {
+      font-family: var(--serif); font-size: 17px; font-weight: 500;
+      letter-spacing: -0.01em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .al-ticker {
+      font: 500 11px ui-monospace, monospace; color: var(--ink-faint);
+      letter-spacing: 0.05em; margin-top: 2px;
+    }
+    .al-genre {
+      font-size: 12px; color: var(--ink-dim); text-transform: capitalize;
+    }
+    .al-price {
+      font-family: var(--serif); font-size: 18px; font-weight: 500;
+      letter-spacing: -0.02em; text-align: right;
+    }
+    .al-chg {
+      font-size: 12px; font-weight: 600;
+      padding: 4px 10px; border-radius: 8px;
+      justify-self: end; white-space: nowrap;
+    }
+    .al-chg.up { background: rgba(110, 255, 184, 0.12); color: var(--up); }
+    .al-chg.down { background: rgba(255, 107, 138, 0.12); color: var(--down); }
+    .al-spark { height: 32px; width: 100%; }
+    .al-meta {
+      font-size: 11px; color: var(--ink-faint); text-align: right;
+      white-space: nowrap;
+    }
+    .al-meta strong { color: var(--ink-dim); font-weight: 600; }
+
+    @media (max-width: 900px) {
+      .al-head { display: none; }
+      .al-row {
+        grid-template-columns: 40px 1fr auto;
+        grid-template-areas:
+          "avatar name price"
+          "avatar meta chg";
+        row-gap: 4px; padding: 14px 18px;
+      }
+      .al-rank, .al-spark, .al-genre { display: none; }
+      .al-artist { grid-area: avatar / avatar / meta / meta; align-items: flex-start; }
+      .al-price { grid-area: price; }
+      .al-chg { grid-area: chg; }
+    }
+  </style>
+
+  <div class="art-filter-bar">
+    <div class="art-chips" id="genreChips"></div>
+    <div class="art-controls">
+      <label class="art-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="searchInput" placeholder="Search artist or ticker…" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="art-view-toggle" id="viewToggle">
+        <button data-view="list" class="active" aria-label="List view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          List
+        </button>
+        <button data-view="grid" aria-label="Grid view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Grid
+        </button>
+      </div>
+      <select class="art-sort" id="priceFilter" aria-label="Filter by price">
+        <option value="all">Price: all</option>
+        <option value="u50">Under €50</option>
+        <option value="50-100">€50 – €100</option>
+        <option value="100-200">€100 – €200</option>
+        <option value="o200">Over €200</option>
+      </select>
+      <select class="art-sort" id="changeFilter" aria-label="Filter by 24h change">
+        <option value="all">24h: all</option>
+        <option value="gainers">Gainers only</option>
+        <option value="losers">Losers only</option>
+        <option value="big">Big movers (±5%)</option>
+      </select>
+      <select class="art-sort" id="listenersFilter" aria-label="Filter by listeners">
+        <option value="all">Listeners: all</option>
+        <option value="mega">Mega (50M+)</option>
+        <option value="major">Major (10–50M)</option>
+        <option value="rising">Rising (&lt;10M)</option>
+      </select>
+      <select class="art-sort" id="sortSelect">
+        <option value="price-high">Sort: Price high → low</option>
+        <option value="price-low">Price: low → high</option>
+        <option value="gainers">Top gainers today</option>
+        <option value="losers">Top losers today</option>
+        <option value="trending">Trending</option>
+        <option value="name">Name: A → Z</option>
+      </select>
+      <button class="art-sort" id="resetFilters" type="button" style="background:transparent;">Reset</button>
+    </div>
+  </div>
+
+  <div class="art-count" id="artCount" aria-live="polite"></div>
+  <div id="artGrid"></div>
+</section>
+
+<!-- ============ SPOTLIGHT ============ -->
+<section class="block" style="padding-top: 20px;">
+  <div class="spotlight">
+    <h3>Biggest movers today</h3>
+    <div class="spotlight-row" id="spotlightMovers"></div>
+  </div>
+</section>
+
+<!-- ============ IMAGE SPLIT ============ -->
+<section class="block" style="padding-top:20px; padding-bottom:40px;">
+  <div class="image-split reveal">
+    <figure style="background-image:url('lifestyle/vocalist-studio-orange-mic.jpg')">
+      <figcaption><small>The voice</small>Every listing is a real human, a real catalog.</figcaption>
+    </figure>
+    <figure style="background-image:url('lifestyle/listener-phone-happy-backwards-cap.jpg')">
+      <figcaption><small>The fan</small>Every price is a real person pressing play.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<div class="cta-strip">
+  <div class="cta-card">
+    <div class="cta-inner">
+      <div>
+        <h2 class="cta-title reveal">Want the<br><em>full exchange?</em></h2>
+        <p class="cta-sub reveal">Launch the app to see all <span data-listed-count>105</span> artists, charts updated every 30 minutes, and start paper trading with €100,000 in virtual credits.</p>
+      </div>
+      <div class="cta-actions reveal">
+        <a class="btn-primary" href="signup.html">Create free account <svg><use href="#i-arrow-up-right"/></svg></a>
+        <a class="btn-ghost" href="Muse - Exchange Prototype.html">Launch the demo</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-mount"></div>
+
+<script src="muse-shared.js"></script>
+<script>
+/* ============ ARTIST DATA ============
+   Built dynamically from window.__MUSE_PRICES (app/prices.js), which the
+   fetcher regenerates on every run. Falls back to the hardcoded set below
+   if prices.js hasn't been generated yet. */
+const GENRE_ID_MAP = {
+  'Pop': 'pop', 'Hip-hop': 'hiphop', 'Latin': 'latin', 'R&B': 'rnb',
+  'Indie': 'indie', 'Alt': 'alt', 'Afropop': 'afropop',
+  'K-Pop': 'kpop', 'Electronic': 'electronic',
+};
+const GRADIENT_POOL = [
+  'linear-gradient(135deg, #ff8a65, #c084fc)','linear-gradient(135deg, #7c3aed, #4c1d95)',
+  'linear-gradient(135deg, #a855f7, #ff8a65)','linear-gradient(135deg, #ff8a65, #ffd7c2)',
+  'linear-gradient(135deg, #4c1d95, #7c3aed)','linear-gradient(135deg, #cfff5e, #6effb8)',
+  'linear-gradient(135deg, #ff6b8a, #ff8a65)','linear-gradient(135deg, #c084fc, #a855f7)',
+  'linear-gradient(135deg, #6effb8, #c084fc)','linear-gradient(135deg, #ffd7c2, #ff6b8a)',
+  'linear-gradient(135deg, #a855f7, #ffd7c2)','linear-gradient(135deg, #4c1d95, #c084fc)',
+  'linear-gradient(135deg, #6effb8, #cfff5e)','linear-gradient(135deg, #ff6b8a, #c084fc)',
+  'linear-gradient(135deg, #cfff5e, #ff8a65)','linear-gradient(135deg, #ffd7c2, #c084fc)',
+  'linear-gradient(135deg, #c084fc, #6effb8)','linear-gradient(135deg, #ff8a65, #4c1d95)',
+  'linear-gradient(135deg, #a855f7, #ff6b8a)','linear-gradient(135deg, #6effb8, #a855f7)',
+];
+function hashTicker(t){let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))|0;return Math.abs(h);}
+// Match Exchange fmtBigNum / fmtBigEuro exactly.
+function fmtBigNum(n){if(!n)return'0';if(n>=1e9)return(n/1e9).toFixed(2)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return n.toFixed(0);}
+function fmtBigEuro(n){if(!n)return'€0';if(n>=1e9)return'€'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return'€'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return'€'+(n/1e3).toFixed(1)+'K';return'€'+n.toFixed(0);}
+function fmtPrice(price){return'€'+(+price||0).toFixed(2);}
+function fmtPct(pct){const v=(+pct||0).toFixed(2);return(pct>=0?'+':'')+v+'%';}
+function pickTag(live){const c=live.chg24h||0;if((live.followers||0)>25e6)return'Blue chip';if(c>4)return'Rising';if(c<-3)return'Volatile';if(Math.abs(c)>2)return'Trending';return'Stable';}
+
+/* --- Muse price model (ported from Exchange Prototype) ------------------
+   The raw `price` in app/prices.js is the backend's 1M-shares scale. The
+   Exchange recomputes display prices from monthlyListeners using a
+   market-share formula, so prices.js → Exchange is a ~100× jump. Mirror
+   that here so artists.html shows the same numbers as the exchange. */
+const PRICING = {
+  sharesOutstanding: 10000,
+  baseMarketCap:    50_000_000,
+  capPerArtist:        500_000,
+};
+function museFairPrice(live, totalListeners, totalCap){
+  const listeners = (live && live.monthlyListeners) || 0;
+  const share = totalListeners > 0 ? listeners / totalListeners : 0;
+  const base = Math.max(0.01, (share * totalCap) / PRICING.sharesOutstanding);
+  const boost = (live.youtubeBoost||0) + (live.popularityBoost||0) + (live.chartBoost||0);
+  return base * (1 + boost);
+}
+
+function liveToArtist(live, totalListeners, totalCap){
+  const h=hashTicker(live.ticker);
+  // Use the Muse market-share formula (same as Exchange) instead of the
+  // raw `live.price` field, which is on a legacy 1M-shares scale.
+  const price = museFairPrice(live, totalListeners, totalCap);
+  const monthly = (typeof live.monthlyListeners === 'number' && live.monthlyListeners > 0)
+                    ? live.monthlyListeners
+                    : (live.followers ? Math.round(live.followers * 0.6) : 0);
+  return {
+    name: live.name, t: live.ticker,
+    price: price, chg: Number(live.chg24h)||0,
+    genre: GENRE_ID_MAP[live.genre] || (live.genre||'pop').toLowerCase(),
+    // Match Exchange: monthly listeners is the headline engagement number.
+    monthlyListeners: monthly,
+    // Raw volume (share count) from the fetcher — Exchange uses this as-is.
+    volume: Number(live.volume) || 0,
+    tag: pickTag(live),
+    initial: (live.name||'?')[0].toUpperCase(),
+    gradient: GRADIENT_POOL[h % GRADIENT_POOL.length],
+    imgUrl: live.image || null,
+  };
+}
+const FALLBACK_ARTISTS = [
+  { name: "Sabrina Carpenter", t: "SABR", price: 142.80, chg: 8.42, genre: "pop", streams: "2.4B", vol: "3.8M", tag: "Trending", initial: "S", gradient: "linear-gradient(135deg, #ff8a65, #c084fc)" },
+  { name: "Bad Bunny",        t: "BNNY", price: 318.44, chg: 2.17, genre: "latin", streams: "8.1B", vol: "12.4M", tag: "Blue chip", initial: "B", gradient: "linear-gradient(135deg, #7c3aed, #4c1d95)" },
+  { name: "Chappell Roan",    t: "CHPL", price:  96.12, chg: -1.34, genre: "pop", streams: "980M", vol: "2.1M", tag: "Volatile", initial: "C", gradient: "linear-gradient(135deg, #a855f7, #ff8a65)" },
+  { name: "Taylor Swift",     t: "TSWF", price: 541.20, chg: 0.88, genre: "pop", streams: "11.2B", vol: "18.7M", tag: "Blue chip", initial: "T", gradient: "linear-gradient(135deg, #ff8a65, #ffd7c2)" },
+  { name: "The Weeknd",       t: "WKND", price: 287.65, chg: -0.42, genre: "rnb", streams: "7.8B", vol: "9.2M", tag: "Blue chip", initial: "W", gradient: "linear-gradient(135deg, #4c1d95, #7c3aed)" },
+  { name: "Tyla",             t: "TYLA", price:  74.30, chg: 5.91, genre: "afropop", streams: "612M", vol: "1.4M", tag: "Rising", initial: "T", gradient: "linear-gradient(135deg, #cfff5e, #6effb8)" },
+  { name: "Peso Pluma",       t: "PESO", price: 128.77, chg: 3.14, genre: "latin", streams: "4.2B", vol: "5.8M", tag: "Trending", initial: "P", gradient: "linear-gradient(135deg, #ff6b8a, #ff8a65)" },
+  { name: "Olivia Rodrigo",   t: "OLVR", price: 204.55, chg: -2.08, genre: "pop", streams: "5.1B", vol: "6.3M", tag: "Volatile", initial: "O", gradient: "linear-gradient(135deg, #c084fc, #a855f7)" },
+  { name: "Drake",            t: "DRKE", price: 372.18, chg: 1.02, genre: "hiphop", streams: "9.4B", vol: "14.1M", tag: "Blue chip", initial: "D", gradient: "linear-gradient(135deg, #1a1a1a, #4c1d95)" },
+  { name: "Billie Eilish",    t: "BILL", price: 231.90, chg: 4.67, genre: "alt", streams: "6.8B", vol: "7.9M", tag: "Trending", initial: "B", gradient: "linear-gradient(135deg, #6effb8, #c084fc)" },
+  { name: "Tate McRae",       t: "TATE", price:  89.40, chg: 6.22, genre: "pop", streams: "1.8B", vol: "2.8M", tag: "Rising", initial: "T", gradient: "linear-gradient(135deg, #ffd7c2, #ff6b8a)" },
+  { name: "Rosalía",          t: "ROSA", price: 176.33, chg: -0.78, genre: "latin", streams: "3.2B", vol: "4.6M", tag: "Blue chip", initial: "R", gradient: "linear-gradient(135deg, #ff8a65, #a855f7)" },
+  { name: "Travis Scott",     t: "TRVS", price: 248.70, chg: 1.87, genre: "hiphop", streams: "6.4B", vol: "8.2M", tag: "Blue chip", initial: "T", gradient: "linear-gradient(135deg, #7c3aed, #ff6b8a)" },
+  { name: "Karol G",          t: "KROL", price: 162.44, chg: 3.96, genre: "latin", streams: "4.9B", vol: "6.1M", tag: "Trending", initial: "K", gradient: "linear-gradient(135deg, #a855f7, #ffd7c2)" },
+  { name: "Lana Del Rey",     t: "LANA", price: 118.22, chg: -1.12, genre: "alt", streams: "3.7B", vol: "3.4M", tag: "Stable", initial: "L", gradient: "linear-gradient(135deg, #4c1d95, #c084fc)" },
+  { name: "Ice Spice",        t: "ICE", price:  62.18, chg: 7.84, genre: "hiphop", streams: "1.1B", vol: "2.2M", tag: "Rising", initial: "I", gradient: "linear-gradient(135deg, #6effb8, #cfff5e)" },
+  { name: "Dua Lipa",         t: "DUAL", price: 198.60, chg: 0.54, genre: "pop", streams: "5.7B", vol: "5.2M", tag: "Blue chip", initial: "D", gradient: "linear-gradient(135deg, #ff6b8a, #c084fc)" },
+  { name: "Rema",             t: "REMA", price:  88.75, chg: 4.31, genre: "afropop", streams: "1.4B", vol: "1.9M", tag: "Rising", initial: "R", gradient: "linear-gradient(135deg, #cfff5e, #ff8a65)" },
+  { name: "The Marías",       t: "MARI", price:  54.90, chg: 2.68, genre: "indie", streams: "680M", vol: "0.9M", tag: "Rising", initial: "M", gradient: "linear-gradient(135deg, #ffd7c2, #c084fc)" },
+  { name: "Clairo",           t: "CLRO", price:  72.15, chg: -0.94, genre: "indie", streams: "920M", vol: "1.1M", tag: "Stable", initial: "C", gradient: "linear-gradient(135deg, #c084fc, #6effb8)" },
+  { name: "Kendrick Lamar",   t: "KDOT", price: 412.30, chg: 1.42, genre: "hiphop", streams: "8.8B", vol: "11.4M", tag: "Blue chip", initial: "K", gradient: "linear-gradient(135deg, #ff8a65, #4c1d95)" },
+  { name: "SZA",              t: "SZA", price: 216.80, chg: 2.91, genre: "rnb", streams: "6.1B", vol: "7.2M", tag: "Blue chip", initial: "S", gradient: "linear-gradient(135deg, #a855f7, #ff6b8a)" },
+  { name: "Ayra Starr",       t: "AYRA", price:  68.22, chg: 5.18, genre: "afropop", streams: "890M", vol: "1.3M", tag: "Rising", initial: "A", gradient: "linear-gradient(135deg, #6effb8, #a855f7)" },
+  { name: "Beabadoobee",      t: "BEAB", price:  48.66, chg: -1.88, genre: "indie", streams: "520M", vol: "0.7M", tag: "Volatile", initial: "B", gradient: "linear-gradient(135deg, #ffd7c2, #ff8a65)" },
+];
+
+// Prefer live fetcher data (105 artists) when prices.js is loaded; otherwise
+// fall back to the hardcoded 24-artist set above. app/prices.js assigns to
+// window.LIVE_MARKET; the Exchange Prototype also exposes window.__MUSE_PRICES.
+const __liveSrc = (window.__MUSE_PRICES && Array.isArray(window.__MUSE_PRICES.artists) && window.__MUSE_PRICES.artists.length)
+  ? window.__MUSE_PRICES
+  : (window.LIVE_MARKET && Array.isArray(window.LIVE_MARKET.artists) && window.LIVE_MARKET.artists.length)
+    ? window.LIVE_MARKET
+    : null;
+// Precompute total listeners + market cap up front so every artist's price
+// is derived from the same market-share denominator as the Exchange.
+const ARTISTS = (() => {
+  if (!__liveSrc) {
+    // Normalise fallback records to the new schema (monthlyListeners / volume)
+    // so every downstream consumer sees a consistent shape.
+    const parseStream = s => {
+      const m = String(s||'').match(/([\d.]+)\s*([KMB]?)/i); if (!m) return 0;
+      const n = parseFloat(m[1]); const u = (m[2]||'').toUpperCase();
+      return n * (u==='B'?1e9:u==='M'?1e6:u==='K'?1e3:1);
+    };
+    return FALLBACK_ARTISTS.map(a => ({
+      ...a,
+      // "streams" in the fallback set is ~120× monthly listeners; back it out.
+      monthlyListeners: a.monthlyListeners || Math.round(parseStream(a.streams) / 120),
+      volume: a.volume != null ? a.volume : parseStream(a.vol),
+    }));
+  }
+  const totalListeners = __liveSrc.artists.reduce((s, a) => s + ((a && a.monthlyListeners) || 0), 0);
+  const totalCap = Math.max(PRICING.baseMarketCap, __liveSrc.artists.length * PRICING.capPerArtist);
+  return __liveSrc.artists.map(a => liveToArtist(a, totalListeners, totalCap));
+})();
+
+// Update every "X listed" counter in the hero to match the actual count.
+document.querySelectorAll('[data-listed-count]').forEach(el => {
+  el.textContent = ARTISTS.length;
+});
+
+// Canonical order + display labels for known genres. Any genre present in the
+// live data but not listed here gets appended automatically with a titlecased
+// label — so adding e.g. "Country" to prices.js will surface a "Country" chip
+// with zero code changes.
+const GENRE_LABELS = {
+  pop: "Pop", hiphop: "Hip-hop", latin: "Latin", rnb: "R&B",
+  indie: "Indie", alt: "Alternative", afropop: "Afropop",
+  kpop: "K-Pop", electronic: "Electronic",
+};
+const GENRE_ORDER = ["pop", "hiphop", "latin", "rnb", "indie", "alt", "afropop", "kpop", "electronic"];
+function titleCase(s){ return s.replace(/(^|[\s-])\w/g, c => c.toUpperCase()); }
+const GENRES = (() => {
+  const present = new Set(ARTISTS.map(a => a.genre));
+  const ordered = GENRE_ORDER.filter(g => present.has(g));
+  const extras  = [...present].filter(g => !GENRE_ORDER.includes(g)).sort();
+  return [{ id: "all", label: "All" }].concat(
+    ordered.concat(extras).map(id => ({ id, label: GENRE_LABELS[id] || titleCase(id) }))
+  );
+})();
+
+/* ============ STATE ============ */
+let currentGenre     = 'all';
+let currentSort      = 'price-high'; // highest price on top by default
+let currentView      = 'list';       // list view by default
+let filterPrice      = 'all';
+let filterChange     = 'all';
+let filterListeners  = 'all';
+let currentQuery     = '';           // search box — name or ticker substring
+
+/* ============ CHIPS ============ */
+function renderChips() {
+  const wrap = document.getElementById('genreChips');
+  // Count artists that match all non-genre filters, so chip counts stay accurate
+  // as the user layers in price/change/listener filters.
+  const savedGenre = currentGenre;
+  currentGenre = 'all';
+  const eligible = ARTISTS.filter(passesFilters);
+  currentGenre = savedGenre;
+  wrap.innerHTML = GENRES.map(g => {
+    const count = g.id === 'all' ? eligible.length : eligible.filter(a => a.genre === g.id).length;
+    return `<button class="art-chip ${g.id === currentGenre ? 'active' : ''}" data-g="${g.id}">${g.label} <span style="opacity:0.55; margin-left:4px;">${count}</span></button>`;
+  }).join('');
+  wrap.querySelectorAll('.art-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentGenre = btn.dataset.g;
+      renderChips();
+      renderGrid();
+    });
+  });
+}
+
+/* ============ SPARKLINE GENERATOR ============ */
+function makeSparkPath(up, seed) {
+  // deterministic pseudo-random from seed
+  let s = seed;
+  const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  const points = [];
+  for (let i = 0; i <= 10; i++) {
+    const x = i * 30;
+    const base = up ? 45 - i * 3.5 : 15 + i * 3;
+    const y = Math.max(4, Math.min(48, base + (rand() - 0.5) * 12));
+    points.push(`${i === 0 ? 'M' : 'L'}${x} ${y.toFixed(1)}`);
+  }
+  return points.join(' ');
+}
+
+/* ============ SORT + FILTER ============ */
+// Parse the streams string ("1.2B", "680M", "920K") back into a number so the
+// listener-tier filter can compare it. Uses the raw monthlyListeners when we
+// have it (live data), falling back to the pretty string for the hardcoded set.
+function passesFilters(a){
+  if (currentGenre !== 'all' && a.genre !== currentGenre) return false;
+  // Search query — match name or ticker, case-insensitive.
+  if (currentQuery) {
+    const q = currentQuery.toLowerCase();
+    const hit = (a.name || '').toLowerCase().includes(q) || (a.t || '').toLowerCase().includes(q);
+    if (!hit) return false;
+  }
+  // Price band (now in €)
+  if (filterPrice === 'u50'     && !(a.price < 50))                    return false;
+  if (filterPrice === '50-100'  && !(a.price >= 50 && a.price < 100))  return false;
+  if (filterPrice === '100-200' && !(a.price >= 100 && a.price < 200)) return false;
+  if (filterPrice === 'o200'    && !(a.price >= 200))                  return false;
+  // 24h change
+  if (filterChange === 'gainers' && !(a.chg > 0))            return false;
+  if (filterChange === 'losers'  && !(a.chg < 0))            return false;
+  if (filterChange === 'big'     && !(Math.abs(a.chg) >= 5)) return false;
+  // Listener tier — use the real monthly listener count.
+  const monthly = a.monthlyListeners || 0;
+  if (filterListeners === 'mega'   && !(monthly >= 50e6))                   return false;
+  if (filterListeners === 'major'  && !(monthly >= 10e6 && monthly < 50e6)) return false;
+  if (filterListeners === 'rising' && !(monthly < 10e6))                    return false;
+  return true;
+}
+function getFilteredSorted() {
+  let items = ARTISTS.filter(passesFilters);
+  switch (currentSort) {
+    case 'gainers':    items.sort((a, b) => b.chg - a.chg); break;
+    case 'losers':     items.sort((a, b) => a.chg - b.chg); break;
+    case 'price-low':  items.sort((a, b) => a.price - b.price); break;
+    case 'name':       items.sort((a, b) => a.name.localeCompare(b.name)); break;
+    case 'trending':   items.sort((a, b) => (b.chg > 0 ? b.chg : 0) - (a.chg > 0 ? a.chg : 0)); break;
+    default:           items.sort((a, b) => b.price - a.price); // price-high
+  }
+  return items;
+}
+
+/* ============ GRID VIEW ============ */
+function renderGridCards(items, root) {
+  root.className = 'art-grid';
+  root.innerHTML = items.map((a, i) => {
+    const up = a.chg >= 0;
+    const color = up ? '#6effb8' : '#ff6b8a';
+    const path = makeSparkPath(up, a.t.charCodeAt(0) + a.t.charCodeAt(1) * 7);
+    const photo = a.imgUrl ? `<img src="${a.imgUrl}" class="artist-photo" alt="" onerror="this.remove()">` : '';
+    return `
+      <div class="art-card">
+        <div class="ac-top">
+          <div class="ac-avatar" data-ticker="${a.t}" style="background: ${a.gradient};">${a.initial}${photo}</div>
+        </div>
+        <div class="ac-name">${a.name}</div>
+        <div class="ac-ticker">$${a.t} · ${a.genre.toUpperCase()}</div>
+        <div class="ac-price-row">
+          <div class="ac-price">${fmtPrice(a.price)}</div>
+          <div class="ac-chg ${up ? 'up' : 'down'}">${fmtPct(a.chg)}</div>
+        </div>
+        <svg class="ac-spark" viewBox="0 0 300 52" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="sg-${a.t}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="${color}" stop-opacity="0.45"/>
+              <stop offset="1" stop-color="${color}" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="${path} L300 52 L0 52 Z" fill="url(#sg-${a.t})"/>
+          <path d="${path}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="ac-meta">
+          <span><strong>${fmtBigNum(a.monthlyListeners)}</strong> listeners</span>
+          <span>Vol <strong>${fmtBigNum(a.volume)}</strong></span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ============ LIST VIEW ============ */
+function renderListRows(items, root) {
+  root.className = 'art-list';
+  const head = `
+    <div class="al-head">
+      <div>#</div>
+      <div>Artist</div>
+      <div>Genre</div>
+      <div class="right">Price</div>
+      <div class="right">24h</div>
+      <div class="right">Trend</div>
+      <div class="right">Listeners / Vol</div>
+    </div>`;
+  root.innerHTML = head + items.map((a, i) => {
+    const up = a.chg >= 0;
+    const color = up ? '#6effb8' : '#ff6b8a';
+    const path = makeSparkPath(up, a.t.charCodeAt(0) + a.t.charCodeAt(1) * 7);
+    const photo = a.imgUrl ? `<img src="${a.imgUrl}" class="artist-photo" alt="" onerror="this.remove()">` : '';
+    const genreLabel = (GENRE_LABELS[a.genre] || a.genre);
+    return `
+      <div class="al-row">
+        <div class="al-rank">${String(i + 1).padStart(2, '0')}</div>
+        <div class="al-artist">
+          <div class="ac-avatar" data-ticker="${a.t}" style="background: ${a.gradient};">${a.initial}${photo}</div>
+          <div style="min-width:0;">
+            <div class="al-name">${a.name}</div>
+            <div class="al-ticker">$${a.t}</div>
+          </div>
+        </div>
+        <div class="al-genre">${genreLabel}</div>
+        <div class="al-price">${fmtPrice(a.price)}</div>
+        <div class="al-chg ${up ? 'up' : 'down'}">${fmtPct(a.chg)}</div>
+        <svg class="al-spark" viewBox="0 0 300 52" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="slg-${a.t}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="${color}" stop-opacity="0.35"/>
+              <stop offset="1" stop-color="${color}" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="${path} L300 52 L0 52 Z" fill="url(#slg-${a.t})"/>
+          <path d="${path}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="al-meta">
+          <strong>${fmtBigNum(a.monthlyListeners)}</strong> listeners · Vol <strong>${fmtBigNum(a.volume)}</strong>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ============ DISPATCH ============ */
+function renderCount(shown) {
+  const el = document.getElementById('artCount');
+  if (!el) return;
+  const total = ARTISTS.length;
+  const filtered = (shown !== total);
+  el.innerHTML = filtered
+    ? `Showing <strong>${shown}</strong> of <strong>${total}</strong> artists`
+    : `Showing all <strong>${total}</strong> artists`;
+}
+function renderGrid() {
+  const items = getFilteredSorted();
+  const root  = document.getElementById('artGrid');
+  renderCount(items.length);
+  if (items.length === 0) {
+    root.className = '';
+    root.innerHTML = `<div class="art-empty">No artists match this filter.</div>`;
+    return;
+  }
+  if (currentView === 'grid') renderGridCards(items, root);
+  else                        renderListRows(items, root);
+}
+
+/* ============ SPOTLIGHT ============ */
+function renderSpotlight() {
+  const top3 = [...ARTISTS].sort((a, b) => b.chg - a.chg).slice(0, 3);
+  const wrap = document.getElementById('spotlightMovers');
+  wrap.innerHTML = top3.map((a, i) => {
+    const photo = a.imgUrl ? `<img src="${a.imgUrl}" class="artist-photo" alt="" onerror="this.remove()">` : '';
+    return `
+    <div class="spotlight-item">
+      <div class="spotlight-rank">${['i','ii','iii'][i]}</div>
+      <div class="ac-avatar" data-ticker="${a.t}" style="width:42px; height:42px; font-size:16px; border-radius:12px; background: ${a.gradient};">${a.initial}${photo}</div>
+      <div class="spotlight-info">
+        <div class="spotlight-name">${a.name}</div>
+        <div class="spotlight-chg up">${fmtPct(a.chg)}</div>
+      </div>
+      <div style="font-family: var(--serif); font-size: 18px; font-weight: 500;">${fmtPrice(a.price)}</div>
+    </div>
+  `;
+  }).join('');
+}
+
+/* ============ WIRE ============ */
+document.getElementById('sortSelect').addEventListener('change', (e) => {
+  currentSort = e.target.value;
+  renderGrid();
+});
+document.getElementById('priceFilter').addEventListener('change', (e) => {
+  filterPrice = e.target.value; renderChips(); renderGrid();
+});
+document.getElementById('changeFilter').addEventListener('change', (e) => {
+  filterChange = e.target.value; renderChips(); renderGrid();
+});
+document.getElementById('listenersFilter').addEventListener('change', (e) => {
+  filterListeners = e.target.value; renderChips(); renderGrid();
+});
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  currentQuery = (e.target.value || '').trim();
+  renderChips(); renderGrid();
+});
+document.getElementById('resetFilters').addEventListener('click', () => {
+  currentGenre = 'all'; filterPrice = 'all'; filterChange = 'all'; filterListeners = 'all'; currentQuery = '';
+  document.getElementById('priceFilter').value     = 'all';
+  document.getElementById('changeFilter').value    = 'all';
+  document.getElementById('listenersFilter').value = 'all';
+  document.getElementById('searchInput').value     = '';
+  renderChips(); renderGrid();
+});
+document.querySelectorAll('#viewToggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentView = btn.dataset.view;
+    document.querySelectorAll('#viewToggle button').forEach(b => b.classList.toggle('active', b === btn));
+    renderGrid();
+  });
+});
+
+renderChips();
+renderGrid();
+renderSpotlight();
+
+// Re-inject artist photos whenever sort/filter re-renders the grid.
+const _origRenderGrid = renderGrid;
+renderGrid = function() { _origRenderGrid.apply(this, arguments); if (window.MuseArtists) window.MuseArtists.inject(); };
+if (window.MuseArtists) window.MuseArtists.inject();
+</script>
+<script src="muse-artists.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="cGrad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6D28D9"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#10D88B"/>
+    </linearGradient>
+    <linearGradient id="cBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c0a18"/>
+      <stop offset="100%" stop-color="#050507"/>
+    </linearGradient>
+    <radialGradient id="cGlow" cx="50%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="cBlur">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <clipPath id="cClip">
+      <rect x="16" y="16" width="480" height="480" rx="108"/>
+    </clipPath>
+  </defs>
+
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#cBg)"/>
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#cGlow)"/>
+  <rect x="16" y="16" width="480" height="480" rx="108"
+        stroke="#8B5CF6" stroke-opacity="0.1" stroke-width="1.5" fill="none"/>
+
+  <!-- Vinyl circle (outer ring) -->
+  <circle cx="256" cy="268" r="160" stroke="#8B5CF6" stroke-opacity="0.15" stroke-width="2" fill="none"/>
+  <circle cx="256" cy="268" r="130" stroke="#8B5CF6" stroke-opacity="0.08" stroke-width="1" fill="none"/>
+  <circle cx="256" cy="268" r="100" stroke="#8B5CF6" stroke-opacity="0.06" stroke-width="0.8" fill="none"/>
+
+  <!-- Center hole -->
+  <circle cx="256" cy="268" r="12" fill="#6D28D9" opacity="0.4"/>
+  <circle cx="256" cy="268" r="5" fill="#8B5CF6" opacity="0.6"/>
+
+  <!-- Chart line cutting through the vinyl -->
+  <g clip-path="url(#cClip)">
+    <!-- Glow -->
+    <path d="M 50 400 Q 120 370 180 340 Q 220 320 256 268 Q 300 200 360 160 Q 420 120 470 80"
+          stroke="#8B5CF6" stroke-width="18" stroke-linecap="round" fill="none" opacity="0.1" filter="url(#cBlur)"/>
+    <!-- Main line -->
+    <path d="M 50 400 Q 120 370 180 340 Q 220 320 256 268 Q 300 200 360 160 Q 420 120 470 80"
+          stroke="url(#cGrad)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <!-- Endpoint -->
+    <circle cx="470" cy="80" r="10" fill="#10D88B" opacity="0.15" filter="url(#cBlur)"/>
+    <circle cx="470" cy="80" r="5" fill="#10D88B" opacity="0.9"/>
+  </g>
+
+  <!-- "M" small watermark in center -->
+  <text x="256" y="282" text-anchor="middle"
+        font-family="'Plus Jakarta Sans','Inter',system-ui,sans-serif"
+        font-weight="800" font-size="36" fill="#F0ECF9" opacity="0.6">M</text>
+</svg>

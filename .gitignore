@@ -1,0 +1,31 @@
+# Secrets & credentials — NEVER commit
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+.spotify-token.json
+
+# Internal / non-shipping material
+_internal/
+*.command
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+
+# OS & editor junk
+.DS_Store
+Thumbs.db
+.fuse_hidden*
+.~lock*
+*.swp
+.idea/
+.vscode/
+
+# Logs
+*.log

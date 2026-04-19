@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Waitlist — Muse</title>
+<meta name="description" content="Join the Muse waitlist. Get notified when new artists, features, and leaderboards land. One email, no spam.">
+<meta property="og:title" content="Join the Muse waitlist">
+<meta property="og:description" content="A stock market for music, priced by streams. Paper-trading prototype.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Muse">
+<meta property="og:url" content="https://muses.exchange/waitlist.html">
+<meta property="og:image" content="https://muses.exchange/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Muse — a stock market for music, priced by streams.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Join the Muse waitlist">
+<meta name="twitter:description" content="A stock market for music, priced by streams. Paper-trading prototype.">
+<meta name="twitter:image" content="https://muses.exchange/og-image.png">
+<meta name="twitter:image:alt" content="Muse — a stock market for music, priced by streams.">
+<meta name="theme-color" content="#0b0910">
+<link rel="canonical" href="https://muses.exchange/waitlist.html">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="muse-shared.css">
+</head>
+<body data-page="waitlist">
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  </defs>
+</svg>
+
+<div id="nav-mount"></div>
+
+<!-- ============ HERO ============ -->
+<section class="wl-hero">
+  <h1 class="wl-hero-title reveal">Get notified when<br><em>something ships.</em></h1>
+  <p class="wl-lede reveal">
+    One email when new artists are added, new features go live, or leaderboards open. That's it. No hype, no counter, no fake FOMO — the waitlist is simply how Muse says "keep me posted."
+  </p>
+
+  <form class="wl-form reveal" id="wlForm" name="waitlist" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" netlify>
+    <input type="hidden" name="form-name" value="waitlist">
+    <p style="display:none;"><label>Don't fill this out: <input name="bot-field"></label></p>
+    <input type="email" name="email" placeholder="you@sound.fm" required>
+    <button type="submit">Keep me posted</button>
+  </form>
+  <p class="wl-form-note reveal">
+    No spam. No referral schemes. Unsubscribe anytime.<br>
+    By signing up you agree to our <a href="privacy.html">privacy policy</a>.
+  </p>
+  <div class="wl-success" id="wlSuccess">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg>
+    You're in. We'll email when there's something worth saying.
+  </div>
+</section>
+
+<!-- ============ WHAT YOU'RE SIGNING UP FOR ============ -->
+<section class="block">
+  <div class="section-eyebrow reveal" style="justify-content: center;">What you'll actually hear about</div>
+  <h2 class="section-title reveal" style="margin: 0 auto 60px; text-align: center; max-width: 24ch;">Four things, at most.</h2>
+
+  <div class="wl-tiers">
+    <div class="wl-tier reveal">
+      <h3>New artists</h3>
+      <p class="wl-tier-desc">When the roster grows — usually a handful at a time, curated by hand.</p>
+    </div>
+    <div class="wl-tier reveal">
+      <h3>New features</h3>
+      <p class="wl-tier-desc">When something shippable lands: limit orders, leaderboards, new chart types, mobile, etc.</p>
+    </div>
+    <div class="wl-tier reveal">
+      <h3>Big data changes</h3>
+      <p class="wl-tier-desc">When the pricing formula changes enough that your virtual portfolio will move noticeably.</p>
+    </div>
+    <div class="wl-tier reveal">
+      <h3>If this ever gets real</h3>
+      <p class="wl-tier-desc">If Muse ever moves from prototype to a real, money-handling product, you hear first — and you'll hear it framed honestly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<div class="cta-strip">
+  <div class="cta-card">
+    <div class="cta-inner">
+      <div>
+        <h2 class="cta-title reveal">Don't wait —<br><em>the app is live.</em></h2>
+        <p class="cta-sub reveal">You don't need the waitlist to try Muse. Launch the prototype, get €100,000 in virtual credits, and start trading <span data-listed-count>105</span> artists right now.</p>
+      </div>
+      <div class="cta-actions reveal">
+        <a class="btn-primary" href="Muse - Exchange Prototype.html">Launch the app <svg><use href="#i-arrow-up-right"/></svg></a>
+        <a class="btn-ghost" href="how-it-works.html">How it works</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-mount"></div>
+
+<script src="muse-shared.js"></script>
+<script src="app/prices.js" defer onerror="console.warn('app/prices.js not found — run app/fetch-prices.py to generate it')"></script>
+<script>
+/* Form handling — submits to Netlify Forms via fetch so we can keep the
+   inline success state instead of navigating to a thank-you page. */
+document.getElementById('wlForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn  = form.querySelector('button[type="submit"]');
+  const data = new URLSearchParams(new FormData(form)).toString();
+  const origBtn = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+
+  const showError = (msg) => {
+    let err = document.getElementById('wlError');
+    if (!err) {
+      err = document.createElement('div');
+      err.id = 'wlError';
+      err.className = 'wl-form-note';
+      err.style.color = 'var(--down, #ff6b8a)';
+      err.style.marginTop = '12px';
+      form.parentNode.insertBefore(err, form.nextSibling);
+    }
+    err.textContent = msg;
+  };
+
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: data,
+  }).then((res) => {
+    /* Netlify Forms returns 200 on success; anything else means the submission
+       didn't land — show an honest error rather than pretending it worked. */
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    document.getElementById('wlSuccess').classList.add('show');
+    form.reset();
+    if (btn) { btn.disabled = false; btn.textContent = origBtn; }
+    setTimeout(() => {
+      document.getElementById('wlSuccess').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }).catch(() => {
+    showError("Couldn't save your email — check your connection and try again.");
+    if (btn) { btn.disabled = false; btn.textContent = origBtn; }
+  });
+});
+
+/* Sync artist count from live prices if available */
+(function(){
+  const apply = (n) => {
+    if (!n || n < 1) return;
+    document.querySelectorAll('[data-listed-count]').forEach(el => { el.textContent = n; });
+  };
+  const check = () => {
+    if (window.__MUSE_PRICES && window.__MUSE_PRICES.artists) {
+      apply(window.__MUSE_PRICES.artists.length);
+      return true;
+    }
+    return false;
+  };
+  if (!check()) {
+    let tries = 0;
+    const t = setInterval(() => { tries++; if (check() || tries > 40) clearInterval(t); }, 250);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+/* =========================================================
+   Muse — shared nav + footer + reveal for marketing pages
+   ========================================================= */
+
+(function () {
+  const page = document.body.dataset.page || '';
+
+  /* Plausible analytics — privacy-friendly, no cookies, GDPR-compliant.
+     Uses Plausible's per-account bootstrap (pa-l2ZPZ9CJzbwtv0SHjAGZE.js).
+     Only loads on muses.exchange in production; skipped on localhost and
+     file:// previews so local sessions don't pollute the dashboard. */
+  (function loadPlausible() {
+    const host = location.hostname;
+    if (!host || host === 'localhost' || host === '127.0.0.1' || location.protocol === 'file:') return;
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://plausible.io/js/pa-l2ZPZ9CJzbwtv0SHjAGZE.js';
+    document.head.appendChild(s);
+    window.plausible = window.plausible || function () { (plausible.q = plausible.q || []).push(arguments); };
+    plausible.init = plausible.init || function (i) { plausible.o = i || {}; };
+    plausible.init();
+  })();
+
+  const NAV_HTML = `
+    <div class="nav-wrap">
+      <nav class="nav">
+        <a class="brand" href="index.html">
+          <div class="brand-mark"><svg><use href="#i-logo"/></svg></div>
+          <div class="brand-name">Muse<sup>Exchange</sup></div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="how-it-works.html" data-page="how">How it works</a></li>
+          <li><a href="artists.html" data-page="artists">Artists</a></li>
+          <li><a href="faq.html" data-page="faq">FAQ</a></li>
+          <li><a href="waitlist.html" data-page="waitlist">Waitlist</a></li>
+        </ul>
+        <div class="nav-cta-wrap">
+          <a class="nav-signin" href="signin.html">Sign in</a>
+          <a class="nav-cta" href="Muse - Exchange Prototype.html">
+            Launch app <svg><use href="#i-arrow-up-right"/></svg>
+          </a>
+        </div>
+        <button class="nav-menu-btn" aria-label="Open menu" id="navMenuBtn"><svg><use href="#i-menu"/></svg></button>
+      </nav>
+    </div>
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="mobile-drawer" id="mobileDrawer" aria-label="Mobile navigation">
+      <button class="md-close" id="mdClose" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <nav class="md-nav">
+        <a href="how-it-works.html" data-page="how">How it works</a>
+        <a href="artists.html" data-page="artists">Artists</a>
+        <a href="faq.html" data-page="faq">FAQ</a>
+        <a href="waitlist.html" data-page="waitlist">Waitlist</a>
+      </nav>
+      <div class="md-cta">
+        <a class="btn-primary" href="Muse - Exchange Prototype.html" style="width: 100%; justify-content: center;">
+          Launch app <svg><use href="#i-arrow-up-right"/></svg>
+        </a>
+        <a class="btn-ghost" href="waitlist.html" style="width:100%; justify-content:center; margin-top:10px;">
+          Join the waitlist
+        </a>
+        <a href="signin.html" style="display:block; text-align:center; margin-top:14px; font-family:var(--sans); font-size:14px; color:var(--ink-dim); text-decoration:none;">Already have an account? <span style="color:var(--violet);">Sign in</span></a>
+      </div>
+    </aside>
+  `;
+
+  const FOOTER_HTML = `
+    <footer>
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <a class="brand" href="index.html">
+            <div class="brand-mark"><svg><use href="#i-logo"/></svg></div>
+            <div class="brand-name">Muse<sup>Exchange</sup></div>
+          </a>
+          <p class="foot-tag">A paper-trading prototype where artists trade like stocks, priced by real Spotify and YouTube data. Independently built in the Netherlands.</p>
+        </div>
+        <div class="foot-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="Muse - Exchange Prototype.html">Launch app</a></li>
+            <li><a href="how-it-works.html">How it works</a></li>
+            <li><a href="artists.html">Artists</a></li>
+            <li><a href="waitlist.html">Waitlist</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Project</h4>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="press.html">Press</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="terms.html">Terms</a></li>
+            <li><a href="privacy.html">Privacy</a></li>
+            <li><a href="risk.html">Risk notice</a></li>
+            <li><a href="cookies.html">Cookies</a></li>
+            <li><a href="licenses.html">Licenses</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <div>© 2026 Muse · muses.exchange</div>
+        <div class="disclaimer">Muse is a paper-trading prototype. Prices track real streaming data; money is virtual. Muse is not a regulated investment service, not a broker-dealer, and does not hold client funds.</div>
+      </div>
+    </footer>
+  `;
+
+  const PROTOTYPE_BANNER_HTML = `
+    <div class="proto-banner" role="note">
+      <span class="proto-dot"></span>
+      <b>Prototype.</b>&nbsp;Paper trading only — prices are real, money is virtual.
+      <a href="faq.html">Learn more</a>
+    </div>
+  `;
+
+  const navMount = document.getElementById('nav-mount');
+  if (navMount) {
+    navMount.innerHTML = PROTOTYPE_BANNER_HTML + NAV_HTML;
+  }
+  const footMount = document.getElementById('footer-mount');
+  if (footMount) footMount.innerHTML = FOOTER_HTML;
+
+  // Mobile sticky CTA (hidden on waitlist page itself)
+  if (page !== 'waitlist') {
+    const stickyCta = document.createElement('a');
+    stickyCta.className = 'mobile-sticky-cta';
+    stickyCta.href = 'waitlist.html';
+    stickyCta.setAttribute('aria-label', 'Join the Muse waitlist');
+    stickyCta.textContent = 'Join the waitlist';
+    document.body.appendChild(stickyCta);
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const h = document.documentElement;
+        const scrolled = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
+        stickyCta.classList.toggle('show', scrolled > 0.25);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  // Page fade-in
+  requestAnimationFrame(() => document.body.classList.add('loaded'));
+
+  // Mark current nav item
+  document.querySelectorAll(`.nav-links a[data-page="${page}"], .md-nav a[data-page="${page}"]`)
+    .forEach(el => el.classList.add('current'));
+
+  // Mobile drawer wiring
+  const openBtn = document.getElementById('navMenuBtn');
+  const drawer = document.getElementById('mobileDrawer');
+  const backdrop = document.getElementById('drawerBackdrop');
+  const closeBtn = document.getElementById('mdClose');
+  if (openBtn && drawer && backdrop) {
+    const open = () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+    const close = () => {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+    openBtn.addEventListener('click', open);
+    backdrop.addEventListener('click', close);
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawer.classList.contains('open')) close();
+    });
+  }
+
+  // Reveal on scroll
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+
+  // Auto-reveal elements already in view
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.reveal').forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight) el.classList.add('in');
+    });
+  });
+})();
