@@ -21,22 +21,48 @@
     plausible.init();
   })();
 
+  /* =========================================================
+     Funnel events — fired at most once per user, ever.
+     landing (auto pageview)  →  viewed_artist  →  first_buy
+         →  first_sell  →  return_day2
+     first_visit + return_day2 are wired here (shared pages).
+     viewed_artist / first_buy / first_sell are wired in the
+     prototype itself (exchange.html) since that's where the
+     trading actions live.
+     ========================================================= */
+  (function trackFunnel() {
+    try {
+      const host = location.hostname;
+      if (!host || host === 'localhost' || host === '127.0.0.1' || location.protocol === 'file:') return;
+      const DAY = 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      const first = parseInt(localStorage.getItem('muse_first_visit_at') || '0', 10);
+      if (!first) {
+        localStorage.setItem('muse_first_visit_at', String(now));
+        if (window.plausible) plausible('first_visit');
+      } else if (!localStorage.getItem('muse_return_day2_fired') && (now - first) >= DAY) {
+        if (window.plausible) plausible('return_day2');
+        localStorage.setItem('muse_return_day2_fired', '1');
+      }
+    } catch (e) { /* localStorage disabled — skip silently */ }
+  })();
+
   const NAV_HTML = `
     <div class="nav-wrap">
       <nav class="nav">
-        <a class="brand" href="index.html">
+        <a class="brand" href="/">
           <div class="brand-mark"><svg><use href="#i-logo"/></svg></div>
           <div class="brand-name">Muse<sup>Exchange</sup></div>
         </a>
         <ul class="nav-links">
-          <li><a href="how-it-works.html" data-page="how">How it works</a></li>
-          <li><a href="artists.html" data-page="artists">Artists</a></li>
-          <li><a href="faq.html" data-page="faq">FAQ</a></li>
-          <li><a href="waitlist.html" data-page="waitlist">Waitlist</a></li>
+          <li><a href="/how-it-works" data-page="how">How it works</a></li>
+          <li><a href="/artists" data-page="artists">Artists</a></li>
+          <li><a href="/faq" data-page="faq">FAQ</a></li>
+          <li><a href="/waitlist" data-page="waitlist">Waitlist</a></li>
         </ul>
         <div class="nav-cta-wrap">
-          <a class="nav-signin" href="signin.html">Sign in</a>
-          <a class="nav-cta" href="Muse - Exchange Prototype.html">
+          <a class="nav-signin" href="/signin">Sign in</a>
+          <a class="nav-cta" href="/exchange">
             Launch app <svg><use href="#i-arrow-up-right"/></svg>
           </a>
         </div>
@@ -49,19 +75,19 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <nav class="md-nav">
-        <a href="how-it-works.html" data-page="how">How it works</a>
-        <a href="artists.html" data-page="artists">Artists</a>
-        <a href="faq.html" data-page="faq">FAQ</a>
-        <a href="waitlist.html" data-page="waitlist">Waitlist</a>
+        <a href="/how-it-works" data-page="how">How it works</a>
+        <a href="/artists" data-page="artists">Artists</a>
+        <a href="/faq" data-page="faq">FAQ</a>
+        <a href="/waitlist" data-page="waitlist">Waitlist</a>
       </nav>
       <div class="md-cta">
-        <a class="btn-primary" href="Muse - Exchange Prototype.html" style="width: 100%; justify-content: center;">
+        <a class="btn-primary" href="/exchange" style="width: 100%; justify-content: center;">
           Launch app <svg><use href="#i-arrow-up-right"/></svg>
         </a>
-        <a class="btn-ghost" href="waitlist.html" style="width:100%; justify-content:center; margin-top:10px;">
+        <a class="btn-ghost" href="/waitlist" style="width:100%; justify-content:center; margin-top:10px;">
           Join the waitlist
         </a>
-        <a href="signin.html" style="display:block; text-align:center; margin-top:14px; font-family:var(--sans); font-size:14px; color:var(--ink-dim); text-decoration:none;">Already have an account? <span style="color:var(--violet);">Sign in</span></a>
+        <a href="/signin" style="display:block; text-align:center; margin-top:14px; font-family:var(--sans); font-size:14px; color:var(--ink-dim); text-decoration:none;">Already have an account? <span style="color:var(--violet);">Sign in</span></a>
       </div>
     </aside>
   `;
@@ -70,7 +96,7 @@
     <footer>
       <div class="foot-grid">
         <div class="foot-brand">
-          <a class="brand" href="index.html">
+          <a class="brand" href="/">
             <div class="brand-mark"><svg><use href="#i-logo"/></svg></div>
             <div class="brand-name">Muse<sup>Exchange</sup></div>
           </a>
@@ -79,30 +105,30 @@
         <div class="foot-col">
           <h4>Product</h4>
           <ul>
-            <li><a href="Muse - Exchange Prototype.html">Launch app</a></li>
-            <li><a href="how-it-works.html">How it works</a></li>
-            <li><a href="artists.html">Artists</a></li>
-            <li><a href="waitlist.html">Waitlist</a></li>
-            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="/exchange">Launch app</a></li>
+            <li><a href="/how-it-works">How it works</a></li>
+            <li><a href="/artists">Artists</a></li>
+            <li><a href="/waitlist">Waitlist</a></li>
+            <li><a href="/faq">FAQ</a></li>
           </ul>
         </div>
         <div class="foot-col">
           <h4>Project</h4>
           <ul>
-            <li><a href="about.html">About</a></li>
-            <li><a href="press.html">Press</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="contact.html">Contact</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/press">Press</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/contact">Contact</a></li>
           </ul>
         </div>
         <div class="foot-col">
           <h4>Legal</h4>
           <ul>
-            <li><a href="terms.html">Terms</a></li>
-            <li><a href="privacy.html">Privacy</a></li>
-            <li><a href="risk.html">Risk notice</a></li>
-            <li><a href="cookies.html">Cookies</a></li>
-            <li><a href="licenses.html">Licenses</a></li>
+            <li><a href="/terms">Terms</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+            <li><a href="/risk">Risk notice</a></li>
+            <li><a href="/cookies">Cookies</a></li>
+            <li><a href="/licenses">Licenses</a></li>
           </ul>
         </div>
       </div>
@@ -117,7 +143,7 @@
     <div class="proto-banner" role="note">
       <span class="proto-dot"></span>
       <b>Prototype.</b>&nbsp;Paper trading only — prices are real, money is virtual.
-      <a href="faq.html">Learn more</a>
+      <a href="/faq">Learn more</a>
     </div>
   `;
 
@@ -132,7 +158,7 @@
   if (page !== 'waitlist') {
     const stickyCta = document.createElement('a');
     stickyCta.className = 'mobile-sticky-cta';
-    stickyCta.href = 'waitlist.html';
+    stickyCta.href = '/waitlist';
     stickyCta.setAttribute('aria-label', 'Join the Muse waitlist');
     stickyCta.textContent = 'Join the waitlist';
     document.body.appendChild(stickyCta);

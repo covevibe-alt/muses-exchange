@@ -1,0 +1,43 @@
+[build]
+  publish = "."
+
+# ── Pretty URLs ─────────────────────────────────────────────────────────────
+# Netlify automatically serves /page.html when a request comes in for /page,
+# so all we need here is 301 redirects that collapse any *.html or /index.html
+# hits to the canonical clean URL.
+#
+# Order matters: Netlify processes redirects top-to-bottom and stops at the
+# first match. Specific rules (legacy space-encoded prototype URL, /index.html)
+# must come BEFORE the generic "/*.html -> /:splat" rule.
+
+[[redirects]]
+  from = "/Muse - Exchange Prototype.html"
+  to = "/exchange"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/Muse%20-%20Exchange%20Prototype.html"
+  to = "/exchange"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/*.html"
+  to = "/:splat"
+  status = 301
+  force = true
+
+# ── Sensible default headers ────────────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

@@ -10,7 +10,7 @@
 <meta property="og:description" content="Paper-trade artist stocks driven by real streaming data. €100,000 in virtual credits." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Muse" />
-<meta property="og:url" content="https://muses.exchange/Muse%20-%20Exchange%20Prototype.html" />
+<meta property="og:url" content="https://muses.exchange/exchange" />
 <meta property="og:image" content="https://muses.exchange/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -47,6 +47,20 @@
   window.plausible = window.plausible || function () { (plausible.q = plausible.q || []).push(arguments); };
   plausible.init = plausible.init || function (i) { plausible.o = i || {}; };
   plausible.init();
+
+  // Funnel: first_visit + return_day2 (fired at most once each per user, ever)
+  try {
+    var DAY = 24 * 60 * 60 * 1000;
+    var now = Date.now();
+    var first = parseInt(localStorage.getItem('muse_first_visit_at') || '0', 10);
+    if (!first) {
+      localStorage.setItem('muse_first_visit_at', String(now));
+      if (window.plausible) plausible('first_visit');
+    } else if (!localStorage.getItem('muse_return_day2_fired') && (now - first) >= DAY) {
+      if (window.plausible) plausible('return_day2');
+      localStorage.setItem('muse_return_day2_fired', '1');
+    }
+  } catch (e) { /* localStorage disabled — skip */ }
 })();
 </script>
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
@@ -7763,7 +7777,7 @@
     window.netlifyIdentity.init();
     const u = window.netlifyIdentity.currentUser();
     if (!u){
-      window.location.replace('signin.html');
+      window.location.replace('/signin');
       return;
     }
     bootstrap(u);
@@ -7773,7 +7787,7 @@
         const key = 'muse_price_state_v8_' + (window.MUSE_USER && window.MUSE_USER.id);
         localStorage.removeItem(key);
       } catch(e){}
-      window.location.replace('signin.html');
+      window.location.replace('/signin');
     });
   })();
 </script>
@@ -10485,6 +10499,18 @@ function setView(name) {
       STATE.previousView = CURRENT_VIEW;
     }
   }
+  // Funnel: fire viewed_artist once per session when the user lands on a
+  // detail view. Per-session dedupe keeps the event volume low.
+  if (name === 'artist' && typeof window.plausible === 'function') {
+    try {
+      if (!sessionStorage.getItem('muse_viewed_artist_fired')) {
+        window.plausible('viewed_artist', {
+          props: { ticker: (STATE.selected && STATE.selected.ticker) || 'unknown' }
+        });
+        sessionStorage.setItem('muse_viewed_artist_fired', '1');
+      }
+    } catch (e) { /* sessionStorage disabled — skip */ }
+  }
   CURRENT_VIEW = name;
   VIEWS.forEach(v => {
     document.getElementById('view-' + v).classList.toggle('hidden', v !== name);
@@ -12782,6 +12808,23 @@ document.getElementById('ad-tab-sell').addEventListener('click', () => {
   STATE.tradeSide = 'sell';
   document.getElementById('ad-tab-sell').classList.add('active');
   document.getElementById('ad-tab-buy').classList.remove('active');
+  // Clamp the amount field to the user's position value if they're switching
+  // from Buy to Sell with an amount that exceeds what they can actually sell.
+  // Without this, a user who buys €100 then clicks Sell sees a "Not enough
+  // shares" warning because the €100 buy yielded a position worth slightly
+  // less than €100 at current price.
+  const a = STATE.selected;
+  if (a) {
+    const h = STATE.holdings[a.ticker];
+    const posValue = h && h.shares ? Math.floor(h.shares * a.price * 100) / 100 : 0;
+    const input = document.getElementById('ad-trade-amount');
+    const amt = parseFloat(input.value) || 0;
+    if (posValue <= 0) {
+      input.value = '';
+    } else if (amt > posValue) {
+      input.value = posValue.toFixed(2).replace(/\.00$/, '');
+    }
+  }
   updateDetailTradeBtn();
   recalcDetailTrade();
 });
@@ -12899,6 +12942,13 @@ function executeMarketOrder(a, side, amt) {
       ]
     });
     if (isFirstBuy) firstBuyCelebration();
+    // Funnel events
+    if (typeof window.plausible === 'function') {
+      try {
+        window.plausible('buy', { props: { ticker: a.ticker } });
+        if (isFirstBuy) window.plausible('first_buy', { props: { ticker: a.ticker } });
+      } catch (e) {}
+    }
   } else {
     const h = STATE.holdings[a.ticker];
     if (!h || h.shares < shares) { showToast('Not enough shares', true); return false; }
@@ -12907,6 +12957,8 @@ function executeMarketOrder(a, side, amt) {
     STATE.realized = (STATE.realized || 0) + realized;
     if (h.shares < 0.001) delete STATE.holdings[a.ticker];
     STATE.cash += amt;
+    const isFirstSell = !STATE.firstSellAt;
+    if (isFirstSell) STATE.firstSellAt = Date.now();
     STATE.transactions.unshift({ type: 'SELL', ticker: a.ticker, name: a.name, shares, price: a.price, total: amt, time: new Date() });
     recordUserOrderFlow(a, 'sell', shares);
     showConfirmation({
@@ -12927,8 +12979,30 @@ function executeMarketOrder(a, side, amt) {
         { label: 'Done', primary: true },
       ]
     });
+    // Funnel events
+    if (typeof window.plausible === 'function') {
+      try {
+        window.plausible('sell', { props: { ticker: a.ticker } });
+        if (isFirstSell) window.plausible('first_sell', { props: { ticker: a.ticker } });
+      } catch (e) {}
+    }
   }
   updateCashDisplay();
+  // After any trade, refresh the trade form so the amount field and chip
+  // states reflect the new holdings/cash. If a sell emptied the position,
+  // clear the amount so we don't keep showing a stale "Not enough shares"
+  // warning against a position that no longer exists.
+  try {
+    const amtInput = document.getElementById('ad-trade-amount');
+    if (amtInput) {
+      if (side === 'sell' && !STATE.holdings[a.ticker]) {
+        amtInput.value = '';
+      }
+    }
+    if (typeof refreshAmtChipsState === 'function') refreshAmtChipsState();
+    if (typeof recalcDetailTrade === 'function') recalcDetailTrade();
+    if (typeof updateDetailTradeBtn === 'function') updateDetailTradeBtn();
+  } catch (e) { /* non-critical UI refresh — fail open */ }
   // Persist immediately after every trade so holdings survive refresh
   if (typeof saveMusePriceState === 'function') saveMusePriceState();
   return true;
