@@ -7,7 +7,7 @@
 <meta name="description" content="Paper-trade artist stocks driven by real streaming data." />
 <!-- Open Graph / social preview -->
 <meta property="og:title" content="Muses — Exchange" />
-<meta property="og:description" content="Paper-trade artist stocks driven by real streaming data. €100,000 in virtual credits." />
+<meta property="og:description" content="Paper-trade artist stocks driven by real streaming data. €10,000 in virtual credits." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Muses" />
 <meta property="og:url" content="https://muses.exchange/exchange" />
@@ -8272,8 +8272,8 @@
 
         <!-- PAPER BALANCE -->
         <div class="card">
-          <div class="card-title"><span>Paper Balance <span class="info-tip">?<span class="tip-text">Practice money for paper trading — not real funds. Starts at €100,000.</span></span></span> <span class="money-badge paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Paper</span></div>
-          <div class="hero-value" style="font-size:28px;opacity:0.7">€<span id="cash-balance">100,000</span></div>
+          <div class="card-title"><span>Paper Balance <span class="info-tip">?<span class="tip-text">Practice money for paper trading — not real funds. Starts at €10,000.</span></span></span> <span class="money-badge paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Paper</span></div>
+          <div class="hero-value" style="font-size:28px;opacity:0.7">€<span id="cash-balance">10,000</span></div>
           <div class="qa-grid" style="margin-top:14px">
             <button class="qa-btn" data-action="swap" style="padding:12px 10px"><div class="qa-icon" style="width:32px;height:32px;border-radius:8px"><svg><use href="#i-swap"/></svg></div><span class="label">Swap</span></button>
           </div>
@@ -10202,7 +10202,7 @@ setTimeout(loadLivePrices, 0);
 
 // ============ STATE ============
 const STATE = {
-  cash: 100_000.00,
+  cash: 10_000.00,
   tournamentCredits: 0.00,  // virtual tournament credits (paper — used for tournament entries and virtual prizes)
   holdings: {},
   realized: 0,
@@ -13826,7 +13826,7 @@ function renderSettings() {
           <div class="settings-card">
             ${rowAction('Replay onboarding tour', 'Walk through the welcome flow again.', 'Replay tour', 'replay-onboarding')}
             ${rowAction('Clear favorites', 'Remove every artist currently in your favorites.', 'Clear favorites', 'clear-watchlist')}
-            ${rowAction('Reset paper cash', 'Reset your balance to €100,000.00 and clear holdings.', 'Reset cash', 'reset-cash')}
+            ${rowAction('Reset paper cash', 'Reset your balance to €10,000.00 and clear holdings.', 'Reset cash', 'reset-cash')}
             ${rowAction('Export data', 'Download a JSON snapshot of your portfolio and orders.', 'Export JSON', 'export-json')}
           </div>
         </div>
@@ -13917,8 +13917,8 @@ function runSettingsAction(action) {
       if (typeof refreshStars === 'function') refreshStars();
     }
   } else if (action === 'reset-cash') {
-    if (confirm('Reset balance to €100,000.00 and clear all holdings and orders? This cannot be undone.')) {
-      STATE.cash = 100_000;
+    if (confirm('Reset balance to €10,000.00 and clear all holdings and orders? This cannot be undone.')) {
+      STATE.cash = 10_000;
       STATE.holdings = {};
       STATE.transactions = [];
       STATE.openOrders = [];
@@ -13928,7 +13928,7 @@ function runSettingsAction(action) {
       // Clear saved state so the reset sticks across refreshes
       try { localStorage.removeItem(MUSE_STATE_KEY); } catch (e) {}
       if (typeof updateCashDisplay === 'function') updateCashDisplay();
-      showToast('Cash reset to €100,000.00');
+      showToast('Cash reset to €10,000.00');
     }
   } else if (action === 'export-json') {
     const data = {
@@ -13982,7 +13982,7 @@ const HELP_FAQ = [
   },
   {
     q: 'Is this real money?',
-    a: 'No — Muses is a paper-trading prototype. Every session starts with €100,000 in virtual credits. Your portfolio, P&L, and leaderboard rank all track live against real data, but no real funds are at risk and no deposits are possible.'
+    a: 'No — Muses is a paper-trading prototype. Every session starts with €10,000 in virtual credits. Your portfolio, P&L, and leaderboard rank all track live against real data, but no real funds are at risk and no deposits are possible.'
   },
   {
     q: 'What kinds of orders can I place?',
@@ -20068,11 +20068,11 @@ function renderOnboardingStep() {
     body.innerHTML = `
       <div class="onb-step">
         <div class="onb-eyebrow">Step 4 of ${total}</div>
-        <h1 class="onb-title">You're starting with €100,000.</h1>
+        <h1 class="onb-title">You're starting with €10,000.</h1>
         <p class="onb-sub">Virtual credits to build a portfolio with. Nothing deposited, nothing to deposit, and no fees — this is paper. Reset to the starting balance anytime from Settings.</p>
         <div class="onb-cash-card">
           <div>
-            <div class="onb-cash-amount">€100,000.00</div>
+            <div class="onb-cash-amount">€10,000.00</div>
             <div class="onb-cash-label">Starter balance</div>
           </div>
         </div>
