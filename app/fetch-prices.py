@@ -34,6 +34,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 ARTISTS_FILE = HERE / "artists.json"
+LISTENER_RATIOS_FILE = HERE / "listener-ratios.json"
 OUT_FILE = HERE / "prices.json"
 OUT_JS_FILE = HERE / "prices.js"  # file:// fallback — loaded via <script> tag
 HISTORY_FILE = HERE / "history.json"
@@ -665,6 +666,25 @@ def blend_price(fair, previous):
     return round(previous * 0.85 + fair * 0.15, 2)
 
 
+def load_listener_ratios():
+    """Load the per-artist follower→listener multiplier table.
+
+    Shape: { calibratedAt, defaultRatio, ratios: { <spotifyId>: <float>, … } }.
+    Used as a smarter fallback when the Spotify partner-API scrape fails:
+    instead of a flat `followers × 0.6`, we use `followers × ratios[id]`
+    per artist so rankings and magnitudes stay anchored to the last
+    calibration. Returns (ratios_dict, default_ratio). Empty + 0.6 on any
+    error so the old behavior is preserved.
+    """
+    if not LISTENER_RATIOS_FILE.exists():
+        return {}, 0.6
+    try:
+        data = json.loads(LISTENER_RATIOS_FILE.read_text())
+        return data.get("ratios", {}) or {}, float(data.get("defaultRatio", 0.6))
+    except Exception:
+        return {}, 0.6
+
+
 def load_previous_prices():
     if not OUT_FILE.exists():
         return {}
@@ -869,6 +889,10 @@ def main():
 
     previous = load_previous_prices()
     history = load_history()
+    listener_ratios, default_listener_ratio = load_listener_ratios()
+    if listener_ratios:
+        print(f"  · loaded {len(listener_ratios)} per-artist listener ratios "
+              f"(default {default_listener_ratio:.3f})")
     now_dt = datetime.now(timezone.utc)
     now_iso = now_dt.isoformat(timespec="seconds").replace("+00:00", "Z")
 
@@ -883,15 +907,28 @@ def main():
         image = (live.get("images") or [{}])[0].get("url") if live.get("images") else None
 
         # Real monthly listeners scraped from open.spotify.com. If the
-        # scrape failed for this artist, fall back to the old proxy of
-        # 60% of followers so the pipeline still produces a number.
+        # scrape failed for this artist, fall back to a per-artist
+        # calibrated multiplier (listener-ratios.json) applied to the
+        # follower count. The ratio is the ratio of real monthly listeners
+        # to followers from the last successful calibration, so rankings
+        # and magnitudes stay anchored instead of collapsing to a flat
+        # 0.6× that mis-ranks big artists. If no calibration is available
+        # we fall back further to the flat 0.6× proxy.
         scraped_listeners = monthly_listeners_by_id.get(a["spotifyId"])
         if scraped_listeners and scraped_listeners > 0:
             monthly_listeners = scraped_listeners
             listeners_source = "spotify-page"
         else:
-            monthly_listeners = int(round(followers * 0.6))
-            listeners_source = "follower-proxy"
+            ratio = listener_ratios.get(a["spotifyId"])
+            if ratio and ratio > 0:
+                monthly_listeners = int(round(followers * ratio))
+                listeners_source = "ratio-calibrated"
+            elif default_listener_ratio and default_listener_ratio > 0:
+                monthly_listeners = int(round(followers * default_listener_ratio))
+                listeners_source = "ratio-default"
+            else:
+                monthly_listeners = int(round(followers * 0.6))
+                listeners_source = "follower-proxy"
 
         yt_stats = youtube_data.get(a["ticker"])
         chart_stats = chart_positions_by_id.get(a["spotifyId"])
