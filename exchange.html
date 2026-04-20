@@ -7730,17 +7730,28 @@
   }
 
 </style>
-<!-- Netlify Identity widget (real auth for signed-in sessions) -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<!-- Supabase Auth — real auth for signed-in sessions.
+     UMD build (not ESM) so the synchronous gate below can read
+     window.supabase before the rest of the page parses. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   // ═══════════════════════════════════════════════════════════════
   // Auth gate — runs synchronously before the main app boots.
-  // Requires the user to be signed in via Netlify Identity.
-  // Exposes window.MUSE_USER = { id, email, name }.
-  // The widget script above is blocking, so window.netlifyIdentity
-  // is already defined by the time we get here.
+  // Requires the user to be signed in via Supabase Auth.
+  // Exposes:
+  //   window.MUSE_USER = { id, email, name, handle, authed }
+  //   window.SUPABASE  = Supabase client (for downstream app code)
+  //
+  // Strategy: Supabase's getUser() is async, which would break the
+  // synchronous ordering the inline app JS below depends on. So we
+  // synchronously read the cached session from localStorage (where
+  // the SDK persists it as `sb-<project-ref>-auth-token`), populate
+  // MUSE_USER immediately, then async-validate in the background.
   // ═══════════════════════════════════════════════════════════════
   (function(){
+    const SUPABASE_URL = 'https://bhyjdvqbfearmrkxvppl.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_rJy9Oi0xt7U2HfiUs1-S9w_klZz82Lh';
+
     // Allow local file:// and localhost to run without auth (dev convenience).
     const isLocal = location.protocol === 'file:'
       || location.hostname === 'localhost'
@@ -7748,47 +7759,83 @@
 
     function bootstrap(user){
       const meta = (user && user.user_metadata) || {};
-      const name = meta.full_name
+      const name = meta.display_name
+        || meta.full_name
         || meta.name
         || (user && user.email && user.email.split('@')[0])
         || 'You';
-      const handle = (meta.handle || name).toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 24) || 'you';
+      const handleRaw = meta.handle
+        || name.toLowerCase().replace(/[^a-z0-9_]+/g, '').slice(0, 24)
+        || 'you';
       window.MUSE_USER = {
         id: (user && user.id) || 'local-dev',
         email: (user && user.email) || 'dev@local',
         name: name,
-        handle: handle,
+        handle: handleRaw,
         authed: !!user,
       };
     }
 
-    if (isLocal){
-      bootstrap(null);
-      return;
-    }
-
-    if (!window.netlifyIdentity){
-      // Widget failed to load (network block, adblocker) — don't hard-lock.
-      console.warn('[Muses] Identity widget failed to load; running unauthenticated.');
-      bootstrap(null);
-      return;
-    }
-
-    window.netlifyIdentity.init();
-    const u = window.netlifyIdentity.currentUser();
-    if (!u){
-      window.location.replace('/signin');
-      return;
-    }
-    bootstrap(u);
-
-    window.netlifyIdentity.on('logout', () => {
+    // Synchronously probe the cached Supabase session from localStorage.
+    // SDK persists it under `sb-<project-ref>-auth-token`.
+    function readCachedSession(){
       try {
-        const key = 'muse_price_state_v8_' + (window.MUSE_USER && window.MUSE_USER.id);
-        localStorage.removeItem(key);
+        for (let i = 0; i < localStorage.length; i++){
+          const k = localStorage.key(i);
+          if (!k || !/^sb-.+-auth-token$/.test(k)) continue;
+          const raw = localStorage.getItem(k);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+          // Shape varies across SDK versions; check both.
+          const user = (parsed && parsed.user)
+            || (parsed && parsed.currentSession && parsed.currentSession.user)
+            || null;
+          if (user) return user;
+        }
       } catch(e){}
-      window.location.replace('/signin');
-    });
+      return null;
+    }
+
+    const cachedUser = readCachedSession();
+
+    if (!cachedUser){
+      if (isLocal){
+        // Dev bypass — let the app boot unauthenticated locally.
+        bootstrap(null);
+      } else {
+        // No session — bounce to signin synchronously, before the app parses further.
+        window.location.replace('/signin');
+        return;
+      }
+    } else {
+      bootstrap(cachedUser);
+    }
+
+    // Create the client and expose it for downstream use (portfolios, trades, etc).
+    // Guard: if the UMD script didn't load, don't hard-lock — just log.
+    if (window.supabase && typeof window.supabase.createClient === 'function'){
+      window.SUPABASE = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      // Async background validation. If Supabase says the session is bad, bounce.
+      window.SUPABASE.auth.getUser().then(({ data, error }) => {
+        if (error || !data || !data.user){
+          if (!isLocal) window.location.replace('/signin');
+        }
+      }).catch(() => { /* network flake — keep cached session */ });
+
+      // Handle sign-out from any tab.
+      window.SUPABASE.auth.onAuthStateChange((event) => {
+        if (event === 'SIGNED_OUT'){
+          try {
+            const key = 'muse_price_state_v8_' + (window.MUSE_USER && window.MUSE_USER.id);
+            localStorage.removeItem(key);
+          } catch(e){}
+          window.location.replace('/signin');
+        }
+      });
+    } else {
+      console.warn('[Muses] Supabase SDK failed to load; running with cached session only.');
+    }
   })();
 </script>
 </head>
@@ -9670,6 +9717,9 @@ function saveMusePriceState() {
   } catch (e) {
     // localStorage full or blocked — silently ignore
   }
+  // Also push portfolio to Supabase (async, coalesced, silent on failure).
+  // Fire-and-forget: localStorage is still the immediate persistence layer.
+  try { pushPortfolioToSupabase(); } catch (e) {}
 }
 
 /**
@@ -9747,6 +9797,93 @@ function startPricePersistence() {
   // Also save on page unload / tab close
   window.addEventListener('beforeunload', saveMusePriceState);
   window.addEventListener('pagehide', saveMusePriceState);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// SUPABASE PORTFOLIO SYNC — Phase 1 (JSON snapshot)
+// ══════════════════════════════════════════════════════════════════
+// localStorage is still the primary cache (instant boot, works offline).
+// Supabase is the source of truth when it's available — on boot we
+// overlay the Supabase snapshot on top of the localStorage-restored
+// state, and every save heartbeat pushes the current STATE up.
+//
+// Phase 2 (server-side trade validation via RPC) will write to the
+// structured holdings/transactions tables and deprecate this snapshot.
+// ══════════════════════════════════════════════════════════════════
+async function fetchPortfolioFromSupabase() {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return false;
+  try {
+    const { data, error } = await window.SUPABASE
+      .from('portfolios')
+      .select('cash, realized, snapshot, updated_at')
+      .eq('user_id', window.MUSE_USER.id)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return false;
+
+    const snap = data.snapshot;
+    if (snap && typeof snap === 'object') {
+      // Full snapshot present — use it as authoritative
+      if (typeof snap.cash === 'number') STATE.cash = snap.cash;
+      if (typeof snap.realized === 'number') STATE.realized = snap.realized;
+      if (typeof snap.tournamentCredits === 'number') STATE.tournamentCredits = snap.tournamentCredits;
+      if (snap.holdings && typeof snap.holdings === 'object') STATE.holdings = snap.holdings;
+      if (Array.isArray(snap.transactions)) STATE.transactions = snap.transactions;
+      if (Array.isArray(snap.openOrders)) STATE.openOrders = snap.openOrders;
+      if (Array.isArray(snap.filledOrders)) STATE.filledOrders = snap.filledOrders;
+      if (typeof snap.firstBuyAt === 'number' || snap.firstBuyAt === null) STATE.firstBuyAt = snap.firstBuyAt;
+      console.log('✓ Portfolio restored from Supabase (' + Math.round((Date.now() - (snap.savedAt || 0)) / 60000) + 'm ago)');
+    } else {
+      // Fresh row from the trigger — just carry cash + realized
+      if (data.cash != null) STATE.cash = Number(data.cash);
+      if (data.realized != null) STATE.realized = Number(data.realized);
+      console.log('✓ Fresh portfolio row (no snapshot yet) — cash €' + STATE.cash);
+    }
+    return true;
+  } catch (e) {
+    console.warn('[Muses] Supabase portfolio fetch failed:', e.message || e);
+    return false;
+  }
+}
+
+let _pushInFlight = false;
+let _pushQueued = false;
+async function pushPortfolioToSupabase() {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return;
+  // Coalesce: if a push is already in flight, mark that another is needed
+  // and let the current one pick it up when it finishes.
+  if (_pushInFlight) { _pushQueued = true; return; }
+  _pushInFlight = true;
+  try {
+    do {
+      _pushQueued = false;
+      const snapshot = {
+        cash: STATE.cash,
+        realized: STATE.realized || 0,
+        tournamentCredits: STATE.tournamentCredits || 0,
+        holdings: STATE.holdings || {},
+        transactions: (STATE.transactions || []).slice(-200),
+        openOrders: STATE.openOrders || [],
+        filledOrders: (STATE.filledOrders || []).slice(-100),
+        firstBuyAt: STATE.firstBuyAt || null,
+        savedAt: Date.now(),
+      };
+      const { error } = await window.SUPABASE
+        .from('portfolios')
+        .update({
+          cash: STATE.cash,
+          realized: STATE.realized || 0,
+          snapshot: snapshot,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', window.MUSE_USER.id);
+      if (error) throw error;
+    } while (_pushQueued);
+  } catch (e) {
+    console.warn('[Muses] Supabase portfolio push failed:', e.message || e);
+  } finally {
+    _pushInFlight = false;
+  }
 }
 
 // Synchronously merge prices.js / history.js into ARTISTS *before* the
@@ -13831,7 +13968,7 @@ function renderSettings() {
           </div>
         </div>
 
-        ${(window.netlifyIdentity && window.netlifyIdentity.currentUser()) ? `
+        ${(window.MUSE_USER && window.MUSE_USER.authed) ? `
         <div class="settings-section" id="sec-session">
           <div class="settings-section-head">
             <h2 class="settings-section-title">Session</h2>
@@ -13925,8 +14062,12 @@ function runSettingsAction(action) {
       STATE.filledOrders = [];
       STATE.cancelledOrders = [];
       STATE.recurringBuys = [];
+      STATE.realized = 0;
+      STATE.firstBuyAt = null;
       // Clear saved state so the reset sticks across refreshes
       try { localStorage.removeItem(MUSE_STATE_KEY); } catch (e) {}
+      // Push reset to Supabase so it persists across devices
+      try { pushPortfolioToSupabase(); } catch (e) {}
       if (typeof updateCashDisplay === 'function') updateCashDisplay();
       showToast('Cash reset to €10,000.00');
     }
@@ -13953,11 +14094,15 @@ function runSettingsAction(action) {
     URL.revokeObjectURL(url);
     showToast('Export downloaded');
   } else if (action === 'sign-out') {
-    if (window.netlifyIdentity && window.netlifyIdentity.currentUser()){
+    if (window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed){
       if (confirm('Sign out of Muses on this device?')){
-        window.netlifyIdentity.logout();
-        // logout() is async; the global 'logout' handler in the auth gate
-        // will clear local state and redirect.
+        // Final flush before signing out so the latest state is in Supabase.
+        try { pushPortfolioToSupabase(); } catch (e) {}
+        window.SUPABASE.auth.signOut().then(() => {
+          // onAuthStateChange handler in the auth gate above will redirect.
+          // Fallback in case it doesn't fire:
+          setTimeout(() => { window.location.href = '/signin'; }, 600);
+        });
       }
     } else {
       showToast('Not signed in');
@@ -20177,6 +20322,18 @@ loadArtistImages();
 renderTickerTape();
 setInterval(tickPrices, 5000);
 startPricePersistence(); // save prices + history to localStorage every 30s
+
+// Pull authoritative portfolio from Supabase (overrides localStorage if present).
+// Async — first paint uses the localStorage cache; if Supabase has a newer
+// snapshot, it overlays and re-renders. New users (no row yet) just keep
+// the trigger-default €10,000 cash.
+fetchPortfolioFromSupabase().then(ok => {
+  if (!ok) return;
+  try { updateCashDisplay(); } catch (e) {}
+  try { renderMarkets(); } catch (e) {}
+  try { if (typeof renderPortfolio === 'function' && CURRENT_VIEW === 'portfolio') renderPortfolio(); } catch (e) {}
+  try { if (typeof renderOrdersView === 'function' && CURRENT_VIEW === 'orders') renderOrdersView(); } catch (e) {}
+});
 setInterval(() => {
   if (typeof processRecurringBuys === 'function') {
     try { processRecurringBuys(); } catch (e) {}

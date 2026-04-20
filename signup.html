@@ -30,6 +30,20 @@
     font-family:var(--sans); font-size:12.5px; color:var(--ink-faint);
     margin-top:8px; line-height:1.5;
   }
+  .handle-wrap{ position:relative; }
+  .handle-prefix{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    font-family:var(--sans); font-size:14px; color:var(--ink-faint);
+    pointer-events:none;
+  }
+  #handle{ padding-left:28px; }
+  .handle-status{
+    font-family:var(--sans); font-size:12px; margin-top:6px;
+    min-height:16px; line-height:1.4;
+  }
+  .handle-status.ok{ color:#8df0cf; }
+  .handle-status.err{ color:#ffb3c3; }
+  .handle-status.neutral{ color:var(--ink-faint); }
 </style>
 </head>
 <body data-page="signup">
@@ -65,6 +79,15 @@
     </div>
 
     <div class="signup-field">
+      <label class="signup-label" for="handle">Handle</label>
+      <div class="handle-wrap">
+        <span class="handle-prefix">@</span>
+        <input class="signup-input" type="text" id="handle" placeholder="yourhandle" autocomplete="off" required minlength="3" maxlength="24" pattern="[a-z0-9_]+">
+      </div>
+      <div class="handle-status neutral" id="handle-status">3–24 characters. Lowercase letters, numbers, and underscores only.</div>
+    </div>
+
+    <div class="signup-field">
       <label class="signup-label" for="email">Email address</label>
       <input class="signup-input" type="email" id="email" placeholder="you@example.com" autocomplete="email" required>
     </div>
@@ -84,69 +107,136 @@
   <p class="signup-foot-hint">Already have an account? <a href="/signin">Sign in →</a></p>
 </main>
 
-<!-- Netlify Identity widget (handles account creation, email confirmation, password reset) -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>
-(function(){
-  const form = document.getElementById('signup-form');
-  const alertBox = document.getElementById('auth-alert');
-  const submitBtn = document.getElementById('signup-submit');
+<!-- Supabase Auth — handles signup, email confirmation, and post-confirm trigger
+     creates the profile + portfolio rows (€10,000 starting cash) via SQL trigger. -->
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-  function showAlert(kind, msg){
-    alertBox.className = 'auth-alert show ' + kind;
-    alertBox.textContent = msg;
-    alertBox.scrollIntoView({behavior:'smooth', block:'nearest'});
+const SUPABASE_URL = 'https://bhyjdvqbfearmrkxvppl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_rJy9Oi0xt7U2HfiUs1-S9w_klZz82Lh';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const form        = document.getElementById('signup-form');
+const alertBox    = document.getElementById('auth-alert');
+const submitBtn   = document.getElementById('signup-submit');
+const handleInput = document.getElementById('handle');
+const handleStatus= document.getElementById('handle-status');
+
+function showAlert(kind, msg){
+  alertBox.className = 'auth-alert show ' + kind;
+  alertBox.textContent = msg;
+  alertBox.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// If already signed in, skip the form
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) window.location.href = '/exchange';
+})();
+
+// ── Live handle availability check (debounced) ─────────────────────
+let handleTimer = null;
+let lastCheckedHandle = null;
+let lastAvailability = null;
+
+function setHandleStatus(kind, msg){
+  handleStatus.className = 'handle-status ' + kind;
+  handleStatus.textContent = msg;
+}
+
+handleInput.addEventListener('input', () => {
+  // Force lowercase and strip invalid chars as user types
+  const cleaned = handleInput.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+  if (cleaned !== handleInput.value) handleInput.value = cleaned;
+
+  clearTimeout(handleTimer);
+  const h = handleInput.value.trim();
+  if (h.length === 0){
+    setHandleStatus('neutral', '3–24 characters. Lowercase letters, numbers, and underscores only.');
+    lastAvailability = null;
+    return;
   }
-
-  // Ensure the widget has loaded before we call its API
-  function onReady(cb){
-    if (window.netlifyIdentity) cb();
-    else window.addEventListener('load', cb, {once:true});
+  if (h.length < 3){
+    setHandleStatus('err', 'Too short — at least 3 characters.');
+    lastAvailability = null;
+    return;
   }
+  setHandleStatus('neutral', 'Checking availability…');
 
-  onReady(() => {
-    if (!window.netlifyIdentity) return;
-    window.netlifyIdentity.init({ locale: 'en' });
-
-    // If already logged in, skip the form
-    const existing = window.netlifyIdentity.currentUser();
-    if (existing){
-      window.location.href = 'Muses - Exchange Prototype.html';
-      return;
-    }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-
-      if (!name || !email || password.length < 8){
-        showAlert('err', 'Please fill in every field. Password must be at least 8 characters.');
-        return;
+  handleTimer = setTimeout(async () => {
+    if (h === lastCheckedHandle) return;
+    lastCheckedHandle = h;
+    try {
+      const { data, error } = await supabase.rpc('handle_available', { p_handle: h });
+      if (error) throw error;
+      if (data === true){
+        setHandleStatus('ok', '@' + h + ' is available.');
+        lastAvailability = true;
+      } else {
+        setHandleStatus('err', '@' + h + ' is already taken.');
+        lastAvailability = false;
       }
+    } catch (err) {
+      setHandleStatus('neutral', "Couldn't check availability — we'll verify when you submit.");
+      lastAvailability = null;
+    }
+  }, 400);
+});
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Creating account…';
+// ── Submit ─────────────────────────────────────────────────────────
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name     = document.getElementById('name').value.trim();
+  const handle   = handleInput.value.trim().toLowerCase();
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-      try {
-        // Netlify Identity's GoTrue client is exposed on the widget
-        const gotrue = window.netlifyIdentity.gotrue;
-        if (!gotrue){
-          throw new Error('Identity service is not available. Make sure Netlify Identity is enabled for this site.');
-        }
-        await gotrue.signup(email, password, { full_name: name });
-        showAlert('ok', 'Account created. Check your inbox — we just sent a confirmation link to ' + email + '. Click it to activate your account, then sign in.');
-        submitBtn.textContent = 'Check your email';
-      } catch (err){
-        const msg = (err && err.json && err.json.msg) || (err && err.message) || 'Could not create account. Please try again.';
-        showAlert('err', msg);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Create account';
+  if (!name || !handle || !email || password.length < 8){
+    showAlert('err', 'Please fill in every field. Password must be at least 8 characters.');
+    return;
+  }
+  if (!/^[a-z0-9_]{3,24}$/.test(handle)){
+    showAlert('err', 'Handle must be 3–24 lowercase letters, numbers, or underscores.');
+    return;
+  }
+  if (lastAvailability === false){
+    showAlert('err', '@' + handle + ' is already taken. Pick another.');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Creating account…';
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { display_name: name, handle: handle },
+        emailRedirectTo: window.location.origin + '/signin'
       }
     });
-  });
-})();
+    if (error) throw error;
+
+    // Supabase returns a user but no session when email confirmation is required
+    showAlert('ok',
+      'Account created. Check your inbox — we just sent a confirmation link to ' +
+      email + '. Click it to activate your account, then sign in.');
+    submitBtn.textContent = 'Check your email';
+  } catch (err){
+    // Unique handle violation from trigger surfaces as a DB error; normalize it
+    const raw = (err && err.message) || '';
+    let msg = raw || 'Could not create account. Please try again.';
+    if (/profiles_handle_key|duplicate key|unique constraint/i.test(raw)){
+      msg = '@' + handle + ' is already taken. Pick another handle.';
+    } else if (/already registered|user already/i.test(raw)){
+      msg = 'An account with this email already exists. Try signing in instead.';
+    }
+    showAlert('err', msg);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Create account';
+  }
+});
 </script>
 </body>
 </html>

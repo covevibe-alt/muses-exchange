@@ -80,87 +80,79 @@
   <p class="signup-foot-hint">Don't have an account? <a href="/signup">Create one →</a></p>
 </main>
 
-<!-- Netlify Identity widget -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>
-(function(){
-  const form = document.getElementById('signin-form');
-  const alertBox = document.getElementById('auth-alert');
-  const submitBtn = document.getElementById('signin-submit');
-  const forgotBtn = document.getElementById('forgot-link');
+<!-- Supabase Auth — sign in, session persistence, forgot password -->
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-  function showAlert(kind, msg){
-    alertBox.className = 'auth-alert show ' + kind;
-    alertBox.textContent = msg;
-    alertBox.scrollIntoView({behavior:'smooth', block:'nearest'});
-  }
+const SUPABASE_URL = 'https://bhyjdvqbfearmrkxvppl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_rJy9Oi0xt7U2HfiUs1-S9w_klZz82Lh';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  function onReady(cb){
-    if (window.netlifyIdentity) cb();
-    else window.addEventListener('load', cb, {once:true});
-  }
+const form      = document.getElementById('signin-form');
+const alertBox  = document.getElementById('auth-alert');
+const submitBtn = document.getElementById('signin-submit');
+const forgotBtn = document.getElementById('forgot-link');
 
-  onReady(() => {
-    if (!window.netlifyIdentity) return;
-    window.netlifyIdentity.init({ locale: 'en' });
+function showAlert(kind, msg){
+  alertBox.className = 'auth-alert show ' + kind;
+  alertBox.textContent = msg;
+  alertBox.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
 
-    // If already logged in, go straight to the app
-    const existing = window.netlifyIdentity.currentUser();
-    if (existing){
-      window.location.href = 'Muses - Exchange Prototype.html';
-      return;
-    }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-
-      if (!email || !password){
-        showAlert('err', 'Please enter both your email and password.');
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Signing in…';
-
-      try {
-        const gotrue = window.netlifyIdentity.gotrue;
-        if (!gotrue){
-          throw new Error('Identity service is not available. Make sure Netlify Identity is enabled for this site.');
-        }
-        await gotrue.login(email, password, true); // remember = true
-        showAlert('ok', 'Signed in. Loading the exchange…');
-        setTimeout(() => {
-          window.location.href = 'Muses - Exchange Prototype.html';
-        }, 400);
-      } catch (err){
-        const msg = (err && err.json && err.json.error_description)
-          || (err && err.json && err.json.msg)
-          || (err && err.message)
-          || 'Could not sign in. Check your email and password.';
-        showAlert('err', msg);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Sign in';
-      }
-    });
-
-    forgotBtn.addEventListener('click', async () => {
-      const email = document.getElementById('email').value.trim();
-      if (!email){
-        showAlert('err', 'Enter your email above first, then click "Forgot your password?" again.');
-        return;
-      }
-      try {
-        const gotrue = window.netlifyIdentity.gotrue;
-        await gotrue.requestPasswordRecovery(email);
-        showAlert('ok', 'If an account exists for ' + email + ', we just emailed a reset link.');
-      } catch (err){
-        showAlert('err', 'Could not send reset link. Please try again in a moment.');
-      }
-    });
-  });
+// If already signed in, go straight to the exchange
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) window.location.href = '/exchange';
 })();
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  if (!email || !password){
+    showAlert('err', 'Please enter both your email and password.');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Signing in…';
+
+  try {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    showAlert('ok', 'Signed in. Loading the exchange…');
+    setTimeout(() => { window.location.href = '/exchange'; }, 400);
+  } catch (err){
+    const raw = (err && err.message) || '';
+    let msg = raw || 'Could not sign in. Check your email and password.';
+    if (/invalid login credentials/i.test(raw)){
+      msg = 'Wrong email or password. Try again.';
+    } else if (/email not confirmed/i.test(raw)){
+      msg = "You haven't confirmed your email yet. Check your inbox for the confirmation link.";
+    }
+    showAlert('err', msg);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Sign in';
+  }
+});
+
+forgotBtn.addEventListener('click', async () => {
+  const email = document.getElementById('email').value.trim();
+  if (!email){
+    showAlert('err', 'Enter your email above first, then click "Forgot your password?" again.');
+    return;
+  }
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/signin'
+    });
+    if (error) throw error;
+    showAlert('ok', 'If an account exists for ' + email + ', we just emailed a reset link.');
+  } catch (err){
+    showAlert('err', 'Could not send reset link. Please try again in a moment.');
+  }
+});
 </script>
 </body>
 </html>
