@@ -553,6 +553,42 @@
     margin: 4px 4px;
   }
 
+  /* Guest CTAs — shown in the header when the visitor has no account.
+     Replace the user chip / user menu. Sign up is the primary action
+     (violet fill); Sign in is the secondary action (ghost). The
+     visibility toggle lives on <html class="is-guest">, set by the
+     auth gate synchronously so there's no FOUC between chip and CTAs. */
+  .guest-auth-cta { display: none; align-items: center; gap: 8px; }
+  html.is-guest .guest-auth-cta { display: flex; }
+  html.is-guest #user-wrap { display: none; }
+  html:not(.is-guest) .guest-auth-cta { display: none; }
+  .guest-signin, .guest-signup {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 34px; padding: 0 14px;
+    border-radius: 999px;
+    font-size: 13px; font-weight: 600;
+    text-decoration: none;
+    font-family: inherit;
+    transition: background .15s, border-color .15s, color .15s, transform .15s;
+    white-space: nowrap;
+  }
+  .guest-signin {
+    color: var(--text-dim);
+    background: transparent;
+    border: 1px solid var(--border);
+  }
+  .guest-signin:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+  .guest-signup {
+    color: #fff;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    border: 1px solid rgba(167,139,250,0.5);
+    box-shadow: 0 6px 18px rgba(124,58,237,0.35);
+  }
+  .guest-signup:hover { transform: translateY(-1px); }
+
   /* CONTENT GRID */
   .content {
     padding: 32px 36px;
@@ -8010,17 +8046,20 @@
 
     const cachedUser = readCachedSession();
 
+    // Guest mode: visitors without an account can browse the exchange,
+    // inspect prices, and preview the trade flow. Trading, portfolio sync,
+    // and tournament enrollment are gated behind sign-up. This lets the
+    // product speak for itself before asking for anything.
     if (!cachedUser){
-      if (isLocal){
-        // Dev bypass — let the app boot unauthenticated locally.
-        bootstrap(null);
-      } else {
-        // No session — bounce to signin synchronously, before the app parses further.
-        window.location.replace('/signin');
-        return;
-      }
+      bootstrap(null);
     } else {
       bootstrap(cachedUser);
+    }
+
+    // Mark the document as guest-mode synchronously so CSS swaps the
+    // header user chip for the Sign in / Sign up CTAs without a flash.
+    if (!window.MUSE_USER || !window.MUSE_USER.authed) {
+      document.documentElement.classList.add('is-guest');
     }
 
     // Create the client and expose it for downstream use (portfolios, trades, etc).
@@ -8028,21 +8067,27 @@
     if (window.supabase && typeof window.supabase.createClient === 'function'){
       window.SUPABASE = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      // Async background validation. If Supabase says the session is bad, bounce.
+      // Async background validation. If Supabase says the session is bad, drop
+      // to guest mode in place — don't bounce to /signin. This keeps browsers
+      // that opened /exchange without an account on the exchange page.
       window.SUPABASE.auth.getUser().then(({ data, error }) => {
         if (error || !data || !data.user){
-          if (!isLocal) window.location.replace('/signin');
+          // Cached session was stale — reload so the gate bootstraps a guest.
+          if (window.MUSE_USER && window.MUSE_USER.authed && !isLocal) {
+            window.location.reload();
+          }
         }
       }).catch(() => { /* network flake — keep cached session */ });
 
-      // Handle sign-out from any tab.
+      // Handle sign-out from any tab. Reload into guest mode so the user stays
+      // on /exchange and can browse freely after signing out.
       window.SUPABASE.auth.onAuthStateChange((event) => {
         if (event === 'SIGNED_OUT'){
           try {
             const key = 'muse_price_state_v8_' + (window.MUSE_USER && window.MUSE_USER.id);
             localStorage.removeItem(key);
           } catch(e){}
-          window.location.replace('/signin');
+          window.location.reload();
         }
       });
     } else {
@@ -8243,7 +8288,7 @@
             </div>
           </div>
         </div>
-        <div class="user-wrap">
+        <div class="user-wrap" id="user-wrap">
           <div class="user-chip" id="user-chip-btn" style="cursor:pointer">
             <div class="avatar">Y</div>
             <span class="name">You</span>
@@ -8268,6 +8313,12 @@
               <span>Sign out</span>
             </button>
           </div>
+        </div>
+        <!-- Guest CTAs — shown only when the visitor has no account.
+             Visibility is driven by <html class="is-guest"> in CSS. -->
+        <div class="guest-auth-cta" id="guest-auth-cta">
+          <a class="guest-signin" href="/signin">Sign in</a>
+          <a class="guest-signup" href="/signup">Sign up</a>
         </div>
       </div>
     </header>
@@ -13241,6 +13292,14 @@ document.getElementById('ad-trade-submit').addEventListener('click', () => {
   if (btn._locked) return;
   const amt = parseFloat(document.getElementById('ad-trade-amount').value);
   if (!amt || amt <= 0) return showToast('Enter a valid amount', true);
+  // Guest gate: let visitors play with the trade panel (build intent),
+  // but stop them at the moment of commitment with a friendly auth prompt
+  // instead of opening the review modal they can't actually complete.
+  if (!isAuthed()) {
+    const side = STATE.tradeSide === 'sell' ? 'sell shares' : 'place this trade';
+    showAuthPrompt({ action: side });
+    return;
+  }
   // Short lock so a double-click can't stack two review modals. The review
   // modal itself has its own guard for the actual execution.
   btn._locked = true;
@@ -13316,6 +13375,10 @@ function submitTradeFromState() {
 }
 
 function executeMarketOrder(a, side, amt) {
+  // Guest safety net — the UI gates trade submit, but this catches any
+  // other entry points (limit-order triggers, tournament auto-submits)
+  // that could reach executeMarketOrder for an unauthenticated session.
+  if (!isAuthed()) { showAuthPrompt({ action: side === 'sell' ? 'sell shares' : 'place this trade' }); return false; }
   if (!a.price || a.price <= 0) { showToast('Artist price unavailable', true); return false; }
   const shares = amt / a.price;
   if (!isFinite(shares) || shares <= 0) { showToast('Invalid trade amount', true); return false; }
@@ -16398,6 +16461,74 @@ function showConfirmation(opts) {
   return overlay;
 }
 
+/**
+ * Guest-gate prompt. Called anywhere a guest tries to do something that
+ * requires an account (place a trade, save to favorites, join a
+ * tournament, etc.). Reuses the confirmation-overlay chrome so it feels
+ * native, and offers both Sign up (primary) and Sign in (secondary).
+ *
+ * Usage:
+ *   if (!isAuthed()) { showAuthPrompt({ action: 'place this trade' }); return; }
+ *
+ * @param {Object} [opts]
+ * @param {string} [opts.action] - e.g. 'place this trade', 'save favorites'
+ * @param {string} [opts.title]  - override the default title
+ */
+function showAuthPrompt(opts) {
+  opts = opts || {};
+  const action = opts.action || 'use this feature';
+  const title = opts.title || 'Create an account to continue';
+  const subtitle = 'Sign up to ' + action + ' — it\'s free and takes 30 seconds. '
+    + 'You get €10,000 in paper cash and your portfolio is saved across devices.';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="confirm-card" style="max-width:420px">
+      <div class="cc-icon info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 11h-6"/><path d="M19 8v6"/>
+        </svg>
+      </div>
+      <div class="cc-title">${title}</div>
+      <div class="cc-sub">${subtitle}</div>
+      <div class="cc-actions" style="flex-direction:column;gap:10px">
+        <button class="btn btn-primary" data-ap-btn="signup" style="width:100%">Sign up — it's free</button>
+        <button class="btn btn-secondary" data-ap-btn="signin" style="width:100%">I already have an account</button>
+      </div>
+      <div class="cc-time" style="margin-top:4px">You can keep browsing prices without an account.</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+  overlay.querySelector('[data-ap-btn="signup"]').addEventListener('click', () => {
+    try { if (window.plausible) window.plausible('guest_signup_click', { props: { context: action } }); } catch(e){}
+    window.location.href = '/signup';
+  });
+  overlay.querySelector('[data-ap-btn="signin"]').addEventListener('click', () => {
+    try { if (window.plausible) window.plausible('guest_signin_click', { props: { context: action } }); } catch(e){}
+    window.location.href = '/signin';
+  });
+
+  // Plausible: fires every time a guest hits a gate. Useful for measuring
+  // intent — high gate-hit counts mean the product is doing its job of
+  // convincing browsers to become traders.
+  try { if (window.plausible) window.plausible('guest_gate_shown', { props: { context: action } }); } catch(e){}
+
+  return overlay;
+}
+
+/**
+ * Tiny helper so every gate reads the same.
+ */
+function isAuthed() {
+  return !!(window.MUSE_USER && window.MUSE_USER.authed);
+}
+
 // ============ TOURNAMENTS ============
 // endsAt is an absolute future timestamp so the live countdown is real and persistent.
 const _now = Date.now();
@@ -17660,6 +17791,11 @@ function projectedPrize(t, rank) {
 function quickEnterTournament(id) {
   const t = TOURNAMENTS[id];
   if (!t) return;
+
+  // Guest gate — entering a tournament needs a saved account so prizes
+  // and rank can actually be tracked. Browsing tournament cards is fine
+  // without an account.
+  if (!isAuthed()) { showAuthPrompt({ action: 'enter tournaments' }); return; }
 
   // Already entered with lineup — go to detail
   const existing = STATE.enteredTournaments[id];
@@ -18925,6 +19061,9 @@ function renderSwapStep() {
 }
 
 function executeSwap(fromArtist, toArtist, amount) {
+  // Guests can browse the swap UI but can't execute — same gating model
+  // as buy/sell.
+  if (!isAuthed()) { showAuthPrompt({ action: 'swap shares' }); return; }
   const from = ARTISTS.find(a => a.ticker === fromArtist.ticker);
   const to = ARTISTS.find(a => a.ticker === toArtist.ticker);
   if (!from || !to) { showToast('Artist not found', true); return; }
