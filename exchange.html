@@ -7479,6 +7479,31 @@
     #view-markets .col-main > #all-artists { order: 5; }
     /* Top Movers + Live Signals fall through to order: 20 (below all-artists) */
 
+    /* Artist-detail view: on mobile, hoist the Buy/Sell trade card up to
+       just below the hero so the user doesn't have to scroll past the
+       chart + similar artists to trade. Same `display: contents` +
+       `order` pattern as view-markets; :not(.hidden) guard is the same
+       fix as the M1 regression (otherwise `display: flex !important`
+       overrides `.hidden { display: none }` and other views render
+       off-screen below). */
+    #view-artist:not(.hidden) {
+      display: flex !important;
+      flex-direction: column;
+      gap: 22px;
+    }
+    #view-artist:not(.hidden) .col-main,
+    #view-artist:not(.hidden) .col-side {
+      display: contents;
+    }
+    #view-artist .col-main > * { order: 10; }
+    #view-artist .col-side > * { order: 20; }
+    /* Reading flow: Back → Hero → Trade → Your position → rest */
+    #view-artist .col-main > .back-btn     { order: 1; }
+    #view-artist .col-main > .artist-hero  { order: 2; }
+    #view-artist .col-side > .card:has(.trade-tabs) { order: 3; }
+    #view-artist .col-side > #ad-position-card      { order: 4; }
+    /* About card sinks to the bottom (order: 20 default is fine) */
+
     .section-head { flex-wrap: wrap; gap: 10px; }
     .section-head h1 { font-size: 22px; }
     .section-head .sub { font-size: 12px; }
