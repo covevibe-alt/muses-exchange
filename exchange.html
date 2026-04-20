@@ -7237,7 +7237,9 @@
     }
     .main {
       min-height: 100vh;
-      padding-bottom: 76px; /* reserve space for fixed bottom nav */
+      /* Reserve space for fixed bottom nav (64px) + breathing room.
+         Safe-area-inset-bottom handled in the @supports block below. */
+      padding-bottom: 96px;
     }
     .sidebar {
       position: fixed;
@@ -7417,7 +7419,21 @@
 
     /* Artist detail page */
     .ad-substats { grid-template-columns: repeat(2, 1fr) !important; }
-    .ad-similar-grid { grid-template-columns: 1fr !important; }
+    /* Similar Artists as 2-col grid at mobile — full-width stacked cards
+       were taking 4 screens of scroll; 2-col halves that. */
+    .ad-similar-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .ad-sim-card { padding: 12px 8px; }
+    .ad-sim-bubble { width: 44px; height: 44px; }
+
+    /* Artist header reflow: at 680px the name/price already compete —
+       shrink their sizes so they don't clip. Full stack happens at ≤500px. */
+    .artist-hero { gap: 14px; flex-wrap: wrap; }
+    .artist-hero .big-bubble { width: 64px; height: 64px; border-radius: 16px; font-size: 20px; }
+    .artist-hero .big-bubble > span { font-size: 18px; }
+    .artist-hero .ah-name { font-size: 22px; }
+    .artist-hero .ah-sub { flex-wrap: wrap; gap: 8px; font-size: 12px; }
+    .ah-price .num { font-size: 40px; }
+    .ah-price .num .cents { font-size: 18px; }
 
     /* Order review + trade panels stay readable */
     .ord-rev-row, .ord-rev-foot { flex-wrap: wrap; gap: 10px; }
@@ -7437,6 +7453,116 @@
     .orders-thead { display: none; }
     .orders-row { flex-wrap: wrap; gap: 4px; }
     .stat-tile { min-width: 100%; }
+
+    /* Artist hero: stack name/ticker/meta on top, price + watch on bottom.
+       Bubble sits inline with the name/meta block so the layout reads:
+       [bubble] [name + meta]
+       [        big price           + watch button ]                 */
+    .artist-hero {
+      flex-direction: row;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .artist-hero .big-bubble {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      flex-shrink: 0;
+    }
+    .artist-hero .big-bubble > span { font-size: 16px; }
+    .artist-hero .ah-meta {
+      flex: 1 1 0;
+      min-width: 0;
+      align-self: center;
+    }
+    .artist-hero .ah-name {
+      font-size: 20px;
+      line-height: 1.15;
+      word-break: break-word;
+    }
+    .artist-hero .ah-sub {
+      margin-top: 6px;
+      font-size: 12px;
+      gap: 6px 10px;
+    }
+    /* Price + watch button drop to a full-width row beneath bubble/name.
+       Price aligns left so the eye flows naturally on a single column. */
+    .ah-price {
+      flex-basis: 100%;
+      width: 100%;
+      text-align: left;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 14px;
+      padding-top: 4px;
+      border-top: 1px solid var(--border);
+    }
+    .ah-price .num { font-size: 36px; }
+    .ah-price .num .cents { font-size: 16px; }
+    .ad-watch-btn { margin-left: auto; padding: 7px 12px; font-size: 11px; }
+
+    /* Price-breakdown card — tighten so BASE/+€… doesn't crowd the label */
+    .pf-row { padding: 10px 12px; gap: 10px; grid-template-columns: 24px 1fr auto; }
+    .pf-icon { width: 24px; height: 24px; }
+    .pf-icon svg { width: 12px; height: 12px; }
+    .pf-mid .pf-name { font-size: 12px; }
+    .pf-mid .pf-meta { font-size: 10px; }
+    .pf-right .pf-weight { font-size: 9px; }
+    .pf-right .pf-contrib { font-size: 13px; }
+    .pf-total { padding: 12px 14px; }
+    .pf-total .v { font-size: 18px; }
+
+    /* Tournament card stats: 2x2 at mobile so labels like "Up to €1,275"
+       don't wrap to 3 lines. */
+    .tc-stats { grid-template-columns: repeat(2, 1fr); gap: 8px 14px; }
+    .tc-stat .v { font-size: 13px; }
+
+    /* Profile hero action buttons: fit 3 on one row at mobile,
+       no text wrap inside each button. */
+    .prof-hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      width: 100%;
+      justify-content: center;
+    }
+    .prof-hero-actions .btn {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 9px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    /* Profile handle/meta line: shrink and allow gentle wrap without
+       orphans like "2026" alone on a second line. */
+    .prof-handle { font-size: 11px; word-break: keep-all; }
+
+    /* Settings theme picker: 2-col grid at mobile
+       (was 1-col — very long scrolling strip of themes). */
+    .st-theme-grid { grid-template-columns: repeat(2, 1fr) !important; padding: 12px; gap: 10px; }
+  }
+
+  /* --- Tournament filter tabs: horizontal scroll at ≤680px so "Endorsed"
+     isn't cut off the viewport and "Signed up" doesn't wrap to 2 lines. --- */
+  @media (max-width: 680px) {
+    .t-filter-tabs {
+      display: flex;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      max-width: 100%;
+      width: 100%;
+    }
+    .t-filter-tabs::-webkit-scrollbar { display: none; }
+    .t-filter-tabs button {
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: 7px 11px;
+      font-size: 11px;
+    }
   }
 
   /* --- SMALL MOBILE (≤420px): tightest layout --- */
@@ -7453,6 +7579,80 @@
     .crumb .crumb-icon { display: none; }
   }
 
+  /* --- Mobile drawer sign-out button --- */
+  .md-signout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 11px 14px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .md-signout:hover,
+  .md-signout:active {
+    background: rgba(255, 90, 120, 0.08);
+    border-color: rgba(255, 90, 120, 0.35);
+    color: #ff7a8e;
+  }
+  .md-signout svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* --- Mobile top-bar search button (hidden on desktop) --- */
+  .top-search-btn { display: none; }
+
+  /* --- TOP-BAR SEARCH COLLAPSE (≤680px): collapse inline search
+     to a magnifier button that expands full-width below the topbar. --- */
+  @media (max-width: 680px) {
+    /* Hide inline search by default at mobile (replaced by icon button) */
+    .header-search { display: none; }
+    /* Show the mobile search icon button */
+    .top-search-btn { display: grid !important; }
+    /* Expanded state: full-width dropdown beneath the top bar.
+       Topbar at ≤680px is ~60px tall (12px padding × 2 + 36px icon-btn);
+       64px clears the border-bottom with a comfortable hairline gap. */
+    .header-search.hs-mobile-open {
+      display: flex;
+      position: fixed;
+      top: 64px;
+      left: 10px;
+      right: 10px;
+      width: auto;
+      max-width: none;
+      min-width: 0;
+      z-index: 950;
+      background: var(--panel, var(--card));
+      border-color: var(--purple);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.55),
+                  0 0 0 3px var(--purple-soft);
+      padding: 10px 12px;
+    }
+    .header-search.hs-mobile-open input { font-size: 14px; }
+    .header-search.hs-mobile-open .hs-results {
+      left: 0;
+      right: 0;
+      min-width: 0;
+      top: calc(100% + 6px);
+    }
+    /* Give the crumb room now that search is gone */
+    .crumb .here { max-width: none; }
+  }
+
+  /* --- BOTTOM-NAV TRIM (≤500px): reduce to 5 primary items + menu
+     so icon targets are comfortably >= 44px on a 428px viewport. --- */
+  @media (max-width: 500px) {
+    .sb-mobile-hide { display: none !important; }
+    .sb-item { max-width: 88px; }
+  }
+
   /* --- SAFE AREA INSETS for iPhone notch / home indicator --- */
   @supports (padding: max(0px)) {
     @media (max-width: 680px) {
@@ -7460,7 +7660,7 @@
         padding-bottom: max(6px, env(safe-area-inset-bottom));
         height: calc(64px + env(safe-area-inset-bottom));
       }
-      .main { padding-top: max(12px, env(safe-area-inset-top)); padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+      .main { padding-top: max(12px, env(safe-area-inset-top)); padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
       .mobile-drawer { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
     }
   }
@@ -7666,15 +7866,22 @@
       flex-direction: column;
       gap: 16px;
     }
+    /* 3-col grid at mobile so Today/All-Time/Allocated stay on one row
+       (old flex-basis: 50% forced a 2+1 "orphan on row 2" layout). */
     .pf-chips {
-      flex-wrap: wrap;
-      gap: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
       width: 100%;
+      flex: none;
     }
     .pf-chip {
       min-width: 0;
-      flex: 1 1 calc(50% - 5px);
+      padding: 10px 12px;
     }
+    .pf-chip .pf-chip-v { font-size: 15px; }
+    .pf-chip .pf-chip-l { font-size: 9px; }
+    .pf-chip .pf-chip-sub { font-size: 10px; }
     /* Genre chips scroll instead of wrap on small screens */
     .dh-chips {
       overflow-x: auto;
@@ -7975,13 +8182,13 @@
   <aside class="sidebar">
     <button class="sb-logo" id="sb-home" data-label="Muses · Home" aria-label="Muses home"><svg><use href="#i-logo"/></svg></button>
     <button class="sb-item active" data-nav="markets" data-label="Markets" aria-label="Markets"><svg><use href="#i-markets"/></svg></button>
-    <button class="sb-item" data-nav="artists" data-label="Artists" aria-label="Artists"><svg><use href="#i-users"/></svg></button>
-    <button class="sb-item" data-nav="genres" data-label="Genres" aria-label="Genres"><svg><use href="#i-grid"/></svg></button>
+    <button class="sb-item sb-mobile-hide" data-nav="artists" data-label="Artists" aria-label="Artists"><svg><use href="#i-users"/></svg></button>
+    <button class="sb-item sb-mobile-hide" data-nav="genres" data-label="Genres" aria-label="Genres"><svg><use href="#i-grid"/></svg></button>
     <button class="sb-item" data-nav="portfolio" data-label="Portfolio" aria-label="Portfolio"><svg><use href="#i-portfolio"/></svg></button>
-    <button class="sb-item" data-nav="orders" data-label="Orders" aria-label="Orders"><svg><use href="#i-list"/></svg></button>
+    <button class="sb-item sb-mobile-hide" data-nav="orders" data-label="Orders" aria-label="Orders"><svg><use href="#i-list"/></svg></button>
     <button class="sb-item" data-nav="swap" data-label="Swap" aria-label="Swap"><svg><use href="#i-swap"/></svg></button>
     <button class="sb-item" data-nav="tournaments" data-label="Tournaments" aria-label="Tournaments"><svg><use href="#i-trophy"/></svg></button>
-    <button class="sb-item" data-nav="leaderboard" data-label="Leaderboard" aria-label="Leaderboard"><svg><use href="#i-medal"/></svg></button>
+    <button class="sb-item sb-mobile-hide" data-nav="leaderboard" data-label="Leaderboard" aria-label="Leaderboard"><svg><use href="#i-medal"/></svg></button>
     <div class="sb-spacer"></div>
     <button class="sb-item sb-menu-btn" id="mobile-menu-btn" data-label="Menu" aria-label="Open menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -8018,6 +8225,9 @@
         <button class="tab" data-nav="leaderboard">Leaderboard</button>
       </div>
       <div class="top-actions">
+        <button class="icon-btn top-search-btn" id="mobile-search-btn" aria-label="Search artists" title="Search" hidden>
+          <svg><use href="#i-search"/></svg>
+        </button>
         <div class="notif-wrap">
           <button class="icon-btn" id="notif-btn" title="Notifications">
             <svg><use href="#i-bell"/></svg>
@@ -9437,10 +9647,13 @@ function refreshComputedData() {
 function computeDisplayPrice(a) {
   const fair = computeFairPrice(a);  // Muses price model (base + boosts)
   a.fairPrice = fair;
-  // Order-flow bias: buy/sell pressure from user trades moves price ±20%
-  const bias = computeOrderFlowBias(a);
-  a.orderFlowBias = bias;
-  return fair * (1 + bias * PRICING.maxPremium);
+  // Order-flow bias is computed and kept on the artist (UI may display it)
+  // but is NOT applied to the displayed price. It was a per-user quantity
+  // that moved with each account's own trades and caused accounts to see
+  // different prices for the same artist. Shared-market pricing requires
+  // the displayed price to be a pure function of the scraper's data.
+  a.orderFlowBias = computeOrderFlowBias(a);
+  return fair;
 }
 
 // Seed initial order flow deterministically from the artist seed so that
@@ -9700,7 +9913,11 @@ const MUSE_STATE_KEY = (window.MUSE_USER && window.MUSE_USER.id && window.MUSE_U
 const MUSE_STATE_MAX_AGE = 24 * 60 * 60 * 1000; // discard saved state older than 24h
 const MUSE_SAVE_INTERVAL = 30_000; // save every 30 seconds
 
-/** Save current prices + history + portfolio to localStorage */
+/**
+ * Save portfolio to localStorage. Prices, %s, and history are deliberately
+ * NOT saved — they're shared market state sourced from prices.json +
+ * history.json every boot. Only user-scoped portfolio data is cached here.
+ */
 function saveMusePriceState() {
   try {
     const snapshot = {
@@ -9712,16 +9929,6 @@ function saveMusePriceState() {
       transactions: (STATE.transactions || []).slice(-100), // cap at last 100
       openOrders: STATE.openOrders || [],
       filledOrders: (STATE.filledOrders || []).slice(-50),
-      artists: ARTISTS.map(a => ({
-        tk: a.ticker,
-        p:  a.price,
-        cat: 0,                      // legacy field (catalyst system removed)
-        s:  a.start,
-        hp: (a.historyPoints || []).slice(-350), // cap at 350 points per artist (~29h at 5min)
-        c24: a.change24h || 0,
-        c7d: a.change7d  || 0,
-        c30d: a.change30d || 0,
-      })),
     };
     localStorage.setItem(MUSE_STATE_KEY, JSON.stringify(snapshot));
   } catch (e) {
@@ -9743,7 +9950,7 @@ function restoreMusePriceState() {
     const raw = localStorage.getItem(MUSE_STATE_KEY);
     if (!raw) return false;
     const snap = JSON.parse(raw);
-    if (!snap || !snap.savedAt || !Array.isArray(snap.artists)) return false;
+    if (!snap || !snap.savedAt) return false;
 
     // Discard if too old — the live data has moved on
     if (Date.now() - snap.savedAt > MUSE_STATE_MAX_AGE) {
@@ -9751,27 +9958,11 @@ function restoreMusePriceState() {
       return false;
     }
 
-    // Build a ticker→saved map
-    const saved = Object.fromEntries(snap.artists.map(s => [s.tk, s]));
-    let restored = 0;
-
-    ARTISTS.forEach(a => {
-      const s = saved[a.ticker];
-      if (!s) return;
-      a.price     = s.p;
-      a.start     = s.s;
-      a._restoredPrice = s.p;   // flag so loadLivePrices() won't overwrite
-      a.change24h = s.c24 || 0;
-      a.change7d  = s.c7d  || 0;
-      a.change30d = s.c30d || 0;
-      // catalyst system removed — field kept for backward compat
-      if (Array.isArray(s.hp) && s.hp.length >= 2) {
-        a.historyPoints = s.hp;
-        // Append a fresh "now" point so the chart connects to live price
-        a.historyPoints.push({ t: Date.now(), listeners: a.monthlyListeners || 0, p: a.price });
-      }
-      restored++;
-    });
+    // NOTE: Prices, %s, and history are intentionally NOT restored from
+    // the per-user snapshot. They're shared market state — every client
+    // must read them fresh from prices.json + history.json so that two
+    // accounts never disagree on what Taylor Swift costs. Legacy snapshots
+    // may still contain a snap.artists array; we ignore it.
 
     // Restore portfolio state (STATE is defined by this point)
     if (typeof STATE !== 'undefined') {
@@ -9789,8 +9980,8 @@ function restoreMusePriceState() {
       STATE.recurringBuys = [];
     }
 
-    console.log(`✓ Restored saved state for ${restored} artists (saved ${Math.round((Date.now() - snap.savedAt) / 60000)}m ago)`);
-    return restored > 0;
+    console.log(`✓ Restored portfolio (saved ${Math.round((Date.now() - snap.savedAt) / 60000)}m ago)`);
+    return true;
   } catch (e) {
     console.warn('⚠ Failed to restore saved state:', e);
     return false;
@@ -10037,35 +10228,29 @@ function mergeMusePricesSync() {
     if (live.image) a.imgUrl = live.image;
     if (live.genre) a.genre = live.genre;
     // Order-flow disabled — no live trading yet. Skip seeding/decay.
-    // When trading launches, re-enable seedOrderFlow + decay here.
-    // Compute display price from the Muses price model only — each
-    // historical point carries its own raw `listeners`, so the chart
-    // derives its value from the fundamentals formula independently.
-    const newPrice = computeDisplayPrice(a); // also writes a.fairPrice/bias
+    // Install the shared history buffer BEFORE computing the display price
+    // so listener-momentum (which reads historyPoints) is included. All
+    // clients read the same history.json → all clients compute the same
+    // display price. Strip the scraper's stored `p` on each point because
+    // the scraper and client use different pricing formulas; priceFromPoint
+    // recalculates from `listeners` using the client formula.
     const hist = history[a.ticker];
     if (Array.isArray(hist) && hist.length >= 1) {
-      // IMPORTANT: Delete stored prices (`p`) from backend history.
-      // The backend (fetch-prices.py) uses a DIFFERENT pricing formula
-      // ($300-$460 range) than the frontend's market-share formula (€100-€275).
-      // Keeping backend `p` values creates a fake -60% crash.
-      // priceFromPoint(pt, artist) will recalculate from `listeners` using
-      // the frontend formula WITH boost ratios applied, keeping everything
-      // consistent with the displayed price.
       a.historyPoints = hist.map(pt => {
         const h = { ...pt };
         delete h.p;
         return h;
       });
     }
+    // Seed-history fallback (offline / CDN hiccup) — deterministic per
+    // ticker, so offline clients still agree with each other.
+    if (!a.historyPoints || a.historyPoints.length === 0) {
+      const seedAnchor = computeDisplayPrice(a);
+      a.historyPoints = _generateSeedHistory(seedAnchor, a.monthlyListeners || 0, a.ticker);
+    }
+    const newPrice = computeDisplayPrice(a); // pure fn of shared inputs
     a.start = newPrice;
     a.price = newPrice;
-    // ── Dense seed history ──
-    // Only runs when no backend history exists. Seed points keep their `p`
-    // because they're generated WITH the frontend formula (via _generateSeedHistory).
-    if (!a.historyPoints || a.historyPoints.length === 0) {
-      a.historyPoints = _generateSeedHistory(newPrice, a.monthlyListeners || 0, a.ticker);
-    }
-    // Real 24h change comes from rolling history, not from simulator drift.
     a.change24h = compute24hChange(a);
     a.change7d  = compute7dChange(a);
     a.change30d = compute30dChange(a);
@@ -10151,8 +10336,17 @@ function hideLoadingBar() {
   setTimeout(() => { bar.style.opacity = '0'; setTimeout(() => bar.remove(), 300); }, 200);
 }
 
-async function loadLivePrices() {
-  showLoadingBar();
+// opts.periodic = true means this is a background refresh, not the
+// initial boot. We skip the visible loading bar + toast, and we leave
+// a.price alone so simulatePriceTick converges smoothly toward the new
+// fair value instead of snapping. Inputs (listeners, boosts, history,
+// market stats) still update — the price just drifts to meet them over
+// a few ticks. This is the mechanism that keeps multiple tabs in sync:
+// every tab re-fetches prices.json on the same ~5-min cadence so they
+// all read the latest scraper snapshot.
+async function loadLivePrices(opts) {
+  const periodic = !!(opts && opts.periodic);
+  if (!periodic) showLoadingBar();
   try {
     let data = null;
     let history = null;
@@ -10243,14 +10437,15 @@ async function loadLivePrices() {
         a.genre = live.genre;
         if (typeof GENRES !== 'undefined') GENRES[a.ticker] = live.genre;
       }
-      // Order-flow disabled — no live trading yet.
-      // Derive price from the Muses price model only.
-      const newPrice = computeDisplayPrice(a);
-      // Delete stored prices from backend history — backend uses a different
-      // pricing formula. priceFromPoint(pt, artist) recalculates from listeners.
+      // history.json is the shared source of truth for per-artist history.
+      // Every client reads the same points, so computeListenerMomentum and
+      // the 24h/7d/30d change calcs produce the same value everywhere. We
+      // strip the scraper's stored `p` because the scraper's fair-price
+      // formula and the client's display-price formula differ — the client
+      // recomputes price from the shared listener/boost inputs via
+      // priceFromPoint(pt, artist) when it needs a historical price.
       const hist = history[a.ticker];
-      const _hasSavedPrice = typeof a._restoredPrice === 'number';
-      if (!_hasSavedPrice && Array.isArray(hist) && hist.length >= 1) {
+      if (Array.isArray(hist) && hist.length >= 1) {
         a.historyPoints = hist.map(pt => {
           const h = { ...pt };
           delete h.p;
@@ -10258,20 +10453,29 @@ async function loadLivePrices() {
         });
         realSeriesCount++;
       }
-      if (!_hasSavedPrice) {
+      // Provisional price (momentum=0 since history may not be set yet) —
+      // used as the anchor for the seed-history fallback below.
+      const provisionalPrice = computeDisplayPrice(a);
+      // _generateSeedHistory is a last-resort fallback for when history.json
+      // couldn't be fetched (offline / CDN hiccup). It uses a seeded RNG
+      // keyed on the ticker, so it's still deterministic across clients —
+      // all offline users see the same seeded curve.
+      if (!a.historyPoints || a.historyPoints.length === 0) {
+        a.historyPoints = _generateSeedHistory(provisionalPrice, a.monthlyListeners || 0, a.ticker);
+      }
+      // Final price, now with listener-momentum boost computed from the
+      // shared history buffer. This is a pure function of prices.json +
+      // history.json — every client loading at this moment gets the same
+      // number.
+      const newPrice = computeDisplayPrice(a);
+      if (!periodic) {
+        // Initial boot — snap a.price/start to the fresh fair value.
         a.start = newPrice;
         a.price = newPrice;
-      } else {
-        // Still update the fair-value anchor so the tick simulator knows
-        // the fundamental target, but leave the running price intact.
-        a.start = newPrice;
       }
-      // Dense seed history ONLY when the artist has no accumulated history
-      // (fresh session). Restored sessions already have real ticks.
-      if (!a.historyPoints || a.historyPoints.length === 0) {
-        const _p = _hasSavedPrice ? a.price : newPrice;
-        a.historyPoints = _generateSeedHistory(_p, a.monthlyListeners || 0, a.ticker);
-      }
+      // On periodic refresh we leave a.price alone; simulatePriceTick
+      // closes 8% of the gap each 5s tick so price drifts toward newPrice
+      // without a visible jump.
       a.change24h = compute24hChange(a);
       a.change7d  = compute7dChange(a);
       a.change30d = compute30dChange(a);
@@ -10287,11 +10491,10 @@ async function loadLivePrices() {
       topLosers: (data.topLosers || []).filter(g => !DELISTED.has(g.ticker)),
       updatedAt: data.updatedAt,
     };
-    rebuildAllSeries(true);   // skipPriceReset — preserve saved/running prices
-    // Clear the _restoredPrice flag — the initial load is done, future
-    // data merges (if any) should use fresh computed prices.
-    ARTISTS.forEach(a => { delete a._restoredPrice; });
-    // Catalyst system removed — prices now driven by fair value + user trades only
+    rebuildAllSeries(true);   // skipPriceReset — prices already set fresh above
+    // _restoredPrice is no longer set anywhere (per-user price restore was
+    // removed to keep all accounts on the same shared market state).
+    // Catalyst system removed — prices now driven by fair value only.
     console.log(`✓ Loaded live prices for ${hits}/${ARTISTS.length} artists from ${sourceLabel}`);
     if (historyPointCount > 0) {
       console.log(`✓ Loaded real history: ${historyPointCount} points, ${realSeriesCount} artists using real charts`);
@@ -10310,13 +10513,13 @@ async function loadLivePrices() {
     // Re-render the ticker tape with real change data.
     if (typeof renderTickerTape === 'function') renderTickerTape();
     // Show a toast so the user can visually confirm the full roster loaded.
-    showLiveLoadToast(ARTISTS.length, added);
+    if (!periodic) showLiveLoadToast(ARTISTS.length, added);
     hideConnectionBanner();
-    hideLoadingBar();
+    if (!periodic) hideLoadingBar();
   } catch (err) {
     console.warn('prices.json not available, using fallback data:', err.message);
-    showConnectionBanner();
-    hideLoadingBar();
+    if (!periodic) showConnectionBanner();
+    if (!periodic) hideLoadingBar();
   }
 }
 
@@ -10346,6 +10549,32 @@ function hideConnectionBanner() {
 }
 // Kick off after initial render so the UI never blocks on the network.
 setTimeout(loadLivePrices, 0);
+
+// Periodic refresh — every 5 minutes, re-fetch prices.json + history.json
+// so all open tabs converge on the latest scraper revision. Without this,
+// a tab opened at 14:00 and a tab opened at 15:10 would read different
+// revisions of prices.json forever (the scraper runs hourly) and the two
+// accounts would never fully agree on what an artist costs. With this,
+// every tab is at most ~5 min behind the live snapshot, and within a few
+// ticks of each refetch simulatePriceTick converges both tabs to the
+// same price. Visibility gate: only poll when the tab is foregrounded —
+// backgrounded tabs don't need to hit the CDN.
+const PRICES_REFRESH_MS = 5 * 60 * 1000;
+setInterval(() => {
+  if (document.visibilityState === 'visible') {
+    loadLivePrices({ periodic: true });
+  }
+}, PRICES_REFRESH_MS);
+// Also refresh immediately when the tab returns to the foreground after
+// being hidden — catches the case where a backgrounded tab missed several
+// refresh intervals.
+let _lastForegroundRefresh = Date.now();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  if (Date.now() - _lastForegroundRefresh < 30_000) return; // debounce
+  _lastForegroundRefresh = Date.now();
+  loadLivePrices({ periodic: true });
+});
 
 // ============ STATE ============
 const STATE = {
@@ -12444,11 +12673,12 @@ function renderArtistSubstats(a) {
     lowTile  = { l: 'Low',  v: '—', s: 'Collecting data' };
   }
 
+  // NOTE: Popularity is shown in the primary stats grid above this section, so
+  // it's intentionally omitted here to avoid duplicating it.
   const items = [
     highTile,
     lowTile,
     { l: 'Followers', v: followers !== null ? fmtBigNum(followers) : '—', s: 'Tracked by Muses' },
-    { l: 'Popularity', v: popVal !== null ? String(popVal) : '—', s: 'Score out of 100' },
     { l: 'Chart position', v: chartLabel, s: chartSub },
     { l: 'Cap rank', v: '#' + rank, s: 'of ' + ARTISTS.length + ' artists' },
   ];
@@ -13568,10 +13798,14 @@ function renderSwapPage() {
 }
 
 function renderOrdersView() {
-  document.getElementById('orders-count-open').textContent = STATE.openOrders.length;
-  document.getElementById('orders-count-filled').textContent = STATE.filledOrders.length;
-  document.getElementById('orders-count-cancelled').textContent = STATE.cancelledOrders.length;
-  document.getElementById('orders-count-recurring').textContent = STATE.recurringBuys.length;
+  const setCount = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
+  setCount('orders-count-open', STATE.openOrders.length);
+  setCount('orders-count-filled', STATE.filledOrders.length);
+  setCount('orders-count-cancelled', STATE.cancelledOrders.length);
+  setCount('orders-count-recurring', (STATE.recurringBuys || []).length);
   document.querySelectorAll('#orders-tabs .orders-tab').forEach(t => {
     t.classList.toggle('active', t.dataset.otab === STATE.ordersTab);
   });
@@ -15504,9 +15738,12 @@ function computeProfileStats() {
     costBasis += h.shares * (h.cost || a.price);
   });
   const totalValue = (STATE.cash || 0) + holdingsVal;
-  const startingCash = 1_000_000;
+  const startingCash = 10_000;
   const totalReturn = totalValue - startingCash;
-  const totalReturnPct = (totalReturn / startingCash) * 100;
+  // If the user has never traded AND is still at the starting balance, show 0%
+  // instead of letting tiny floating-point drift turn into misleading swings.
+  const hasEverTraded = (STATE.transactions || []).length > 0;
+  const totalReturnPct = hasEverTraded ? (totalReturn / startingCash) * 100 : 0;
   const txCount = (STATE.transactions || []).length;
   const tournamentsPlayed = 0;  // Keeping for compatibility, computed elsewhere if needed
   const wins = 0;
@@ -15567,18 +15804,25 @@ function renderProfile() {
   // Recent activity (last 5 transactions)
   const recentTx = (STATE.transactions || []).slice(0, 5);
 
-  // Synthetic 30-day equity curve based on current value
+  // 30-day equity curve. Only show a synthetic curve once the user has actually
+  // started trading — before that, a flat line at the starting balance is honest.
   const points = 30;
-  const curveRng = mulberry32(_hashStr(STATE.profile.name || 'You'));
+  const hasTraded = (STATE.transactions || []).length > 0;
   let curve = [];
-  let v = 10000;
-  for (let i = 0; i < points; i++) {
-    v *= 1 + (curveRng() - 0.48) * 0.02;
-    curve.push(v);
+  if (hasTraded) {
+    const curveRng = mulberry32(_hashStr(STATE.profile.name || 'You'));
+    let v = 10000;
+    for (let i = 0; i < points; i++) {
+      v *= 1 + (curveRng() - 0.48) * 0.02;
+      curve.push(v);
+    }
+    // Anchor end to actual current value
+    const lastVal = curve[curve.length - 1];
+    curve = curve.map((x) => x * (s.totalValue / lastVal));
+  } else {
+    // Flat line at current (= starting) balance
+    for (let i = 0; i < points; i++) curve.push(s.totalValue);
   }
-  // Anchor end to actual current value
-  const lastVal = curve[curve.length - 1];
-  curve = curve.map((x, i) => x * (s.totalValue / lastVal));
   const minV = Math.min(...curve), maxV = Math.max(...curve);
   const W = 760, H = 140, pad = 8;
   const xStep = (W - pad * 2) / (curve.length - 1);
@@ -15601,7 +15845,7 @@ function renderProfile() {
           <div class="prof-row">
             <h1 class="prof-name">${profile.name}</h1>
           </div>
-          <div class="prof-handle">@${profile.handle} · ${profile.location} · Member since ${memberSince}</div>
+          <div class="prof-handle">@${profile.handle} · ${profile.location} · Member&nbsp;since&nbsp;${memberSince.replace(/ /g, '&nbsp;')}</div>
           ${profile.bio ? `<div class="prof-bio">${profile.bio}</div>` : ''}
         </div>
         <div class="prof-hero-actions">
@@ -19770,18 +20014,13 @@ function updateLiveChartPoints() {
   ARTISTS.forEach(a => {
     if (!a) return;
 
-    // ── Record to historyPoints (persisted via localStorage) ──
-    if (Array.isArray(a.historyPoints)) {
-      a.historyPoints.push({
-        t: nowMs,
-        listeners: a.monthlyListeners || 0,
-        p: a.price,
-      });
-      // Cap at 600 points (~10h at 60s intervals + seed) to prevent unbounded growth
-      if (a.historyPoints.length > 600) {
-        a.historyPoints = a.historyPoints.slice(-400);
-      }
-    }
+    // historyPoints is deliberately NOT appended to here. It's sourced from
+    // the shared history.json on load and must stay identical across clients
+    // — per-tick appends would make each browser drift into its own buffer
+    // and different accounts would compute different 24h/7d/30d %s.
+    //
+    // The visual chart is driven by a.series (below), which CAN be per-
+    // session since it's purely display and gets rebuilt on reload.
 
     // ── Record to chart series (display only) ──
     if (!a.series || !a.series.length) return;
@@ -19946,10 +20185,11 @@ function wireHeaderSearch() {
 
   // Click results
   dd.addEventListener('click', (e) => {
+    const closeMobileOverlay = () => { if (wrap) wrap.classList.remove('hs-mobile-open'); };
     const row = e.target.closest('[data-hs-ticker]');
-    if (row) { navigateToArtist(row.dataset.hsTicker); input.value = ''; dd.hidden = true; input.blur(); return; }
+    if (row) { navigateToArtist(row.dataset.hsTicker); input.value = ''; dd.hidden = true; input.blur(); closeMobileOverlay(); return; }
     const genre = e.target.closest('[data-hs-genre]');
-    if (genre) { navigateToGenre(genre.dataset.hsGenre); input.value = ''; dd.hidden = true; input.blur(); }
+    if (genre) { navigateToGenre(genre.dataset.hsGenre); input.value = ''; dd.hidden = true; input.blur(); closeMobileOverlay(); }
   });
 
   // Click outside closes
@@ -19961,7 +20201,43 @@ function wireHeaderSearch() {
       const tag = (e.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
       e.preventDefault();
+      // On mobile the inline search is hidden; force the overlay to open.
+      if (wrap && window.matchMedia('(max-width: 680px)').matches) {
+        wrap.classList.add('hs-mobile-open');
+      }
       input.focus();
+    }
+  });
+
+  // Mobile: tap the magnifier icon in the top-bar to toggle the full-width
+  // search overlay. Needed because the inline search is hidden at ≤680px
+  // (which frees the crumb from being truncated on every page).
+  const mobileSearchBtn = document.getElementById('mobile-search-btn');
+  if (mobileSearchBtn && wrap) {
+    mobileSearchBtn.hidden = false;
+    mobileSearchBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const opening = !wrap.classList.contains('hs-mobile-open');
+      wrap.classList.toggle('hs-mobile-open', opening);
+      if (opening) {
+        setTimeout(() => { try { input.focus(); } catch(_){} }, 40);
+      } else {
+        dd.hidden = true;
+      }
+    });
+  }
+  // Close the mobile search overlay on outside click or Escape.
+  document.addEventListener('click', (e) => {
+    if (!wrap) return;
+    if (!wrap.classList.contains('hs-mobile-open')) return;
+    if (e.target.closest('#header-search-wrap')) return;
+    if (e.target.closest('#mobile-search-btn')) return;
+    wrap.classList.remove('hs-mobile-open');
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && wrap && wrap.classList.contains('hs-mobile-open')) {
+      wrap.classList.remove('hs-mobile-open');
+      input.blur();
     }
   });
 }
@@ -20049,15 +20325,18 @@ function startOnboarding(force) {
 function endOnboarding(completed) {
   const m = document.getElementById('onb-modal');
   m.classList.remove('show');
+  // Always persist the onboarded flag on dismissal — otherwise Skip would
+  // leave it unset and the tour would reappear on every refresh. The `completed`
+  // flag only gates whether we apply the draft profile/watchlist seeds below.
+  STATE.onboarded = true;
+  try {
+    // Per-user onboarded flag — matches the read path in startOnboarding().
+    // Writing to a global 'muse_onboarded' key would suppress the tour for
+    // any subsequent signup on the same browser.
+    const userId = (window.MUSE_USER && window.MUSE_USER.id) || 'anon';
+    localStorage.setItem('muse_onboarded_' + userId, '1');
+  } catch (e) {}
   if (completed) {
-    STATE.onboarded = true;
-    try {
-      // Per-user onboarded flag — matches the read path in startOnboarding().
-      // Writing to a global 'muse_onboarded' key would suppress the tour for
-      // any subsequent signup on the same browser.
-      const userId = (window.MUSE_USER && window.MUSE_USER.id) || 'anon';
-      localStorage.setItem('muse_onboarded_' + userId, '1');
-    } catch (e) {}
     const d = STATE.onboardingDraft;
     if (d) {
       STATE.profile.name = d.name.trim() || 'You';
@@ -20459,6 +20738,25 @@ function wireMobileDrawer() {
     };
     updateAvatar();
   }
+
+  // Drawer sign-out — only visible for authenticated Supabase users.
+  // Reuses the same teardown path as the user-chip dropdown and Settings row.
+  const mdSignoutBtn = document.getElementById('md-signout-btn');
+  if (mdSignoutBtn) {
+    const authed = window.MUSE_USER && window.MUSE_USER.authed;
+    if (authed) mdSignoutBtn.hidden = false;
+    mdSignoutBtn.addEventListener('click', () => {
+      if (!(window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed)) {
+        if (typeof showToast === 'function') showToast('Not signed in');
+        return;
+      }
+      if (!confirm('Sign out of Muses on this device?')) return;
+      try { pushPortfolioToSupabase(); } catch (e) {}
+      window.SUPABASE.auth.signOut().then(() => {
+        setTimeout(() => { window.location.href = '/signin'; }, 600);
+      });
+    });
+  }
 }
 
 // Wire drawer once DOM is ready (drawer HTML is below this script)
@@ -20526,6 +20824,10 @@ if (typeof applySettings === 'function') applySettings();
   </nav>
 
   <div class="md-foot">
+    <button class="md-signout" id="md-signout-btn" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span>Sign out</span>
+    </button>
     <div style="display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:4px">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#A78BFA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></svg>
       <span style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12px">Muses Exchange</span>

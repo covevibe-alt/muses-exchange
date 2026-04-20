@@ -170,7 +170,10 @@
       requestAnimationFrame(() => {
         const h = document.documentElement;
         const scrolled = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
-        stickyCta.classList.toggle('show', scrolled > 0.25);
+        // Hide the floating CTA once the user is near the footer so it
+        // doesn't cover the disclaimer / "©" line at the page bottom.
+        const nearBottom = scrolled > 0.92;
+        stickyCta.classList.toggle('show', scrolled > 0.25 && !nearBottom);
         ticking = false;
       });
     };
@@ -208,7 +211,11 @@
     });
   }
 
-  // Reveal on scroll
+  // Reveal on scroll.
+  // Thresholds are loose so short mobile viewports (428×831) still fire the
+  // reveal when a tall section barely pokes into the viewport — the old
+  // 0.1 threshold + -50px rootMargin left some sections stuck at opacity:0
+  // at mobile because not enough of the section was ever visible at once.
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -217,7 +224,7 @@
           io.unobserve(e.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    }, { threshold: 0.01, rootMargin: '0px 0px 0px 0px' });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
   } else {
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));

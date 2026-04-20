@@ -105,6 +105,7 @@ body {
   font-family: var(--sans); font-weight: 600; font-size: 14px;
   cursor: pointer; text-decoration: none;
   transition: transform 0.18s, box-shadow 0.18s;
+  white-space: nowrap;
 }
 .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(247, 243, 234, 0.22); }
 .nav-cta svg { width: 14px; height: 14px; }
@@ -119,6 +120,7 @@ body {
   font-family: var(--sans); font-weight: 600; font-size: 14px;
   cursor: pointer; text-decoration: none;
   transition: border-color 0.18s, color 0.18s, transform 0.18s;
+  white-space: nowrap;
 }
 .nav-cta-secondary:hover {
   border-color: var(--violet); color: var(--violet);
@@ -1549,6 +1551,24 @@ body.loaded {
   margin-top:24px;
 }
 .signup-foot-hint a{color:var(--violet);}
+
+/* Auth pages (signin / signup) — mobile tightening.
+   Both pages use .signup-* classes above; this compresses generous
+   desktop spacing so the form is comfortable on a 428×831 phone. */
+@media (max-width: 640px){
+  .signup-shell{padding:40px 20px 80px;}
+  .signup-lede{margin-bottom:28px; font-size:15px;}
+  .signup-actions{margin-top:28px;}
+  .signup-back-link{margin-bottom:18px;}
+  .signup-field{margin-bottom:16px;}
+}
+@media (max-width: 420px){
+  .signup-shell{padding:32px 16px 72px;}
+  .signup-title{font-size:clamp(28px, 8vw, 34px);}
+  .signup-lede{font-size:14.5px; margin-bottom:24px;}
+  .signup-btn{padding:15px 20px; font-size:14.5px;}
+  /* Keep .signup-input at 16px — iOS zooms inputs below 16px on focus */
+}
 
 /* Header action cluster: Sign in (quiet) · Waitlist (outlined pill) · Launch app (solid) */
 .nav .nav-cta-wrap,

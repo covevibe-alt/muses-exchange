@@ -621,6 +621,19 @@
     }
     .humans-item.feature figcaption { font-size: 26px; }
   }
+  @media (max-width: 500px) {
+    /* Stacked single column at narrow mobile — 2-col gets visually dense
+       and the captions wrap to 3+ lines. */
+    .humans-grid {
+      grid-template-columns: 1fr;
+      grid-auto-rows: 200px;
+    }
+    .humans-item.feature {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+    .humans-item.feature figcaption { font-size: 22px; }
+  }
 
   /* ============ Artist photo overlay ============ */
   .hcf-avatar, .ac-avatar, .lead-avatar, .ps-watch-avatar, .ps-chart-avatar {
@@ -1584,7 +1597,7 @@
       <div class="hero-stat-label">Artists listed</div>
     </div>
     <div>
-      <div class="hero-stat-num">€100K</div>
+      <div class="hero-stat-num">€10K</div>
       <div class="hero-stat-label">Virtual starting balance</div>
     </div>
     <div>
