@@ -10588,14 +10588,14 @@ async function loadLivePrices(opts) {
       // history.json — every client loading at this moment gets the same
       // number.
       const newPrice = computeDisplayPrice(a);
-      if (!periodic) {
-        // Initial boot — snap a.price/start to the fresh fair value.
-        a.start = newPrice;
-        a.price = newPrice;
-      }
-      // On periodic refresh we leave a.price alone; simulatePriceTick
-      // closes 8% of the gap each 5s tick so price drifts toward newPrice
-      // without a visible jump.
+      // Always snap a.price/start to the fresh fair value — on initial boot
+      // AND on periodic refresh. We used to leave a.price alone on periodic
+      // refresh and let simulatePriceTick close 8% of the gap each 5s tick.
+      // That drift registered as constant flicker. Now: prices are locked at
+      // the scraper's fair value between fetches, and jump to the new value
+      // the moment prices.json updates.
+      a.start = newPrice;
+      a.price = newPrice;
       a.change24h = compute24hChange(a);
       a.change7d  = compute7dChange(a);
       a.change30d = compute30dChange(a);
@@ -19672,37 +19672,22 @@ function updateTickerTape(priceBefore) {
 // Between events, prices smoothly converge toward fair + order flow target.
 // No synthetic noise, momentum, sentiment, or regime switching.
 
-// ── Simple fair-price convergence ──
-// Each tick, prices smoothly converge toward the target (fair + order flow).
-// The smooth factor controls how fast: 0.08 = ~8% of the gap per 5s tick,
-// meaning prices reach 95% of target in about 35 ticks (~3 minutes).
-// This creates gentle, visible movement without any synthetic noise.
-const PRICE_SMOOTH_FACTOR = 0.08;
+// ── Prices are locked between scraper fetches ──
+// We used to converge each price toward its fair value at 8% of the gap per
+// 5s tick, which produced gentle continuous drift. Sander flagged that as
+// flicker — every refresh and every 5s, the numbers jiggled and the CSS
+// flash animations fired, making the board look noisy instead of static.
+// New model: the price is whatever the scraper last published. It only
+// changes when prices.json refetches (every ~5 minutes) and snaps to the
+// new fair value. No per-tick drift, no flash, no flicker.
+const PRICE_SMOOTH_FACTOR = 0;  // kept as a named constant for any legacy references
 
 function simulatePriceTick() {
+  // No-op: prices are locked between scraper fetches. See loadLivePrices()
+  // for where real updates flow in.
+  // Order-flow state is still decayed so the UI's pressure meter trends
+  // back toward neutral when nobody is trading — this doesn't touch a.price.
   if (!Array.isArray(ARTISTS) || ARTISTS.length === 0) return;
-
-  for (let i = 0; i < ARTISTS.length; i++) {
-    const a = ARTISTS[i];
-    if (!a || typeof a.price !== 'number' || a.price <= 0) continue;
-
-    // Target = fair value (from listeners + boosts) + order flow bias (from user trades)
-    const target = computeDisplayPrice(a); // also writes a.fairPrice and a.orderFlowBias
-
-    // Smooth convergence: close 8% of the gap per tick
-    const gap = target - a.price;
-    const next = a.price + PRICE_SMOOTH_FACTOR * gap;
-    a.price = Math.max(0.01, Math.round(next * 100) / 100);
-
-    // Recompute rolling time-window changes from live price vs history
-    a.change24h = compute24hChange(a) || a.change24h || 0;
-    a.change7d  = compute7dChange(a)  || 0;
-    a.change30d = compute30dChange(a) || 0;
-  }
-
-  // Decay order flow slightly each tick so prices revert to fair when
-  // nobody is trading. Half-life ~90 ticks (~7.5 min).
-  // This replaces the old hourly flowDecay (0.92).
   ARTISTS.forEach(a => {
     if (!a || !a.orderFlow) return;
     a.orderFlow.buys  *= 0.9925;
