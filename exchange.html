@@ -19976,8 +19976,22 @@ const ONB_GENRES = [
 ];
 
 function startOnboarding(force) {
+  const userId = (window.MUSE_USER && window.MUSE_USER.id) || 'anon';
+  const userKey = 'muse_onboarded_' + userId;
   try {
+    // Per-user onboarded flag (Supabase era — multi-user on one browser is now a
+    // real scenario). A global 'muse_onboarded' key would have suppressed the
+    // tour for every new signup on a browser where anyone had completed it.
+    if (!force && localStorage.getItem(userKey) === '1') {
+      STATE.onboarded = true;
+      return;
+    }
+    // One-time migration: legacy global flag → this user's per-user key.
+    // After this, the legacy key is cleared so future users on the same
+    // browser start fresh.
     if (!force && localStorage.getItem('muse_onboarded') === '1') {
+      localStorage.setItem(userKey, '1');
+      localStorage.removeItem('muse_onboarded');
       STATE.onboarded = true;
       return;
     }
@@ -19999,7 +20013,13 @@ function endOnboarding(completed) {
   m.classList.remove('show');
   if (completed) {
     STATE.onboarded = true;
-    try { localStorage.setItem('muse_onboarded', '1'); } catch (e) {}
+    try {
+      // Per-user onboarded flag — matches the read path in startOnboarding().
+      // Writing to a global 'muse_onboarded' key would suppress the tour for
+      // any subsequent signup on the same browser.
+      const userId = (window.MUSE_USER && window.MUSE_USER.id) || 'anon';
+      localStorage.setItem('muse_onboarded_' + userId, '1');
+    } catch (e) {}
     const d = STATE.onboardingDraft;
     if (d) {
       STATE.profile.name = d.name.trim() || 'You';
