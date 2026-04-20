@@ -67,7 +67,13 @@ body {
   position: sticky; top: 0; z-index: 50;
   background: linear-gradient(to bottom, rgba(11, 9, 16, 0.92) 20%, rgba(11, 9, 16, 0.6) 80%, transparent);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  /* Hide-on-scroll-down behavior — see initNavAutoHide() in muse-shared.js.
+     The transition is set on .nav-wrap globally so the slide is smooth, but
+     the .nav-hidden class is only ever applied at mobile widths. */
+  transition: transform 0.3s ease;
+  will-change: transform;
 }
+.nav-wrap.nav-hidden { transform: translateY(-100%); }
 .nav {
   max-width: var(--container); margin: 0 auto;
   padding: 22px 32px;
@@ -1005,6 +1011,9 @@ footer {
   }
   .nav-menu-btn svg { width: 18px; height: 18px; }
   .nav-cta, .nav-cta-secondary { display: none; }
+  /* Match specificity of the desktop rule at line 1574 (.nav .nav-cta-wrap) */
+  .nav .nav-cta-wrap,
+  .nav-wrap .nav-cta-wrap { display: none; }
   .page-hero { padding: 50px 22px 24px; }
   section.block, .wl-hero { padding: 70px 22px; }
   .art-grid { grid-template-columns: 1fr; }
@@ -1661,6 +1670,9 @@ body.loaded {
   text-underline-offset: 3px;
 }
 .proto-banner a:hover{text-decoration-color: var(--violet);}
+/* Default (desktop): show full phrase, hide short variant */
+.proto-banner .proto-full{display:inline;}
+.proto-banner .proto-short{display:none;}
 @keyframes proto-pulse{
   0%,100%{opacity:.65;}
   50%{opacity:1;}
@@ -1668,4 +1680,7 @@ body.loaded {
 @media (max-width: 640px){
   .proto-banner{font-size: 11.5px; padding: 7px 12px;}
   .proto-banner a{display:inline;}
+  /* On mobile, swap to the short copy: "Prototype. Paper trading only — Learn more" */
+  .proto-banner .proto-full{display:none;}
+  .proto-banner .proto-short{display:inline;}
 }

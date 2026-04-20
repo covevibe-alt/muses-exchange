@@ -10305,7 +10305,10 @@ function showLiveLoadToast(total, added) {
     if (!t) {
       t = document.createElement('div');
       t.id = 'live-load-toast';
-      t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:1100;background:rgba(16,216,139,0.12);border:1px solid rgba(16,216,139,0.45);color:#10D88B;font:600 13px Inter,system-ui,sans-serif;padding:10px 16px;border-radius:10px;backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,0.35);transition:opacity .4s';
+      // pointer-events:none so the faded-out toast never blocks clicks on
+      // elements underneath (specifically the bottom-nav hamburger on mobile,
+      // which sits in the same bottom-right area).
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:1100;background:rgba(16,216,139,0.12);border:1px solid rgba(16,216,139,0.45);color:#10D88B;font:600 13px Inter,system-ui,sans-serif;padding:10px 16px;border-radius:10px;backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,0.35);transition:opacity .4s;pointer-events:none';
       document.body.appendChild(t);
     }
     const addedPart = added > 0 ? ` · +${added} new` : '';

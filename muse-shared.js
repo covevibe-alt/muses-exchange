@@ -143,7 +143,7 @@
   const PROTOTYPE_BANNER_HTML = `
     <div class="proto-banner" role="note">
       <span class="proto-dot"></span>
-      <b>Prototype.</b>&nbsp;Paper trading only — prices are real, money is virtual.
+      <b>Prototype.</b>&nbsp;Paper trading only<span class="proto-full"> — prices are real, money is virtual.</span><span class="proto-short"> —</span>
       <a href="/faq">Learn more</a>
     </div>
   `;
@@ -179,6 +179,44 @@
     };
     window.addEventListener('scroll', onScroll, { passive: true });
   }
+
+  // Mobile only: hide the sticky nav on scroll-down, show it on scroll-up.
+  // Keeps the hamburger reachable without eating vertical space while reading.
+  // The nav re-appears whenever the user scrolls up, even a small amount — so
+  // it feels responsive, not sluggish. Desktop is wide enough that the nav
+  // doesn't feel in the way, so we leave that behavior alone.
+  (function initNavAutoHide(){
+    const navWrap = document.querySelector('.nav-wrap');
+    if (!navWrap) return;
+    let lastY = window.scrollY || 0;
+    let navTicking = false;
+    const THRESHOLD = 6;   // px of movement before we flip state
+    const TOP_BUFFER = 80; // always show when near the very top
+    const isMobile = () => window.matchMedia('(max-width: 760px)').matches;
+    const onNavScroll = () => {
+      if (navTicking) return;
+      navTicking = true;
+      requestAnimationFrame(() => {
+        if (!isMobile()){
+          navWrap.classList.remove('nav-hidden');
+          lastY = window.scrollY || 0;
+          navTicking = false;
+          return;
+        }
+        const y = window.scrollY || 0;
+        if (y < TOP_BUFFER){
+          navWrap.classList.remove('nav-hidden');
+        } else if (y > lastY + THRESHOLD){
+          navWrap.classList.add('nav-hidden');
+        } else if (y < lastY - THRESHOLD){
+          navWrap.classList.remove('nav-hidden');
+        }
+        lastY = y;
+        navTicking = false;
+      });
+    };
+    window.addEventListener('scroll', onNavScroll, { passive: true });
+  })();
 
   // Page fade-in
   requestAnimationFrame(() => document.body.classList.add('loaded'));
