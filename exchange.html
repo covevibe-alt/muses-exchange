@@ -455,7 +455,8 @@
     border-radius: 12px;
   }
   .tab {
-    padding: 8px 16px;
+    padding: 11px 16px;
+    min-height: 44px;
     border-radius: 8px;
     color: var(--text-dim);
     font-size: 13px;
@@ -481,6 +482,7 @@
     color: var(--text-dim);
     transition: all .15s ease;
   }
+  @media (max-width: 900px) { .icon-btn { width: 44px; height: 44px; } }
   .icon-btn:hover { color: var(--text); border-color: var(--border-strong); }
   .icon-btn svg { width: 16px; height: 16px; }
   .user-chip {
@@ -982,6 +984,7 @@
     font-family: 'Inter', sans-serif; font-size: 14px; flex: 1; min-width: 0;
     pointer-events: auto;
   }
+  @media (max-width: 900px) { .dh-search input { font-size: 16px; } }
   .dh-search input::placeholder { color: var(--text-faint); }
   .dh-chips {
     display: flex; flex-wrap: wrap; gap: 8px;
@@ -1088,6 +1091,7 @@
     font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
     padding: 9px 14px; cursor: pointer;
     transition: box-shadow .15s ease;
+    min-height: 44px; min-width: 56px;
   }
   .featured-card .fc-buy:hover { box-shadow: 0 0 24px var(--purple-glow); }
 
@@ -1183,7 +1187,8 @@
     border: 1px solid var(--border);
     color: var(--text-dim);
     font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
-    padding: 7px 12px; border-radius: 10px;
+    padding: 11px 14px; border-radius: 10px;
+    min-height: 44px;
     cursor: pointer;
     display: inline-flex; align-items: center; gap: 6px;
     transition: all .12s ease;
@@ -1280,6 +1285,13 @@
     width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
     font-size: 16px; line-height: 1; display: grid; place-items: center;
     flex: 0 0 auto;
+    position: relative;
+  }
+  .dh-search-clear::before {
+    content: ''; position: absolute;
+    top: 50%; left: 50%;
+    width: 44px; height: 44px;
+    transform: translate(-50%, -50%);
   }
   .dh-search-clear:hover { background: rgba(255,255,255,0.12); color: var(--text); }
   .search-results {
@@ -1357,6 +1369,7 @@
     background: transparent; border: none; outline: none; color: var(--text);
     font-family: 'Inter', sans-serif; font-size: 13px; flex: 1; min-width: 0;
   }
+  @media (max-width: 900px) { .header-search input { font-size: 16px; } }
   .header-search input::placeholder { color: var(--text-faint); }
   .header-search .hs-clear {
     background: rgba(255,255,255,0.06); border: none; color: var(--text-dim);
@@ -1677,7 +1690,7 @@
     border-radius: 10px;
     padding: 12px 14px;
     color: var(--text);
-    font-size: 15px;
+    font-size: 16px;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 600;
   }
@@ -4803,6 +4816,46 @@
   }
   .ad-trade-warn:empty { display: none; }
 
+  /* ===== Mobile sticky "Trade" FAB on artist detail =====
+     On narrow screens the Trade card sits in the right-side aside which
+     stacks below the long main column (chart → stats → similar → pricing
+     explainer). On mobile, users would have to scroll past all of that
+     just to place an order. This floating button keeps the primary action
+     one tap away. Desktop ignores it entirely. */
+  .ad-sticky-trade {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    z-index: 70;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    min-height: 48px;
+    border: none;
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, var(--purple), var(--purple-2));
+    box-shadow: 0 10px 28px rgba(124, 92, 255, 0.35), 0 2px 8px rgba(0,0,0,0.25);
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ad-sticky-trade.show { opacity: 1; pointer-events: auto; }
+  .ad-sticky-trade:active { transform: translateX(-50%) scale(0.97); }
+  .ad-sticky-trade svg { width: 16px; height: 16px; }
+  body[data-view="artist"] .ad-sticky-trade { display: inline-flex; }
+  /* Desktop has the trade card always in view — no need for a floating CTA. */
+  @media (min-width: 901px) {
+    .ad-sticky-trade { display: none !important; }
+  }
+
   /* ===== Order review modal ===== */
   .order-review-card {
     max-width: 440px;
@@ -4960,15 +5013,16 @@
   }
   .onb-skip {
     position: absolute;
-    top: 18px;
-    right: 22px;
+    top: 14px;
+    right: 18px;
     background: transparent;
     border: none;
     color: var(--text-faint);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    padding: 6px 10px;
+    padding: 12px 14px;
+    min-height: 44px;
     border-radius: 6px;
     font-family: inherit;
     z-index: 5;
@@ -5978,6 +6032,17 @@
     transition: all 0.15s;
     padding: 0;
     flex-shrink: 0;
+    position: relative;
+  }
+  /* Expand hit area to 44x44 without affecting layout */
+  .row-star::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
   }
   .row-star svg {
     width: 16px;
@@ -6294,7 +6359,7 @@
     letter-spacing: -0.01em;
   }
   .modal-close {
-    width: 34px; height: 34px;
+    width: 44px; height: 44px;
     border-radius: 10px;
     background: var(--card-2);
     border: 1px solid var(--border);
@@ -7192,7 +7257,8 @@
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 11px 12px;
+    padding: 13px 12px;
+    min-height: 44px;
     background: transparent;
     border: none;
     color: var(--text-dim);
@@ -7353,7 +7419,7 @@
       border-radius: 999px;
       gap: 0;
     }
-    .icon-btn { width: 36px; height: 36px; }
+    .icon-btn { width: 44px; height: 44px; }
 
     /* User dropdown + notification panel as bottom sheet feel */
     .user-dropdown {
@@ -7609,7 +7675,7 @@
     .section-head h1 { font-size: 20px; }
     .featured-card .fc-name { font-size: 14px; }
     .featured-card .fc-price { font-size: 18px; }
-    .sb-item { width: 40px; height: 40px; }
+    .sb-item { min-height: 44px; height: 48px; }
     .sb-item svg { width: 18px; height: 18px; }
     /* Hide crumb icon on tiny screens */
     .crumb .crumb-icon { display: none; }
@@ -7671,7 +7737,7 @@
                   0 0 0 3px var(--purple-soft);
       padding: 10px 12px;
     }
-    .header-search.hs-mobile-open input { font-size: 14px; }
+    .header-search.hs-mobile-open input { font-size: 16px; }
     .header-search.hs-mobile-open .hs-results {
       left: 0;
       right: 0;
@@ -7872,8 +7938,8 @@
       justify-content: center;
     }
     .chip {
-      min-height: 40px;
-      padding: 8px 16px;
+      min-height: 44px;
+      padding: 10px 16px;
     }
     .sort-tab {
       min-height: 40px;
@@ -8257,7 +8323,7 @@
       </div>
       <div class="header-search" id="header-search-wrap">
         <svg><use href="#i-search"/></svg>
-        <input type="text" id="header-search" placeholder="Search artists…" autocomplete="off">
+        <input type="search" id="header-search" placeholder="Search artists…" autocomplete="off" inputmode="search" enterkeyhint="search">
         <button class="hs-clear" id="hs-clear" aria-label="Clear" hidden>×</button>
         <span class="hs-kbd">/</span>
         <div class="search-results hs-results" id="hs-results" hidden></div>
@@ -8342,7 +8408,7 @@
           <div class="dh-sub">Buy shares in the artists you believe in. Prices move with Spotify streams, YouTube views, chart positions, and cultural momentum.</div>
           <div class="dh-search">
             <svg><use href="#i-search"/></svg>
-            <input type="text" id="market-search" placeholder="Search by artist, ticker, or genre…" autocomplete="off">
+            <input type="search" id="market-search" placeholder="Search by artist, ticker, or genre…" autocomplete="off" inputmode="search" enterkeyhint="search">
             <button class="dh-search-clear" id="search-clear" aria-label="Clear" hidden>×</button>
             <div class="search-results" id="search-results" hidden></div>
           </div>
@@ -8389,15 +8455,15 @@
               <div class="qf-popover" hidden>
                 <div class="qf-row">
                   <label>Max price <span data-val="priceMax">Any</span></label>
-                  <input type="range" data-range="priceMax" min="0" max="1000" step="10" value="1000">
+                  <input type="range" data-range="priceMax" min="0" max="1000" step="10" value="1000" autocomplete="off">
                 </div>
                 <div class="qf-row">
                   <label>Min listeners <span data-val="listenersMin">Any</span></label>
-                  <input type="range" data-range="listenersMin" min="0" max="100" step="1" value="0">
+                  <input type="range" data-range="listenersMin" min="0" max="100" step="1" value="0" autocomplete="off">
                 </div>
                 <div class="qf-row">
                   <label>Min 24h change <span data-val="chgMin">Any</span></label>
-                  <input type="range" data-range="chgMin" min="-20" max="20" step="1" value="-20">
+                  <input type="range" data-range="chgMin" min="-20" max="20" step="1" value="-20" autocomplete="off">
                 </div>
                 <div class="qf-actions">
                   <button class="qf-reset" data-qf-reset>Reset</button>
@@ -8911,7 +8977,7 @@
           </div>
           <div class="field">
             <label>Amount (€)</label>
-            <input type="number" id="ad-trade-amount" value="100" min="1" step="1">
+            <input type="number" id="ad-trade-amount" value="100" min="1" step="1" inputmode="decimal" autocomplete="off" enterkeyhint="done">
             <div class="amt-chips" id="ad-amt-chips">
               <button type="button" class="amt-chip" data-amt="50">€50</button>
               <button type="button" class="amt-chip" data-amt="100">€100</button>
@@ -8963,7 +9029,7 @@
           <div class="dh-sub">Search, sort, and explore the full roster — from chart-toppers to indie risers. Click any artist to see their stock, holders, and live trades.</div>
           <div class="dh-search">
             <svg><use href="#i-search"/></svg>
-            <input type="text" id="artists-search" placeholder="Search by artist, ticker, or genre…" autocomplete="off">
+            <input type="search" id="artists-search" placeholder="Search by artist, ticker, or genre…" autocomplete="off" inputmode="search" enterkeyhint="search">
             <button class="dh-search-clear" id="artists-search-clear" aria-label="Clear" hidden>×</button>
           </div>
           <div class="dh-chips" id="artists-genre-chips">
@@ -9000,15 +9066,15 @@
               <div class="qf-popover" hidden>
                 <div class="qf-row">
                   <label>Max price <span data-val="priceMax">Any</span></label>
-                  <input type="range" data-range="priceMax" min="0" max="1000" step="10" value="1000">
+                  <input type="range" data-range="priceMax" min="0" max="1000" step="10" value="1000" autocomplete="off">
                 </div>
                 <div class="qf-row">
                   <label>Min listeners <span data-val="listenersMin">Any</span></label>
-                  <input type="range" data-range="listenersMin" min="0" max="100" step="1" value="0">
+                  <input type="range" data-range="listenersMin" min="0" max="100" step="1" value="0" autocomplete="off">
                 </div>
                 <div class="qf-row">
                   <label>Min 24h change <span data-val="chgMin">Any</span></label>
-                  <input type="range" data-range="chgMin" min="-20" max="20" step="1" value="-20">
+                  <input type="range" data-range="chgMin" min="-20" max="20" step="1" value="-20" autocomplete="off">
                 </div>
                 <div class="qf-actions">
                   <button class="qf-reset" data-qf-reset>Reset</button>
@@ -9204,15 +9270,15 @@
               <div class="qf-popover" hidden>
                 <div class="qf-row">
                   <label>Max price <span data-val="priceMax">Any</span></label>
-                  <input type="range" data-range="priceMax" min="0" max="1000" step="10" value="1000">
+                  <input type="range" data-range="priceMax" min="0" max="1000" step="10" value="1000" autocomplete="off">
                 </div>
                 <div class="qf-row">
                   <label>Min listeners <span data-val="listenersMin">Any</span></label>
-                  <input type="range" data-range="listenersMin" min="0" max="100" step="1" value="0">
+                  <input type="range" data-range="listenersMin" min="0" max="100" step="1" value="0" autocomplete="off">
                 </div>
                 <div class="qf-row">
                   <label>Min 24h change <span data-val="chgMin">Any</span></label>
-                  <input type="range" data-range="chgMin" min="-20" max="20" step="1" value="-20">
+                  <input type="range" data-range="chgMin" min="-20" max="20" step="1" value="-20" autocomplete="off">
                 </div>
                 <div class="qf-actions">
                   <button class="qf-reset" data-qf-reset>Reset</button>
@@ -10942,6 +11008,9 @@ function setView(name) {
     } catch (e) { /* sessionStorage disabled — skip */ }
   }
   CURRENT_VIEW = name;
+  // Expose current view on body so CSS can target view-specific chrome
+  // (e.g. the mobile sticky-trade CTA that should only appear on artist detail).
+  document.body.setAttribute('data-view', name);
   VIEWS.forEach(v => {
     document.getElementById('view-' + v).classList.toggle('hidden', v !== name);
   });
@@ -13476,6 +13545,10 @@ function executeMarketOrder(a, side, amt) {
   } catch (e) { /* non-critical UI refresh — fail open */ }
   // Persist immediately after every trade so holdings survive refresh
   if (typeof saveMusePriceState === 'function') saveMusePriceState();
+  // Haptic nudge on Android / capable mobile browsers. iOS Safari ignores
+  // `navigator.vibrate` (unsupported by design), so this is a silent no-op
+  // there — a nice-to-have that degrades gracefully everywhere else.
+  try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {}
   return true;
 }
 
@@ -20985,7 +21058,64 @@ if (typeof applySettings === 'function') applySettings();
       navigator.serviceWorker.register('sw.js').catch(() => {});
     });
   }
+
+  // Mobile sticky-trade FAB — appears on the artist-detail view once the user
+  // scrolls past the hero. Taps scroll-focus the Trade card and bounce-highlight
+  // it so the user sees where their tap landed. Only rendered on small screens
+  // (CSS gates display via body[data-view="artist"]).
+  (function initStickyTradeFab(){
+    const fab = document.getElementById('ad-sticky-trade');
+    if (!fab) return;
+    const scroller = document.querySelector('.main') || window;
+    let fabTicking = false;
+    const onFabScroll = () => {
+      if (fabTicking) return;
+      fabTicking = true;
+      requestAnimationFrame(() => {
+        const isArtist = document.body.getAttribute('data-view') === 'artist';
+        const mobile = window.matchMedia('(max-width: 900px)').matches;
+        if (!isArtist || !mobile) {
+          fab.classList.remove('show');
+          fabTicking = false;
+          return;
+        }
+        // Hide once the user has scrolled the Trade card into view — at that
+        // point the inline Buy/Sell button is already reachable.
+        const tradeBtn = document.getElementById('ad-trade-submit');
+        const btnRect = tradeBtn && tradeBtn.getBoundingClientRect();
+        const tradeVisible = btnRect && btnRect.top < window.innerHeight - 100 && btnRect.bottom > 0;
+        const y = scroller === window ? window.scrollY : scroller.scrollTop;
+        // Show after the user scrolls a bit (past the hero), hide when trade
+        // card is on screen.
+        fab.classList.toggle('show', y > 180 && !tradeVisible);
+        fabTicking = false;
+      });
+    };
+    (scroller === window ? window : scroller).addEventListener('scroll', onFabScroll, { passive: true });
+    window.addEventListener('resize', onFabScroll, { passive: true });
+    // Re-evaluate when the view changes (setView runs synchronously, so a
+    // microtask suffices).
+    const origSetView = window.setView;
+    if (typeof origSetView === 'function') {
+      window.setView = function(){ const r = origSetView.apply(this, arguments); onFabScroll(); return r; };
+    }
+    fab.addEventListener('click', () => {
+      const tradeCard = document.getElementById('ad-trade-submit');
+      if (!tradeCard) return;
+      // Scroll the trade card into view, then focus the amount input so the
+      // iOS keyboard pops for immediate entry.
+      tradeCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const amt = document.getElementById('ad-trade-amount');
+      if (amt) setTimeout(() => { try { amt.focus({ preventScroll: true }); } catch(e){} }, 350);
+    });
+  })();
 </script>
+
+<!-- Mobile-only sticky "Trade" FAB. Desktop hides it via CSS. -->
+<button type="button" class="ad-sticky-trade" id="ad-sticky-trade" aria-label="Jump to trade panel">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 8 21 12 17 16"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+  Trade
+</button>
 
 </body>
 </html>

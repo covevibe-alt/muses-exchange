@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="muse-shared.css">
+<link rel="stylesheet" href="muse-shared.css?v=20260420">
 <!-- Live roster from the fetcher. Works via file:// because it's a <script>
      tag, not a fetch() call. See app/fetch-prices.py. -->
 <script src="app/prices.js" onerror="console.warn('app/prices.js not found — run app/fetch-prices.py to generate it')"></script>
@@ -95,10 +95,12 @@
     }
     .art-search input {
       background: var(--card); border: 1px solid var(--line);
-      border-radius: 10px; padding: 8px 12px 8px 34px;
+      border-radius: 10px; padding: 10px 12px 10px 34px;
       color: var(--ink); font: 500 13px var(--sans);
       width: 220px; outline: none; transition: border-color 0.18s, background 0.18s;
+      min-height: 44px;
     }
+    @media (max-width: 600px) { .art-search input { font-size: 16px; } }
     .art-search input::placeholder { color: var(--ink-faint); }
     .art-search input:focus { border-color: var(--line-strong); background: rgba(168, 85, 247, 0.04); }
     .art-search svg {
@@ -195,7 +197,7 @@
     <div class="art-controls">
       <label class="art-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" id="searchInput" placeholder="Search artist or ticker…" autocomplete="off" spellcheck="false">
+        <input type="search" id="searchInput" placeholder="Search artist or ticker…" autocomplete="off" spellcheck="false" inputmode="search" enterkeyhint="search">
       </label>
       <div class="art-view-toggle" id="viewToggle">
         <button data-view="list" class="active" aria-label="List view">
@@ -280,7 +282,7 @@
 
 <div id="footer-mount"></div>
 
-<script src="muse-shared.js?v=20260419c"></script>
+<script src="muse-shared.js?v=20260420"></script>
 <script>
 /* ============ ARTIST DATA ============
    Built dynamically from window.__MUSE_PRICES (app/prices.js), which the

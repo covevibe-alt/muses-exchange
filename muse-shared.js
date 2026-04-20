@@ -88,7 +88,7 @@
         <a class="btn-ghost" href="/exchange" style="width:100%; justify-content:center; margin-top:10px;">
           Launch app <svg><use href="#i-arrow-up-right"/></svg>
         </a>
-        <a href="/signin" style="display:block; text-align:center; margin-top:14px; font-family:var(--sans); font-size:14px; color:var(--ink-dim); text-decoration:none;">Already have an account? <span style="color:var(--violet);">Sign in</span></a>
+        <a href="/signin" style="display:block; text-align:center; margin-top:14px; padding:12px 16px; min-height:44px; font-family:var(--sans); font-size:14px; color:var(--ink-dim); text-decoration:none;">Already have an account? <span style="color:var(--violet);">Sign in</span></a>
       </div>
     </aside>
   `;
