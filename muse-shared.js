@@ -61,10 +61,8 @@
           <li><a href="/waitlist" data-page="waitlist">Waitlist</a></li>
         </ul>
         <div class="nav-cta-wrap">
-          <a class="nav-signin" href="/signin">Sign in</a>
-          <a class="nav-cta" href="/exchange">
-            Launch app <svg><use href="#i-arrow-up-right"/></svg>
-          </a>
+          <a class="nav-signin" id="nav-signin-link" href="/signin">Sign in</a>
+          <a class="nav-cta" id="nav-cta-primary" href="/signup">Sign up</a>
         </div>
         <button class="nav-menu-btn" aria-label="Open menu" id="navMenuBtn"><svg><use href="#i-menu"/></svg></button>
       </nav>
@@ -81,8 +79,8 @@
         <a href="/waitlist" data-page="waitlist">Waitlist</a>
       </nav>
       <div class="md-cta">
-        <a class="btn-primary" href="/exchange" style="width: 100%; justify-content: center;">
-          Launch app <svg><use href="#i-arrow-up-right"/></svg>
+        <a class="btn-primary" id="md-cta-primary" href="/signup" style="width: 100%; justify-content: center;">
+          Sign up <svg><use href="#i-arrow-up-right"/></svg>
         </a>
         <a class="btn-ghost" href="/waitlist" style="width:100%; justify-content:center; margin-top:10px;">
           Join the waitlist
@@ -153,6 +151,44 @@
   }
   const footMount = document.getElementById('footer-mount');
   if (footMount) footMount.innerHTML = FOOTER_HTML;
+
+  /* Auth-aware nav CTA swap.
+     Default HTML shows "Sign up" for cold visitors (the honest state now that
+     we require accounts). If a Supabase session exists in localStorage, swap
+     the primary CTA back to "Launch app" pointing at /exchange — same token
+     probe pattern the exchange.html auth gate uses, so there's no flicker.
+     Also swaps "Sign in" → "Sign out" for symmetry. */
+  (function swapNavForAuth() {
+    try {
+      let hasSession = false;
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !/^sb-.+-auth-token$/.test(k)) continue;
+        const raw = localStorage.getItem(k);
+        if (!raw) continue;
+        const parsed = JSON.parse(raw);
+        const user = (parsed && parsed.user) ||
+                     (parsed && parsed.currentSession && parsed.currentSession.user) || null;
+        if (user) { hasSession = true; break; }
+      }
+      if (!hasSession) return;
+
+      const primary = document.getElementById('nav-cta-primary');
+      if (primary) {
+        primary.setAttribute('href', '/exchange');
+        primary.innerHTML = 'Launch app <svg><use href="#i-arrow-up-right"/></svg>';
+      }
+      const mdPrimary = document.getElementById('md-cta-primary');
+      if (mdPrimary) {
+        mdPrimary.setAttribute('href', '/exchange');
+        mdPrimary.innerHTML = 'Launch app <svg><use href="#i-arrow-up-right"/></svg>';
+      }
+      // The "Already have an account? Sign in" line in the mobile drawer is
+      // redundant for signed-in users — hide it.
+      const drawerSigninHint = document.querySelector('.md-cta a[href="/signin"]');
+      if (drawerSigninHint) drawerSigninHint.style.display = 'none';
+    } catch (e) { /* localStorage blocked — fall back to signed-out nav */ }
+  })();
 
   // Mobile sticky CTA (hidden on waitlist page itself)
   if (page !== 'waitlist') {
