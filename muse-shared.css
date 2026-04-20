@@ -1582,6 +1582,13 @@ body.loaded {
 /* Header action cluster: Sign in (quiet) · Waitlist (outlined pill) · Launch app (solid) */
 .nav .nav-cta-wrap,
 .nav-wrap .nav-cta-wrap{display:flex; align-items:center; gap:14px;}
+/* Mobile override MUST come AFTER the desktop rule above to win on source
+   order (equal specificity). At mobile widths everything in the CTA cluster
+   moves into the drawer, which already has Sign up / Launch app / Sign in. */
+@media (max-width: 760px){
+  .nav .nav-cta-wrap,
+  .nav-wrap .nav-cta-wrap{display:none;}
+}
 
 .nav .nav-signin,
 .nav-wrap .nav-signin{
