@@ -757,6 +757,13 @@
   .range-btn.active { background: var(--purple-soft); color: var(--purple-2); }
   #chart { width: 100%; height: 300px; position: relative; z-index: 1; }
   #chart-portfolio { width: 100%; height: 360px; position: relative; z-index: 1; }
+  /* M1.6 — slimmer chart on mobile so the page doesn't feel chart-heavy.
+     Sander's screenshot showed the 7D chart taking 60%+ of the viewport
+     height. The chart library reads container clientHeight via the
+     ResizeObserver below, so this CSS change drives the actual size. */
+  @media (max-width: 680px) {
+    #chart-portfolio { height: 220px; }
+  }
   .chart-source {
     display: flex; align-items: center; gap: 8px;
     margin-top: 14px;
@@ -5774,6 +5781,16 @@
     grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
+  /* M1.7 — stack to a single column on mobile. Side-by-side at 428px
+     was too narrow for an avatar + name + ticker + price + percent to
+     coexist without the artist name wrapping to two lines on one tile
+     and not the other, which made the two cards visibly misaligned
+     (different heights, content at different y-offsets). Full-width
+     tiles stacked vertically keep everything on single lines and read
+     like a clean 2-row list. */
+  @media (max-width: 680px) {
+    .bw-grid { grid-template-columns: 1fr; gap: 12px; }
+  }
   .bw-card .card-title { display: flex; align-items: center; gap: 8px; }
   .bw-card .bw-tag {
     font-size: 9px; letter-spacing: 0.1em;
@@ -7396,20 +7413,22 @@
     .sb-logo[data-label]::after { display: none !important; }
 
     .topbar {
-      padding: 12px 14px;
-      gap: 10px;
+      /* Slimmed in M1.1 — was padding 12px 14px, gap 10px. Header was too
+         full once you stack logo + brand + "/ Markets" + magnifier + bell
+         + Sign in + Sign up across a 428px viewport (see Sander's screenshot
+         showing "Muses Mark..." truncated). We hide the redundant bits —
+         the "Markets" label (bottom nav already tells you where you are)
+         and the magnifier (search lives in the All Artists block below). */
+      padding: 8px 10px;
+      gap: 8px;
       flex-wrap: nowrap;
     }
-    .crumb { font-size: 13px; min-width: 0; flex: 1; gap: 6px; }
+    .crumb { font-size: 13px; min-width: 0; flex-shrink: 0; gap: 6px; }
     .crumb .dim, .crumb .sep { display: none; }
-    .crumb .here {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-    }
+    /* "Markets" (or whichever section) label is hidden at mobile — the
+       bottom nav's active pill already communicates the current section. */
+    .crumb .here { display: none; }
+    .crumb .crumb-brand { font-size: 14px; color: var(--text); }
     .crumb .crumb-icon { width: 20px; height: 20px; flex-shrink: 0; }
     .top-actions { gap: 6px; margin-left: auto; flex-shrink: 0; }
     .user-chip .name { display: none; }
@@ -7419,7 +7438,16 @@
       border-radius: 999px;
       gap: 0;
     }
-    .icon-btn { width: 44px; height: 44px; }
+    .icon-btn { width: 40px; height: 40px; }
+    /* Shrink guest Sign in / Sign up pills so the header sits at ~56px
+       instead of ~68px. Still >= 32px tap height which is acceptable for
+       secondary auth CTAs that have a full /signin page behind them. */
+    html.is-guest .guest-signin,
+    html.is-guest .guest-signup {
+      height: 32px;
+      padding: 0 12px;
+      font-size: 12.5px;
+    }
 
     /* User dropdown + notification panel as bottom sheet feel */
     .user-dropdown {
@@ -7437,14 +7465,46 @@
     .col-main { gap: 22px; }
     .col-side { gap: 16px; }
 
+    /* M1.4 — Markets view: on mobile, flatten the two columns so we can
+       interleave Quick Actions BETWEEN the featured section and All
+       Artists instead of dumping the whole sidebar at the bottom. We
+       use `display: contents` to hoist col-main/col-side children up
+       to .content's flex context, then reorder with `order`.
+       Desktop layout is untouched. */
+    #view-markets {
+      display: flex !important;
+      flex-direction: column;
+      gap: 22px;
+    }
+    #view-markets .col-main,
+    #view-markets .col-side {
+      display: contents;
+    }
+    /* Defaults — main items rank early, side items late */
+    #view-markets .col-main > * { order: 10; }
+    #view-markets .col-side > * { order: 20; }
+    /* Explicit reading-flow order */
+    #view-markets .col-main > .discover-hero  { order: 1; }
+    #view-markets .col-main > .market-stats   { order: 2; }
+    #view-markets .col-main > div:has(.featured-head) { order: 3; }
+    /* Quick Actions is the first card in .col-side */
+    #view-markets .col-side > .card:first-child { order: 4; }
+    #view-markets .col-main > #all-artists { order: 5; }
+    /* Top Movers + Live Signals fall through to order: 20 (below all-artists) */
+
     .section-head { flex-wrap: wrap; gap: 10px; }
     .section-head h1 { font-size: 22px; }
     .section-head .sub { font-size: 12px; }
 
     .ticker-tape { display: none; } /* save vertical space on small screens */
 
-    /* Featured cards → 1 column */
+    /* Featured cards → 1 column, 1 card only (M1.5).
+       JS renders 3 featured (highest price, biggest mover, top artist).
+       On mobile we only show the first (highest price) — stacking three
+       tall cards above the fold pushed All Artists too far down. The
+       remaining two are still rendered in the DOM; we just hide them. */
     .featured-grid { grid-template-columns: 1fr; gap: 12px; }
+    .featured-grid > .featured-card:nth-child(n+2) { display: none; }
     .featured-card { padding: 16px; }
     .featured-card .fc-head { padding-right: 92px; }
     .featured-card .fc-price { font-size: 20px; }
@@ -7515,7 +7575,18 @@
     .help-topics { grid-template-columns: 1fr; }
 
     /* Profile and other detail pages */
-    .prof-hero-content { grid-template-columns: 1fr !important; text-align: center; }
+    .prof-hero-content {
+      grid-template-columns: 1fr !important;
+      text-align: center;
+      /* M1.16 — center the whole column axis so the avatar (a fixed-
+         size 96px block) aligns with the centered name/handle text.
+         Without this, the 1fr column was full-width and the avatar
+         sat left-aligned inside it, making the whole card feel off-
+         balance. place-items centers both grid-row and grid-col axes. */
+      place-items: center;
+      gap: 14px;
+    }
+    .prof-avatar-xl { justify-self: center; }
     .prof-kpis { grid-template-columns: repeat(2, 1fr) !important; }
     .prof-grid { grid-template-columns: 1fr !important; }
 
@@ -7712,12 +7783,16 @@
   .top-search-btn { display: none; }
 
   /* --- TOP-BAR SEARCH COLLAPSE (≤680px): collapse inline search
-     to a magnifier button that expands full-width below the topbar. --- */
+     to a magnifier button that expands full-width below the topbar.
+     M1.1: the magnifier is now hidden on mobile — search is duplicated
+     by the All Artists search input in the directory view below, and
+     quick-filter chips cover most needs inline. Keeping the expand/
+     dropdown styles around in case we re-enable later. --- */
   @media (max-width: 680px) {
     /* Hide inline search by default at mobile (replaced by icon button) */
     .header-search { display: none; }
-    /* Show the mobile search icon button */
-    .top-search-btn { display: grid !important; }
+    /* Magnifier button hidden at mobile (M1.1) */
+    .top-search-btn { display: none !important; }
     /* Expanded state: full-width dropdown beneath the top bar.
        Topbar at ≤680px is ~60px tall (12px padding × 2 + 36px icon-btn);
        64px clears the border-bottom with a comfortable hairline gap. */
@@ -12520,7 +12595,8 @@ function initDetailChart() {
 let chartPortfolio, lineSeriesPortfolio;
 function initPortfolioChart() {
   if (chartPortfolio) return;
-  chartPortfolio = LightweightCharts.createChart(document.getElementById('chart-portfolio'), {
+  const chartEl = document.getElementById('chart-portfolio');
+  chartPortfolio = LightweightCharts.createChart(chartEl, {
     layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#6E6E80', fontFamily: 'Inter' },
     grid: { vertLines: { color: 'rgba(255,255,255,0.03)' }, horzLines: { color: 'rgba(255,255,255,0.03)' } },
     rightPriceScale: { borderColor: 'transparent' },
@@ -12528,7 +12604,10 @@ function initPortfolioChart() {
     crosshair: { vertLine: { color: 'rgba(139,92,246,0.5)' }, horzLine: { color: 'rgba(139,92,246,0.5)' } },
     handleScroll: false,
     handleScale: false,
-    height: 360,
+    // Read initial height from the container so the CSS mobile override
+    // (@media (max-width:680px) { #chart-portfolio { height: 220px; } })
+    // takes effect instead of being hardcoded to 360.
+    height: chartEl.clientHeight || 360,
   });
   lineSeriesPortfolio = chartPortfolio.addAreaSeries({
     lineColor: '#A78BFA',
@@ -12537,7 +12616,13 @@ function initPortfolioChart() {
     lineWidth: 2,
     priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
   });
-  new ResizeObserver(() => chartPortfolio.applyOptions({ width: document.getElementById('chart-portfolio').clientWidth })).observe(document.getElementById('chart-portfolio'));
+  // Resize observer reapplies BOTH width and height on container resize
+  // so rotating the device or crossing the 680px breakpoint re-renders
+  // at the right size.
+  new ResizeObserver(() => chartPortfolio.applyOptions({
+    width: chartEl.clientWidth,
+    height: chartEl.clientHeight,
+  })).observe(chartEl);
 }
 
 
@@ -15411,12 +15496,18 @@ function renderBestWorst(tickers) {
   const worst = sortedByPct[sortedByPct.length - 1];
   const renderRow = (target, item, kind) => {
     const upDown = item.pct >= 0 ? 'up' : 'down';
+    // M1.7 — simplified sub-line. Was "TICKER · €VALUE" but the value
+    // duplicated the price in the right column (value = shares × price,
+    // and most users hold 1 share at launch), causing "+0.82%" to render
+    // twice and the mono-font text to wrap unpredictably. Now: just the
+    // ticker. Alignment with the peer card is clean because both lines
+    // are single-line short strings.
     target.innerHTML = `
       <div class="holding-row" data-ticker="${item.t}" style="border-bottom:none;padding:10px 0;grid-template-columns:auto 1fr auto">
-        ${bubbleHTML(item.a, 48)}
+        ${bubbleHTML(item.a, 44)}
         <div class="h-meta">
           <div class="h-name">${item.a.name}</div>
-          <div class="h-shares">${item.t} · €${item.value.toFixed(2)}</div>
+          <div class="h-shares">${item.t}</div>
         </div>
         <div class="h-price" style="text-align:right">
           <div class="pv">${fmtPrice(item.a.price)}</div>
