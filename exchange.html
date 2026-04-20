@@ -3751,11 +3751,7 @@
     font-size: 10px;
     letter-spacing: 0.5px;
   }
-  .lb-friend {
-    color: var(--gold);
-    margin-right: 4px;
-    font-size: 11px;
-  }
+  /* M4.12: .lb-friend (friend-star badge) CSS removed with fake friends. */
   .lb-chev {
     background: transparent;
     border: none;
@@ -4220,42 +4216,8 @@
     line-height: 1.3;
   }
 
-  /* Friends */
-  .prof-friends {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-  .prof-friend {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    padding: 8px 4px;
-    border-radius: 10px;
-    transition: background .12s;
-  }
-  .prof-friend:hover { background: var(--card-2); }
-  .prof-friend-av {
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    display: grid; place-items: center;
-    font-weight: 700;
-    font-size: 16px;
-    color: white;
-    border: 2px solid rgba(255,255,255,0.1);
-  }
-  .prof-friend-n {
-    font-size: 10px;
-    color: var(--text-dim);
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 100%;
-    font-weight: 600;
-  }
+  /* M4.12: .prof-friends / .prof-friend / .prof-friend-av / .prof-friend-n
+     CSS removed with the fake-friends card. Returns in phase 2. */
 
   /* Activity */
   .prof-activity { display: flex; flex-direction: column; }
@@ -10846,8 +10808,11 @@ const STATE = {
   firstBuyAt: null,
   notifications: [],
   notifUnread: 0,
-  friends: ['velvet_orbit', 'lo_fi_lana', 'frequency_22', 'kazoo_king', 'm00nlight'],
-  leaderboardTab: 'all',  // 'all' or 'friends'
+  // M4.12: Fake friends removed pre-launch. Kept as empty array so any
+  // persisted state / downstream code that reads STATE.friends still works;
+  // a real friends system lands in phase 2 with multiplayer.
+  friends: [],
+  leaderboardTab: 'all',  // retained for phase-2 (was 'all' | 'friends')
   lbState: {},  // per-tournament: { startRanks, prevRanks, search, sort, expanded, limit }
   settings: {
     // Appearance
@@ -10892,7 +10857,7 @@ const STATE = {
     notifyPrefs: {
       tournaments: true,
       rankChanges: true,
-      friendActivity: false,
+      // M4.12: friendActivity removed with fake friends; returns in phase 2.
     },
   },
 };
@@ -15714,14 +15679,13 @@ function renderLeaderboard() {
   const host = document.getElementById('lb-list');
   if (!host) return;
 
-  // Build enriched rows with friend / you flags + synthetic lineups
+  // Build enriched rows with `isYou` flag + synthetic lineups
   const yourName = STATE.profile.name || 'You';
   const all = FAKE_USERS.map(u => ({
     name: u.name === '__YOU__' ? yourName : u.name,
     tag: u.tag,
     ret: u.ret,
     isYou: u.name === '__YOU__',
-    isFriend: STATE.friends.includes(u.name),
     lineup: syntheticLineupFor(u.name),
   }));
 
@@ -15738,10 +15702,8 @@ function renderLeaderboard() {
     });
   }
 
-  // Apply tab + search filters
-  let rows = STATE.leaderboardTab === 'friends'
-    ? fullRanking.filter(r => r.isFriend || r.isYou)
-    : fullRanking.slice();
+  // Apply search filter (M4.12: friend-tab filter removed with fake friends)
+  let rows = fullRanking.slice();
   const q = (lb.search || '').trim().toLowerCase();
   if (q) {
     rows = rows.filter(r =>
@@ -15813,8 +15775,6 @@ function renderLeaderboard() {
     const gapHTML = u.absRank === 1
       ? '<span class="lb-gap2 leader">leader</span>'
       : `<span class="lb-gap2">${gap.toFixed(2)}%</span>`;
-    const friendBadge = (u.isFriend && !u.isYou)
-      ? '<span class="lb-friend" title="Friend">★</span>' : '';
     const youAttr = u.isYou ? ' data-you="1"' : '';
     const expanded = lb.expanded === u.name;
     return `
@@ -15822,7 +15782,7 @@ function renderLeaderboard() {
         <div class="lb-rank ${cls}">${rank}</div>
         ${deltaHTML}
         <div class="lb-user">
-          <div class="n">${friendBadge}${u.name}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
+          <div class="n">${u.name}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
           <div class="t">${u.tag}</div>
         </div>
         ${lineupBubbles(u.lineup)}
@@ -15879,8 +15839,6 @@ function renderLeaderboard() {
       </div>
     </div>
     <div class="lb-tabs">
-      <button data-lb-tab="all" class="${STATE.leaderboardTab === 'all' ? 'active' : ''}">All players</button>
-      <button data-lb-tab="friends" class="${STATE.leaderboardTab === 'friends' ? 'active' : ''}">Friends (${STATE.friends.length})</button>
       <button class="lb-jump" id="lb-jump-g">Jump to me · #${yourRank}</button>
     </div>
     <div class="lb-controls">
@@ -16019,7 +15977,7 @@ function computeProfileStats() {
   return {
     cash: STATE.cash || 0, holdingsVal, totalValue, totalReturn, totalReturnPct,
     txCount, tournamentsPlayed, wins, top10, bestRank,
-    friendsCount: (STATE.friends || []).length,
+    // M4.12: friendsCount removed with fake friends; returns in phase 2.
   };
 }
 function profileTier(pts) {
@@ -16035,9 +15993,13 @@ function profileBadges(s) {
   list.push({ key: 'tournament',  name: 'Competitor',      desc: 'Entered a tournament',         earned: Object.keys(STATE.enteredTournaments || {}).length > 0, icon: '#i-medal' });
   list.push({ key: 'top10',       name: 'Top 10 Finish',   desc: 'Finished top 10 in any cup',   earned: s.top10 > 0, icon: '#i-medal' });
   list.push({ key: 'champion',    name: 'Champion',        desc: 'Won a tournament',             earned: s.wins > 0, icon: '#i-trophy' });
-  list.push({ key: 'social',      name: 'Social',          desc: 'Added 5+ friends',             earned: s.friendsCount >= 5, icon: '#i-users' });
+  // M4.12: 'social' achievement dropped — required fake friends, which no
+  // longer exist; returns in phase 2 when real multiplayer ships.
   list.push({ key: 'diversified', name: 'Diversified',     desc: 'Hold 5+ different artists',    earned: Object.keys(STATE.holdings || {}).filter(t => STATE.holdings[t].shares > 0).length >= 5, icon: '#i-grid' });
-  return list;
+  // M4.13: Float earned achievements to the top (stable — retains the
+  // declared order within each bucket so the Bronze-path still reads
+  // naturally once a user starts unlocking things).
+  return list.sort((a, b) => Number(b.earned) - Number(a.earned));
 }
 function renderProfile() {
   const host = document.getElementById('profile-host');
@@ -16211,25 +16173,8 @@ function renderProfile() {
           </div>
         </div>
 
-        <!-- Friends -->
-        <div class="card prof-card">
-          <div class="prof-card-head">
-            <div class="prof-card-title">Friends · ${s.friendsCount}</div>
-            <button class="prof-link" data-nav="leaderboard">Compare →</button>
-          </div>
-          <div class="prof-friends">
-            ${(STATE.friends || []).map(f => {
-              const initial = f.charAt(0).toUpperCase();
-              const hue = (_hashStr(f) % 360);
-              return `
-                <div class="prof-friend">
-                  <div class="prof-friend-av" style="background:linear-gradient(135deg, hsl(${hue} 70% 55%), hsl(${(hue+60)%360} 70% 45%))">${initial}</div>
-                  <div class="prof-friend-n">${f}</div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
+        <!-- M4.12: Friends card removed pre-launch (was backed by fake
+             hardcoded friends). Returns in phase 2 with real multiplayer. -->
 
         <!-- Recent activity -->
         <div class="card prof-card">
@@ -16386,7 +16331,7 @@ function renderEditProfileModal() {
         ${[
           ['tournaments',    'Tournament events',  'Entry, rebalance windows, and final results.'],
           ['rankChanges',    'Rank movements',     'When you climb or drop 5+ positions.'],
-          ['friendActivity', 'Friend activity',    'When friends enter or win tournaments.'],
+          // M4.12: 'Friend activity' toggle removed with fake friends; returns in phase 2.
         ].map(([key, label, desc]) => `
           <div class="pe-toggle">
             <div>
@@ -18615,7 +18560,6 @@ function renderTournamentDetail() {
     tag: c.tag,
     ret: competitorReturn(c),
     lineup: c.lineup,
-    isFriend: STATE.friends.includes(c.name),
   }));
   // Always compute the FULL ranking first (used for deltas, even when filtering)
   const fullRanking = allField.slice();
@@ -18637,10 +18581,8 @@ function renderTournamentDetail() {
     });
   }
 
-  // Apply tab filter, then search filter
-  let fieldRows = STATE.leaderboardTab === 'friends'
-    ? fullRanking.filter(r => r.isFriend || r.isYou)
-    : fullRanking.slice();
+  // Apply search filter (M4.12: friend-tab filter removed with fake friends)
+  let fieldRows = fullRanking.slice();
   const q = (lb.search || '').trim().toLowerCase();
   if (q) {
     fieldRows = fieldRows.filter(r =>
@@ -18712,8 +18654,6 @@ function renderTournamentDetail() {
     const gapHTML = u.absRank === 1
       ? '<span class="lb-gap2 leader">leader</span>'
       : `<span class="lb-gap2">${gap.toFixed(2)}%</span>`;
-    const friendBadge = (u.isFriend && !u.isYou)
-      ? '<span class="lb-friend" title="Friend">★</span>' : '';
     const youAttr = u.isYou ? ' data-you="1"' : '';
     const expanded = lb.expanded === u.name;
     return `
@@ -18721,7 +18661,7 @@ function renderTournamentDetail() {
         <div class="lb-rank ${cls}">${rank}</div>
         ${deltaHTML}
         <div class="lb-user">
-          <div class="n">${friendBadge}${u.name}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
+          <div class="n">${u.name}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
           <div class="t">${u.tag}</div>
         </div>
         ${lineupBubbles(u.lineup)}
@@ -18743,8 +18683,6 @@ function renderTournamentDetail() {
 
   let lbHTML = `
     <div class="lb-tabs">
-      <button data-lb-tab="all" class="${STATE.leaderboardTab === 'all' ? 'active' : ''}">All players</button>
-      <button data-lb-tab="friends" class="${STATE.leaderboardTab === 'friends' ? 'active' : ''}">Friends (${STATE.friends.length})</button>
       ${entered ? `<button class="lb-jump" id="lb-jump">Jump to me · #${entry.rank}</button>` : ''}
     </div>
     <div class="lb-controls">
