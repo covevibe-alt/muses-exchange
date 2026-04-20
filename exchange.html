@@ -2726,6 +2726,27 @@
   .swap-summary .ss-row b { color: var(--text); }
   .swap-summary .ss-row.total { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; font-weight: 700; color: var(--text); }
 
+  /* M2.10: Your Holdings list on Swap page uses 5 cells (Artist, Shares,
+     Value, P&L, Swap-btn), while the generic .orders-row grid reserves a
+     trailing 90px column that was left empty. Re-grid specifically for this
+     list so the columns actually line up with the header, and on mobile put
+     the Swap button on its own row so the data columns stay aligned. */
+  #swap-holdings-list .orders-thead,
+  #swap-holdings-list .orders-row {
+    grid-template-columns: 2fr 1fr 1fr 1fr 100px;
+    gap: 10px;
+  }
+  @media (max-width: 700px) {
+    #swap-holdings-list .orders-thead { display: none; }
+    #swap-holdings-list .orders-row {
+      grid-template-columns: 1fr 1fr 1fr;
+      row-gap: 6px;
+      padding: 12px;
+    }
+    #swap-holdings-list .orders-row .ord-art { grid-column: 1 / -1; }
+    #swap-holdings-list .orders-row > .btn { grid-column: 1 / -1; margin-top: 2px; }
+  }
+
   /* ===== Action confirmation overlay ===== */
   .confirm-overlay {
     position: fixed; inset: 0;
@@ -7471,13 +7492,17 @@
        use `display: contents` to hoist col-main/col-side children up
        to .content's flex context, then reorder with `order`.
        Desktop layout is untouched. */
-    #view-markets {
+    /* :not(.hidden) is critical — without it, `display: flex !important`
+       overrides the `.hidden { display: none }` rule and every other view
+       (Swap, Portfolio, etc.) renders *below* Markets far off-screen, which
+       looks exactly like "nav is broken". */
+    #view-markets:not(.hidden) {
       display: flex !important;
       flex-direction: column;
       gap: 22px;
     }
-    #view-markets .col-main,
-    #view-markets .col-side {
+    #view-markets:not(.hidden) .col-main,
+    #view-markets:not(.hidden) .col-side {
       display: contents;
     }
     /* Defaults — main items rank early, side items late */
@@ -8021,8 +8046,24 @@
       padding: 8px 14px;
     }
     .qf-preset {
-      min-height: 40px;
+      min-height: 36px;
       padding: 8px 14px;
+      min-width: 92px;
+      flex: 0 0 auto;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Match the More-filters button to the preset pill shape so the row
+       reads as one consistent strip of bubbles, not a mixed pill+chip mess. */
+    .qf-more-btn {
+      min-height: 36px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      min-width: 92px;
+      flex: 0 0 auto;
+      justify-content: center;
     }
     /* Stat tiles stack more gracefully */
     .stat-grid {
@@ -9252,14 +9293,6 @@
       </div>
 
       <aside class="col-side">
-        <!-- TOURNAMENT CREDITS BALANCE -->
-        <div class="card" id="swap-real-balance-card">
-          <div class="card-title">Tournament Credits <span class="money-badge real"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Credits</span></div>
-          <div class="hero-value" style="font-size:38px">€<span id="swap-real-bal">0.00</span></div>
-          <div style="font-size:11px;color:var(--text-faint);margin-top:4px">For tournament entry fees &amp; prizes</div>
-          <button class="btn btn-primary" style="width:100%;margin-top:14px" data-action="deposit">Top up credits</button>
-        </div>
-
         <!-- PAPER BALANCE -->
         <div class="card">
           <div class="card-title">Paper Balance <span class="money-badge paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Paper</span></div>
@@ -9794,7 +9827,14 @@ function computeOrderFlowBias(a) {
 // ══════════════════════════════════════════════════════════════════
 
 // ── Formatting helpers (DRY — used everywhere) ──
-function fmtPrice(price)  { return '€' + (+price || 0).toFixed(2); }
+// M2.9: thousands separators on money. en-US gives "€10,000.00" style
+// (comma thousands + dot decimal), which matches the existing UI. Low-price
+// artists (<€1,000) render unchanged.
+function fmtPrice(price)  { return '€' + (+price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+// Integer-only variant for big hero numbers that render cents separately.
+function fmtInt(n)        { return (+n || 0).toLocaleString('en-US'); }
+// Plain-number 2-decimal variant (no € prefix) for inline fields.
+function fmtNum2(n)       { return (+n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function fmtPct(ratio)    { const v = (ratio * 100).toFixed(2); return (ratio >= 0 ? '+' : '') + v + '%'; }
 function fmtPct24(ratio)  { return fmtPct(ratio) + ' · 24h'; }
 function upDownClass(val) { return val >= 0 ? 'up' : 'down'; }
@@ -12690,7 +12730,7 @@ function donutSVG(segments, size = 160, stroke = 22) {
 }
 
 function fmtBigEuro(n) {
-  if (n >= 1e9) return '€' + (n/1e9).toFixed(2) + 'B';
+  if (n >= 1e9) return fmtPrice(n/1e9) + 'B';
   if (n >= 1e6) return '€' + (n/1e6).toFixed(1) + 'M';
   if (n >= 1e3) return '€' + (n/1e3).toFixed(1) + 'K';
   return '€' + n.toFixed(0);
@@ -12870,8 +12910,8 @@ function renderArtistSubstats(a) {
       const loIdx = values.lastIndexOf(lo);
       const hiTime = hiIdx >= 0 ? fmtTime(a.series[hiIdx].time) : '';
       const loTime = loIdx >= 0 ? fmtTime(a.series[loIdx].time) : '';
-      highTile = { l: 'High', v: '€' + hi.toFixed(2), s: hiTime ? 'at ' + hiTime : '' };
-      lowTile  = { l: 'Low',  v: '€' + lo.toFixed(2), s: loTime ? 'at ' + loTime : '' };
+      highTile = { l: 'High', v: fmtPrice(hi), s: hiTime ? 'at ' + hiTime : '' };
+      lowTile  = { l: 'Low',  v: fmtPrice(lo), s: loTime ? 'at ' + loTime : '' };
     } else {
       highTile = { l: 'High', v: '—', s: 'Collecting data' };
       lowTile  = { l: 'Low',  v: '—', s: 'Collecting data' };
@@ -12980,16 +13020,16 @@ function renderArtistPosition(a) {
     <div class="ad-pos-top">
       <div>
         <div class="ad-pos-l">Value</div>
-        <div class="ad-pos-v" id="ad-pos-value">€${value.toFixed(2)}</div>
+        <div class="ad-pos-v" id="ad-pos-value">${fmtPrice(value)}</div>
       </div>
       <div class="ad-pos-pl ${isPos ? 'up' : 'down'}" id="ad-pos-pl">
-        ${isPos ? '+' : ''}€${pl.toFixed(2)}
+        ${isPos ? '+' : ''}${fmtPrice(pl)}
         <div class="ad-pos-pct">${isPos ? '+' : ''}${plPct.toFixed(2)}%</div>
       </div>
     </div>
     <div class="ad-pos-rows">
       <div class="ad-pos-row"><span class="dim">Shares</span><b>${h.shares.toFixed(2)}</b></div>
-      <div class="ad-pos-row"><span class="dim">Avg cost</span><b>€${(h.cost || a.price).toFixed(2)}</b></div>
+      <div class="ad-pos-row"><span class="dim">Avg cost</span><b>${fmtPrice((h.cost || a.price))}</b></div>
       <div class="ad-pos-row"><span class="dim">Current price</span><b>${fmtPrice(a.price)}</b></div>
       <div class="ad-pos-row"><span class="dim">% of portfolio</span><b>${sharePct.toFixed(1)}%</b></div>
     </div>
@@ -13086,7 +13126,7 @@ function renderPriceFormula(a) {
   const popContrib = basePrice * popBoost;
   const chContrib = basePrice * chBoost;
   // Use global fmtPct() for boost ratio formatting (removed local shadow)
-  const fmtContrib = (v) => (v >= 0 ? '+' : '−') + '€' + Math.abs(v).toFixed(2);
+  const fmtContrib = (v) => (v >= 0 ? '+' : '−') + fmtPrice(Math.abs(v));
   const tradingFlowActive = (() => {
     const flow = a.orderFlow || { buys: 0, sells: 0 };
     return (flow.buys + flow.sells) >= 1 || (a.orderFlowBias != null && Math.abs(a.orderFlowBias) > 0.001);
@@ -13104,7 +13144,7 @@ function renderPriceFormula(a) {
     : '—';
   const tradingContribVal = a.orderFlowBias != null ? a.orderFlowBias * PRICING.maxPremium * basePrice * totalMultiplier : 0;
   const tradingContrib = tradingFlowActive && a.orderFlowBias != null
-    ? (tradingContribVal >= 0 ? '+' : '−') + '€' + Math.abs(tradingContribVal).toFixed(2)
+    ? (tradingContribVal >= 0 ? '+' : '−') + fmtPrice(Math.abs(tradingContribVal))
     : '—';
 
   wrap.innerHTML = `
@@ -13119,7 +13159,7 @@ function renderPriceFormula(a) {
       </div>
       <div class="pf-right">
         <div class="pf-weight">Base</div>
-        <div class="pf-contrib" id="pf-stream-val">€${basePrice.toFixed(2)}</div>
+        <div class="pf-contrib" id="pf-stream-val">${fmtPrice(basePrice)}</div>
       </div>
     </div>
     <div class="pf-row"${ytViews ? '' : ' style="opacity:0.45"'}>
@@ -13226,7 +13266,7 @@ function updatePriceFormula(a) {
   const chContrib = basePrice * chBoost;
   const lstContrib = basePrice * lstBoost;
   // Use global fmtPct() for boost ratio formatting (removed local shadow)
-  const fmtContrib = (v) => (v >= 0 ? '+' : '−') + '€' + Math.abs(v).toFixed(2);
+  const fmtContrib = (v) => (v >= 0 ? '+' : '−') + fmtPrice(Math.abs(v));
 
   // Snapshot previous displayed values for flash detection
   const _prev = {};
@@ -13235,7 +13275,7 @@ function updatePriceFormula(a) {
 
   // Update streaming base
   const el0 = document.getElementById('pf-stream-val');
-  if (el0) el0.textContent = '€' + basePrice.toFixed(2);
+  if (el0) el0.textContent = fmtPrice(basePrice);
   const el0m = document.getElementById('pf-stream-meta');
   if (el0m) el0m.textContent = fmtBigNum((a.monthlyListeners || 0)) + ' monthly listeners · ' + marketShare.toFixed(2) + '% market share → ' + fmtBigEuro(marketCap) + ' valuation';
 
@@ -13286,7 +13326,7 @@ function updatePriceFormula(a) {
   const elTv = document.getElementById('pf-trade-val');
   const tradingContribVal = a.orderFlowBias != null ? a.orderFlowBias * PRICING.maxPremium * basePrice * totalMultiplier : 0;
   if (elTv) elTv.textContent = tradingFlowActive && a.orderFlowBias != null
-    ? (tradingContribVal >= 0 ? '+' : '−') + '€' + Math.abs(tradingContribVal).toFixed(2)
+    ? (tradingContribVal >= 0 ? '+' : '−') + fmtPrice(Math.abs(tradingContribVal))
     : '—';
   // Toggle the row's "live" visual state so it picks up the transition
   // from awaiting → live (and vice versa) without a full re-render.
@@ -13328,7 +13368,7 @@ function recalcDetailTrade() {
   const shares = a.price > 0 ? amt / a.price : 0;
   document.getElementById('ad-ts-price').textContent = fmtPrice(a.price);
   document.getElementById('ad-ts-shares').textContent = shares.toFixed(2);
-  document.getElementById('ad-ts-total').textContent = '€' + amt.toFixed(2);
+  document.getElementById('ad-ts-total').textContent = fmtPrice(amt);
 
   // Inline warnings
   const warnEl = document.getElementById('ad-trade-warn');
@@ -13480,10 +13520,10 @@ function openOrderReviewModal() {
       <div class="ord-rev-side ${isBuy?'buy':'sell'}">${isBuy?'BUY':'SELL'}</div>
     </div>
     <div class="ord-rev-rows">
-      <div class="ord-rev-row"><span>Amount</span><b>€${amt.toFixed(2)}</b></div>
+      <div class="ord-rev-row"><span>Amount</span><b>${fmtPrice(amt)}</b></div>
       <div class="ord-rev-row"><span>Price per share ${tip('Current market price for one share of this artist.', 'tip-below')}</span><b>${fmtPrice(a.price)}</b></div>
       <div class="ord-rev-row"><span>Shares ${tip('Number of fractional shares for this trade.', 'tip-below')}</span><b>${shares.toFixed(4)}</b></div>
-      <div class="ord-rev-row total"><span>${isBuy?'Total cost':'You receive'}</span><b>€${amt.toFixed(2)}</b></div>
+      <div class="ord-rev-row total"><span>${isBuy?'Total cost':'You receive'}</span><b>${fmtPrice(amt)}</b></div>
     </div>
     <div class="ord-rev-actions">
       <button class="btn btn-secondary" id="order-cancel-btn">Cancel</button>
@@ -13558,8 +13598,8 @@ function executeMarketOrder(a, side, amt) {
         { label: 'Artist', value: a.ticker },
         { label: 'Shares', value: shares.toFixed(4) },
         { label: 'Price per share', value: fmtPrice(a.price) },
-        { label: 'Total cost', value: '€' + amt.toFixed(2), total: true },
-        { label: 'Cash remaining', value: '€' + STATE.cash.toFixed(2) },
+        { label: 'Total cost', value: fmtPrice(amt), total: true },
+        { label: 'Cash remaining', value: fmtPrice(STATE.cash) },
       ],
       buttons: [
         { label: 'View portfolio', action: () => setView('portfolio') },
@@ -13595,9 +13635,9 @@ function executeMarketOrder(a, side, amt) {
         { label: 'Artist', value: a.ticker },
         { label: 'Shares sold', value: shares.toFixed(4) },
         { label: 'Sale price', value: fmtPrice(a.price) },
-        { label: 'P&L on trade', value: (realized >= 0 ? '+' : '') + '€' + realized.toFixed(2) },
-        { label: 'Total received', value: '€' + amt.toFixed(2), total: true },
-        { label: 'Cash balance', value: '€' + STATE.cash.toFixed(2) },
+        { label: 'P&L on trade', value: (realized >= 0 ? '+' : '') + fmtPrice(realized) },
+        { label: 'Total received', value: fmtPrice(amt), total: true },
+        { label: 'Cash balance', value: fmtPrice(STATE.cash) },
       ],
       buttons: [
         { label: 'View portfolio', action: () => setView('portfolio') },
@@ -13735,7 +13775,7 @@ function processOpenOrders() {
     o.fillPrice = a.price;
     STATE.filledOrders.unshift(o);
     pushNotification('order', 'Order filled',
-      `${o.side === 'buy' ? 'Bought' : 'Sold'} €${o.amount.toFixed(2)} of ${o.ticker} @ ${fmtPrice(a.price)}`, null);
+      `${o.side === 'buy' ? 'Bought' : 'Sold'} ${fmtPrice(o.amount)} of ${o.ticker} @ ${fmtPrice(a.price)}`, null);
   });
   STATE.openOrders = stillOpen;
   // If orders view is open, refresh it
@@ -13762,9 +13802,10 @@ function renderSwapPage() {
     return { ...a, shares: h.shares, value: h.shares * a.price, cost: h.cost };
   }).filter(Boolean).sort((a, b) => b.value - a.value);
 
-  // Real + paper balances
-  document.getElementById('swap-real-bal').textContent = STATE.tournamentCredits.toFixed(2);
-  document.getElementById('swap-paper-bal').textContent = STATE.cash.toFixed(2);
+  // Paper balance (tournament credits card was removed from this view per M2.11)
+  const swapRealEl = document.getElementById('swap-real-bal');
+  if (swapRealEl) swapRealEl.textContent = fmtNum2(STATE.tournamentCredits);
+  document.getElementById('swap-paper-bal').textContent = fmtNum2(STATE.cash);
 
   // Holdings count
   document.getElementById('swap-holdings-count').textContent = holdings.length + (holdings.length === 1 ? ' position' : ' positions');
@@ -13795,47 +13836,43 @@ function renderSwapPage() {
 
     wb.innerHTML = `
       <div class="swap-pair">
-        <div class="swap-slot ${s.from ? 'selected' : ''}" id="sp-from" style="${!s.from ? 'min-height:auto;padding:10px' : ''}">
+        <div class="swap-slot ${s.from ? 'selected' : ''}" id="sp-from">
           <div class="slot-label">Sell</div>
           ${s.from
             ? `<div class="slot-artist">${bubbleHTML(s.from, 24)} ${s.from.ticker}</div>
-               <div class="slot-val">€${s.from.value.toFixed(2)} · ${s.from.shares.toFixed(2)} shares</div>`
-            : `<div class="swap-holdings-inline">${holdings.slice(0, 6).map(a => `
-                <div class="shi-row" data-ticker="${a.ticker}">
-                  ${bubbleHTML(a, 22)}<span class="shi-name">${a.ticker}</span><span class="shi-val">€${a.value.toFixed(2)}</span>
-                </div>`).join('')}
-              </div>`
+               <div class="slot-val">${fmtPrice(s.from.value)} · ${s.from.shares.toFixed(2)} shares</div>`
+            : `<div class="slot-empty">Select holding</div>`
           }
-          ${s.picking === 'from' ? `<div class="swap-inline-picker" id="sip-from">
-            <input class="sip-search" placeholder="Search your holdings…" id="sip-from-q" autocomplete="off">
-            <div class="sip-list" id="sip-from-list"></div>
-          </div>` : ''}
         </div>
         <div class="swap-arrow" id="sp-reverse" title="Switch direction"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><line x1="3" y1="5" x2="21" y2="5"/><polyline points="7 15 3 19 7 23"/><line x1="21" y1="19" x2="3" y2="19"/></svg></div>
         <div class="swap-slot ${s.to ? 'selected' : ''}" id="sp-to">
           <div class="slot-label">Buy</div>
           ${s.to
             ? `<div class="slot-artist">${bubbleHTML(s.to, 24)} ${s.to.ticker}</div>
-               <div class="slot-val">€${s.to.price.toFixed(2)} / share</div>`
+               <div class="slot-val">${fmtPrice(s.to.price)} / share</div>`
             : `<div class="slot-empty">Select artist</div>`
           }
-          ${s.picking === 'to' ? `<div class="swap-inline-picker" id="sip-to">
-            <input class="sip-search" placeholder="Search all artists…" id="sip-to-q" autocomplete="off">
-            <div class="sip-list" id="sip-to-list"></div>
-          </div>` : ''}
         </div>
       </div>
+      ${s.picking === 'from' ? `<div class="swap-inline-picker" id="sip-from">
+        <input class="sip-search" placeholder="Search your holdings…" id="sip-from-q" autocomplete="off">
+        <div class="sip-list" id="sip-from-list"></div>
+      </div>` : ''}
+      ${s.picking === 'to' ? `<div class="swap-inline-picker" id="sip-to">
+        <input class="sip-search" placeholder="Search all artists…" id="sip-to-q" autocomplete="off">
+        <div class="sip-list" id="sip-to-list"></div>
+      </div>` : ''}
       ${s.from && !s.picking ? `
         <div class="swap-amount-row">
           <input type="number" id="sp-amt" value="${s.amount || ''}" placeholder="Amount in €" min="1" max="${maxAmt}" step="1">
-          <span class="swap-max" id="sp-max-btn">MAX €${maxAmt.toFixed(2)}</span>
+          <span class="swap-max" id="sp-max-btn">MAX ${fmtPrice(maxAmt)}</span>
         </div>
       ` : ''}
       <div id="sp-summary-host">
         ${valid && !s.picking ? `<div class="swap-summary">
           <div class="ss-row"><span>Selling</span><b>${(s.amount / s.from.price).toFixed(4)} ${s.from.ticker}</b></div>
           <div class="ss-row"><span>Buying</span><b>${(s.amount / s.to.price).toFixed(4)} ${s.to.ticker}</b></div>
-          <div class="ss-row total"><span>Swap value</span><b>€${s.amount.toFixed(2)}</b></div>
+          <div class="ss-row total"><span>Swap value</span><b>${fmtPrice(s.amount)}</b></div>
         </div>` : ''}
       </div>
       <div style="display:flex;gap:10px;margin-top:12px">
@@ -13940,7 +13977,7 @@ function renderSwapPage() {
         host.innerHTML = v ? `<div class="swap-summary">
           <div class="ss-row"><span>Selling</span><b>${(s.amount / s.from.price).toFixed(4)} ${s.from.ticker}</b></div>
           <div class="ss-row"><span>Buying</span><b>${(s.amount / s.to.price).toFixed(4)} ${s.to.ticker}</b></div>
-          <div class="ss-row total"><span>Swap value</span><b>€${s.amount.toFixed(2)}</b></div>
+          <div class="ss-row total"><span>Swap value</span><b>${fmtPrice(s.amount)}</b></div>
         </div>` : '';
       });
       const maxBtn = document.getElementById('sp-max-btn');
@@ -13976,7 +14013,7 @@ function renderSwapPage() {
         return `<div class="orders-row" style="cursor:pointer" data-swap-from="${a.ticker}">
           <span class="ord-art"><span class="ord-bubble" style="background:${a.color}">${a.imgUrl ? `<img src="${a.imgUrl}" onerror="this.remove()"/>` : a.ticker.slice(0,2)}</span><span><b>${a.name}</b><span class="dim"> · ${a.ticker}</span></span></span>
           <b>${a.shares.toFixed(2)}</b>
-          <b>€${a.value.toFixed(2)}</b>
+          <b>${fmtPrice(a.value)}</b>
           <span class="${pl >= 0 ? 'up' : 'down'}">${pl >= 0 ? '+' : ''}${plPct}%</span>
           <button class="btn btn-secondary" style="padding:6px 14px;font-size:11px">Swap</button>
         </div>`;
@@ -14010,7 +14047,7 @@ function renderSwapPage() {
       const when = sell.time ? new Date(sell.time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
       return `<div class="orders-row" style="font-size:12px">
         <span><b>${sell.ticker || '?'}</b> → <b>${buy.ticker || '?'}</b></span>
-        <span>€${(sell.amount || 0).toFixed(2)}</span>
+        <span>${fmtPrice((sell.amount || 0))}</span>
         <span class="dim">${when}</span>
       </div>`;
     }).join('');
@@ -14065,7 +14102,7 @@ function renderOrdersView() {
             <span class="ord-bubble" style="background:${a?a.color:'#888'}">${a?(a.imgUrl?`<img src="${a.imgUrl}" onerror="this.remove()"/>`:a.ticker.slice(0,2)):'?'}</span>
             <span><b>${r.name}</b><span class="dim"> · ${r.ticker}</span></span>
           </span>
-          <b>€${r.amount.toFixed(2)}</b>
+          <b>${fmtPrice(r.amount)}</b>
           <span class="ord-tag">${r.freq}</span>
           <span>${next.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span>
           <span class="dim">${created.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span>
@@ -14090,7 +14127,7 @@ function renderOrdersView() {
             subtitle: `Auto-buy for ${recName} has been stopped`,
             details: [
               { label: 'Artist', value: recName },
-              { label: 'Amount', value: `€${recAmount.toFixed(2)}` },
+              { label: 'Amount', value: `${fmtPrice(recAmount)}` },
               { label: 'Frequency', value: recFreq },
               { label: 'Status', value: 'Cancelled — no future buys' },
             ],
@@ -14117,9 +14154,9 @@ function renderOrdersView() {
   ` + rows.map(o => {
     const a = ARTISTS.find(x => x.ticker === o.ticker);
     const trig = o.type === 'market' ? '—' :
-      o.type === 'limit' ? '€' + o.limitPrice.toFixed(2) :
-      '€' + o.stopPrice.toFixed(2);
-    const time = tab === 'filled' ? '€' + (o.fillPrice||0).toFixed(2) :
+      o.type === 'limit' ? fmtPrice(o.limitPrice) :
+      fmtPrice(o.stopPrice);
+    const time = tab === 'filled' ? fmtPrice(o.fillPrice||0) :
                  tab === 'cancelled' ? new Date(o.cancelledAt||o.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) :
                  new Date(o.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
     return `
@@ -14130,7 +14167,7 @@ function renderOrdersView() {
         </span>
         <span class="ord-side ${o.side}">${o.side.toUpperCase()}</span>
         <span class="ord-tag">${o.type}</span>
-        <b>€${o.amount.toFixed(2)}</b>
+        <b>${fmtPrice(o.amount)}</b>
         <span class="${o.type==='market'?'dim':''}">${trig}</span>
         <span>${time}</span>
         ${tab === 'open' ? `<button class="ord-cancel-btn" data-oid="${o.id}">Cancel</button>` : '<span></span>'}
@@ -14168,9 +14205,9 @@ function renderOrdersView() {
               { label: 'Order type', value: `${orderType.charAt(0).toUpperCase() + orderType.slice(1)} ${orderSide}` },
               { label: 'Artist', value: orderName },
               { label: 'Shares', value: orderShares.toFixed(4) },
-              { label: 'Price', value: `€${orderPrice.toFixed(2)}` },
-              ...(refundLabel ? [{ label: refundLabel, value: `€${refunded.toFixed(2)}` }] : []),
-              { label: 'Paper balance', value: `€${STATE.cash.toFixed(2)}` },
+              { label: 'Price', value: `${fmtPrice(orderPrice)}` },
+              ...(refundLabel ? [{ label: refundLabel, value: `${fmtPrice(refunded)}` }] : []),
+              { label: 'Paper balance', value: `${fmtPrice(STATE.cash)}` },
             ],
             buttons: [
               { label: 'View orders', action: () => setView('orders'), primary: true },
@@ -15142,9 +15179,9 @@ function wireGenreControls() {
 }
 
 function updateCashDisplay() {
-  document.getElementById('cash-balance').textContent = STATE.cash.toFixed(2);
+  document.getElementById('cash-balance').textContent = fmtNum2(STATE.cash);
   const realEl = document.getElementById('pf-real-bal');
-  if (realEl) realEl.textContent = STATE.tournamentCredits.toFixed(2);
+  if (realEl) realEl.textContent = fmtNum2(STATE.tournamentCredits);
 }
 
 // ============ PORTFOLIO ============
@@ -15192,23 +15229,23 @@ function renderPortfolio() {
     allTimeChip.className = 'pf-chip-v';
     document.getElementById('pf-chip-alltime-sub').textContent = 'Since first buy';
   } else {
-    allTimeChip.textContent = (totalPL >= 0 ? '+€' : '−€') + Math.abs(totalPL).toFixed(2);
+    allTimeChip.textContent = (totalPL >= 0 ? '+' : '−') + fmtPrice(Math.abs(totalPL));
     allTimeChip.className = 'pf-chip-v ' + (totalPL >= 0 ? 'up' : 'down');
     document.getElementById('pf-chip-alltime-sub').textContent = (totalPLPct >= 0 ? '+' : '') + totalPLPct.toFixed(2) + '% return';
   }
 
   document.getElementById('pf-chip-alloc').textContent = allocPct.toFixed(0) + '%';
-  document.getElementById('pf-chip-alloc-sub').textContent = 'Cash €' + STATE.cash.toFixed(0);
+  document.getElementById('pf-chip-alloc-sub').textContent = 'Cash €' + fmtInt(Math.round(STATE.cash));
 
   // ---- Stat tiles ----
-  document.getElementById('pf-cash').textContent = '€' + STATE.cash.toFixed(2);
-  document.getElementById('pf-invested').textContent = '€' + invested.toFixed(2);
+  document.getElementById('pf-cash').textContent = fmtPrice(STATE.cash);
+  document.getElementById('pf-invested').textContent = fmtPrice(invested);
   document.getElementById('pf-num').textContent = tickers.length;
-  document.getElementById('pf-realized').textContent = '€' + (STATE.realized || 0).toFixed(2);
+  document.getElementById('pf-realized').textContent = fmtPrice(STATE.realized || 0);
 
   // ---- Real money balance in sidebar ----
   const pfRealBal = document.getElementById('pf-real-bal');
-  if (pfRealBal) pfRealBal.textContent = STATE.tournamentCredits.toFixed(2);
+  if (pfRealBal) pfRealBal.textContent = fmtNum2(STATE.tournamentCredits);
 
   // ---- Deposit nudge (shows when cash is low relative to portfolio) ----
   const nudgeHost = document.getElementById('deposit-nudge-host');
@@ -15218,7 +15255,7 @@ function renderPortfolio() {
     nudgeHost.innerHTML = showNudge ? `
       <div class="card" style="background:linear-gradient(135deg, rgba(167,139,250,0.08), rgba(109,40,217,0.08));border-color:rgba(167,139,250,0.2)">
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Running low on cash</div>
-        <div style="font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:12px">You have €${STATE.cash.toFixed(2)} left (${cashPct.toFixed(0)}% of portfolio). Deposit more to keep investing.</div>
+        <div style="font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:12px">You have ${fmtPrice(STATE.cash)} left (${cashPct.toFixed(0)}% of portfolio). Deposit more to keep investing.</div>
         <button class="btn btn-primary" style="width:100%;padding:10px" data-action="deposit">Deposit funds</button>
       </div>
     ` : '';
@@ -15295,11 +15332,11 @@ function renderPortfolio() {
           ${bubbleHTML(r.a, 44)}
           <div class="h-meta">
             <div class="h-name">${r.a.name}</div>
-            <div class="h-shares">${r.h.shares.toFixed(2)} sh · €${r.h.cost.toFixed(2)} avg</div>
+            <div class="h-shares">${r.h.shares.toFixed(2)} sh · ${fmtPrice(r.h.cost)} avg</div>
           </div>
           <div class="h-value" style="text-align:right">
-            <div class="vv${pfx(r.t)}" data-pr="${r.t}">€${r.value.toFixed(2)}</div>
-            <div class="vpl ${upDown}${pfx(r.t)}">${r.pl >= 0 ? '+' : ''}€${r.pl.toFixed(2)}</div>
+            <div class="vv${pfx(r.t)}" data-pr="${r.t}">${fmtPrice(r.value)}</div>
+            <div class="vpl ${upDown}${pfx(r.t)}">${r.pl >= 0 ? '+' : ''}${fmtPrice(r.pl)}</div>
           </div>
           <div class="h-conc">
             <div class="h-conc-pct">${r.alloc.toFixed(0)}%</div>
@@ -15396,7 +15433,7 @@ function renderPortfolio() {
       return `
         <div class="feed-row">
           <span class="ftype ${isBuy ? 'buy' : 'sell'}">${tx.type}</span>
-          <span class="fuser"><b>You</b> ${isBuy ? 'bought' : 'sold'} ${tx.shares.toFixed(2)} shares of ${tx.ticker} @ €${tx.price.toFixed(2)}</span>
+          <span class="fuser"><b>You</b> ${isBuy ? 'bought' : 'sold'} ${tx.shares.toFixed(2)} shares of ${tx.ticker} @ ${fmtPrice(tx.price)}</span>
           <span class="ftime">${ago}</span>
         </div>
       `;
@@ -16100,7 +16137,7 @@ function renderProfile() {
       </div>
       <div class="prof-kpi">
         <div class="prof-kpi-label">Tournament Credits ${tip('Virtual credits used for tournament entries and prize payouts. No real money involved.')} ${realBadge('Credits')}</div>
-        <div class="prof-kpi-val">€${STATE.tournamentCredits.toFixed(2)}</div>
+        <div class="prof-kpi-val">${fmtPrice(STATE.tournamentCredits)}</div>
         <div class="prof-kpi-sub"><span style="color:var(--purple);cursor:pointer" onclick="openModal('deposit')">Top up →</span></div>
       </div>
       <div class="prof-kpi">
@@ -16206,7 +16243,7 @@ function renderProfile() {
                   <div class="prof-act-icon ${tx.type === 'BUY' ? 'buy' : 'sell'}">${tx.type === 'BUY' ? '↑' : '↓'}</div>
                   <div class="prof-act-info">
                     <div class="prof-act-n">${tx.type === 'BUY' ? 'Bought' : 'Sold'} ${tx.shares.toFixed(2)} ${tx.ticker}</div>
-                    <div class="prof-act-t">@ €${tx.price.toFixed(2)} · ${new Date(tx.time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
+                    <div class="prof-act-t">@ ${fmtPrice(tx.price)} · ${new Date(tx.time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
                   </div>
                   <div class="prof-act-amt ${tx.type === 'BUY' ? 'down' : 'up'}">${tx.type === 'BUY' ? '-' : '+'}${fmt(tx.total)}</div>
                 </div>
@@ -18017,20 +18054,20 @@ function showSignupModal(id) {
         <div class="sm-row"><span>Duration</span><span class="val">${durationLabel}</span></div>
         <div class="sm-row"><span>Max capacity</span><span class="val">${t.cap} players</span></div>
         ${maxPicks ? `<div class="sm-row"><span>Portfolio</span><span class="val">${maxPicks}</span></div>` : ''}
-        <div class="sm-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px"><span>Entry fee</span><span class="val">€${t.entry.toFixed(2)}</span></div>
-        <div class="sm-row" style="font-size:11px;color:var(--text-faint)"><span>Goes to prize pool (85%)</span><span>€${toPool.toFixed(2)}</span></div>
-        <div class="sm-row" style="font-size:11px;color:var(--text-faint)"><span>Platform fee (15%)</span><span>€${rake.toFixed(2)}</span></div>
+        <div class="sm-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px"><span>Entry fee</span><span class="val">${fmtPrice(t.entry)}</span></div>
+        <div class="sm-row" style="font-size:11px;color:var(--text-faint)"><span>Goes to prize pool (85%)</span><span>${fmtPrice(toPool)}</span></div>
+        <div class="sm-row" style="font-size:11px;color:var(--text-faint)"><span>Platform fee (15%)</span><span>${fmtPrice(rake)}</span></div>
         <div class="sm-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px">
           <span>Your credit balance</span>
-          <span class="val" style="color:${hasBalance ? 'var(--up)' : 'var(--down)'}">€${STATE.tournamentCredits.toFixed(2)}</span>
+          <span class="val" style="color:${hasBalance ? 'var(--up)' : 'var(--down)'}">${fmtPrice(STATE.tournamentCredits)}</span>
         </div>
-        ${!hasBalance ? `<div class="sm-row" style="color:var(--down);font-size:11px"><span>Insufficient tournament credits — deposit €${(t.entry - STATE.tournamentCredits).toFixed(2)} more</span></div>` : ''}
-        <div class="sm-row" style="font-size:11px;color:var(--text-faint)"><span>Balance after entry</span><span>${hasBalance ? '€' + (STATE.tournamentCredits - t.entry).toFixed(2) : '—'}</span></div>
+        ${!hasBalance ? `<div class="sm-row" style="color:var(--down);font-size:11px"><span>Insufficient tournament credits — deposit ${fmtPrice((t.entry - STATE.tournamentCredits))} more</span></div>` : ''}
+        <div class="sm-row" style="font-size:11px;color:var(--text-faint)"><span>Balance after entry</span><span>${hasBalance ? fmtPrice(STATE.tournamentCredits - t.entry) : '—'}</span></div>
       </div>
       <div class="sm-actions">
         <button class="btn-cancel" data-signup-cancel>Cancel</button>
         ${hasBalance
-          ? `<button class="btn-confirm" data-signup-confirm="${id}">Pay €${t.entry.toFixed(2)} & enter</button>`
+          ? `<button class="btn-confirm" data-signup-confirm="${id}">Pay ${fmtPrice(t.entry)} & enter</button>`
           : `<button class="btn-confirm" data-signup-deposit>Deposit funds</button>`
         }
       </div>
@@ -18080,7 +18117,7 @@ function showSignupModal(id) {
       };
       overlay.remove();
       pushNotification('entry', 'Tournament entry confirmed',
-        `€${t.entry.toFixed(2)} charged for ${t.name}. You'll pick your portfolio when the tournament starts.`, id);
+        `${fmtPrice(t.entry)} charged for ${t.name}. You'll pick your portfolio when the tournament starts.`, id);
       renderTournaments();
       showConfirmation({
         icon: 'success',
@@ -18089,9 +18126,9 @@ function showSignupModal(id) {
         subtitle: 'Your spot in ' + t.name + ' is reserved.',
         rows: [
           { label: 'Tournament', value: t.name },
-          { label: 'Entry fee', value: '€' + t.entry.toFixed(2) },
+          { label: 'Entry fee', value: fmtPrice(t.entry) },
           { label: 'Prize pool', value: '€' + (t.pool > 0 ? t.pool.toFixed(2) : 'TBD') },
-          { label: 'Credits remaining', value: '€' + STATE.tournamentCredits.toFixed(2), total: true },
+          { label: 'Credits remaining', value: fmtPrice(STATE.tournamentCredits), total: true },
         ],
         buttons: [
           { label: 'View tournament', action: () => { STATE.selectedTournament = id; setView('tournament'); } },
@@ -18475,7 +18512,7 @@ function renderTournamentDetail() {
             { label: 'Tournament', value: t.name },
             { label: 'Your rank', value: _rankValue },
             { label: 'Prize won', value: `€${prize.toLocaleString()}` },
-            { label: 'Credits balance', value: `€${STATE.tournamentCredits.toFixed(2)}` },
+            { label: 'Credits balance', value: `${fmtPrice(STATE.tournamentCredits)}` },
           ],
           buttons: [
             { label: 'Withdraw to bank', action: () => { MODAL = { type: 'deposit', depositTab: 'withdraw' }; renderModal(); }, primary: true },
@@ -18852,7 +18889,7 @@ function renderTournamentDetail() {
           { label: 'Tournament', value: t.name },
           { label: 'Your rank', value: _rankValue2 },
           { label: 'Prize won', value: `€${prize.toLocaleString()}` },
-          { label: 'Credits balance', value: `€${STATE.tournamentCredits.toFixed(2)}` },
+          { label: 'Credits balance', value: `${fmtPrice(STATE.tournamentCredits)}` },
         ],
         buttons: [
           { label: 'Withdraw to bank', action: () => { MODAL = { type: 'deposit', depositTab: 'withdraw' }; renderModal(); }, primary: true },
@@ -19069,30 +19106,16 @@ function renderSwapStep() {
   // Sort holdings: highest value first
   const sortedHoldings = [...holdings].sort((a, b) => b.value - a.value);
 
-  // Build inline holdings picker for sell side (when no from artist selected yet)
-  const holdingsInlineHTML = !s.from && sortedHoldings.length ? `
-    <div class="swap-holdings-inline">
-      ${sortedHoldings.slice(0, 8).map(a => `
-        <div class="shi-row" data-ticker="${a.ticker}">
-          ${bubbleHTML(a, 22)}
-          <span class="shi-name">${a.ticker}</span>
-          <span class="shi-val">€${a.value.toFixed(2)}</span>
-        </div>
-      `).join('')}
-      ${sortedHoldings.length > 8 ? `<div style="text-align:center;padding:4px;font-size:11px;color:var(--text-faint);cursor:pointer" id="shi-more">+${sortedHoldings.length - 8} more…</div>` : ''}
-    </div>
-  ` : '';
-
   body.innerHTML = `
     ${paperBanner('Swap between artists — paper trade.')}
     <div class="swap-pair">
-      <div class="swap-slot ${s.from ? 'selected' : ''}" id="swap-from" style="${!s.from && sortedHoldings.length ? 'min-height:auto;padding:10px' : ''}">
+      <div class="swap-slot ${s.from ? 'selected' : ''}" id="swap-from">
         <div class="slot-label">Sell</div>
         ${s.from
           ? `<div class="slot-artist">${bubbleHTML(s.from, 24)} ${s.from.ticker}</div>
-             <div class="slot-val">€${s.from.value.toFixed(2)} · ${s.from.shares.toFixed(2)} shares</div>`
+             <div class="slot-val">${fmtPrice(s.from.value)} · ${s.from.shares.toFixed(2)} shares</div>`
           : (sortedHoldings.length
-              ? holdingsInlineHTML
+              ? `<div class="slot-empty">Select holding</div>`
               : `<div class="slot-empty">No holdings</div>`)
         }
       </div>
@@ -19101,7 +19124,7 @@ function renderSwapStep() {
         <div class="slot-label">Buy</div>
         ${s.to
           ? `<div class="slot-artist">${bubbleHTML(s.to, 24)} ${s.to.ticker}</div>
-             <div class="slot-val">€${s.to.price.toFixed(2)} / share</div>`
+             <div class="slot-val">${fmtPrice(s.to.price)} / share</div>`
           : `<div class="slot-empty">Select artist</div>`
         }
       </div>
@@ -19110,7 +19133,7 @@ function renderSwapStep() {
     ${s.from ? `
       <div class="swap-amount-row">
         <input type="number" id="swap-amt" value="${s.amount || ''}" placeholder="Amount in €" min="1" max="${maxAmt}" step="1">
-        <span class="swap-max" id="swap-max-btn">MAX €${maxAmt.toFixed(2)}</span>
+        <span class="swap-max" id="swap-max-btn">MAX ${fmtPrice(maxAmt)}</span>
       </div>
     ` : ''}
 
@@ -19118,10 +19141,10 @@ function renderSwapStep() {
       ${s.from && s.to && s.amount > 0 ? `
         <div class="swap-summary">
           <div class="ss-row"><span>Selling</span><b>${(s.amount / s.from.price).toFixed(4)} ${s.from.ticker} shares</b></div>
-          <div class="ss-row"><span>At</span><b>€${s.from.price.toFixed(2)} / share</b></div>
+          <div class="ss-row"><span>At</span><b>${fmtPrice(s.from.price)} / share</b></div>
           <div class="ss-row"><span>Buying</span><b>${(s.amount / s.to.price).toFixed(4)} ${s.to.ticker} shares</b></div>
-          <div class="ss-row"><span>At</span><b>€${s.to.price.toFixed(2)} / share</b></div>
-          <div class="ss-row total"><span>Swap value</span><b>€${s.amount.toFixed(2)}</b></div>
+          <div class="ss-row"><span>At</span><b>${fmtPrice(s.to.price)} / share</b></div>
+          <div class="ss-row total"><span>Swap value</span><b>${fmtPrice(s.amount)}</b></div>
         </div>
       ` : ''}
     </div>
@@ -19194,10 +19217,10 @@ function renderSwapStep() {
       summaryHost.innerHTML = `
         <div class="swap-summary">
           <div class="ss-row"><span>Selling</span><b>${(s.amount / s.from.price).toFixed(4)} ${s.from.ticker} shares</b></div>
-          <div class="ss-row"><span>At</span><b>€${s.from.price.toFixed(2)} / share</b></div>
+          <div class="ss-row"><span>At</span><b>${fmtPrice(s.from.price)} / share</b></div>
           <div class="ss-row"><span>Buying</span><b>${(s.amount / s.to.price).toFixed(4)} ${s.to.ticker} shares</b></div>
-          <div class="ss-row"><span>At</span><b>€${s.to.price.toFixed(2)} / share</b></div>
-          <div class="ss-row total"><span>Swap value</span><b>€${s.amount.toFixed(2)}</b></div>
+          <div class="ss-row"><span>At</span><b>${fmtPrice(s.to.price)} / share</b></div>
+          <div class="ss-row total"><span>Swap value</span><b>${fmtPrice(s.amount)}</b></div>
         </div>`;
     } else {
       summaryHost.innerHTML = '';
@@ -19286,7 +19309,7 @@ function executeSwap(fromArtist, toArtist, amount) {
       { label: 'At', value: fmtPrice(from.price) + ' / share' },
       { label: 'Bought', value: buyShares.toFixed(4) + ' ' + to.ticker },
       { label: 'At', value: fmtPrice(to.price) + ' / share' },
-      { label: 'Swap value', value: '€' + amount.toFixed(2), total: true },
+      { label: 'Swap value', value: fmtPrice(amount), total: true },
     ],
     buttons: [
       { label: 'View portfolio', action: () => setView('portfolio') },
@@ -19406,7 +19429,7 @@ function renderStepAmount() {
     <div class="step-label">${isDeposit ? 'How much do you want to deposit?' : 'How much do you want to withdraw?'}</div>
     <div class="amount-display">
       <span class="currency">€</span><span class="amt" id="amt-display">${MODAL.amount || 0}</span>
-      ${available !== null ? `<div class="available">Available: €${available.toFixed(2)}</div>` : `<div class="available">Min €5 · Max €10,000 per transaction</div>`}
+      ${available !== null ? `<div class="available">Available: ${fmtPrice(available)}</div>` : `<div class="available">Min €5 · Max €10,000 per transaction</div>`}
     </div>
     <div class="quick-amounts">
       ${QUICK_AMOUNTS.map(v => `<button class="quick-amt ${MODAL.amount === v ? 'active' : ''}" data-v="${v}">€${v}</button>`).join('')}
@@ -19461,12 +19484,12 @@ function renderStepConfirm() {
     <div class="step-label">Review and confirm</div>
     <div style="background:var(--card-2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px">
       <div class="confirm-row"><span class="l">${isDeposit ? 'Method' : 'Destination'}</span><span class="v">${m.name}</span></div>
-      <div class="confirm-row"><span class="l">Amount</span><span class="v">€${MODAL.amount.toFixed(2)}</span></div>
-      <div class="confirm-row"><span class="l">Fee</span><span class="v">${fee > 0 ? '€' + fee.toFixed(2) : 'Free'}</span></div>
+      <div class="confirm-row"><span class="l">Amount</span><span class="v">${fmtPrice(MODAL.amount)}</span></div>
+      <div class="confirm-row"><span class="l">Fee</span><span class="v">${fee > 0 ? fmtPrice(fee) : 'Free'}</span></div>
       <div class="confirm-row"><span class="l">Estimated arrival</span><span class="v">${m.id === 'sepa' ? '1–2 days' : 'Instant'}</span></div>
-      <div class="confirm-row total"><span class="l">${isDeposit ? 'Total to pay' : 'You receive'}</span><span class="v">€${(isDeposit ? total : receive).toFixed(2)}</span></div>
-      <div class="confirm-row" style="margin-top:6px;padding-top:8px;border-top:1px solid var(--border)"><span class="l">Current credit balance</span><span class="v">€${STATE.tournamentCredits.toFixed(2)}</span></div>
-      <div class="confirm-row"><span class="l">Balance after</span><span class="v" style="color:var(--up)">€${(isDeposit ? STATE.tournamentCredits + MODAL.amount : STATE.tournamentCredits - MODAL.amount).toFixed(2)}</span></div>
+      <div class="confirm-row total"><span class="l">${isDeposit ? 'Total to pay' : 'You receive'}</span><span class="v">${fmtPrice((isDeposit ? total : receive))}</span></div>
+      <div class="confirm-row" style="margin-top:6px;padding-top:8px;border-top:1px solid var(--border)"><span class="l">Current credit balance</span><span class="v">${fmtPrice(STATE.tournamentCredits)}</span></div>
+      <div class="confirm-row"><span class="l">Balance after</span><span class="v" style="color:var(--up)">${fmtPrice((isDeposit ? STATE.tournamentCredits + MODAL.amount : STATE.tournamentCredits - MODAL.amount))}</span></div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" id="modal-back">Back</button>
@@ -19497,8 +19520,8 @@ function renderStepSuccess() {
       <div class="success-icon"><svg><use href="#i-check"/></svg></div>
       <div class="success-title">${isDeposit ? 'Deposit simulated' : 'Withdrawal simulated'}</div>
       <div class="success-msg">${isDeposit
-        ? `€${MODAL.amount.toFixed(2)} in virtual credits has been added to your paper balance. No real money moved — Muses is a prototype and nothing was charged.`
-        : `€${MODAL.amount.toFixed(2)} in virtual credits has been removed from your paper balance. No real money moved — Muses is a prototype and nothing was sent.`}</div>
+        ? `${fmtPrice(MODAL.amount)} in virtual credits has been added to your paper balance. No real money moved — Muses is a prototype and nothing was charged.`
+        : `${fmtPrice(MODAL.amount)} in virtual credits has been removed from your paper balance. No real money moved — Muses is a prototype and nothing was sent.`}</div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" id="modal-done">Done</button>
@@ -19542,7 +19565,7 @@ function renderQuickTradeModal() {
           <button class="qt-side-btn sell ${!isBuy ? 'active' : ''}" data-side="sell">Sell</button>
         </div>
         <input type="number" class="qt-amount-input" id="qt-amount" placeholder="Amount in €" min="1" max="${max}" step="1" value="${s.amount || ''}">
-        <div class="qt-cash-hint">${isBuy ? 'Available: €' + STATE.cash.toFixed(2) : 'Holdings: ' + holdingShares.toFixed(4) + ' shares (€' + holdingValue.toFixed(2) + ')'} · <span style="color:var(--purple);cursor:pointer" id="qt-max-btn">MAX</span></div>
+        <div class="qt-cash-hint">${isBuy ? 'Available: ' + fmtPrice(STATE.cash) : 'Holdings: ' + holdingShares.toFixed(4) + ' shares (' + fmtPrice(holdingValue) + ')'} · <span style="color:var(--purple);cursor:pointer" id="qt-max-btn">MAX</span></div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" id="qt-back">Back</button>
@@ -20108,7 +20131,7 @@ function updatePricesInPlace(priceBefore) {
       const chipToday = document.getElementById('pf-chip-today');
       if (chipToday) {
         const up = todayPL >= 0;
-        const newChipText = (up ? '+' : '') + '€' + Math.abs(todayPL).toFixed(2);
+        const newChipText = (up ? '+' : '') + fmtPrice(Math.abs(todayPL));
         chipToday.classList.remove('price-flash-up', 'price-flash-down');
         const oldChipText = chipToday.textContent;
         chipToday.textContent = newChipText;
@@ -20132,10 +20155,10 @@ function updatePricesInPlace(priceBefore) {
       }
       // Cash
       const pfCash = document.getElementById('pf-cash');
-      if (pfCash) pfCash.textContent = '€' + STATE.cash.toFixed(2);
+      if (pfCash) pfCash.textContent = fmtPrice(STATE.cash);
       // Invested
       const pfInv = document.getElementById('pf-invested');
-      if (pfInv) pfInv.textContent = '€' + currentVal.toFixed(2);
+      if (pfInv) pfInv.textContent = fmtPrice(currentVal);
     }
   } catch (e) {}
 
