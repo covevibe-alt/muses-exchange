@@ -61,8 +61,12 @@
           <li><a href="/waitlist" data-page="waitlist">Waitlist</a></li>
         </ul>
         <div class="nav-cta-wrap">
+          <!-- Desktop CTA cluster. Two buttons only: a quiet "Sign in" for
+               returning users, and a single primary "Launch app" to drive
+               cold visitors into the prototype. Sign-up used to live here
+               too but the trio was visually noisy — Sign up stays in the
+               mobile drawer and in inline page CTAs. -->
           <a class="nav-signin" href="/signin">Sign in</a>
-          <a class="nav-cta-secondary" href="/signup">Sign up</a>
           <a class="nav-cta" href="/exchange">
             Launch app <svg><use href="#i-arrow-up-right"/></svg>
           </a>
@@ -218,8 +222,10 @@
     window.addEventListener('scroll', onNavScroll, { passive: true });
   })();
 
-  // Page fade-in
-  requestAnimationFrame(() => document.body.classList.add('loaded'));
+  // Page fade-in removed — body renders immediately (was causing a 300-500ms
+  // blank flash on navigation). Keeping the class toggle for any legacy CSS
+  // that might still gate on it.
+  document.body.classList.add('loaded');
 
   // Mark current nav item
   document.querySelectorAll(`.nav-links a[data-page="${page}"], .md-nav a[data-page="${page}"]`)

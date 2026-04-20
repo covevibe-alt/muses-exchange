@@ -453,6 +453,18 @@ section.block, .page-hero {
   margin-top: 50px; padding: 28px 32px;
   border: 1px dashed var(--line); border-radius: 18px;
   display: flex; align-items: center; gap: 32px; flex-wrap: wrap;
+  position: relative;
+  background: linear-gradient(to right, rgba(185,143,255,0.03), transparent 60%);
+}
+/* Small pulsing dot anchors the dashed box so it reads as a live-data footer
+   rather than a box that got accidentally cropped. */
+.data-sources::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: var(--violet);
+  box-shadow: 0 0 10px rgba(185,143,255,0.5);
 }
 .data-sources-label {
   font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em;
@@ -583,9 +595,13 @@ footer {
 }
 .foot-bottom .disclaimer { max-width: 56ch; line-height: 1.6; }
 
-/* ---------- Reveal ---------- */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s ease; }
-.reveal.in { opacity: 1; transform: translateY(0); }
+/* ---------- Reveal ----------
+   Subtle slide-up only; we keep elements visible by default so the page is never
+   "blank" while JS boots. The `in` class just clears the translateY so it feels
+   like content settles in, not fades in. Above-the-fold items get marked `in`
+   synchronously by muse-shared.js to avoid any visible shift on first paint. */
+.reveal { opacity: 1; transform: translateY(12px); transition: transform 0.45s cubic-bezier(.2,.7,.2,1); }
+.reveal.in { transform: translateY(0); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
@@ -1080,16 +1096,11 @@ textarea:focus-visible,
   .mobile-sticky-cta { display: inline-flex; align-items: center; gap: 8px; }
 }
 
-/* Page fade-in on load */
-body {
-  opacity: 0;
-  transition: opacity 0.35s ease;
-}
-body.loaded {
-  opacity: 1;
-}
+/* Page load
+   (Previously we faded the whole <body> from opacity 0 → 1 on 'loaded'. That was
+   an anti-pattern: every navigation looked broken for ~300-500ms while JS booted.
+   Now pages render immediately; the .reveal transform-only slide handles polish.) */
 @media (prefers-reduced-motion: reduce) {
-  body { opacity: 1; transition: none; }
   .mobile-sticky-cta { transition: none; }
 }
 
@@ -1375,7 +1386,19 @@ body.loaded {
 }
 .signup-demo-banner b{color:var(--violet);}
 .signup-shell{
-  max-width:640px; margin:0 auto; padding:60px 24px 120px;
+  /* Auth pages (signin/signup) — at desktop this becomes a centered card so
+     the form doesn't look like floating fields on an empty page. The card
+     dissolves on mobile (no border/bg/shadow) — see the @media block lower
+     in this file — because chrome over-decorates a small viewport. */
+  max-width:480px; margin:48px auto 80px;
+  padding:48px 44px 56px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:24px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.2);
+  position:relative;
+  /* Subtle violet glow at the top edge to match the brand without being loud */
+  background-image: radial-gradient(80% 60% at 50% 0%, rgba(185,143,255,0.06), transparent 60%);
 }
 .signup-progress{
   display:flex; gap:6px; margin-bottom:48px;
@@ -1580,9 +1603,19 @@ body.loaded {
 
 /* Auth pages (signin / signup) — mobile tightening.
    Both pages use .signup-* classes above; this compresses generous
-   desktop spacing so the form is comfortable on a 428×831 phone. */
+   desktop spacing so the form is comfortable on a 428×831 phone.
+   At this width we also strip the card chrome (border/bg/shadow) — a
+   decorated card on a narrow viewport just adds visual noise. */
 @media (max-width: 640px){
-  .signup-shell{padding:40px 20px 80px;}
+  .signup-shell{
+    padding:40px 20px 80px;
+    margin:0 auto;
+    background:none;
+    background-image:none;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+  }
   .signup-lede{margin-bottom:28px; font-size:15px;}
   .signup-actions{margin-top:28px;}
   .signup-back-link{margin-bottom:18px;}
