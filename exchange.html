@@ -547,6 +547,11 @@
     flex-shrink: 0;
   }
   .user-menu-item:hover svg { color: var(--purple-2); }
+  .user-menu-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 4px;
+  }
 
   /* CONTENT GRID */
   .content {
@@ -8047,6 +8052,11 @@
               <svg><use href="#i-list"/></svg>
               <span>Orders</span>
             </button>
+            <div class="user-menu-divider" id="user-menu-signout-divider" hidden></div>
+            <button class="user-menu-item" id="user-menu-signout" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span>Sign out</span>
+            </button>
           </div>
         </div>
       </div>
@@ -10713,7 +10723,7 @@ document.querySelectorAll('[data-nav]').forEach(el => {
   el.addEventListener('click', () => setView(el.dataset.nav));
 });
 
-// User-chip dropdown menu (Profile / Portfolio / Orders)
+// User-chip dropdown menu (Profile / Portfolio / Orders / Sign out)
 (function wireUserMenu() {
   const wrap = document.querySelector('.user-wrap');
   const btn = document.getElementById('user-chip-btn');
@@ -10734,6 +10744,34 @@ document.querySelectorAll('[data-nav]').forEach(el => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close();
   });
+
+  // Sign-out item — only shown to authenticated Supabase users. Reuses the
+  // same teardown path as the Settings → Session → Sign out row so there's
+  // a single source of truth for sign-out behavior.
+  const soDivider = document.getElementById('user-menu-signout-divider');
+  const soBtn = document.getElementById('user-menu-signout');
+  if (soBtn && soDivider) {
+    const authed = window.MUSE_USER && window.MUSE_USER.authed;
+    if (authed) {
+      soDivider.hidden = false;
+      soBtn.hidden = false;
+    }
+    soBtn.addEventListener('click', () => {
+      if (!(window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed)) {
+        showToast && showToast('Not signed in');
+        return;
+      }
+      if (!confirm('Sign out of Muses on this device?')) return;
+      // Flush the latest portfolio state before dropping the session so no
+      // trades-in-the-last-second get lost.
+      try { pushPortfolioToSupabase(); } catch (e) {}
+      window.SUPABASE.auth.signOut().then(() => {
+        // The onAuthStateChange handler above should redirect — fallback
+        // in case it doesn't fire within 600ms.
+        setTimeout(() => { window.location.href = '/signin'; }, 600);
+      });
+    });
+  }
 })();
 
 // ============ MARKETS ============
