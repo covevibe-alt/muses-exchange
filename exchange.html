@@ -10909,6 +10909,13 @@ function saveMusePriceState() {
       transactions: (STATE.transactions || []).slice(-100), // cap at last 100
       openOrders: STATE.openOrders || [],
       filledOrders: (STATE.filledOrders || []).slice(-50),
+      // M16.19 — persist firstBuyAt in the localStorage snapshot too (not just
+      // the Supabase snapshot). Without this, a user who reloads before the
+      // Supabase fetch completes falls back to localStorage, which had no
+      // firstBuyAt, so STATE.firstBuyAt stayed null and firstBuyCelebration
+      // re-fired on the next buy. That's why confetti kept re-appearing every
+      // session for users who had already celebrated their first buy.
+      firstBuyAt: STATE.firstBuyAt || null,
       // M16.12 — persist the notifications inbox so unread counts survive reload.
       // Cap at 50 (same cap pushNotification enforces). Read state is preserved.
       notifications: (STATE.notifications || []).slice(0, 50),
@@ -10957,7 +10964,12 @@ function restoreMusePriceState() {
 
     // Restore portfolio state (STATE is defined by this point)
     if (typeof STATE !== 'undefined') {
-      if (typeof snap.cash === 'number' && snap.cash > 0) STATE.cash = snap.cash;
+      // M16.19 — drop the `> 0` guard. When a user had invested all their
+      // cash (legitimately zero paper balance), the guard fell through to
+      // the 10_000 default, effectively minting an extra €10k on every
+      // reload. Zero is a valid, meaningful restore value; only skip if
+      // the field is absent or non-numeric.
+      if (typeof snap.cash === 'number') STATE.cash = snap.cash;
       if (typeof snap.realCash === 'number') STATE.tournamentCredits = snap.realCash; // back-compat
       if (typeof snap.tournamentCredits === 'number') STATE.tournamentCredits = snap.tournamentCredits;
       if (snap.holdings && typeof snap.holdings === 'object') STATE.holdings = snap.holdings;
@@ -10965,6 +10977,9 @@ function restoreMusePriceState() {
       if (Array.isArray(snap.transactions)) STATE.transactions = snap.transactions;
       if (Array.isArray(snap.openOrders)) STATE.openOrders = snap.openOrders;
       if (Array.isArray(snap.filledOrders)) STATE.filledOrders = snap.filledOrders;
+      // M16.19 — restore firstBuyAt so the confetti celebration fires exactly
+      // once per user, not once per browser session.
+      if (typeof snap.firstBuyAt === 'number' || snap.firstBuyAt === null) STATE.firstBuyAt = snap.firstBuyAt;
       // Clear any recurring-buy entries from legacy snapshots. The feature
       // is not yet shipped and leaving old entries would fire unsolicited
       // "Recurring buy executed" notifications after restore.
