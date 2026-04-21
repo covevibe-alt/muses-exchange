@@ -280,6 +280,17 @@
     background: rgba(255,255,255,0.85);
   }
 
+  /* ── M16.5 — light-mode background bleed below the fold ───────────────
+     `html, body { height: 100% }` caps body at one viewport tall. The
+     scrolling element is <html>, and content (.shell at ~8500px) extends
+     well past the first screen. CSS custom properties cascade DOWN, so
+     when light mode redefines --bg on body the html element keeps reading
+     the dark --bg from :root and paints a black band beneath the page.
+     Force html's bg to follow the theme via :has(). */
+  html:has(body[data-theme="light"]) {
+    background: #FAFAFC;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     background: var(--bg);
