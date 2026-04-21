@@ -1686,20 +1686,14 @@
     background: var(--card);
   }
   .markets-table thead th.right { text-align: right; }
-  /* M10.3 — when a listing/filter bar sits directly above a table in the
-     same .card, pin it to the viewport so sort controls stay in reach
-     while scrolling through long lists. Cards that carry a sticky filter
-     bar set --sticky-filter-h so the thead tucks beneath it. */
+  /* Filter / sort bar above each artist table. Previously this was
+     position: sticky so it stayed pinned while scrolling down long
+     lists (M10.3) — but that caused it to hover at the viewport top
+     and created a visible double line with the thead below it, which
+     Sander didn't want. It now scrolls naturally with the page. */
   .card > .listing-bar {
-    position: sticky;
-    top: 0;
-    z-index: 4;
     background: var(--card);
-    /* A small bottom border separates it visually from the table body
-       once rows start scrolling under the thead. */
-    border-bottom: 1px solid var(--border);
   }
-  .card:has(> .listing-bar) { --sticky-filter-h: 56px; }
   .markets-table tbody tr {
     transition: background .12s ease;
     cursor: pointer;
@@ -6315,9 +6309,9 @@
      breathing gap on the left edge. */
   .markets-table td.col-star,
   .markets-table th.col-star {
-    width: 40px;
-    min-width: 40px;
-    max-width: 40px;
+    width: 34px;
+    min-width: 34px;
+    max-width: 34px;
     padding-left: 4px;
     padding-right: 0;
     box-sizing: border-box;
@@ -6354,17 +6348,17 @@
      scrolling rows don't bleed through. */
   .markets-table td.col-rank,
   .markets-table th.col-rank {
-    width: 34px;
-    min-width: 34px;
-    max-width: 34px;
-    padding-left: 0;
-    padding-right: 6px;
-    text-align: right;
+    width: 26px;
+    min-width: 26px;
+    max-width: 26px;
+    padding-left: 2px;
+    padding-right: 4px;
+    text-align: left;
     box-sizing: border-box;
     font-variant-numeric: tabular-nums;
   }
   .markets-table tbody td.col-rank {
-    color: var(--text-faint);
+    color: var(--text-dim);
     font-size: 12px;
     font-weight: 500;
   }
@@ -6378,13 +6372,13 @@
   .markets-table td.col-rank,
   .markets-table th.col-rank {
     position: sticky;
-    left: 40px;
+    left: 34px;
     z-index: 2;
   }
   .markets-table td:nth-child(3),
   .markets-table th:nth-child(3) {
     position: sticky;
-    left: 74px;
+    left: 60px;
     z-index: 2;
     box-shadow: 6px 0 8px -6px rgba(0,0,0,0.25);
   }
