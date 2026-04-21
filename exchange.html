@@ -5815,9 +5815,25 @@
   }
   .hh-cell.active .hh-arrow { opacity: 1; }
 
-  /* HOLDING ROW REFRESH — concentration bar */
+  /* HOLDING ROW REFRESH — concentration bar
+     M3.8 — 5-col grid matches .holdings-header (1fr 90px 70px 130px 70px).
+     The artist column (bubble + h-meta) is now wrapped in .h-artist so the
+     header's "Artist" 1fr aligns with the body cell below it. Prior layout
+     was 6 cols (auto 1fr + 4 data) which didn't align to the 5-col header. */
   .holding-row.with-bar {
-    grid-template-columns: auto 1fr 90px 70px 130px 70px;
+    grid-template-columns: 1fr 90px 70px 130px 70px;
+  }
+  .h-artist {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;  /* allow h-name ellipsis in narrow viewports */
+  }
+  .h-artist .h-meta { min-width: 0; overflow: hidden; }
+  .h-artist .h-meta .h-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .h-conc {
     width: 70px;
@@ -7541,6 +7557,61 @@
       -webkit-overflow-scrolling: touch;
     }
 
+    /* ── M3.3 All Artists: freeze Artist column, scroll the data ──
+       Force the table wider than the viewport so overflow-x triggers,
+       then stick the first two <td>/<th> (star + artist name) to the
+       left edge. Border-collapse: separate avoids a Safari quirk where
+       collapsed borders drop out during sticky paint. */
+    #artists-table {
+      min-width: 720px;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    #artists-table th.col-star,
+    #artists-table td.col-star {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: var(--card);
+    }
+    #artists-table th:nth-child(2),
+    #artists-table td:nth-child(2) {
+      position: sticky;
+      left: 44px;  /* col-star width */
+      z-index: 2;
+      background: var(--card);
+      box-shadow: 6px 0 8px -6px rgba(0,0,0,0.5);
+    }
+
+    /* ── M3.8 Holdings: same treatment, freeze Artist name column ──
+       Wrapping scroll container (.holdings-scroll) extends past the
+       card's 16px side padding via negative margin + inner padding so
+       the scroll-thumb sits at the card edge, not clipped inside. */
+    .holdings-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0 -16px;
+      padding: 0 16px;
+    }
+    .holdings-header,
+    .holding-row.with-bar {
+      min-width: 560px;
+    }
+    .holdings-header .hh-cell.name {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: var(--card);
+    }
+    .holding-row .h-artist {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: var(--card);
+      box-shadow: 6px 0 8px -6px rgba(0,0,0,0.5);
+      padding-right: 8px;  /* breathing room before the shadow edge */
+    }
+
     /* Modals: full-screen-ish on mobile */
     .modal-backdrop .modal,
     .modal-backdrop > div:not(.onb-card) {
@@ -8719,14 +8790,16 @@
         <!-- HOLDINGS -->
         <div class="card">
           <div class="card-title">Holdings <span class="link" id="pf-holdings-count">0 positions</span></div>
-          <div class="holdings-header" id="holdings-header">
-            <div class="hh-cell name" data-sort="name">Artist</div>
-            <div class="hh-cell" data-sort="value">Value <span class="hh-arrow">▼</span></div>
-            <div class="hh-cell" data-sort="alloc">% <span class="hh-arrow">▼</span></div>
-            <div class="hh-cell active" data-sort="pl">P&amp;L <span class="info-tip tip-below">?<span class="tip-text">Unrealized profit or loss — the difference between current value and what you paid.</span></span> <span class="hh-arrow">▼</span></div>
-            <div class="hh-cell" data-sort="d24">24h <span class="info-tip tip-below">?<span class="tip-text">How this artist's price has changed in the last 24 hours.</span></span> <span class="hh-arrow">▼</span></div>
+          <div class="holdings-scroll">
+            <div class="holdings-header" id="holdings-header">
+              <div class="hh-cell name" data-sort="name">Artist</div>
+              <div class="hh-cell" data-sort="value">Value <span class="hh-arrow">▼</span></div>
+              <div class="hh-cell" data-sort="alloc">% <span class="hh-arrow">▼</span></div>
+              <div class="hh-cell active" data-sort="pl">P&amp;L <span class="info-tip tip-below">?<span class="tip-text">Unrealized profit or loss — the difference between current value and what you paid.</span></span> <span class="hh-arrow">▼</span></div>
+              <div class="hh-cell" data-sort="d24">24h <span class="info-tip tip-below">?<span class="tip-text">How this artist's price has changed in the last 24 hours.</span></span> <span class="hh-arrow">▼</span></div>
+            </div>
+            <div id="holdings-body"></div>
           </div>
-          <div id="holdings-body"></div>
         </div>
 
         <!-- FAVORITES -->
@@ -15319,10 +15392,12 @@ function renderPortfolio() {
       const upDown24 = r.pct24 >= 0 ? 'up' : 'down';
       return `
         <div class="holding-row with-bar" data-ticker="${r.t}">
-          ${bubbleHTML(r.a, 44)}
-          <div class="h-meta">
-            <div class="h-name">${r.a.name}</div>
-            <div class="h-shares">${r.h.shares.toFixed(2)} sh · ${fmtPrice(r.h.cost)} avg</div>
+          <div class="h-artist">
+            ${bubbleHTML(r.a, 44)}
+            <div class="h-meta">
+              <div class="h-name">${r.a.name}</div>
+              <div class="h-shares">${r.h.shares.toFixed(2)} sh · ${fmtPrice(r.h.cost)} avg</div>
+            </div>
           </div>
           <div class="h-value" style="text-align:right">
             <div class="vv${pfx(r.t)}" data-pr="${r.t}">${fmtPrice(r.value)}</div>
