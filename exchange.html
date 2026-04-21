@@ -151,6 +151,79 @@
     background: rgba(255,255,255,0.06);
   }
 
+  /* ── M14.8 — light-mode audit fixes ────────────────────────────────────
+     Many pills, chips, tracks, tag backgrounds, and active-state fills
+     were hardcoded as rgba(255,255,255,0.03–0.06) — a white-on-dark inset
+     tint that works great on the dark palette but vanishes on a white
+     card. Flip each to the equivalent dark tint in light mode so the
+     element silhouette survives. Grouped for scan-readability. */
+
+  /* Pills, tags, chips with subtle inset background (~0.04 white tint).
+     On dark: reads as a soft recessed surface. On light: invisible.
+     Map to rgba(15,15,23,0.045) so the element still has a visible
+     boundary without feeling heavy. */
+  body[data-theme="light"] .chip,
+  body[data-theme="light"] .related-genres .rg-pill,
+  body[data-theme="light"] .genre-group-head .gg-count,
+  body[data-theme="light"] .view-toggle,
+  body[data-theme="light"] .tfh-cta .btn-secondary,
+  body[data-theme="light"] .t-filter-tabs .count,
+  body[data-theme="light"] .tournament-tag,
+  body[data-theme="light"] .tc-actions .view-link,
+  body[data-theme="light"] .dh-search-clear,
+  body[data-theme="light"] .header-search .hs-clear {
+    background: rgba(15,15,23,0.045);
+  }
+  body[data-theme="light"] .dh-search-clear:hover,
+  body[data-theme="light"] .header-search .hs-clear:hover {
+    background: rgba(15,15,23,0.09);
+  }
+
+  /* Progress-bar / capacity-bar tracks. Same story: the dark-tinted
+     track needs a dark sibling on light or the fill reads as a line
+     floating in whitespace. */
+  body[data-theme="light"] .pf-bar,
+  body[data-theme="light"] .tfh-cap-bar-track,
+  body[data-theme="light"] .tc-cap-track {
+    background: rgba(15,15,23,0.08);
+  }
+
+  /* Empty-state surface (dashed outline + near-invisible fill). Give
+     it a faint tonal backdrop instead of transparent-white. */
+  body[data-theme="light"] .chart-empty {
+    background: rgba(15,15,23,0.025);
+  }
+
+  /* Theme-preview light-card inner chip: dark mode uses a white tint,
+     light mode uses a black tint. Previously the `[data-theme="dark"]`
+     variant got a light-mode override; the "light" preview needed one
+     too so the preview inside the *light* tile is visible on a light
+     page (it was 0.04 white on white). */
+  body[data-theme="light"] .st-theme-card[data-theme="light"] .st-theme-preview::before {
+    background: rgba(15,15,23,0.045);
+  }
+
+  /* Skeleton shimmer. The middle gradient stop is the "highlight pass"
+     of the loading shimmer — a touch brighter than card. On dark that
+     means +white; on light that means +darker. Flip all three skeleton
+     variants so the shimmer actually animates (previously: white on
+     white card = no motion visible at all). */
+  body[data-theme="light"] .skeleton,
+  body[data-theme="light"] .skeleton-line,
+  body[data-theme="light"] .skeleton-circle {
+    background: linear-gradient(90deg, var(--card-2) 25%, rgba(15,15,23,0.08) 50%, var(--card-2) 75%);
+    background-size: 800px 100%;
+  }
+  body[data-theme="light"] .skel {
+    background: linear-gradient(90deg, var(--card-2) 25%, rgba(15,15,23,0.08) 50%, var(--card-2) 75%);
+    background-size: 200% 100%;
+  }
+
+  /* Splash screen (shown before tokens load) is hardcoded to --bg dark.
+     In light mode this causes a jarring black flash. Override the inline
+     style by raising specificity. */
+  body[data-theme="light"] #splash { background: #FAFAFC !important; }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     background: var(--bg);
@@ -2826,6 +2899,23 @@
     grid-template-columns: 2fr 1fr 1fr 1fr 100px;
     gap: 10px;
   }
+  /* M14.7 — tighten the visual rhythm of Your Holdings.
+     - Right-align numeric cells 2/3/4 (Shares, Value, P&L) so values
+       sit on a shared right baseline under their small-caps headers.
+     - Bold the P&L cell to match Shares/Value weight; previously it
+       was the only lighter-weight cell in the row.
+     - Pull the Swap button to the right edge of its 100px track so
+       the card has a clean action-column down its right side. */
+  #swap-holdings-list .orders-thead > span:nth-child(2),
+  #swap-holdings-list .orders-thead > span:nth-child(3),
+  #swap-holdings-list .orders-thead > span:nth-child(4),
+  #swap-holdings-list .orders-row > :nth-child(2),
+  #swap-holdings-list .orders-row > :nth-child(3),
+  #swap-holdings-list .orders-row > :nth-child(4) {
+    text-align: right;
+  }
+  #swap-holdings-list .orders-row > :nth-child(4) { font-weight: 700; }
+  #swap-holdings-list .orders-row > .btn { justify-self: end; }
   @media (max-width: 700px) {
     #swap-holdings-list .orders-thead { display: none; }
     #swap-holdings-list .orders-row {
@@ -2834,7 +2924,13 @@
       padding: 12px;
     }
     #swap-holdings-list .orders-row .ord-art { grid-column: 1 / -1; }
-    #swap-holdings-list .orders-row > .btn { grid-column: 1 / -1; margin-top: 2px; }
+    #swap-holdings-list .orders-row > .btn { grid-column: 1 / -1; margin-top: 2px; justify-self: stretch; }
+    /* On mobile we stack into a 3-col data grid; keep the numbers
+       left-aligned here so they read naturally under the artist
+       block rather than bunching against the card's right edge. */
+    #swap-holdings-list .orders-row > :nth-child(2),
+    #swap-holdings-list .orders-row > :nth-child(3),
+    #swap-holdings-list .orders-row > :nth-child(4) { text-align: left; }
   }
 
   /* ===== Action confirmation overlay ===== */
@@ -4177,8 +4273,12 @@
   .prof-kpi-sub.down { color: var(--down); font-weight: 700; }
 
   .prof-grid {
+    /* M14.5 — was 1.4fr : 1fr to accommodate a wide equity curve on the
+       left. With Performance moved to Portfolio-only, the left column
+       now just holds Top holdings, so equal columns read more naturally
+       and the cards visually echo each other left/right. */
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     align-items: start;
   }
@@ -5826,10 +5926,20 @@
     pointer-events: none;
     z-index: 0;
   }
+  /* M14.6 — "Total Portfolio Value" hero alignment.
+     Previously .pf-hero-row was a wrapping flex with align-items: stretch
+     and .pf-chips was flex: 1 1 auto. That meant (a) at awkward widths,
+     chips orphaned onto a second row and left the value visually
+     stranded, and (b) each chip grew/shrank independently as the value
+     string width changed. Switch to grid: fixed auto-col for the value,
+     1fr for a 3-equal-column chip strip. The baseline stays put at
+     every viewport between mobile breakpoint and max-width. */
   .pf-hero-row {
-    display: flex; align-items: stretch; justify-content: space-between;
-    gap: 24px; flex-wrap: wrap;
-    margin-top: 14px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 28px;
+    margin-top: 18px;
     position: relative;
     z-index: 1;
   }
@@ -5840,9 +5950,8 @@
     line-height: 1;
     letter-spacing: -0.025em;
     color: var(--text);
-    flex: 0 0 auto;
     display: flex;
-    align-items: center;
+    align-items: baseline;
   }
   .pf-hero-value .cents {
     font-size: 22px;
@@ -5850,8 +5959,15 @@
     font-weight: 700;
   }
   .pf-chips {
-    display: flex; gap: 12px; flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
   }
+  /* Push the "Paper Trading" badge to the right edge of the label row.
+     The label is a flex container with [dot, text-node, badge] as
+     children; margin-left: auto on the badge cleanly pins it right
+     without breaking the dot+text cluster on the left. */
+  .pf-hero-card .hero-label .money-badge { margin-left: auto; }
   /* Settings → Trading → Show P&L on Portfolio (showPnlInHeader). When off,
      the hero P&L chips hide for a calmer view. Only the first two chips
      (Today, All-Time) are P&L — the Allocated chip stays because it's just
@@ -7910,21 +8026,32 @@
        same behavior. Only the mobile margin override and narrower
        min-width live inside the 680px media query up there. */
 
-    /* Modals: full-screen-ish on mobile */
-    .modal-backdrop .modal,
-    .modal-backdrop > div:not(.onb-card) {
-      max-width: calc(100vw - 24px) !important;
-      max-height: calc(100vh - 48px) !important;
-      width: calc(100vw - 24px);
-      margin: 12px;
+    /* Modals: full-screen-ish on mobile — M14.2 center-fix.
+       Previous rule set width: calc(100vw - 24px) AND margin: 12px on
+       the modal card, while the backdrop itself had padding: 24px.
+       That pushed the modal past its grid cell (cell width = 100vw -
+       48px padding, modal width = 100vw - 24px + 24px margin = 100vw,
+       so modal > cell → grid "center" aligns it to the start instead).
+       Now: shrink backdrop padding, let the modal fill what's left,
+       and clear the explicit margin so grid place-items: center does
+       its job. */
+    .modal-backdrop { padding: 12px; }
+    .modal-backdrop > .modal-card {
+      width: 100%;
+      max-width: 100%;
+      max-height: calc(100vh - 24px);
+      margin: 0;
+      padding: 20px;
+      border-radius: 18px;
     }
 
     /* Onboarding card on mobile */
     .onb-card {
-      max-width: calc(100vw - 24px) !important;
-      max-height: calc(100vh - 32px);
+      width: 100%;
+      max-width: 100%;
+      max-height: calc(100vh - 24px);
       overflow-y: auto;
-      margin: 16px 12px;
+      margin: 0;
     }
     .onb-title { font-size: 24px !important; }
     .onb-avatar-row { flex-direction: column; align-items: stretch; }
@@ -8006,7 +8133,13 @@
 
   /* --- INTERMEDIATE MOBILE (≤500px): intermediate sizing --- */
   @media (max-width: 500px) {
-    .swap-pair { flex-direction: column; }
+    /* M14.3 — on mobile, .swap-pair is column-oriented, but the base
+       rule still carries `align-items: center` (cross-axis). That
+       centered the Sell/Buy slots horizontally and collapsed them to
+       content width. Switching to `stretch` lets each slot fill the
+       card edge-to-edge so they actually look like symmetrical
+       buttons. */
+    .swap-pair { flex-direction: column; align-items: stretch; }
     .swap-arrow { transform: rotate(90deg); align-self: center; }
     .orders-thead { display: none; }
     .orders-row { flex-wrap: wrap; gap: 4px; }
@@ -10723,10 +10856,16 @@ async function pushPortfolioToSupabase() {
           updated_at: new Date().toISOString(),
         })
         .eq('user_id', window.MUSE_USER.id);
-      if (error) throw error;
-      // After the private snapshot push, upsert the public leaderboard row.
-      // Independent try/catch — a leaderboard hiccup must never block the
-      // primary portfolio persistence path.
+      // M14.1 — leaderboard upsert used to live inside the portfolios
+      // try-block: if portfolios.update() errored (e.g. no row yet for
+      // a user that pre-dates migration 002, RLS hiccup, etc), the
+      // throw skipped past upsertLeaderboardRow() entirely. That left
+      // users who had traded invisible on the board. The upsert is now
+      // independent — even if portfolios fails, the public ranking
+      // row still gets written.
+      if (error) {
+        console.warn('[Muses] Supabase portfolio update failed:', error.message || error);
+      }
       try { await upsertLeaderboardRow(); }
       catch (e) { console.warn('[Muses] Leaderboard upsert failed:', e.message || e); }
     } while (_pushQueued);
@@ -12393,7 +12532,7 @@ function renderAllArtists() {
             </div>
           </td>
           <td class="dim">${(a.monthlyListeners/1_000_000).toFixed(0)}M</td>
-          <td>${sparkline(a.series, a.change24h >= 0 ? '#10D88B' : '#FF4D6D')}</td>
+          <td>${spark7d(a)}</td>
           <td class="right price-num${pfx(a.ticker)}">${fmtPrice(a.price)}</td>
           <td class="right chg-24h ${upDownClass(a.change24h)}${pfx(a.ticker)}" style="font-weight:600">${fmtPct(a.change24h)}</td>
           <td class="right chg-7d ${upDownClass(a.change7d||0)}${pfx(a.ticker)}" style="font-weight:600">${fmtPct(a.change7d||0)}</td>
@@ -12679,7 +12818,7 @@ function renderGenrePage() {
               <div class="fc-ticker">${a.ticker} · ${GENRES[a.ticker] || ''}</div>
             </div>
           </div>
-          <div class="fc-spark">${sparkline(a.series.slice(-30), up ? '#10D88B' : '#FF4D6D', 240, 44)}</div>
+          <div class="fc-spark">${spark7d(a, 240, 44)}</div>
           <div class="fc-foot">
             <div>
               <div class="fc-price${pfx(a.ticker)}">${fmtPrice(a.price)}</div>
@@ -12736,7 +12875,7 @@ function renderGenrePage() {
             </div>
           </td>
           <td class="dim">${(a.monthlyListeners/1_000_000).toFixed(0)}M</td>
-          <td>${sparkline(a.series, a.change24h >= 0 ? '#10D88B' : '#FF4D6D')}</td>
+          <td>${spark7d(a)}</td>
           <td class="right price-num${pfx(a.ticker)}">${fmtPrice(a.price)}</td>
           <td class="right chg-24h ${upDownClass(a.change24h)}${pfx(a.ticker)}" style="font-weight:600">${fmtPct(a.change24h)}</td>
           <td class="right chg-7d ${upDownClass(a.change7d||0)}${pfx(a.ticker)}" style="font-weight:600">${fmtPct(a.change7d||0)}</td>
@@ -12819,16 +12958,67 @@ function renderGenrePage() {
 }
 
 
-function sparkline(series, color, w=100, h=32) {
+// ── M14.4 — artist-list sparklines ──
+// Previously all sparks rendered the full `a.series` (up to ~180d of history,
+// once real fetcher data rolls in) colored by 24h change. Sander wanted the
+// tiny chart to actually *mean* something at a glance on the list views:
+// bound to the 7D window and recolored by the 7D delta so the trend arrow
+// and the chart agree.
+//
+// The viz itself got a small polish pass too — thicker stroke, rounded
+// joins, and a subtle gradient area fill under the line. Still a single
+// inlined <svg>, still cheap to render in a table of ~100 rows.
+function sparkline(series, color, w = 100, h = 32) {
+  if (!Array.isArray(series) || series.length < 2) return '';
   const min = Math.min(...series.map(s => s.value));
   const max = Math.max(...series.map(s => s.value));
   const range = max - min || 1;
-  const pts = series.map((s, i) => {
+  const coords = series.map((s, i) => {
     const x = (i / (series.length - 1)) * w;
-    const y = h - ((s.value - min) / range) * (h - 4) - 2;
-    return x + ',' + y;
-  }).join(' ');
-  return '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '"><polyline fill="none" stroke="' + color + '" stroke-width="1.6" points="' + pts + '"/></svg>';
+    // Extra padding (3px top/bottom) so the line never kisses the edge.
+    const y = h - ((s.value - min) / range) * (h - 6) - 3;
+    return [x, y];
+  });
+  const linePts = coords.map(c => c[0].toFixed(2) + ',' + c[1].toFixed(2)).join(' ');
+  // Polygon path for the area fill: line, down to bottom-right, bottom-left.
+  const areaPts = linePts + ' ' + w.toFixed(2) + ',' + h + ' 0,' + h;
+  // Deterministic gradient id per color so multiple sparks (green + red)
+  // on the same page don't collide. If we ever introduce a third color,
+  // this scheme still works because the id is derived from the hex.
+  const gid = 'spark-grad-' + color.replace('#', '').toLowerCase();
+  return (
+    '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+      '<defs><linearGradient id="' + gid + '" x1="0" x2="0" y1="0" y2="1">' +
+        '<stop offset="0%" stop-color="' + color + '" stop-opacity="0.28"/>' +
+        '<stop offset="100%" stop-color="' + color + '" stop-opacity="0"/>' +
+      '</linearGradient></defs>' +
+      '<polygon fill="url(#' + gid + ')" points="' + areaPts + '"/>' +
+      '<polyline fill="none" stroke="' + color + '" stroke-width="1.8" ' +
+                'stroke-linecap="round" stroke-linejoin="round" points="' + linePts + '"/>' +
+    '</svg>'
+  );
+}
+
+// Slice an artist's series to just the last 7 days of points.
+// a.series[].time is in local-TS seconds (UTC + TZ offset — see toLocalTs),
+// so the cutoff must be shifted into the same frame before comparing.
+// If the 7D window is sparse (common for artists newly onboarded to the
+// fetcher — their history is still growing), fall back to whatever tail
+// we have so the row still draws a line instead of going blank.
+function sliceSeries7d(series) {
+  if (!Array.isArray(series) || series.length < 2) return series;
+  const cutoffUtc = Math.floor((Date.now() - 7 * 24 * 60 * 60 * 1000) / 1000);
+  const cutoffLocal = toLocalTs(cutoffUtc);
+  const filtered = series.filter(p => p.time >= cutoffLocal);
+  return (filtered.length >= 2) ? filtered : series.slice(-Math.max(2, Math.min(series.length, 30)));
+}
+
+// Artist sparkline driven by 7D data + colored by 7D change.
+// Used on every list, featured-card, watchlist-row, and artist-card surface.
+function spark7d(a, w, h) {
+  const s = sliceSeries7d(a && a.series);
+  const up = (a && typeof a.change7d === 'number' ? a.change7d : 0) >= 0;
+  return sparkline(s || [], up ? '#10D88B' : '#FF4D6D', w, h);
 }
 
 function bubbleHTML(a, size) {
@@ -12949,7 +13139,7 @@ function renderFeatured() {
             <div class="fc-ticker">${a.ticker} · ${GENRES[a.ticker] || ''}</div>
           </div>
         </div>
-        <div class="fc-spark">${sparkline(a.series.slice(-30), up ? '#10D88B' : '#FF4D6D', 240, 44)}</div>
+        <div class="fc-spark">${spark7d(a, 240, 44)}</div>
         <div class="fc-foot">
           <div>
             <div class="fc-price${pfx(a.ticker)}">${fmtPrice(a.price)}</div>
@@ -13055,7 +13245,7 @@ function artistCardHTML(a) {
           <div class="ac-genre">${GENRES[a.ticker] || ''}</div>
         </div>
       </div>
-      <div class="ac-spark">${sparkline(a.series.slice(-20), up ? '#10D88B' : '#FF4D6D', 200, 36)}</div>
+      <div class="ac-spark">${spark7d(a, 200, 36)}</div>
       <div class="ac-foot">
         <div>
           <div class="ac-price${pfx(a.ticker)}">${fmtPrice(a.price)}</div>
@@ -13132,7 +13322,7 @@ function renderArtistList() {
             </div>
           </td>
           <td class="dim">${(a.monthlyListeners/1_000_000).toFixed(0)}M</td>
-          <td>${sparkline(a.series, a.change24h >= 0 ? '#10D88B' : '#FF4D6D')}</td>
+          <td>${spark7d(a)}</td>
           <td class="right price-num${pfx(a.ticker)}">${fmtPrice(a.price)}</td>
           <td class="right chg-24h ${upDownClass(a.change24h)}${pfx(a.ticker)}" style="font-weight:600">${fmtPct(a.change24h)}</td>
           <td class="right chg-7d ${upDownClass(a.change7d||0)}${pfx(a.ticker)}" style="font-weight:600">${fmtPct(a.change7d||0)}</td>
@@ -16352,7 +16542,7 @@ function renderPortfolio() {
             <div class="w-name">${a.name}</div>
             <div class="w-genre">${GENRES[tk] || ''}</div>
           </div>
-          <div class="w-spark">${sparkline(a.series.slice(-20), up ? '#10D88B' : '#FF4D6D', 80, 28)}</div>
+          <div class="w-spark">${spark7d(a, 80, 28)}</div>
           <div>
             <div class="w-price" data-pr="${tk}">${fmtPrice(a.price)}</div>
             <div class="w-pct ${upDownClass(a.change24h)}">${fmtPct(a.change24h)}</div>
@@ -16678,8 +16868,19 @@ function renderLeaderboard() {
   const host = document.getElementById('lb-list');
   if (!host) return;
 
-  // Kick off (or refresh) the real-data fetch. Idempotent + TTL-bounded.
-  fetchLeaderboard();
+  // M14.1 — self-heal path. If the user is signed in but has never been
+  // upserted (old account, trade happened while upsertLeaderboardRow
+  // was gated on portfolios.update() succeeding, migration 004 ran
+  // after they started trading, etc), write their row now, then refetch
+  // with force=true so the new row shows up this render cycle.
+  const authed = !!(window.MUSE_USER && window.MUSE_USER.authed && window.SUPABASE);
+  if (authed) {
+    upsertLeaderboardRow()
+      .then(() => fetchLeaderboard(true))
+      .catch((e) => { console.warn('[Muses] Leaderboard self-heal failed:', e.message || e); fetchLeaderboard(); });
+  } else {
+    fetchLeaderboard();
+  }
 
   // First visit before fetch resolves — show a brief loading state rather
   // than rendering the "opens at launch" placeholder, which would misleading-
@@ -17054,31 +17255,13 @@ function renderProfile() {
   // Recent activity (last 5 transactions)
   const recentTx = (STATE.transactions || []).slice(0, 5);
 
-  // 30-day equity curve — same source as the Portfolio page chart.
-  // computePortfolioSeries('30') backtests the user's current holdings
-  // against each artist's real 30-day history, so the curve honestly
-  // reflects what this portfolio would have done over the window.
-  // Pre-trade users get a flat line at starting cash.
-  const hasTraded = (STATE.transactions || []).length > 0 &&
-                    Object.keys(STATE.holdings || {}).length > 0;
-  let curve = [];
-  if (hasTraded) {
-    const series = computePortfolioSeries('30');
-    curve = series.map(p => p.value);
-  }
-  if (curve.length < 2) {
-    // Fallback: flat line at current value (or starting cash if no portfolio yet)
-    const flat = Number.isFinite(s.totalValue) ? s.totalValue : 10000;
-    curve = new Array(30).fill(flat);
-  }
-  const minV = Math.min(...curve), maxV = Math.max(...curve);
-  const W = 760, H = 140, pad = 8;
-  const xStep = (W - pad * 2) / (curve.length - 1);
-  const yScale = (vv) => H - pad - ((vv - minV) / Math.max(1, maxV - minV)) * (H - pad * 2);
-  const path = curve.map((vv, i) => `${i === 0 ? 'M' : 'L'} ${pad + i * xStep} ${yScale(vv)}`).join(' ');
-  const areaPath = path + ` L ${pad + (curve.length - 1) * xStep} ${H - pad} L ${pad} ${H - pad} Z`;
+  // M14.5 — The Performance equity curve previously lived here; it's been
+  // moved to Portfolio-only where it's the primary surface. Profile now
+  // leads with Top holdings on the left and Achievements on the right so
+  // the page reads as "identity + social proof" instead of duplicating the
+  // Portfolio view. Keep `isPos` — the KPI strip's "all-time" delta below
+  // still uses it for coloring.
   const isPos = s.totalReturn >= 0;
-  const stroke = isPos ? 'var(--up)' : 'var(--down)';
 
   const fmt = (n) => '€' + Math.round(n).toLocaleString();
   const _fmtPctRaw = (n) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%'; // n is already ×100
@@ -17130,24 +17313,6 @@ function renderProfile() {
     <div class="prof-grid">
       <!-- LEFT COLUMN -->
       <div class="prof-col">
-        <!-- Equity curve -->
-        <div class="card prof-card">
-          <div class="prof-card-head">
-            <div class="prof-card-title">Performance · 30 days</div>
-            <div class="prof-card-sub ${isPos ? 'up' : 'down'}">${_fmtPctRaw(s.totalReturnPct)}</div>
-          </div>
-          <svg viewBox="0 0 ${W} ${H}" class="prof-chart" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="prof-g" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="${isPos ? '#34d399' : '#f87171'}" stop-opacity="0.35"/>
-                <stop offset="100%" stop-color="${isPos ? '#34d399' : '#f87171'}" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <path d="${areaPath}" fill="url(#prof-g)"/>
-            <path d="${path}" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-
         <!-- Top holdings -->
         <div class="card prof-card">
           <div class="prof-card-head">
