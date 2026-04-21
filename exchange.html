@@ -8586,6 +8586,10 @@
     /* Also trim the huge value a touch so it doesn't wrap its own cents span. */
     .pf-hero-value { font-size: 36px; }
     .pf-hero-value .cents { font-size: 18px; }
+    /* M14.6.2 — hide the "?" tooltip on the Allocated chip on mobile.
+       Mobile tooltips don't work well on touch (no hover), and the "?" badge
+       shifts the "Allocated" label off-center against Today/All-Time. */
+    .pf-chip .info-tip { display: none; }
     /* 3-col grid at mobile so Today/All-Time/Allocated stay on one row
        (old flex-basis: 50% forced a 2+1 "orphan on row 2" layout). */
     .pf-chips {
