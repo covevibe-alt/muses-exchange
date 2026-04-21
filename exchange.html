@@ -4241,20 +4241,36 @@
     .lb-controls {
       flex-direction: column;
       align-items: stretch;
-      gap: 8px;
+      gap: 10px;
+    }
+    /* M16.14 — iOS-friendly tap targets (≥44px) and touch-action on all interactive
+       leaderboard controls. Without this sort tabs, search, chevron, and row-tap feel
+       dead on mobile because iOS adds a 300ms click delay AND the targets are smaller
+       than a fingertip. font-size 16px on inputs prevents iOS from auto-zooming on focus. */
+    .lb-search input {
+      font-size: 16px;
+      padding: 12px 14px 12px 38px;
+      min-height: 44px;
+      touch-action: manipulation;
     }
     .lb-sort {
       justify-content: space-between;
       overflow-x: auto;
+      padding: 4px;
     }
     .lb-sort button {
       flex: 1;
-      padding: 8px 6px;
+      min-height: 40px;
+      padding: 10px 6px;
+      font-size: 13px;
+      touch-action: manipulation;
     }
     .lb-row.v2 {
-      grid-template-columns: 32px 1fr auto 20px;
+      grid-template-columns: 32px 1fr auto 32px;
       gap: 10px;
-      padding: 12px 8px;
+      padding: 14px 10px;
+      min-height: 56px;
+      touch-action: manipulation;
     }
     /* Hide dense columns that don't carry signal on mobile.
        Delta/picks/gap reintroduce at desktop widths. */
@@ -4263,18 +4279,36 @@
     .lb-row.v2 .lb-gap2 { display: none; }
     .lb-return { font-size: 15px; }
     .lb-user .n { font-size: 13px; }
+    .lb-chev {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      touch-action: manipulation;
+    }
     .lb-podium {
       padding: 10px 2px 14px;
       gap: 6px;
     }
-    .podium-card { padding: 10px 6px; }
+    .podium-card {
+      padding: 10px 6px;
+      min-height: 44px;
+      touch-action: manipulation;
+    }
     .podium-card.place-1 {
       padding-top: 18px;
       padding-bottom: 14px;
     }
     .podium-name { font-size: 11px; }
     .podium-ret { font-size: 13px; }
-    .lb-jump { width: 100%; padding: 8px 12px; }
+    .lb-jump {
+      width: 100%;
+      min-height: 44px;
+      padding: 12px 16px;
+      font-size: 14px;
+      touch-action: manipulation;
+    }
   }
 
   /* PROFILE PAGE */
