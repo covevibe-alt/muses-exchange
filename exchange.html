@@ -10949,6 +10949,14 @@ function saveMusePriceState() {
       // re-fired on the next buy. That's why confetti kept re-appearing every
       // session for users who had already celebrated their first buy.
       firstBuyAt: STATE.firstBuyAt || null,
+      // M16.24 — persist profile.privacy so "Show top holdings" (and the
+      // other privacy toggles) survive reload. Without this, the toggle
+      // resets to its default every session and the user's intent is lost.
+      // Only the small privacy sub-object is persisted here — avatar images,
+      // bio, etc. have separate flows (and the avatar image can be large).
+      privacy: (STATE.profile && STATE.profile.privacy)
+        ? JSON.parse(JSON.stringify(STATE.profile.privacy))
+        : null,
       // M16.12 — persist the notifications inbox so unread counts survive reload.
       // Cap at 50 (same cap pushNotification enforces). Read state is preserved.
       notifications: (STATE.notifications || []).slice(0, 50),
@@ -11013,6 +11021,12 @@ function restoreMusePriceState() {
       // M16.19 — restore firstBuyAt so the confetti celebration fires exactly
       // once per user, not once per browser session.
       if (typeof snap.firstBuyAt === 'number' || snap.firstBuyAt === null) STATE.firstBuyAt = snap.firstBuyAt;
+      // M16.24 — restore profile.privacy if persisted. Merge rather than
+      // replace so any NEW privacy keys we add in the future get their
+      // in-code defaults for returning users instead of disappearing.
+      if (snap.privacy && typeof snap.privacy === 'object' && STATE.profile && STATE.profile.privacy) {
+        Object.assign(STATE.profile.privacy, snap.privacy);
+      }
       // Clear any recurring-buy entries from legacy snapshots. The feature
       // is not yet shipped and leaving old entries would fire unsolicited
       // "Recurring buy executed" notifications after restore.
@@ -11077,6 +11091,12 @@ async function fetchPortfolioFromSupabase() {
       if (Array.isArray(snap.openOrders)) STATE.openOrders = snap.openOrders;
       if (Array.isArray(snap.filledOrders)) STATE.filledOrders = snap.filledOrders;
       if (typeof snap.firstBuyAt === 'number' || snap.firstBuyAt === null) STATE.firstBuyAt = snap.firstBuyAt;
+      // M16.24 — restore privacy prefs so the toggle survives new devices
+      // too (not just localStorage on the same browser). Merge so new keys
+      // default in-code rather than disappearing for returning users.
+      if (snap.privacy && typeof snap.privacy === 'object' && STATE.profile && STATE.profile.privacy) {
+        Object.assign(STATE.profile.privacy, snap.privacy);
+      }
       // M16.18 — mark this snapshot as already-applied so the Realtime
       // subscription doesn't treat the identical payload that echoes back
       // as a fresh change.
@@ -11165,6 +11185,12 @@ async function pushPortfolioToSupabase() {
         // which made the intro tour reappear on every new device/private
         // window. Persisting here means the fetch path can skip the tour.
         onboardingCompleted: STATE.onboarded === true,
+        // M16.24 — Privacy toggles travel in the snapshot so the
+        // "publish my lineup" choice follows the user across devices,
+        // same rationale as onboardingCompleted above.
+        privacy: (STATE.profile && STATE.profile.privacy)
+          ? JSON.parse(JSON.stringify(STATE.profile.privacy))
+          : null,
         savedAt: Date.now(),
       };
       const { error } = await window.SUPABASE
@@ -11271,6 +11297,11 @@ function applyPortfolioSnapshot(snap) {
   if (Array.isArray(snap.transactions)) STATE.transactions = snap.transactions;
   if (Array.isArray(snap.openOrders)) STATE.openOrders = snap.openOrders;
   if (Array.isArray(snap.filledOrders)) STATE.filledOrders = snap.filledOrders;
+  // M16.24 — keep the "publish my lineup" toggle in sync across tabs/devices.
+  if (snap.privacy && typeof snap.privacy === 'object'
+      && STATE.profile && STATE.profile.privacy) {
+    Object.assign(STATE.profile.privacy, snap.privacy);
+  }
   return true;
 }
 
@@ -11389,6 +11420,14 @@ async function upsertLeaderboardRow() {
   const emailPrefix = ((window.MUSE_USER.email) || '').split('@')[0];
   const displayName = (handle || emailPrefix || 'trader').slice(0, 40);
 
+  // M16.24 — Publish lineup if (and ONLY if) the user has opted in via
+  // Edit Profile → Privacy → "Show top holdings". Explicit false-write on
+  // opt-out is important: a user who was opted in, then flips it off, must
+  // have their previously-published top_holdings wiped from the row. The
+  // nullish false below does exactly that.
+  const optedIn = !!(STATE.profile && STATE.profile.privacy && STATE.profile.privacy.showHoldings);
+  const publicLineup = optedIn && typeof userOwnLineup === 'function' ? userOwnLineup() : null;
+
   const { error } = await window.SUPABASE
     .from('leaderboard')
     .upsert({
@@ -11396,6 +11435,9 @@ async function upsertLeaderboardRow() {
       display_name: displayName,
       portfolio_value: +portfolioValue.toFixed(2),
       return_pct: +returnPct.toFixed(2),
+      // M16.24 — when opted out OR portfolio empty, wipe any prior lineup.
+      top_holdings: publicLineup,           // jsonb: array or null
+      show_lineup: !!optedIn,               // boolean: explicit opt-in flag
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' });
   if (error) throw error;
@@ -11433,7 +11475,10 @@ async function fetchLeaderboard(force) {
   try {
     const { data, error } = await window.SUPABASE
       .from('leaderboard')
-      .select('user_id, display_name, portfolio_value, return_pct, updated_at')
+      // M16.24 — pull opt-in lineup fields. Older clients that select
+      // without these still work; the server simply returns them as null
+      // for rows that haven't been re-upserted since migration 005 ran.
+      .select('user_id, display_name, portfolio_value, return_pct, updated_at, top_holdings, show_lineup')
       .order('portfolio_value', { ascending: false, nullsFirst: false })
       .limit(200);
     if (error) throw error;
@@ -12030,7 +12075,11 @@ const STATE = {
     avatarImage: null,  // data URL — overrides gradient when set
     privacy: {
       showPortfolio: true,
-      showHoldings: true,
+      // M16.24 — defaults to false. When true, the user's top 5 holdings
+      // are published on the leaderboard for all players to see. Opt-in so
+      // no one's picks leak by default. Wired to leaderboard.top_holdings
+      // / leaderboard.show_lineup via upsertLeaderboardRow.
+      showHoldings: false,
       showHistory: true,
     },
     notifyPrefs: {
@@ -15998,6 +16047,10 @@ function renderSettings() {
     btn.addEventListener('click', () => {
       const key = btn.dataset.priv;
       STATE.profile.privacy[key] = !STATE.profile.privacy[key];
+      // M16.24 — persist & push so the toggle survives reloads/devices
+      // and (for showHoldings) the leaderboard row flips immediately.
+      try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (_) {}
+      try { if (typeof pushPortfolioToSupabase === 'function') pushPortfolioToSupabase(); } catch (_) {}
       renderSettings();
       showToast(STATE.profile.privacy[key] ? 'Privacy: enabled' : 'Privacy: disabled');
     });
@@ -17444,26 +17497,41 @@ function renderLeaderboard() {
   }
 
   // Map real Supabase rows into the enriched shape the rest of this function
-  // expects. `lineup` stays synthetic — we deliberately do not expose other
-  // users' holdings publicly.
+  // expects.
+  //
+  // Lineup resolution priority (M16.24):
+  //   1. If the row belongs to the signed-in user → use their fresh in-memory
+  //      holdings (userOwnLineup). Reflects trades instantly, no roundtrip.
+  //   2. Else if the row has opted in to publishing (show_lineup=true) and
+  //      has a top_holdings payload → use that (another player's real top 5).
+  //   3. Else → synthetic hash-seeded mix (preserves old behavior for
+  //      rows that haven't opted in or pre-migration rows with NULL fields).
+  //
+  // Publishing is opt-in and defaults off. Migration 004's preamble explains
+  // the privacy boundary: leaderboard.* is public by design, portfolios.snapshot
+  // stays owner-only. top_holdings is a small explicit shape, not a full dump.
   const yourId = window.MUSE_USER && window.MUSE_USER.id;
-  // M16.20 — compute the real user lineup once so we can drop it into the
-  // isYou row instead of the hash-seeded synthetic mix. Shown in the expand
-  // panel only; other players' lineups stay synthetic (don't expose their
-  // portfolios publicly).
   const myLineup = userOwnLineup();
   const all = LEADERBOARD_ROWS.map(r => {
     const name = (r.display_name && r.display_name.trim()) || 'trader';
     const isYou = !!(yourId && r.user_id === yourId);
+    // Validate the row's published lineup before trusting it for render —
+    // the column is jsonb so in principle a buggy client could write any
+    // shape. Require a non-empty array of {ticker, weight:number}.
+    const rowLineup = (r.show_lineup && Array.isArray(r.top_holdings) && r.top_holdings.length > 0)
+      ? r.top_holdings.filter(p => p && typeof p.ticker === 'string' && typeof p.weight === 'number')
+      : null;
+    let lineup;
+    if (isYou && myLineup)           lineup = myLineup;          // fresh own data
+    else if (rowLineup && rowLineup.length > 0) lineup = rowLineup; // opted-in peer
+    else                              lineup = syntheticLineupFor(name);
     return {
       name,                        // raw — used as dict key + hash seed
       nameHtml: escapeHTML(name),  // M16.13 — XSS guard for HTML interpolation
       tag: '',                     // Reserved for phase-2 metadata (location, club, etc.)
       ret: Number(r.return_pct) || 0,
       isYou,
-      // Use real holdings for the user's own row (fallback to synthetic if they
-      // hold nothing yet so the panel isn't empty). Others stay synthetic.
-      lineup: (isYou && myLineup) ? myLineup : syntheticLineupFor(name),
+      lineup,
     };
   });
 
@@ -18067,7 +18135,7 @@ function renderEditProfileModal() {
       <div class="pe-toggles">
         ${[
           ['showPortfolio', 'Show portfolio value', 'Display total portfolio value on your public profile.'],
-          ['showHoldings',  'Show top holdings',    'Reveal your top 5 holdings with returns.'],
+          ['showHoldings',  'Publish my lineup',    'Show your top 5 holdings publicly on the leaderboard. Off by default.'],
           ['showHistory',   'Show tournament history', 'Let others see your past tournament finishes.'],
         ].map(([key, label, desc]) => `
           <div class="pe-toggle">
@@ -18189,6 +18257,14 @@ function renderEditProfileModal() {
     closeEditProfileModal();
     renderProfile();
     syncTopbarProfile();
+    // M16.24 — push profile (incl. privacy.showHoldings) immediately so
+    // the "Publish my lineup" toggle takes effect without waiting for
+    // the next trade. pushPortfolioToSupabase both writes the portfolios
+    // snapshot (so cross-device sync carries the flag) and fires
+    // upsertLeaderboardRow (so the public row's top_holdings/show_lineup
+    // columns update in the same call).
+    try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (_) {}
+    try { if (typeof pushPortfolioToSupabase === 'function') pushPortfolioToSupabase(); } catch (_) {}
     showToast('Profile updated');
   };
 }
