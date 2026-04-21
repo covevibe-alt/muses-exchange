@@ -13078,10 +13078,14 @@ function sparkline(series, color, w = 100, h = 32) {
   const linePts = coords.map(c => c[0].toFixed(2) + ',' + c[1].toFixed(2)).join(' ');
   // Polygon path for the area fill: line, down to bottom-right, bottom-left.
   const areaPts = linePts + ' ' + w.toFixed(2) + ',' + h + ' 0,' + h;
-  // Deterministic gradient id per color so multiple sparks (green + red)
-  // on the same page don't collide. If we ever introduce a third color,
-  // this scheme still works because the id is derived from the hex.
-  const gid = 'spark-grad-' + color.replace('#', '').toLowerCase();
+  // M16.6 — gradient id MUST be unique per SVG. Previously we derived the id
+  // from color alone ('spark-grad-10d88b'), which produced ~100+ duplicate
+  // ids in the DOM. `url(#id)` resolves to the FIRST match in document
+  // order, and if that first match lives in a hidden view (e.g. #view-markets
+  // when you're looking at #view-artists), the gradient renders as nothing
+  // and the fill disappears. Uniquifying per call solves it.
+  const gid = 'spark-grad-' + color.replace('#', '').toLowerCase()
+              + '-' + (sparkline._n = (sparkline._n || 0) + 1);
   return (
     '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
       '<defs><linearGradient id="' + gid + '" x1="0" x2="0" y1="0" y2="1">' +
