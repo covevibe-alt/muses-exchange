@@ -14082,8 +14082,25 @@ function computePortfolioSeries(rangeOverride) {
     }
   });
 
+  // M16.21 — anchor the portfolio chart at the user's first-buy timestamp.
+  // Before this, selecting 30D/90D/ALL would include the artist's entire
+  // pre-purchase history projected onto the user's holdings — effectively
+  // showing "if you had owned these shares 90 days ago", which is misleading
+  // and not what the user experienced. Truncate (don't flat-line €10k before
+  // firstBuyAt) so the chart starts at the actual purchase moment.
+  //
+  // pt.time is in "local seconds" (toLocalTs: utcSec + _TZ_OFFSET_SEC).
+  // STATE.firstBuyAt is Date.now() (UTC ms). Convert to the same basis so
+  // the comparison is apples-to-apples.
+  let anchor = null;
+  if (typeof STATE.firstBuyAt === 'number' && STATE.firstBuyAt > 0) {
+    const tzOff = (typeof _TZ_OFFSET_SEC === 'number') ? _TZ_OFFSET_SEC : 0;
+    anchor = Math.floor(STATE.firstBuyAt / 1000) + tzOff;
+  }
+
   const out = [];
   sliced.forEach(pt => {
+    if (anchor !== null && pt.time < anchor) return; // drop pre-first-buy points
     let v = STATE.cash;
     tickers.forEach(t => {
       const h = STATE.holdings[t];
