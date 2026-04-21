@@ -7,7 +7,7 @@
 <meta name="description" content="Paper-trade artist stocks driven by real streaming data." />
 <!-- Open Graph / social preview -->
 <meta property="og:title" content="Muses — Exchange" />
-<meta property="og:description" content="Paper-trade artist stocks driven by real streaming data. €10,000 in virtual credits." />
+<meta property="og:description" content="Paper-trade artist stocks driven by real streaming data. $10,000 in virtual credits." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Muses" />
 <meta property="og:url" content="https://muses.exchange/exchange" />
@@ -8389,7 +8389,7 @@
     .ah-price .num .cents { font-size: 16px; }
     .ad-watch-btn { margin-left: auto; padding: 7px 12px; font-size: 11px; }
 
-    /* Price-breakdown card — tighten so BASE/+€… doesn't crowd the label */
+    /* Price-breakdown card — tighten so BASE/+$… doesn't crowd the label */
     .pf-row { padding: 10px 12px; gap: 10px; grid-template-columns: 24px 1fr auto; }
     .pf-icon { width: 24px; height: 24px; }
     .pf-icon svg { width: 12px; height: 12px; }
@@ -8400,7 +8400,7 @@
     .pf-total { padding: 12px 14px; }
     .pf-total .v { font-size: 18px; }
 
-    /* Tournament card stats: 2x2 at mobile so labels like "Up to €1,275"
+    /* Tournament card stats: 2x2 at mobile so labels like "Up to $1,275"
        don't wrap to 3 lines. */
     .tc-stats { grid-template-columns: repeat(2, 1fr); gap: 8px 14px; }
     .tc-stat .v { font-size: 13px; }
@@ -8771,7 +8771,7 @@
     /* M14.6.1 — mobile hero row must stack.
        Desktop switched .pf-hero-row to `display: grid; grid-template-columns: auto 1fr`
        so the value sits left and the chip strip sits right. On mobile that puts
-       the 44px €9,999.98 next to three chips in ~40% of the screen and they
+       the 44px $9,999.98 next to three chips in ~40% of the screen and they
        clip off the right edge. Force a single-column grid here so the value
        renders full-width and the 3 chips drop below it. The old
        `flex-direction: column` was a no-op against a grid container. */
@@ -8976,7 +8976,7 @@
       // same device reads a different key and never sees the previous user's
       // data. Wiping here caused Sander's bug: after signing out and back in,
       // localStorage was empty while the Supabase fetch was still in flight,
-      // so the portfolio view flashed with the default €10,000 / no-holdings
+      // so the portfolio view flashed with the default $10,000 / no-holdings
       // state until the fetch resolved. Keeping the cache means re-login
       // paints instantly from localStorage; Supabase overlays the
       // authoritative copy on top when it resolves.
@@ -9280,7 +9280,7 @@
           <div class="card-title" style="margin-bottom:18px">All Artists</div>
           <div class="quick-filter-bar" data-qf-scope="markets">
             <div class="qf-presets">
-              <button class="qf-preset" data-preset="under1">Under €100</button>
+              <button class="qf-preset" data-preset="under1">Under $100</button>
               <button class="qf-preset" data-preset="top50">Top 50</button>
               <button class="qf-preset" data-preset="rising">Rising</button>
               <button class="qf-preset" data-preset="watchlist">★ Favorites</button>
@@ -9375,7 +9375,7 @@
         <div class="pf-hero-card">
           <div class="hero-label"><span class="dot"></span>Total Portfolio Value <span class="money-badge paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Paper Trading</span></div>
           <div class="pf-hero-row">
-            <div class="pf-hero-value">€<span id="pf-int">0</span><span class="cents">.<span id="pf-cents">00</span></span></div>
+            <div class="pf-hero-value">$<span id="pf-int">0</span><span class="cents">.<span id="pf-cents">00</span></span></div>
             <div class="pf-chips">
               <div class="pf-chip">
                 <div class="pf-chip-l">Today</div>
@@ -9390,7 +9390,7 @@
               <div class="pf-chip">
                 <div class="pf-chip-l">Allocated <span class="info-tip tip-below tip-right">?<span class="tip-text">Total market value of all your current holdings.</span></span></div>
                 <div class="pf-chip-v" id="pf-chip-alloc">—</div>
-                <div class="pf-chip-sub" id="pf-chip-alloc-sub">Cash €0</div>
+                <div class="pf-chip-sub" id="pf-chip-alloc-sub">Cash $0</div>
               </div>
             </div>
           </div>
@@ -9490,7 +9490,7 @@
         <!-- TOURNAMENT CREDITS BALANCE -->
         <div class="card" style="background:linear-gradient(135deg, rgba(52,211,153,0.06), rgba(16,185,129,0.06));border-color:rgba(52,211,153,0.2)">
           <div class="card-title"><span>Tournament Credits <span class="info-tip">?<span class="tip-text">Virtual credits used for tournament entries and prize payouts. Everything in Muses is paper — no real money is involved.</span></span></span> <span class="money-badge real"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Credits</span></div>
-          <div class="hero-value" style="font-size:28px">€<span id="pf-real-bal">0.00</span></div>
+          <div class="hero-value" style="font-size:28px">$<span id="pf-real-bal">0.00</span></div>
           <div style="font-size:11px;color:var(--text-faint);margin-top:2px;margin-bottom:10px">Tournament fees &amp; prize winnings</div>
           <!-- M16.17 — Restored a deposit button alongside Withdraw, but semantics
                are fully paper: Add credits transfers from Paper Balance → Tournament
@@ -9505,8 +9505,8 @@
 
         <!-- PAPER BALANCE -->
         <div class="card">
-          <div class="card-title"><span>Paper Balance <span class="info-tip">?<span class="tip-text">Practice money for paper trading — not real funds. Starts at €10,000.</span></span></span> <span class="money-badge paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Paper</span></div>
-          <div class="hero-value" style="font-size:28px;opacity:0.7">€<span id="cash-balance">10,000</span></div>
+          <div class="card-title"><span>Paper Balance <span class="info-tip">?<span class="tip-text">Practice money for paper trading — not real funds. Starts at $10,000.</span></span></span> <span class="money-badge paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Paper</span></div>
+          <div class="hero-value" style="font-size:28px;opacity:0.7">$<span id="cash-balance">10,000</span></div>
           <div class="qa-grid" style="margin-top:14px">
             <button class="qa-btn" data-action="swap" style="padding:12px 10px"><div class="qa-icon" style="width:32px;height:32px;border-radius:8px"><svg><use href="#i-swap"/></svg></div><span class="label">Swap</span></button>
           </div>
@@ -9630,11 +9630,11 @@
             </div>
             <div class="prize-block">
               <div class="prize-label">Total Prize Pool <span class="info-tip">?<span class="tip-text">Virtual prize pool — 85% of entry credits, paid to top finishers. No real money is involved.</span></span> <span class="money-badge real"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Credits</span></div>
-              <div class="prize-value" id="td-pool">€8,420</div>
+              <div class="prize-value" id="td-pool">$8,420</div>
             </div>
           </div>
           <div class="actions">
-            <button class="btn btn-primary" id="td-enter" style="flex:0 0 auto;padding:14px 28px">Enter for €25</button>
+            <button class="btn btn-primary" id="td-enter" style="flex:0 0 auto;padding:14px 28px">Enter for $25</button>
             <button class="btn btn-secondary" id="td-share" style="flex:0 0 auto;padding:14px 22px">Share</button>
           </div>
         </div>
@@ -9642,7 +9642,7 @@
         <div class="t-stat-grid">
           <div class="stat-tile">
             <div class="l">Entry Fee <span class="info-tip">?<span class="tip-text">One-time entry cost, paid in tournament credits. No real money is involved.</span></span></div>
-            <div class="v" id="td-entry">€25</div>
+            <div class="v" id="td-entry">$25</div>
           </div>
           <div class="stat-tile">
             <div class="l">Players <span class="info-tip">?<span class="tip-text">Number of users currently competing in this tournament.</span></span></div>
@@ -9735,7 +9735,7 @@
             </div>
           </div>
           <div class="ah-price">
-            <div class="num">€<span id="ad-int">282</span><span class="cents">.<span id="ad-cents">00</span></span></div>
+            <div class="num">$<span id="ad-int">282</span><span class="cents">.<span id="ad-cents">00</span></span></div>
             <span class="delta-pill up" id="ad-delta" style="display:none"><svg><use href="#i-up"/></svg><span>+0.00% 24h</span></span>
             <button class="ad-watch-btn" id="ad-watch-btn"><svg><use id="ad-watch-icon" href="#i-star"/></svg><span>Add to favorites</span></button>
           </div>
@@ -9824,18 +9824,18 @@
             <button class="trade-tab sell" id="ad-tab-sell">Sell</button>
           </div>
           <div class="field">
-            <label>Amount (€)</label>
+            <label>Amount ($)</label>
             <input type="number" id="ad-trade-amount" value="100" min="1" step="1" inputmode="decimal" autocomplete="off" enterkeyhint="done">
             <div class="amt-chips" id="ad-amt-chips">
-              <button type="button" class="amt-chip" data-amt="50">€50</button>
-              <button type="button" class="amt-chip" data-amt="100">€100</button>
-              <button type="button" class="amt-chip" data-amt="500">€500</button>
+              <button type="button" class="amt-chip" data-amt="50">$50</button>
+              <button type="button" class="amt-chip" data-amt="100">$100</button>
+              <button type="button" class="amt-chip" data-amt="500">$500</button>
               <button type="button" class="amt-chip max" data-amt="max">MAX</button>
             </div>
           </div>
-          <div class="summary-line"><span>Price per share <span class="info-tip tip-below">?<span class="tip-text">Current market price for one share of this artist.</span></span></span><span class="v" id="ad-ts-price">€282.00</span></div>
+          <div class="summary-line"><span>Price per share <span class="info-tip tip-below">?<span class="tip-text">Current market price for one share of this artist.</span></span></span><span class="v" id="ad-ts-price">$282.00</span></div>
           <div class="summary-line"><span>Shares <span class="info-tip tip-below">?<span class="tip-text">Number of fractional shares you'll receive (buy) or sell at this price.</span></span></span><span class="v" id="ad-ts-shares">0.35</span></div>
-          <div class="summary-line total"><span>Total <span class="info-tip tip-below">?<span class="tip-text">Total amount in EUR you'll pay or receive for this trade.</span></span></span><span class="v" id="ad-ts-total">€100.00</span></div>
+          <div class="summary-line total"><span>Total <span class="info-tip tip-below">?<span class="tip-text">Total amount in USD you'll pay or receive for this trade.</span></span></span><span class="v" id="ad-ts-total">$100.00</span></div>
           <div class="ad-trade-warn" id="ad-trade-warn" style="display:none"></div>
           <button class="submit-btn" id="ad-trade-submit">Buy shares</button>
         </div>
@@ -9904,7 +9904,7 @@
         <div class="card">
           <div class="quick-filter-bar" data-qf-scope="artists">
             <div class="qf-presets">
-              <button class="qf-preset" data-preset="under1">Under €100</button>
+              <button class="qf-preset" data-preset="under1">Under $100</button>
               <button class="qf-preset" data-preset="top50">Top 50</button>
               <button class="qf-preset" data-preset="rising">Rising</button>
               <button class="qf-preset" data-preset="watchlist">★ Favorites</button>
@@ -10101,7 +10101,7 @@
           <div class="card-title" style="margin-bottom:18px"><span id="genre-list-title">All Artists</span></div>
           <div class="quick-filter-bar" data-qf-scope="genre">
             <div class="qf-presets">
-              <button class="qf-preset" data-preset="under1">Under €100</button>
+              <button class="qf-preset" data-preset="under1">Under $100</button>
               <button class="qf-preset" data-preset="top50">Top 50</button>
               <button class="qf-preset" data-preset="rising">Rising</button>
               <button class="qf-preset" data-preset="watchlist">★ Favorites</button>
@@ -10349,7 +10349,7 @@ const ARTIST_DEFAULTS = [
 // reach, popularity momentum, and Billboard Hot 100 chart position. When live trading
 // launches, order-flow pressure adds a ±20% band on top.
 //
-//   Base price      = (monthlyListeners × valuePerListener) / sharesOutstanding  (10K shares → prices in €100s)
+//   Base price      = (monthlyListeners × valuePerListener) / sharesOutstanding  (10K shares → prices in $100s)
 //   Fair price      = base × (1 + ytBoost + popBoost + chartBoost)
 //   Order-flow bias = (buys − sells) / (buys + sells + flowSmoothing)  ∈ [−1, +1]
 //   Display price   = fairPrice × (1 + bias × maxPremium)
@@ -10359,10 +10359,10 @@ const ARTIST_DEFAULTS = [
 // trading dries up, the price reverts to fair. If signals change, fair
 // adjusts and pulls the price with it.
 const PRICING = {
-  sharesOutstanding: 10_000,    // every artist has 10K shares — gives prices in €100s range
-  baseMarketCap:     50_000_000, // €50M base market — scales dynamically with artist count
-  capPerArtist:      500_000,   // €500K per listed artist — prevents dilution as roster grows
-  valuePerListener:  0.03,      // fallback if market totals unavailable (with 10K shares, keeps prices in €100s)
+  sharesOutstanding: 10_000,    // every artist has 10K shares — gives prices in $100s range
+  baseMarketCap:     50_000_000, // $50M base market — scales dynamically with artist count
+  capPerArtist:      500_000,   // $500K per listed artist — prevents dilution as roster grows
+  valuePerListener:  0.03,      // fallback if market totals unavailable (with 10K shares, keeps prices in $100s)
   maxPremium:        0.08,      // ±8% max swing from order-flow pressure (widened for realistic moves)
   flowSmoothing:     80,        // moderate smoothing — allows order flow to move prices more
   flowDecay:         0.92,      // multiplied into order flow each hourly fetch
@@ -10466,8 +10466,8 @@ function priceFromPoint(pt, artist) {
   if (pt && typeof pt.p === 'number' && pt.p > 0) return +pt.p;
   // Fallback: re-derive from listeners, then apply an estimated boost
   // ratio so the historical price is consistent with the current boosted
-  // display price. Without this, history shows base ~€104 while the
-  // ticker shows boosted ~€154, creating fake +47% "24h change".
+  // display price. Without this, history shows base ~$104 while the
+  // ticker shows boosted ~$154, creating fake +47% "24h change".
   if (pt && typeof pt.listeners === 'number' && pt.listeners > 0) {
     const base = fairFromListeners(pt.listeners);
     // If we have an artist reference, compute the boost ratio between
@@ -10574,13 +10574,13 @@ function computeOrderFlowBias(a) {
 // ══════════════════════════════════════════════════════════════════
 
 // ── Formatting helpers (DRY — used everywhere) ──
-// M2.9: thousands separators on money. en-US gives "€10,000.00" style
+// M2.9: thousands separators on money. en-US gives "$10,000.00" style
 // (comma thousands + dot decimal), which matches the existing UI. Low-price
-// artists (<€1,000) render unchanged.
-function fmtPrice(price)  { return '€' + (+price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+// artists (<$1,000) render unchanged.
+function fmtPrice(price)  { return '$' + (+price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 // Integer-only variant for big hero numbers that render cents separately.
 function fmtInt(n)        { return (+n || 0).toLocaleString('en-US'); }
-// Plain-number 2-decimal variant (no € prefix) for inline fields.
+// Plain-number 2-decimal variant (no $ prefix) for inline fields.
 function fmtNum2(n)       { return (+n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function fmtPct(ratio)    { const v = (ratio * 100).toFixed(2); return (ratio >= 0 ? '+' : '') + v + '%'; }
 function fmtPct24(ratio)  { return fmtPct(ratio) + ' · 24h'; }
@@ -10999,7 +10999,7 @@ function restoreMusePriceState() {
     if (typeof STATE !== 'undefined') {
       // M16.19 — drop the `> 0` guard. When a user had invested all their
       // cash (legitimately zero paper balance), the guard fell through to
-      // the 10_000 default, effectively minting an extra €10k on every
+      // the 10_000 default, effectively minting an extra $10k on every
       // reload. Zero is a valid, meaningful restore value; only skip if
       // the field is absent or non-numeric.
       if (typeof snap.cash === 'number') STATE.cash = snap.cash;
@@ -11103,7 +11103,7 @@ async function fetchPortfolioFromSupabase() {
       // Fresh row from the trigger — just carry cash + realized
       if (data.cash != null) STATE.cash = Number(data.cash);
       if (data.realized != null) STATE.realized = Number(data.realized);
-      console.log('✓ Fresh portfolio row (no snapshot yet) — cash €' + STATE.cash);
+      console.log('✓ Fresh portfolio row (no snapshot yet) — cash $' + STATE.cash);
     }
     return true;
   } catch (e) {
@@ -12014,12 +12014,12 @@ const STATE = {
     // Trading
     defaultOrderType: 'market', // 'market' | 'limit'
     confirmTrades: true,
-    defaultQtyMode: 'shares',   // 'shares' | 'euro'
+    defaultQtyMode: 'shares',   // 'shares' | 'dollar'
     showPnlInHeader: true,
     soundOnFill: false,
     // Language / currency
     language: 'en',
-    currency: 'EUR',
+    currency: 'USD',
   },
   profile: {
     name: (window.MUSE_USER && window.MUSE_USER.name) || 'You',
@@ -12696,11 +12696,11 @@ function qfResetAll(F) {
 function qfActivePills(F) {
   const pills = [];
   const p = F.presets || {};
-  if (p.under1)   pills.push({ key: 'preset:under1', label: 'Under €100' });
+  if (p.under1)   pills.push({ key: 'preset:under1', label: 'Under $100' });
   if (p.top50)    pills.push({ key: 'preset:top50',  label: 'Top 50' });
   if (p.rising)   pills.push({ key: 'preset:rising', label: 'Rising' });
   if (p.watchlist) pills.push({ key: 'preset:watchlist', label: '★ Favorites' });
-  if (typeof F.priceMax === 'number')     pills.push({ key: 'priceMax', label: 'Price ≤ €' + F.priceMax.toFixed(2) });
+  if (typeof F.priceMax === 'number')     pills.push({ key: 'priceMax', label: 'Price ≤ $' + F.priceMax.toFixed(2) });
   if (typeof F.listenersMin === 'number') pills.push({ key: 'listenersMin', label: 'Listeners ≥ ' + fmtBigNum(F.listenersMin) });
   if (typeof F.chgMin === 'number')       pills.push({ key: 'chgMin', label: '24h ≥ ' + (F.chgMin >= 0 ? '+' : '') + F.chgMin + '%' });
   return pills;
@@ -12733,7 +12733,7 @@ function syncQuickFilterUI(scope, F) {
     const el = bar.querySelector('[data-val="' + name + '"]');
     if (el) el.textContent = text;
   };
-  setVal('priceMax', typeof F.priceMax === 'number' ? '≤ €' + F.priceMax.toFixed(2) : 'Any');
+  setVal('priceMax', typeof F.priceMax === 'number' ? '≤ $' + F.priceMax.toFixed(2) : 'Any');
   setVal('listenersMin', typeof F.listenersMin === 'number' ? '≥ ' + fmtBigNum(F.listenersMin) : 'Any');
   setVal('chgMin', typeof F.chgMin === 'number' ? (F.chgMin >= 0 ? '+' : '') + F.chgMin + '%' : 'Any');
   // pills row
@@ -14114,7 +14114,7 @@ function computePortfolioSeries(rangeOverride) {
   // Before this, selecting 30D/90D/ALL would include the artist's entire
   // pre-purchase history projected onto the user's holdings — effectively
   // showing "if you had owned these shares 90 days ago", which is misleading
-  // and not what the user experienced. Truncate (don't flat-line €10k before
+  // and not what the user experienced. Truncate (don't flat-line $10k before
   // firstBuyAt) so the chart starts at the actual purchase moment.
   //
   // pt.time is in "local seconds" (toLocalTs: utcSec + _TZ_OFFSET_SEC).
@@ -14168,9 +14168,9 @@ function donutSVG(segments, size = 160, stroke = 22) {
 
 function fmtBigEuro(n) {
   if (n >= 1e9) return fmtPrice(n/1e9) + 'B';
-  if (n >= 1e6) return '€' + (n/1e6).toFixed(1) + 'M';
-  if (n >= 1e3) return '€' + (n/1e3).toFixed(1) + 'K';
-  return '€' + n.toFixed(0);
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
+  return '$' + n.toFixed(0);
 }
 function fmtBigNum(n) {
   if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
@@ -14679,7 +14679,7 @@ function renderPriceFormula(a) {
       <span class="v" id="pf-market-price" style="color:var(--purple)">${fmtPrice(a.price)}</span>
     </div>
     <div class="pf-meta" style="margin-top:14px;padding:0 2px;font-size:11px;line-height:1.5">
-      Muses prices artists by their <b>market share</b> — each artist's slice of total streaming activity determines their share of a dynamic market cap (currently €${(getTotalMarketCap()/1e6).toFixed(0)}M). YouTube reach, chart positions, and cultural momentum add boosts on top. Trading activity shifts the market price ±${Math.round(PRICING.maxPremium*100)}% based on buy/sell pressure. Prices update every 5 seconds.
+      Muses prices artists by their <b>market share</b> — each artist's slice of total streaming activity determines their share of a dynamic market cap (currently $${(getTotalMarketCap()/1e6).toFixed(0)}M). YouTube reach, chart positions, and cultural momentum add boosts on top. Trading activity shifts the market price ±${Math.round(PRICING.maxPremium*100)}% based on buy/sell pressure. Prices update every 5 seconds.
     </div>
   `;
 }
@@ -14734,8 +14734,8 @@ function updatePriceFormula(a) {
   if (elCw) elCw.textContent = chBoost ? fmtPct(chBoost) : '—';
   if (elCv) elCv.textContent = chBoost ? fmtContrib(chContrib) : '—';
 
-  // Update Listener Momentum — treat sub-€0.05 contributions as "Stable"
-  // so the row doesn't show meaningless "+€0.00 / +€0.01" noise.
+  // Update Listener Momentum — treat sub-$0.05 contributions as "Stable"
+  // so the row doesn't show meaningless "+$0.00 / +$0.01" noise.
   const lstActive = Math.abs(lstContrib) >= 0.05;
   const elLw = document.getElementById('pf-lst-wt');
   const elLv = document.getElementById('pf-lst-val');
@@ -14748,7 +14748,7 @@ function updatePriceFormula(a) {
 
   // Update Trading Activity (this changes every tick). Show a distinct
   // "awaiting" state until real flow exists, so a fresh load doesn't
-  // look like a broken "€0.00 neutral" row.
+  // look like a broken "$0.00 neutral" row.
   const flow = a.orderFlow || { buys: 0, sells: 0 };
   const tradingFlowActive = (flow.buys + flow.sells) >= 1 || (a.orderFlowBias != null && Math.abs(a.orderFlowBias) > 0.001);
   const net = flow.buys - flow.sells;
@@ -14812,11 +14812,11 @@ function recalcDetailTrade() {
   const warnings = [];
   if (STATE.tradeSide === 'buy' && amt > STATE.cash) {
     // M16.11 — removed deposit link. Paper-only; user must sell or reduce size.
-    warnings.push('Insufficient cash · need €' + (amt - STATE.cash).toFixed(2) + ' more · reduce size or sell a position');
+    warnings.push('Insufficient cash · need $' + (amt - STATE.cash).toFixed(2) + ' more · reduce size or sell a position');
   }
   if (STATE.tradeSide === 'sell') {
     const h = STATE.holdings[a.ticker];
-    if (!h || h.shares * a.price < amt) warnings.push('Not enough shares to sell €' + amt.toFixed(2));
+    if (!h || h.shares * a.price < amt) warnings.push('Not enough shares to sell $' + amt.toFixed(2));
   }
   if (warnings.length) {
     warnEl.style.display = 'block';
@@ -14901,9 +14901,9 @@ document.getElementById('ad-tab-sell').addEventListener('click', () => {
   document.getElementById('ad-tab-buy').classList.remove('active');
   // Clamp the amount field to the user's position value if they're switching
   // from Buy to Sell with an amount that exceeds what they can actually sell.
-  // Without this, a user who buys €100 then clicks Sell sees a "Not enough
-  // shares" warning because the €100 buy yielded a position worth slightly
-  // less than €100 at current price.
+  // Without this, a user who buys $100 then clicks Sell sees a "Not enough
+  // shares" warning because the $100 buy yielded a position worth slightly
+  // less than $100 at current price.
   const a = STATE.selected;
   if (a) {
     const h = STATE.holdings[a.ticker];
@@ -15313,7 +15313,7 @@ function renderSwapPage() {
       </div>` : ''}
       ${s.from && !s.picking ? `
         <div class="swap-amount-row">
-          <input type="number" id="sp-amt" value="${s.amount || ''}" placeholder="Amount in €" min="1" max="${maxAmt}" step="1">
+          <input type="number" id="sp-amt" value="${s.amount || ''}" placeholder="Amount in $" min="1" max="${maxAmt}" step="1">
           <span class="swap-max" id="sp-max-btn">MAX ${fmtPrice(maxAmt)}</span>
         </div>
       ` : ''}
@@ -15916,7 +15916,7 @@ function renderSettings() {
             ${rowSwitch('showPnlInHeader', 'Show P&amp;L on Portfolio', 'Show the Today / All-Time P&amp;L chips at the top of the Portfolio page. Off hides them for a calmer view.')}
             <!-- defaultOrderType, defaultQtyMode, and soundOnFill hidden until
                  their consumer UIs exist: no limit-order tab in the trade
-                 panel, no shares/euro toggle, and no fill chime asset. State
+                 panel, no shares/dollar toggle, and no fill chime asset. State
                  keys stay populated in STATE so the rows can return without
                  a migration when those features land. -->
           </div>
@@ -15957,7 +15957,7 @@ function renderSettings() {
           </div>
           <div class="settings-card">
             ${rowAction('Clear favorites', 'Remove every artist currently in your favorites.', 'Clear favorites', 'clear-watchlist')}
-            ${rowAction('Reset paper cash', 'Reset your balance to €10,000.00 and clear holdings.', 'Reset cash', 'reset-cash')}
+            ${rowAction('Reset paper cash', 'Reset your balance to $10,000.00 and clear holdings.', 'Reset cash', 'reset-cash')}
             ${rowAction('Export data', 'Download a JSON snapshot of your portfolio and orders.', 'Export JSON', 'export-json')}
           </div>
         </div>
@@ -16043,7 +16043,7 @@ function runSettingsAction(action) {
       if (typeof refreshStars === 'function') refreshStars();
     }
   } else if (action === 'reset-cash') {
-    if (confirm('Reset balance to €10,000.00 and clear all holdings and orders? This cannot be undone.')) {
+    if (confirm('Reset balance to $10,000.00 and clear all holdings and orders? This cannot be undone.')) {
       STATE.cash = 10_000;
       STATE.holdings = {};
       STATE.transactions = [];
@@ -16058,7 +16058,7 @@ function runSettingsAction(action) {
       // Push reset to Supabase so it persists across devices
       try { pushPortfolioToSupabase(); } catch (e) {}
       if (typeof updateCashDisplay === 'function') updateCashDisplay();
-      showToast('Cash reset to €10,000.00');
+      showToast('Cash reset to $10,000.00');
     }
   } else if (action === 'export-json') {
     const data = {
@@ -16097,7 +16097,7 @@ function runSettingsAction(action) {
 
 // ============ HELP ============
 const HELP_TOPICS = [
-  { id: 'getting-started', icon: '#i-logo',     title: 'Getting started',  desc: 'Find artists and place your first paper trade with your €10,000.', count: 'Guide' },
+  { id: 'getting-started', icon: '#i-logo',     title: 'Getting started',  desc: 'Find artists and place your first paper trade with your $10,000.', count: 'Guide' },
   { id: 'trading',         icon: '#i-markets',  title: 'Trading',          desc: 'Market orders, fills, and how trades settle in paper-trading mode.', count: 'Guide' },
   { id: 'portfolio',       icon: '#i-portfolio',title: 'Portfolio & P&L',  desc: 'Track performance, holdings, and transaction history.',             count: 'Guide' },
   { id: 'tournaments',     icon: '#i-trophy',   title: 'Tournaments',      desc: 'Paper contests — lineups, scoring, and placement.',                 count: 'Guide' },
@@ -16108,11 +16108,11 @@ const HELP_TOPICS = [
 const HELP_FAQ = [
   {
     q: 'How are artist prices calculated?',
-    a: 'Each artist\'s price is driven by real streaming data. The core formula is: Spotify monthly listeners × €0.03 per 1,000,000, with a multiplier from YouTube channel stats. Prices are smoothed with an exponential moving average so single data pulls don\'t cause wild swings. The full breakdown is on any artist\'s detail page.'
+    a: 'Each artist\'s price is driven by real streaming data. The core formula is: Spotify monthly listeners × $0.03 per 1,000,000, with a multiplier from YouTube channel stats. Prices are smoothed with an exponential moving average so single data pulls don\'t cause wild swings. The full breakdown is on any artist\'s detail page.'
   },
   {
     q: 'Is this real money?',
-    a: 'No — Muses is a paper-trading prototype. Every session starts with €10,000 in virtual credits. Your portfolio, P&L, and leaderboard rank all track live against real data, but no real funds are at risk and no deposits are possible.'
+    a: 'No — Muses is a paper-trading prototype. Every session starts with $10,000 in virtual credits. Your portfolio, P&L, and leaderboard rank all track live against real data, but no real funds are at risk and no deposits are possible.'
   },
   {
     q: 'What kinds of orders can I place?',
@@ -16160,11 +16160,11 @@ const HELP_GUIDES = {
   'getting-started': {
     title: 'Getting started',
     body: `
-      <p>Muses is a paper-trading exchange where you invest in artists as if they were stocks. Every new account starts with <b>€10,000 in virtual credits</b> — no deposit, no real money at stake.</p>
+      <p>Muses is a paper-trading exchange where you invest in artists as if they were stocks. Every new account starts with <b>$10,000 in virtual credits</b> — no deposit, no real money at stake.</p>
       <h3>1. Pick your first artist</h3>
       <p>The <b>Markets</b> page is the place to browse. Sort by price, 24-hour change, or market cap. Click any row to open the artist's detail page — that's where you place trades.</p>
       <h3>2. Place your first trade</h3>
-      <p>On the artist page, use the Buy / Sell box at the top. Enter a quantity (in shares or euros — toggle in Settings) and hit <b>Buy</b>. Orders are market orders: they fill at the current live price.</p>
+      <p>On the artist page, use the Buy / Sell box at the top. Enter a quantity (in shares or dollars — toggle in Settings) and hit <b>Buy</b>. Orders are market orders: they fill at the current live price.</p>
       <h3>3. Watch it move</h3>
       <p>Prices update every 30 minutes, pulled from real Spotify and YouTube stats. Check the <b>Portfolio</b> page to see your positions and P&L over time.</p>
       <div class="guide-callout"><b>Tip:</b> Star the artists you're watching — they'll show up on your profile's watchlist so you can spot-check them without searching.</div>
@@ -16187,8 +16187,8 @@ const HELP_GUIDES = {
         <li><b>Buy</b> — opens a position (or adds to one). Your cash goes down, your share count goes up.</li>
         <li><b>Sell</b> — closes some or all of a position. Shares go down, cash goes up. You can't sell shares you don't hold (no shorting yet).</li>
       </ul>
-      <h3>Quantity: shares or euros</h3>
-      <p>Toggle the quantity input between <b>shares</b> and <b>euros</b> in Settings → Trading. Euro mode is rounded down to the nearest whole share — no fractional shares.</p>
+      <h3>Quantity: shares or dollars</h3>
+      <p>Toggle the quantity input between <b>shares</b> and <b>dollars</b> in Settings → Trading. Dollar mode is rounded down to the nearest whole share — no fractional shares.</p>
       <h3>Order confirmation</h3>
       <p>By default every trade pops up a review dialog before it lands. You can turn this off in Settings → Trading if you want one-tap execution.</p>
       <h3>Orders and history</h3>
@@ -16207,8 +16207,8 @@ const HELP_GUIDES = {
       <h3>The chart</h3>
       <p>The big chart shows total portfolio value over time. Use the range buttons (1h, 6h, 1d, 7d, 90d, All) to zoom the window. Note the chart rebuilds from each artist's historical series — so if you just bought into someone, the chart still includes the pre-purchase period.</p>
       <h3>Cash vs. invested</h3>
-      <p>Cash (your uninvested balance) sits in the header widget. Your cash goes down when you buy and up when you sell. You start at €10,000 cash, €0 invested — the goal is to shift that mix toward artists you believe will grow.</p>
-      <div class="guide-callout"><b>Reading P&L:</b> green = up, red = down, and percentages are always relative to cost basis. A 20% gain on a €100 position is €20, not €20,000.</div>
+      <p>Cash (your uninvested balance) sits in the header widget. Your cash goes down when you buy and up when you sell. You start at $10,000 cash, $0 invested — the goal is to shift that mix toward artists you believe will grow.</p>
+      <div class="guide-callout"><b>Reading P&L:</b> green = up, red = down, and percentages are always relative to cost basis. A 20% gain on a $100 position is $20, not $20,000.</div>
     `,
   },
   'tournaments': {
@@ -16230,7 +16230,7 @@ const HELP_GUIDES = {
       <div class="guide-stub"><b>Draft in progress</b> — Sander to fill this guide in his own voice. The short version below is accurate; the deeper walk-through (EMA smoothing, why YouTube is a multiplier not a base, how new artists bootstrap) still needs his take.</div>
       <p>Every artist's price comes from real streaming data, not a simulation:</p>
       <ul>
-        <li><b>Spotify monthly listeners</b> × <b>€0.03 per 1,000,000</b> is the base price.</li>
+        <li><b>Spotify monthly listeners</b> × <b>$0.03 per 1,000,000</b> is the base price.</li>
         <li><b>YouTube channel stats</b> apply a multiplier on top of the base.</li>
         <li>An <b>exponential moving average</b> smooths single data pulls so prices don't whipsaw.</li>
       </ul>
@@ -16250,12 +16250,12 @@ const HELP_GUIDES = {
       <h3>Trading</h3>
       <ul>
         <li><b>Default order type</b> — market or limit (limit isn't live yet, but the default sticks for when it ships).</li>
-        <li><b>Default quantity mode</b> — shares or euros. Sets the initial state of the buy/sell input.</li>
+        <li><b>Default quantity mode</b> — shares or dollars. Sets the initial state of the buy/sell input.</li>
         <li><b>Confirm trades</b> — when on, every buy/sell goes through a review dialog. Off means one-tap execution.</li>
         <li><b>Show P&amp;L in header</b> — toggle the Today / All-time chips on the Portfolio page.</li>
       </ul>
       <h3>Language &amp; currency</h3>
-      <p>English and EUR are the only options today. Multi-currency is on the long-term roadmap but not a near-term ship.</p>
+      <p>English and USD are the only options today. Multi-currency is on the long-term roadmap but not a near-term ship.</p>
       <div class="guide-callout"><b>Notifications, 2FA, privacy controls:</b> all removed in the M9 audit. They'll return when there's real infrastructure behind them — Muses won't ship toggles that don't do anything.</div>
     `,
   },
@@ -16882,7 +16882,7 @@ function renderPortfolio() {
     document.getElementById('pf-chip-today-sub').textContent = 'No positions';
   } else {
     const todayPct = invested > 0 ? (todayChange / invested) * 100 : 0;
-    todayChip.textContent = (todayChange >= 0 ? '+€' : '−€') + Math.abs(todayChange).toFixed(2);
+    todayChip.textContent = (todayChange >= 0 ? '+$' : '−$') + Math.abs(todayChange).toFixed(2);
     todayChip.className = 'pf-chip-v ' + (todayChange >= 0 ? 'up' : 'down');
     document.getElementById('pf-chip-today-sub').textContent = (todayPct >= 0 ? '+' : '') + todayPct.toFixed(2) + '% · 24h';
   }
@@ -16899,7 +16899,7 @@ function renderPortfolio() {
   }
 
   document.getElementById('pf-chip-alloc').textContent = allocPct.toFixed(0) + '%';
-  document.getElementById('pf-chip-alloc-sub').textContent = 'Cash €' + fmtInt(Math.round(STATE.cash));
+  document.getElementById('pf-chip-alloc-sub').textContent = 'Cash $' + fmtInt(Math.round(STATE.cash));
 
   // ---- Stat tiles ----
   document.getElementById('pf-cash').textContent = fmtPrice(STATE.cash);
@@ -17141,7 +17141,7 @@ function renderPortfolio() {
     donutEl.style.position = 'relative';
     const lbl = document.createElement('div');
     lbl.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none';
-    lbl.innerHTML = `<div style="font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em">Invested</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:18px;margin-top:2px">€${total.toFixed(0)}</div>`;
+    lbl.innerHTML = `<div style="font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em">Invested</div><div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:18px;margin-top:2px">$${total.toFixed(0)}</div>`;
     donutEl.appendChild(lbl);
     allocList.innerHTML = segments.map(s => {
       const pct = (s.value / total) * 100;
@@ -17201,7 +17201,7 @@ function renderBestWorst(tickers) {
   const worst = sortedByPct[sortedByPct.length - 1];
   const renderRow = (target, item, kind) => {
     const upDown = item.pct >= 0 ? 'up' : 'down';
-    // M1.7 — simplified sub-line. Was "TICKER · €VALUE" but the value
+    // M1.7 — simplified sub-line. Was "TICKER · $VALUE" but the value
     // duplicated the price in the right column (value = shares × price,
     // and most users hold 1 share at launch), causing "+0.82%" to render
     // twice and the mono-font text to wrap unpredictably. Now: just the
@@ -17828,7 +17828,7 @@ function renderProfile() {
   // still uses it for coloring.
   const isPos = s.totalReturn >= 0;
 
-  const fmt = (n) => '€' + Math.round(n).toLocaleString();
+  const fmt = (n) => '$' + Math.round(n).toLocaleString();
   const _fmtPctRaw = (n) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%'; // n is already ×100
 
   host.innerHTML = `
@@ -18383,7 +18383,7 @@ function showAuthPrompt(opts) {
   const action = opts.action || 'use this feature';
   const title = opts.title || 'Create an account to continue';
   const subtitle = 'Sign up to ' + action + ' — it\'s free and takes 30 seconds. '
-    + 'You get €10,000 in paper cash and your portfolio is saved across devices.';
+    + 'You get $10,000 in paper cash and your portfolio is saved across devices.';
 
   const overlay = document.createElement('div');
   overlay.className = 'confirm-overlay';
@@ -18458,7 +18458,7 @@ const TOURNAMENTS = {
     leaderReturn: 0,
     eligible: ['All Muses artists eligible', 'Exactly 3 picks per portfolio'],
     rules: [
-      ['Pick exactly 3 artists', 'Build a focused portfolio worth €10,000 in tournament credits. Concentrated bets only.'],
+      ['Pick exactly 3 artists', 'Build a focused portfolio worth $10,000 in tournament credits. Concentrated bets only.'],
       ['24-hour window', 'Tournament opens at launch and closes exactly 24 hours later. Fast, decisive plays win.'],
       ['Real streaming data drives prices', 'Prices update via the Muses price model — Spotify streams, YouTube views, chart positions, and social momentum.'],
       ['Top 30 finishers split the pool', 'Entry fees minus 15% platform rake go straight to prizes. The more players, the bigger the pool.'],
@@ -18556,14 +18556,14 @@ const TOURNAMENTS = {
     leaderReturn: 18.4,
     eligible: ['All beta artists eligible', 'Exactly 3 picks'],
     rules: [
-      ['Pick exactly 3 artists', 'Concentrated picks only — €10,000 tournament budget.'],
+      ['Pick exactly 3 artists', 'Concentrated picks only — $10,000 tournament budget.'],
       ['24-hour duration', 'Fast-paced beta test tournament.'],
     ],
     prizes: [
-      { place: '1st', pct: '25%', amt: '€145' },
-      { place: '2nd-3rd', pct: '20%', amt: '€58' },
-      { place: '4th-10th', pct: '25%', amt: '€21' },
-      { place: '11th-30th', pct: '30%', amt: '€9' },
+      { place: '1st', pct: '25%', amt: '$145' },
+      { place: '2nd-3rd', pct: '20%', amt: '$58' },
+      { place: '4th-10th', pct: '25%', amt: '$21' },
+      { place: '11th-30th', pct: '30%', amt: '$9' },
     ],
     finalResults: [
       { name: 'MusicFan99', ret: 18.4, rank: 1, prize: 145 },
@@ -18595,11 +18595,11 @@ const TOURNAMENTS = {
       ['3-day duration', 'Friday to Monday — weekend streaming spikes matter.'],
     ],
     prizes: [
-      { place: '1st', pct: '20%', amt: '€425' },
-      { place: '2nd-3rd', pct: '15%', amt: '€159' },
-      { place: '4th-10th', pct: '25%', amt: '€38' },
-      { place: '11th-50th', pct: '25%', amt: '€13' },
-      { place: '51st-100th', pct: '15%', amt: '€6' },
+      { place: '1st', pct: '20%', amt: '$425' },
+      { place: '2nd-3rd', pct: '15%', amt: '$159' },
+      { place: '4th-10th', pct: '25%', amt: '$38' },
+      { place: '11th-50th', pct: '25%', amt: '$13' },
+      { place: '51st-100th', pct: '15%', amt: '$6' },
     ],
     finalResults: [
       { name: 'VibeChaser', ret: 22.1, rank: 1, prize: 425 },
@@ -18749,7 +18749,7 @@ function tournamentCardHTML(t) {
   `;
   const actionsHTML = isEnded
     ? `<button class="view-link" data-view-tournament="${t.id}" style="width:100%;text-align:center">View results</button>`
-    : `<button class="quick-enter${signedUp ? ' entered' : ''}" data-quick-enter="${t.id}">${signedUp ? '✓ Spot reserved' : (t.status === 'upcoming' ? `Reserve spot · €${t.entry}` : `Quick enter · €${t.entry}`)}</button>
+    : `<button class="quick-enter${signedUp ? ' entered' : ''}" data-quick-enter="${t.id}">${signedUp ? '✓ Spot reserved' : (t.status === 'upcoming' ? `Reserve spot · $${t.entry}` : `Quick enter · $${t.entry}`)}</button>
         <button class="view-link" data-view-tournament="${t.id}">Details</button>`;
   return `
     <div class="tournament-card${entered ? ' entered' : ''}${isEnded ? ' ended' : ''}" data-tournament="${t.id}" style="--card-accent:${accentRgba}">
@@ -18761,8 +18761,8 @@ function tournamentCardHTML(t) {
       <div class="tournament-desc">${t.desc}</div>
       ${leaderHTML}
       <div class="tc-stats">
-        <div class="tc-stat"><div class="l">Entry ${tip('Cost in tournament credits to join this tournament. No real money involved.', 'tip-below')}</div><div class="v">€${t.entry}</div></div>
-        <div class="tc-stat"><div class="l">Pool ${tip('Prize pool paid to top finishers in tournament credits.', 'tip-below')}</div><div class="v gold">${t.pool > 0 ? '€' + t.pool.toLocaleString() : t.players > 0 ? '€' + Math.floor(t.entry * t.players * 0.85).toLocaleString() : 'Up to €' + Math.floor(t.entry * t.cap * 0.85).toLocaleString()}</div></div>
+        <div class="tc-stat"><div class="l">Entry ${tip('Cost in tournament credits to join this tournament. No real money involved.', 'tip-below')}</div><div class="v">$${t.entry}</div></div>
+        <div class="tc-stat"><div class="l">Pool ${tip('Prize pool paid to top finishers in tournament credits.', 'tip-below')}</div><div class="v gold">${t.pool > 0 ? '$' + t.pool.toLocaleString() : t.players > 0 ? '$' + Math.floor(t.entry * t.players * 0.85).toLocaleString() : 'Up to $' + Math.floor(t.entry * t.cap * 0.85).toLocaleString()}</div></div>
         ${endedStatHTML}
       </div>
       ${!isEnded ? `<div class="tc-cap">
@@ -18807,14 +18807,14 @@ function renderTournaments() {
                 <div class="tfh-leader-text"><b>${featured.leaderName}</b> leading with <span class="up">+${featured.leaderReturn.toFixed(1)}%</span> · ${featured.players} players</div>
               </div>
               <div class="tfh-cta">
-                <button class="btn-primary" data-quick-enter="${featured.id}">${STATE.enteredTournaments[featured.id] ? '✓ Entered' : `Enter for €${featured.entry}`}</button>
+                <button class="btn-primary" data-quick-enter="${featured.id}">${STATE.enteredTournaments[featured.id] ? '✓ Entered' : `Enter for $${featured.entry}`}</button>
                 <button class="btn-secondary" data-view-tournament="${featured.id}">View details</button>
               </div>
             </div>
             <div class="tfh-right">
               <div class="tfh-prize-block">
                 <div class="tfh-prize-label">Total Prize Pool ${tip('85% of all entry fees pooled together and awarded to top finishers.')}</div>
-                <div class="tfh-prize-value">€${featured.pool.toLocaleString()}</div>
+                <div class="tfh-prize-value">$${featured.pool.toLocaleString()}</div>
               </div>
               <div class="tfh-countdown" data-hero-cd="${featured.id}">
                 <div class="tfh-cd-cell"><div class="v" data-cd="d">${cd.d}</div><div class="l">Days</div></div>
@@ -18869,7 +18869,7 @@ function renderTournaments() {
       stripEl.innerHTML = `
         <div class="t-strip-tile">
           <div class="icon"><svg><use href="#i-trophy"/></svg></div>
-          <div class="body"><div class="l">Total prize pool</div><div class="v gold">€${totalPool.toLocaleString()}</div></div>
+          <div class="body"><div class="l">Total prize pool</div><div class="v gold">$${totalPool.toLocaleString()}</div></div>
         </div>
         <div class="t-strip-tile">
           <div class="icon"><svg><use href="#i-users"/></svg></div>
@@ -18914,7 +18914,7 @@ function renderTournaments() {
             ? 'Tournaments are paper-trading contests where you build a virtual portfolio and compete for bragging rights. Try a low-stakes one to start.'
             : 'Reserve your spot in an upcoming tournament below. When Muses launches, your spot is guaranteed and you\'ll build your portfolio on day one.'
           }</div>
-          ${recommended ? `<button class="yt-cta" data-quick-enter="${recommended.id}">${hasLive ? `Try ${recommended.name} for €${recommended.entry}` : `Reserve spot · ${recommended.name} · €${recommended.entry}`}</button>` : ''}
+          ${recommended ? `<button class="yt-cta" data-quick-enter="${recommended.id}">${hasLive ? `Try ${recommended.name} for $${recommended.entry}` : `Reserve spot · ${recommended.name} · $${recommended.entry}`}</button>` : ''}
         </div>
       `;
       if (yourMeta) yourMeta.textContent = '';
@@ -18935,7 +18935,7 @@ function renderTournaments() {
                 <div class="ytr-tag">${t.tag}</div>
                 <div class="ytr-stats">
                   <div class="s">Status<b style="color:var(--up)">Reserved</b></div>
-                  <div class="s">Entry<b>€${t.entry}</b></div>
+                  <div class="s">Entry<b>$${t.entry}</b></div>
                   <div class="s">Starts in<b>${fmtCountdownToStart(t)}</b></div>
                 </div>
               </div>
@@ -19027,8 +19027,8 @@ function renderTournaments() {
                     <div style="font-weight:700;color:var(--text)">${t.name}</div>
                     <div style="font-size:11px;color:var(--text-faint)">${t.tag}${youEntered ? ' · <span style="color:var(--purple)">You entered</span>' : ''}</div>
                   </td>
-                  <td style="text-align:center;padding:12px 8px;font-weight:600">€${t.entry}</td>
-                  <td style="text-align:center;padding:12px 8px;font-weight:700;color:#FFD166">€${t.pool.toLocaleString()}</td>
+                  <td style="text-align:center;padding:12px 8px;font-weight:600">$${t.entry}</td>
+                  <td style="text-align:center;padding:12px 8px;font-weight:700;color:#FFD166">$${t.pool.toLocaleString()}</td>
                   <td style="text-align:center;padding:12px 8px">${t.players}</td>
                   <td style="text-align:center;padding:12px 8px">
                     ${winner ? `<span style="font-weight:600;color:var(--text)">${winner.name}</span> <span class="up">+${winner.ret.toFixed(1)}%</span>` : '—'}
@@ -19837,7 +19837,7 @@ function showSignupModal(id) {
         rows: [
           { label: 'Tournament', value: t.name },
           { label: 'Entry fee', value: fmtPrice(t.entry) },
-          { label: 'Prize pool', value: '€' + (t.pool > 0 ? t.pool.toFixed(2) : 'TBD') },
+          { label: 'Prize pool', value: '$' + (t.pool > 0 ? t.pool.toFixed(2) : 'TBD') },
           { label: 'Credits remaining', value: fmtPrice(STATE.tournamentCredits), total: true },
         ],
         buttons: [
@@ -20016,10 +20016,10 @@ function renderTournamentDetail() {
   document.getElementById('td-desc').textContent = t.desc;
   const displayPool = t.pool > 0 ? t.pool : Math.floor(t.entry * t.players * 0.85);
   const poolLabel = t.status === 'upcoming' && t.players > 0
-    ? `€${displayPool.toLocaleString()} so far`
+    ? `$${displayPool.toLocaleString()} so far`
     : t.status === 'upcoming'
-    ? `Up to €${Math.floor(t.entry * t.cap * 0.85).toLocaleString()}`
-    : `€${t.pool.toLocaleString()}`;
+    ? `Up to $${Math.floor(t.entry * t.cap * 0.85).toLocaleString()}`
+    : `$${t.pool.toLocaleString()}`;
   document.getElementById('td-pool').textContent = poolLabel;
   const _tl = tournamentTimeLeft(t);
   if (t.status === 'upcoming') {
@@ -20031,7 +20031,7 @@ function renderTournamentDetail() {
   } else {
     document.getElementById('td-timer').textContent = _tl.ended ? 'Tournament ended' : `Ends in ${_tl.d}d ${_tl.h}h ${_tl.m}m`;
   }
-  document.getElementById('td-entry').textContent = '€' + t.entry;
+  document.getElementById('td-entry').textContent = '$' + t.entry;
   document.getElementById('td-players').textContent = t.players.toLocaleString();
 
   const entry = STATE.enteredTournaments[t.id];
@@ -20095,9 +20095,9 @@ function renderTournamentDetail() {
     }
   } else {
     if (t.status === 'upcoming') {
-      enterBtn.textContent = 'Reserve spot · €' + t.entry;
+      enterBtn.textContent = 'Reserve spot · $' + t.entry;
     } else {
-      enterBtn.textContent = ended ? 'Tournament ended' : 'Enter for €' + t.entry;
+      enterBtn.textContent = ended ? 'Tournament ended' : 'Enter for $' + t.entry;
     }
     enterBtn.classList.remove('btn-secondary');
     enterBtn.classList.add('btn-primary');
@@ -20186,19 +20186,19 @@ function renderTournamentDetail() {
     resultsHost.innerHTML = `
       <div class="card results-card">
         <div class="badge"><span class="live-dot" style="background:var(--gold)"></span>Tournament closed</div>
-        <div class="rc-title">${prize > 0 ? `You won €${prize.toLocaleString()}!` : 'Better luck next time'}</div>
+        <div class="rc-title">${prize > 0 ? `You won $${prize.toLocaleString()}!` : 'Better luck next time'}</div>
         <div class="rc-sub">${t.name} · Final return ${ret >= 0 ? '+' : ''}${ret.toFixed(2)}%</div>
         <div class="rc-grid">
           <div class="rc-tile"><div class="l">Final Rank</div><div class="v">#${entry.rank}</div></div>
           <div class="rc-tile"><div class="l">Return</div><div class="v ${ret >= 0 ? 'up' : 'down'}">${ret >= 0 ? '+' : ''}${ret.toFixed(2)}%</div></div>
-          <div class="rc-tile"><div class="l">Prize</div><div class="v gold">€${prize.toLocaleString()}</div></div>
+          <div class="rc-tile"><div class="l">Prize</div><div class="v gold">$${prize.toLocaleString()}</div></div>
         </div>
         ${bestArtist ? `<div class="rc-sub" style="margin-bottom:18px">Best pick: <b style="color:var(--text)">${bestArtist.name}</b> · contributed ${(best.contribution * 100).toFixed(2)}%</div>` : ''}
         <div class="rc-actions">
           ${entry.claimed
-            ? `<button class="btn btn-secondary" disabled>✓ €${prize.toLocaleString()} claimed</button>
+            ? `<button class="btn btn-secondary" disabled>✓ $${prize.toLocaleString()} claimed</button>
                <button class="btn btn-primary" id="td-withdraw-now">Withdraw to bank</button>`
-            : `<button class="btn btn-primary" id="td-claim">Claim €${prize.toLocaleString()}</button>`}
+            : `<button class="btn btn-primary" id="td-claim">Claim $${prize.toLocaleString()}</button>`}
           <button class="btn btn-secondary" data-nav="tournaments">Back to tournaments</button>
         </div>
       </div>
@@ -20221,7 +20221,7 @@ function renderTournamentDetail() {
           details: [
             { label: 'Tournament', value: t.name },
             { label: 'Your rank', value: _rankValue },
-            { label: 'Prize won', value: `€${prize.toLocaleString()}` },
+            { label: 'Prize won', value: `$${prize.toLocaleString()}` },
             { label: 'Credits balance', value: `${fmtPrice(STATE.tournamentCredits)}` },
           ],
           buttons: [
@@ -20265,7 +20265,7 @@ function renderTournamentDetail() {
     const span = placeMatch ? (parseInt(placeMatch[2]) - parseInt(placeMatch[1]) + 1) : 1;
     const tierTotal = Math.floor(usePool * pctVal);
     const perPerson = span > 1 ? Math.floor(tierTotal / span) : tierTotal;
-    const amtStr = span > 1 ? `€${perPerson.toLocaleString()} ea.` : `€${tierTotal.toLocaleString()}`;
+    const amtStr = span > 1 ? `$${perPerson.toLocaleString()} ea.` : `$${tierTotal.toLocaleString()}`;
     return `
       <div class="prize-row">
         <div class="place ${cls}">${p.place}</div>
@@ -20592,7 +20592,7 @@ function renderTournamentDetail() {
         details: [
           { label: 'Tournament', value: t.name },
           { label: 'Your rank', value: _rankValue2 },
-          { label: 'Prize won', value: `€${prize.toLocaleString()}` },
+          { label: 'Prize won', value: `$${prize.toLocaleString()}` },
           { label: 'Credits balance', value: `${fmtPrice(STATE.tournamentCredits)}` },
         ],
         buttons: [
@@ -20671,7 +20671,7 @@ function _shareProfileFallbackCopy(text) {
 }
 
 function shareTournament(t) {
-  const shareText = `Join me in the ${t.name} on Muses! ${t.status === 'upcoming' ? 'Starting soon — ' : ''}€${t.entry} entry, compete for real prizes based on artist streaming performance.`;
+  const shareText = `Join me in the ${t.name} on Muses! ${t.status === 'upcoming' ? 'Starting soon — ' : ''}$${t.entry} entry, compete for real prizes based on artist streaming performance.`;
   const shareUrl = window.location.origin + window.location.pathname + '#tournament/' + t.id;
   if (navigator.share) {
     navigator.share({ title: t.name + ' — Muses Tournaments', text: shareText, url: shareUrl })
@@ -20866,7 +20866,7 @@ function renderSwapStep() {
 
     ${s.from ? `
       <div class="swap-amount-row">
-        <input type="number" id="swap-amt" value="${s.amount || ''}" placeholder="Amount in €" min="1" max="${maxAmt}" step="1">
+        <input type="number" id="swap-amt" value="${s.amount || ''}" placeholder="Amount in $" min="1" max="${maxAmt}" step="1">
         <span class="swap-max" id="swap-max-btn">MAX ${fmtPrice(maxAmt)}</span>
       </div>
     ` : ''}
@@ -21073,11 +21073,11 @@ function renderStepSimple() {
     ${paperBanner(`Move virtual balance from ${sourceLabel} to ${destLabel}. No real money moves — everything in Muses is paper.`)}
     <div class="step-label">${isDeposit ? 'How much do you want to move into tournament credits?' : 'How much do you want to move back to paper balance?'}</div>
     <div class="amount-display">
-      <span class="currency">€</span><span class="amt" id="amt-display">${MODAL.amount || 0}</span>
-      <div class="available">Available in ${sourceLabel}: €${sourceBalance.toFixed(2)}</div>
+      <span class="currency">$</span><span class="amt" id="amt-display">${MODAL.amount || 0}</span>
+      <div class="available">Available in ${sourceLabel}: $${sourceBalance.toFixed(2)}</div>
     </div>
     <div class="quick-amounts">
-      ${QUICK_AMOUNTS.map(v => `<button class="quick-amt ${MODAL.amount === v ? 'active' : ''}" data-v="${v}">€${v}</button>`).join('')}
+      ${QUICK_AMOUNTS.map(v => `<button class="quick-amt ${MODAL.amount === v ? 'active' : ''}" data-v="${v}">$${v}</button>`).join('')}
     </div>
     <div class="keypad">
       ${[1,2,3,4,5,6,7,8,9,'.',0,'⌫'].map(k => `<button data-k="${k}">${k}</button>`).join('')}
@@ -21182,11 +21182,11 @@ function renderStepAmount() {
   body.innerHTML = `
     <div class="step-label">${isDeposit ? 'How much do you want to deposit?' : 'How much do you want to withdraw?'}</div>
     <div class="amount-display">
-      <span class="currency">€</span><span class="amt" id="amt-display">${MODAL.amount || 0}</span>
-      ${available !== null ? `<div class="available">Available: ${fmtPrice(available)}</div>` : `<div class="available">Min €5 · Max €10,000 per transaction</div>`}
+      <span class="currency">$</span><span class="amt" id="amt-display">${MODAL.amount || 0}</span>
+      ${available !== null ? `<div class="available">Available: ${fmtPrice(available)}</div>` : `<div class="available">Min $5 · Max $10,000 per transaction</div>`}
     </div>
     <div class="quick-amounts">
-      ${QUICK_AMOUNTS.map(v => `<button class="quick-amt ${MODAL.amount === v ? 'active' : ''}" data-v="${v}">€${v}</button>`).join('')}
+      ${QUICK_AMOUNTS.map(v => `<button class="quick-amt ${MODAL.amount === v ? 'active' : ''}" data-v="${v}">$${v}</button>`).join('')}
     </div>
     <div class="keypad">
       ${[1,2,3,4,5,6,7,8,9,'.',0,'⌫'].map(k => `<button data-k="${k}">${k}</button>`).join('')}
@@ -21220,7 +21220,7 @@ function renderStepAmount() {
   document.getElementById('modal-next').addEventListener('click', () => {
     if (MODAL.amount <= 0) return;
     if (!isDeposit && MODAL.amount > STATE.tournamentCredits) return showToast('Amount exceeds available credits', true);
-    if (MODAL.amount < 5) return showToast('Minimum amount is €5', true);
+    if (MODAL.amount < 5) return showToast('Minimum amount is $5', true);
     MODAL.step = 3;
     renderModalStep();
   });
@@ -21340,7 +21340,7 @@ function renderQuickTradeModal() {
           <button class="qt-side-btn buy ${isBuy ? 'active' : ''}" data-side="buy">Buy</button>
           <button class="qt-side-btn sell ${!isBuy ? 'active' : ''}" data-side="sell">Sell</button>
         </div>
-        <input type="number" class="qt-amount-input" id="qt-amount" placeholder="Amount in €" min="1" max="${max}" step="1" value="${s.amount || ''}">
+        <input type="number" class="qt-amount-input" id="qt-amount" placeholder="Amount in $" min="1" max="${max}" step="1" value="${s.amount || ''}">
         <div class="qt-cash-hint">${isBuy ? 'Available: ' + fmtPrice(STATE.cash) : 'Holdings: ' + holdingShares.toFixed(4) + ' shares (' + fmtPrice(holdingValue) + ')'} · <span style="color:var(--purple);cursor:pointer" id="qt-max-btn">MAX</span></div>
       </div>
       <div class="modal-actions">
@@ -22662,11 +22662,11 @@ function renderOnboardingStep() {
     body.innerHTML = `
       <div class="onb-step">
         <div class="onb-eyebrow">Step 4 of ${total}</div>
-        <h1 class="onb-title">You're starting with €10,000.</h1>
+        <h1 class="onb-title">You're starting with $10,000.</h1>
         <p class="onb-sub">Virtual credits to build a portfolio with. Nothing deposited, nothing to deposit, and no fees — this is paper. Reset to the starting balance anytime from Settings.</p>
         <div class="onb-cash-card">
           <div>
-            <div class="onb-cash-amount">€10,000.00</div>
+            <div class="onb-cash-amount">$10,000.00</div>
             <div class="onb-cash-label">Starter balance</div>
           </div>
         </div>
@@ -22775,7 +22775,7 @@ startPricePersistence(); // save prices + history to localStorage every 30s
 // Pull authoritative portfolio from Supabase (overrides localStorage if present).
 // Async — first paint uses the localStorage cache; if Supabase has a newer
 // snapshot, it overlays and re-renders. New users (no row yet) just keep
-// the trigger-default €10,000 cash.
+// the trigger-default $10,000 cash.
 fetchPortfolioFromSupabase().then(ok => {
   if (ok) {
     try { updateCashDisplay(); } catch (e) {}

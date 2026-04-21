@@ -211,10 +211,10 @@
       </div>
       <select class="art-sort" id="priceFilter" aria-label="Filter by price">
         <option value="all">Price: all</option>
-        <option value="u50">Under €50</option>
-        <option value="50-100">€50 – €100</option>
-        <option value="100-200">€100 – €200</option>
-        <option value="o200">Over €200</option>
+        <option value="u50">Under $50</option>
+        <option value="50-100">$50 – $100</option>
+        <option value="100-200">$100 – $200</option>
+        <option value="o200">Over $200</option>
       </select>
       <select class="art-sort" id="changeFilter" aria-label="Filter by 24h change">
         <option value="all">24h: all</option>
@@ -270,7 +270,7 @@
     <div class="cta-inner">
       <div>
         <h2 class="cta-title reveal">Want the<br><em>full exchange?</em></h2>
-        <p class="cta-sub reveal">Sign up free to see all <span data-listed-count>105</span> artists, charts updated every 30 minutes, and start paper trading with €10,000 in virtual credits.</p>
+        <p class="cta-sub reveal">Sign up free to see all <span data-listed-count>105</span> artists, charts updated every 30 minutes, and start paper trading with $10,000 in virtual credits.</p>
       </div>
       <div class="cta-actions reveal">
         <a class="btn-primary" href="/signup">Create free account <svg><use href="#i-arrow-up-right"/></svg></a>
@@ -308,8 +308,8 @@ const GRADIENT_POOL = [
 function hashTicker(t){let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))|0;return Math.abs(h);}
 // Match Exchange fmtBigNum / fmtBigEuro exactly.
 function fmtBigNum(n){if(!n)return'0';if(n>=1e9)return(n/1e9).toFixed(2)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(1)+'K';return n.toFixed(0);}
-function fmtBigEuro(n){if(!n)return'€0';if(n>=1e9)return'€'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return'€'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return'€'+(n/1e3).toFixed(1)+'K';return'€'+n.toFixed(0);}
-function fmtPrice(price){return'€'+(+price||0).toFixed(2);}
+function fmtBigEuro(n){if(!n)return'$0';if(n>=1e9)return'$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return'$'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return'$'+(n/1e3).toFixed(1)+'K';return'$'+n.toFixed(0);}
+function fmtPrice(price){return'$'+(+price||0).toFixed(2);}
 function fmtPct(pct){const v=(+pct||0).toFixed(2);return(pct>=0?'+':'')+v+'%';}
 function pickTag(live){const c=live.chg24h||0;if((live.followers||0)>25e6)return'Blue chip';if(c>4)return'Rising';if(c<-3)return'Volatile';if(Math.abs(c)>2)return'Trending';return'Stable';}
 
@@ -494,7 +494,7 @@ function passesFilters(a){
     const hit = (a.name || '').toLowerCase().includes(q) || (a.t || '').toLowerCase().includes(q);
     if (!hit) return false;
   }
-  // Price band (now in €)
+  // Price band (now in $)
   if (filterPrice === 'u50'     && !(a.price < 50))                    return false;
   if (filterPrice === '50-100'  && !(a.price >= 50 && a.price < 100))  return false;
   if (filterPrice === '100-200' && !(a.price >= 100 && a.price < 200)) return false;
