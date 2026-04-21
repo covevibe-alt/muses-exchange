@@ -5673,6 +5673,11 @@
   .pf-chips {
     display: flex; gap: 12px; flex: 1 1 auto;
   }
+  /* Settings → Trading → Show P&L on Portfolio (showPnlInHeader). When off,
+     the hero P&L chips hide for a calmer view. Only the first two chips
+     (Today, All-Time) are P&L — the Allocated chip stays because it's just
+     portfolio composition, not performance. */
+  body[data-hide-pnl="1"] .pf-chips .pf-chip:nth-child(-n+2) { display: none; }
   .pf-chip {
     background: var(--card-2);
     border: 1px solid var(--border);
@@ -9315,6 +9320,7 @@
         <div class="orders-tabs" id="orders-tabs">
           <button class="orders-tab active" data-otab="open">Open <span class="orders-tab-count" id="orders-count-open">0</span></button>
           <button class="orders-tab" data-otab="filled">Filled <span class="orders-tab-count" id="orders-count-filled">0</span></button>
+          <button class="orders-tab" data-otab="history">History <span class="orders-tab-count" id="orders-count-history">0</span></button>
           <button class="orders-tab" data-otab="cancelled">Cancelled <span class="orders-tab-count" id="orders-count-cancelled">0</span></button>
         </div>
         <div class="card">
@@ -13643,6 +13649,13 @@ document.getElementById('ad-trade-submit').addEventListener('click', () => {
   // modal itself has its own guard for the actual execution.
   btn._locked = true;
   setTimeout(() => { btn._locked = false; }, 400);
+  // Settings.confirmTrades: when off, skip the review modal and fire the
+  // market order directly. executeMarketOrder() already shows its own
+  // success confirmation overlay, so we don't silently swallow the outcome.
+  if (STATE.settings && STATE.settings.confirmTrades === false) {
+    try { submitTradeFromState(); } catch (_) {}
+    return;
+  }
   openOrderReviewModal();
 });
 
@@ -14212,6 +14225,7 @@ function renderOrdersView() {
   setCount('orders-count-filled', STATE.filledOrders.length);
   setCount('orders-count-cancelled', STATE.cancelledOrders.length);
   setCount('orders-count-recurring', (STATE.recurringBuys || []).length);
+  setCount('orders-count-history', (STATE.transactions || []).length);
   document.querySelectorAll('#orders-tabs .orders-tab').forEach(t => {
     t.classList.toggle('active', t.dataset.otab === STATE.ordersTab);
   });
@@ -14221,14 +14235,69 @@ function renderOrdersView() {
   if (tab === 'open') rows = STATE.openOrders;
   else if (tab === 'filled') rows = STATE.filledOrders;
   else if (tab === 'cancelled') rows = STATE.cancelledOrders;
+  else if (tab === 'history') rows = STATE.transactions || [];
   else rows = STATE.recurringBuys;
 
   if (!rows.length) {
+    const emptyCopy = tab === 'open'
+        ? 'Limit and stop orders are on the roadmap — market orders fill instantly, so they don\'t sit here.'
+      : tab === 'recurring'
+        ? 'Recurring buys are on the roadmap — not live yet.'
+      : tab === 'history'
+        ? 'No trades yet. Every market buy, sell and swap will show up here.'
+      : tab === 'filled'
+        ? 'No filled orders yet. When a limit or stop order executes, it\'ll appear here. Market orders show up under History.'
+      : '';
+    const emptyLabel = tab === 'history' ? 'trades' : tab + ' orders';
     list.innerHTML = `<div class="orders-empty">
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div>No ${tab} orders</div>
-      <div class="dim" style="font-size:12px">${tab === 'open' ? 'Limit and stop orders are on the roadmap — market orders fill instantly, so they don\'t sit here.' : tab === 'recurring' ? 'Recurring buys are on the roadmap — not live yet.' : ''}</div>
+      <div>No ${emptyLabel}</div>
+      <div class="dim" style="font-size:12px">${emptyCopy}</div>
     </div>`;
+    return;
+  }
+
+  if (tab === 'history') {
+    // STATE.transactions holds the completed trade record: instant market
+    // buys/sells plus both legs of any swap. Shape is heterogeneous —
+    //   market: { type:'BUY'|'SELL', ticker, name, shares, price, total, time: Date }
+    //   swap:   { id, type:'swap-buy'|'swap-sell', side:'buy'|'sell', ticker, name, shares, price, amount, time: number }
+    // Normalize to a common row before rendering.
+    list.innerHTML = `
+      <div class="orders-thead">
+        <span>Artist</span><span>Side</span><span>Type</span><span>Amount</span><span>@ Price</span><span>Date</span><span></span>
+      </div>
+    ` + rows.map(tx => {
+      const a = ARTISTS.find(x => x.ticker === tx.ticker);
+      const isSwap = typeof tx.type === 'string' && tx.type.indexOf('swap') === 0;
+      const side = (tx.side || (String(tx.type).toLowerCase() === 'buy' ? 'buy' : 'sell')).toLowerCase();
+      const kind = isSwap ? 'swap' : 'market';
+      const total = Number.isFinite(tx.total) ? tx.total : (Number.isFinite(tx.amount) ? tx.amount : (tx.shares || 0) * (tx.price || 0));
+      const t = tx.time instanceof Date ? tx.time : new Date(tx.time);
+      const dateStr = isNaN(t.getTime()) ? '—' : t.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+      return `
+        <div class="orders-row" data-ticker="${tx.ticker}">
+          <span class="ord-art">
+            <span class="ord-bubble" style="background:${a?a.color:'#888'}">${a?(a.imgUrl?`<img src="${a.imgUrl}" onerror="this.remove()"/>`:a.ticker.slice(0,2)):'?'}</span>
+            <span><b>${tx.name || tx.ticker}</b><span class="dim"> · ${tx.ticker}</span></span>
+          </span>
+          <span class="ord-side ${side}">${side.toUpperCase()}</span>
+          <span class="ord-tag">${kind}</span>
+          <b>${fmtPrice(total)}</b>
+          <span>${fmtPrice(tx.price || 0)}</span>
+          <span>${dateStr}</span>
+          <span></span>
+        </div>
+      `;
+    }).join('');
+    // Row click → artist
+    list.querySelectorAll('.orders-row[data-ticker]').forEach(row => {
+      row.addEventListener('click', () => {
+        const t = row.dataset.ticker;
+        const a = ARTISTS.find(x => x.ticker === t);
+        if (a) { STATE.selected = a; setView('artist'); }
+      });
+    });
     return;
   }
 
@@ -14383,7 +14452,10 @@ const SETTINGS_SECTIONS = [
   { id: 'appearance',  label: 'Appearance',    icon: '#i-grid' },
   { id: 'trading',     label: 'Trading',       icon: '#i-markets' },
   { id: 'notifs',      label: 'Notifications', icon: '#i-bell' },
-  { id: 'privacy',     label: 'Privacy',       icon: '#i-users' },
+  // Privacy section intentionally hidden: all three toggles (showPortfolio,
+  // showHoldings, showHistory) save state that nothing reads because there
+  // is no public-profile-viewing-other-users surface yet. Restore this entry
+  // when that surface lands (and wire the toggles at the same time).
   { id: 'account',     label: 'Account',       icon: '#i-settings' },
   { id: 'data',        label: 'Data',          icon: '#i-list' },
 ];
@@ -14424,6 +14496,10 @@ function applySettings() {
   // Theme
   document.body.setAttribute('data-theme', s.theme);
   document.body.setAttribute('data-accent', s.accent);
+  // Hide the Today/All-Time P&L chips on the Portfolio hero when off.
+  // CSS rule [data-hide-pnl="1"] .pf-chips { display:none } does the work.
+  if (s.showPnlInHeader === false) document.body.setAttribute('data-hide-pnl', '1');
+  else document.body.removeAttribute('data-hide-pnl');
 }
 
 function rowSwitch(key, title, desc) {
@@ -14550,17 +14626,13 @@ function renderSettings() {
             <div class="settings-section-sub">Defaults and guardrails for placing orders.</div>
           </div>
           <div class="settings-card">
-            ${rowSeg('defaultOrderType', 'Default order type', 'The order type pre-selected when you open a trade panel.', [
-              { value: 'market', label: 'Market' },
-              { value: 'limit',  label: 'Limit' },
-            ])}
-            ${rowSeg('defaultQtyMode', 'Order amount by', 'Enter buy size in shares or in Euro.', [
-              { value: 'shares', label: 'Shares' },
-              { value: 'euro',   label: 'Euro' },
-            ])}
-            ${rowSwitch('confirmTrades', 'Confirm before submit', 'Show a review step before every market order.')}
-            ${rowSwitch('showPnlInHeader', 'Show P&L in header', 'Display your daily profit/loss next to the cash balance.')}
-            ${rowSwitch('soundOnFill', 'Sound on order fill', 'Play a short chime when a market order fills.')}
+            ${rowSwitch('confirmTrades', 'Confirm before submit', 'Show a review step before every market order. Off = fire instantly.')}
+            ${rowSwitch('showPnlInHeader', 'Show P&amp;L on Portfolio', 'Show the Today / All-Time P&amp;L chips at the top of the Portfolio page. Off hides them for a calmer view.')}
+            <!-- defaultOrderType, defaultQtyMode, and soundOnFill hidden until
+                 their consumer UIs exist: no limit-order tab in the trade
+                 panel, no shares/euro toggle, and no fill chime asset. State
+                 keys stay populated in STATE so the rows can return without
+                 a migration when those features land. -->
           </div>
         </div>
 
@@ -14570,6 +14642,15 @@ function renderSettings() {
             <div class="settings-section-sub">Pick what you want to hear about — and where.</div>
           </div>
           <div class="settings-card">
+            <div class="settings-row" style="border-bottom:1px dashed var(--border);padding-bottom:12px;margin-bottom:4px">
+              <div class="settings-row-l" style="max-width:none">
+                <div class="settings-row-title" style="color:var(--purple);display:flex;align-items:center;gap:6px">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  Notifications are on the roadmap — not live yet
+                </div>
+                <div class="settings-row-desc">Your preferences save and will apply when the system ships. Nothing fires today, regardless of what's on below.</div>
+              </div>
+            </div>
             ${rowSwitch('notifOrderFills', 'Order fills', 'When your market orders are executed.')}
             ${rowSwitch('notifPriceAlerts', 'Price alerts', 'Custom alerts you set from an artist page.')}
             ${rowSwitch('notifTournaments', 'Tournament updates', 'Starts, rebalances, and final results.')}
@@ -14578,42 +14659,9 @@ function renderSettings() {
           </div>
         </div>
 
-        <div class="settings-section" id="sec-privacy">
-          <div class="settings-section-head">
-            <h2 class="settings-section-title">Privacy</h2>
-            <div class="settings-section-sub">Control what other traders can see on your profile.</div>
-          </div>
-          <div class="settings-card">
-            <div class="settings-row">
-              <div class="settings-row-l">
-                <div class="settings-row-title">Public portfolio</div>
-                <div class="settings-row-desc">Let others view your total portfolio value on your profile.</div>
-              </div>
-              <div class="settings-row-r">
-                <button class="st-switch ${STATE.profile.privacy.showPortfolio ? 'on' : ''}" data-priv="showPortfolio" aria-pressed="${STATE.profile.privacy.showPortfolio}"></button>
-              </div>
-            </div>
-            <div class="settings-row">
-              <div class="settings-row-l">
-                <div class="settings-row-title">Public holdings</div>
-                <div class="settings-row-desc">Show which artists you hold positions in.</div>
-              </div>
-              <div class="settings-row-r">
-                <button class="st-switch ${STATE.profile.privacy.showHoldings ? 'on' : ''}" data-priv="showHoldings" aria-pressed="${STATE.profile.privacy.showHoldings}"></button>
-              </div>
-            </div>
-            <div class="settings-row">
-              <div class="settings-row-l">
-                <div class="settings-row-title">Public trade history</div>
-                <div class="settings-row-desc">Display your recent buys and sells on your profile.</div>
-              </div>
-              <div class="settings-row-r">
-                <button class="st-switch ${STATE.profile.privacy.showHistory ? 'on' : ''}" data-priv="showHistory" aria-pressed="${STATE.profile.privacy.showHistory}"></button>
-              </div>
-            </div>
-            ${rowSwitch('analyticsOptIn', 'Product analytics', 'Help improve Muses by sharing anonymous usage data.')}
-          </div>
-        </div>
+        <!-- Privacy section hidden until public-profile-viewing-other-users
+             exists. Keeping the STATE.profile.privacy.* values + analyticsOptIn
+             alive in STATE so nothing breaks when the section re-appears. -->
 
         <div class="settings-section" id="sec-account">
           <div class="settings-section-head">
@@ -14904,16 +14952,8 @@ function renderHelp() {
             <div class="help-contact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
             <div class="help-contact-title">Email support</div>
           </div>
-          <div class="help-contact-desc">Usually replies within 1 business day. Share screenshots, artist tickers, and what you were trying to do.</div>
+          <div class="help-contact-desc">Reply goes to sandertbroeke@hotmail.com — the whole team is one person for now, so be patient. Share screenshots, artist tickers, and what you were trying to do.</div>
           <button class="help-contact-btn" data-help-action="email">Contact support</button>
-        </div>
-        <div class="help-contact-card">
-          <div class="help-contact-head">
-            <div class="help-contact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
-            <div class="help-contact-title">Community</div>
-          </div>
-          <div class="help-contact-desc">Swap strategies, ask questions, and share wins with other Muses traders on our Discord.</div>
-          <button class="help-contact-btn secondary" data-help-action="discord">Join Discord</button>
         </div>
       </div>
     </div>
@@ -15004,14 +15044,103 @@ function renderHelp() {
   host.querySelectorAll('[data-help-action]').forEach(btn => {
     btn.addEventListener('click', () => {
       const act = btn.dataset.helpAction;
-      if (act === 'email') showToast('Opening mail: support@muses.exchange');
-      if (act === 'discord') showToast('Opening Discord invite…');
+      if (act === 'email') {
+        // Open native mail client. Subject/body pre-filled so I can triage
+        // faster. Fallback to a toast if the mailto is blocked (corp iframes).
+        try {
+          window.location.href = 'mailto:sandertbroeke@hotmail.com'
+            + '?subject=' + encodeURIComponent('Muses support')
+            + '&body=' + encodeURIComponent('Tell me what happened — screenshots and the artist ticker help.\n\n');
+        } catch (e) {
+          showToast('Email sandertbroeke@hotmail.com');
+        }
+      }
     });
   });
 }
 
 // Load persisted settings at startup
 loadSettings();
+
+// ============ GLOBAL KEYBOARD SHORTCUTS ============
+// The Help page advertises these — wire them all in one place so the help
+// copy stays honest. Already-wired elsewhere: "/" (focus search) and "Esc"
+// (per-modal handlers). That leaves the vim-style G-prefix nav, buy/sell/
+// favorite on the selected artist, and "?" for help.
+//
+// Bail-out rule: if the user is typing in an input/textarea/contenteditable,
+// every letter shortcut is off. "?" still works because it requires shift and
+// most keyboards fire it only intentionally.
+(function wireGlobalShortcuts() {
+  let gPending = false;
+  let gTimer = null;
+  function resetG() { gPending = false; if (gTimer) { clearTimeout(gTimer); gTimer = null; } }
+  function inEditable(target) {
+    if (!target) return false;
+    const tag = (target.tagName || '').toLowerCase();
+    return tag === 'input' || tag === 'textarea' || tag === 'select' || target.isContentEditable;
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (inEditable(e.target)) return;
+    const k = e.key;
+    // G-prefix sequence handling
+    if (gPending) {
+      const kl = k.toLowerCase();
+      if (kl === 'm') { e.preventDefault(); resetG(); if (typeof setView === 'function') setView('markets'); return; }
+      if (kl === 'p') { e.preventDefault(); resetG(); if (typeof setView === 'function') setView('portfolio'); return; }
+      if (kl === 't') { e.preventDefault(); resetG(); if (typeof setView === 'function') setView('tournaments'); return; }
+      resetG(); // any other key cancels the sequence
+    }
+    if (k === 'g' || k === 'G') {
+      e.preventDefault();
+      gPending = true;
+      gTimer = setTimeout(resetG, 800);
+      return;
+    }
+    if (k === '?') {
+      e.preventDefault();
+      if (typeof setView === 'function') setView('help');
+      return;
+    }
+    if (k === 'b' || k === 'B') {
+      e.preventDefault();
+      // Open the quick-trade modal. If an artist is already selected (we're
+      // on artist-detail, or just navigated from there), skip the search
+      // step and jump straight to the trade form. Otherwise open the search.
+      if (STATE.selected) {
+        STATE._quicktrade = { artist: STATE.selected, side: 'buy', amount: 0, step: 'trade' };
+        openModal('quicktrade');
+      } else {
+        openModal('quicktrade');
+      }
+      return;
+    }
+    if (k === 's' || k === 'S') {
+      e.preventDefault();
+      if (STATE.selected) {
+        STATE._quicktrade = { artist: STATE.selected, side: 'sell', amount: 0, step: 'trade' };
+        openModal('quicktrade');
+      } else {
+        openModal('quicktrade');
+      }
+      return;
+    }
+    if (k === 'w' || k === 'W') {
+      // Only meaningful when there's a current artist focus — otherwise W on
+      // the markets page with no selection would silently do nothing.
+      if (!STATE.selected) return;
+      e.preventDefault();
+      const t = STATE.selected.ticker;
+      toggleWatchlist(t);
+      if (typeof refreshStars === 'function') refreshStars();
+      if (typeof showToast === 'function') {
+        showToast(STATE.watchlist.includes(t) ? 'Added to favorites' : 'Removed from favorites');
+      }
+      return;
+    }
+  });
+})();
 
 document.querySelectorAll('#orders-tabs .orders-tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -16384,16 +16513,25 @@ function renderProfile() {
           </div>
           ${recentTx.length === 0
             ? '<div class="prof-empty">No transactions yet.</div>'
-            : '<div class="prof-activity">' + recentTx.map(tx => `
+            : '<div class="prof-activity">' + recentTx.map(tx => {
+                // Normalize tx shape — same source drives the Orders → History tab.
+                // Market trades set type='BUY'|'SELL'; swaps set type='swap-buy'|'swap-sell' and side='buy'|'sell'.
+                const isBuy = tx.side
+                  ? tx.side === 'buy'
+                  : String(tx.type).toUpperCase() === 'BUY';
+                const isSwap = typeof tx.type === 'string' && tx.type.indexOf('swap') === 0;
+                const verb = isSwap ? (isBuy ? 'Swapped into' : 'Swapped out of') : (isBuy ? 'Bought' : 'Sold');
+                const total = Number.isFinite(tx.total) ? tx.total : (Number.isFinite(tx.amount) ? tx.amount : (tx.shares || 0) * (tx.price || 0));
+                return `
                 <div class="prof-act-row">
-                  <div class="prof-act-icon ${tx.type === 'BUY' ? 'buy' : 'sell'}">${tx.type === 'BUY' ? '↑' : '↓'}</div>
+                  <div class="prof-act-icon ${isBuy ? 'buy' : 'sell'}">${isBuy ? '↑' : '↓'}</div>
                   <div class="prof-act-info">
-                    <div class="prof-act-n">${tx.type === 'BUY' ? 'Bought' : 'Sold'} ${tx.shares.toFixed(2)} ${tx.ticker}</div>
-                    <div class="prof-act-t">@ ${fmtPrice(tx.price)} · ${new Date(tx.time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
+                    <div class="prof-act-n">${verb} ${(tx.shares || 0).toFixed(2)} ${tx.ticker}</div>
+                    <div class="prof-act-t">@ ${fmtPrice(tx.price || 0)} · ${new Date(tx.time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
                   </div>
-                  <div class="prof-act-amt ${tx.type === 'BUY' ? 'down' : 'up'}">${tx.type === 'BUY' ? '-' : '+'}${fmt(tx.total)}</div>
+                  <div class="prof-act-amt ${isBuy ? 'down' : 'up'}">${isBuy ? '-' : '+'}${fmt(total)}</div>
                 </div>
-              `).join('') + '</div>'
+              `;}).join('') + '</div>'
           }
         </div>
       </div>
