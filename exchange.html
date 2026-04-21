@@ -104,6 +104,53 @@
     --radius-lg: 18px;
     --radius-xl: 22px;
   }
+
+  /* ── LIGHT THEME (M9.1) ─────────────────────────────────────────────────
+     Opt-in via body[data-theme="light"]. Most of the UI reads the shell
+     tokens above and follows automatically once they flip. The overrides
+     below also handle the hardcoded hover/separator tints that bypass
+     tokens (rgba(255,255,255,0.0x) shows up invisible on a light bg, so
+     each is re-targeted to an equivalent rgba(0,0,0,0.0x) value).
+     Chart grid/text colors are set from JS — see chartThemeOpts() below. */
+  body[data-theme="light"] {
+    --bg: #FAFAFC;
+    --bg-elev: #FFFFFF;
+    --card: #FFFFFF;
+    --card-2: #F3F3F7;
+    --card-3: #E9E9F0;
+    --border: rgba(15,15,23,0.09);
+    --border-strong: rgba(15,15,23,0.16);
+    --text: #0F0F17;
+    --text-dim: #545466;
+    --text-faint: #8A8A9B;
+    --purple-glow: rgba(139,92,246,0.22);
+    --up-soft: rgba(16,150,105,0.12);
+    --down-soft: rgba(220,38,70,0.10);
+    /* Keep --up / --down at their vivid values — price directionality needs
+       to read at the same volume in both modes. --purple stays too; the
+       brand mark is accent, not theme. */
+  }
+  body[data-theme="light"] {
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(139,92,246,0.06), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(139,92,246,0.035), transparent 60%),
+      var(--bg);
+  }
+  /* Flip subtle hover/separator fills from white-on-dark to dark-on-light.
+     These are the high-traffic hover surfaces; less-visible instances can
+     follow in a future pass. */
+  body[data-theme="light"] .markets-table tbody tr:hover,
+  body[data-theme="light"] .watch-row:hover,
+  body[data-theme="light"] .holding-row:hover,
+  body[data-theme="light"] .help-faq-q:hover,
+  body[data-theme="light"] .sort-tab:hover,
+  body[data-theme="light"] .qf-preset:hover { background: rgba(15,15,23,0.035); }
+  /* The theme-preview chip's inner rounded rectangle is white-on-white in
+     light mode unless we bump its contrast. */
+  body[data-theme="light"] .st-theme-card[data-theme="dark"] .st-theme-preview::before {
+    background: rgba(255,255,255,0.06);
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     background: var(--bg);
@@ -6828,35 +6875,15 @@
     border-radius: 2px;
     background: var(--purple-2);
   }
-  .st-theme-card[data-theme="dark"] .st-theme-preview { background: #0f0f17; }
-  .st-theme-card[data-theme="amoled"] .st-theme-preview { background: #000; }
-  .st-theme-card[data-theme="midnight"] .st-theme-preview { background: #0b1228; }
+  .st-theme-card[data-theme="dark"]  .st-theme-preview { background: #0f0f17; }
+  .st-theme-card[data-theme="light"] .st-theme-preview { background: #fafafc; }
+  .st-theme-card[data-theme="light"] .st-theme-preview::before { background: rgba(0,0,0,0.05); }
   .st-theme-name { font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
   .st-theme-name .check { opacity: 0; color: var(--purple-2); transition: opacity 0.15s; }
   .st-theme-card.active .st-theme-name .check { opacity: 1; }
   .st-theme-sub { font-size: 10px; color: var(--text-faint); margin-top: 2px; }
 
-  /* Accent color row */
-  .st-accent-row {
-    display: flex;
-    gap: 10px;
-    padding: 0 4px;
-  }
-  .st-accent-dot {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: transform 0.15s, border-color 0.15s;
-    position: relative;
-  }
-  .st-accent-dot:hover { transform: scale(1.1); }
-  .st-accent-dot.active { border-color: #fff; }
-  .st-accent-dot[data-accent="purple"] { background: #A78BFA; }
-  .st-accent-dot[data-accent="cyan"]   { background: #22D3EE; }
-  .st-accent-dot[data-accent="pink"]   { background: #EC4899; }
-  .st-accent-dot[data-accent="gold"]   { background: #FBBF24; }
+  /* Accent color row — removed in M9.2 (no CSS read data-accent). */
 
   /* Danger action rows */
   .st-action-btn {
@@ -7002,6 +7029,56 @@
     font-weight: 600;
     margin-top: 4px;
   }
+
+  /* Help guide modal (M9.5) — content rendered via openHelpGuide().
+     Wider than the default modal-card and scrolls internally so long
+     guides don't push the close button off-screen. */
+  .help-guide-card { max-width: 640px; }
+  .help-guide-body { color: var(--text-dim); font-size: 13px; line-height: 1.7; }
+  .help-guide-body h3 {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 700;
+    margin: 22px 0 8px;
+    letter-spacing: -0.005em;
+  }
+  .help-guide-body h3:first-child { margin-top: 0; }
+  .help-guide-body p { margin: 0 0 10px; }
+  .help-guide-body ul, .help-guide-body ol {
+    margin: 0 0 12px;
+    padding-left: 20px;
+  }
+  .help-guide-body li { margin-bottom: 4px; }
+  .help-guide-body b, .help-guide-body strong { color: var(--text); font-weight: 600; }
+  .help-guide-body code {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text);
+  }
+  .help-guide-body a { color: var(--purple-2); text-decoration: none; }
+  .help-guide-body a:hover { text-decoration: underline; }
+  .help-guide-body .guide-callout {
+    background: rgba(167,139,250,0.08);
+    border-left: 3px solid var(--purple-2);
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 12.5px;
+  }
+  .help-guide-body .guide-callout b { color: var(--purple-2); }
+  .help-guide-body .guide-stub {
+    background: rgba(245,158,11,0.08);
+    border-left: 3px solid #F59E0B;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 12.5px;
+  }
+  .help-guide-body .guide-stub b { color: #F59E0B; }
 
   .help-faq-list {
     background: var(--card-2);
@@ -9621,6 +9698,17 @@
   </div>
 </div>
 
+<!-- HELP GUIDE MODAL (M9.5) -->
+<div class="modal-backdrop" id="help-guide-modal">
+  <div class="modal-card help-guide-card">
+    <div class="modal-head">
+      <div class="modal-title" id="help-guide-title">Guide</div>
+      <button class="modal-close" id="help-guide-close"><svg><use href="#i-x"/></svg></button>
+    </div>
+    <div class="help-guide-body" id="help-guide-body"></div>
+  </div>
+</div>
+
 <!-- ============== ONBOARDING FLOW ============== -->
 <div class="modal-backdrop onb-backdrop" id="onb-modal">
   <div class="onb-card">
@@ -11083,29 +11171,17 @@ const STATE = {
   leaderboardTab: 'all',  // retained for phase-2 (was 'all' | 'friends')
   lbState: {},  // per-tournament: { startRanks, prevRanks, search, sort, expanded, limit }
   settings: {
-    // Appearance
-    theme: 'dark',              // 'dark' | 'amoled' | 'midnight'
-    accent: 'purple',           // 'purple' | 'cyan' | 'pink' | 'gold'
+    // Appearance (M9: theme is 'dark' | 'light' only — amoled/midnight +
+    // accent + compactDensity were pruned in the settings operational audit)
+    theme: 'dark',
     reduceMotion: false,
     showTickerTape: true,
-    compactDensity: false,
     // Trading
     defaultOrderType: 'market', // 'market' | 'limit'
     confirmTrades: true,
     defaultQtyMode: 'shares',   // 'shares' | 'euro'
     showPnlInHeader: true,
     soundOnFill: false,
-    // Notifications
-    notifOrderFills: true,
-    notifPriceAlerts: true,
-    notifTournaments: true,
-    notifRankChanges: true,
-    notifNewsletter: false,
-    notifEmail: true,
-    notifPush: true,
-    // Privacy extra
-    analyticsOptIn: true,
-    twoFactor: false,
     // Language / currency
     language: 'en',
     currency: 'EUR',
@@ -13034,15 +13110,34 @@ function makeTickFormatter(getRange) {
   };
 }
 
+// M9: Chart layout/grid colors that need to flip between dark and light
+// themes. Hardcoded rgba(255,255,255,...) grid lines are invisible on a
+// white background, so these are recomputed from body[data-theme] and can
+// be re-applied via applyChartTheme() when the user flips themes without
+// reloading the page.
+function chartThemeOpts() {
+  const isLight = document.body.getAttribute('data-theme') === 'light';
+  const gridColor = isLight ? 'rgba(15,15,23,0.06)' : 'rgba(255,255,255,0.03)';
+  // textColor stays neutral grey — it reads fine on both bg tones.
+  return {
+    layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#6E6E80', fontFamily: 'Inter' },
+    grid: { vertLines: { color: gridColor }, horzLines: { color: gridColor } },
+    crosshair: { vertLine: { color: 'rgba(139,92,246,0.5)' }, horzLine: { color: 'rgba(139,92,246,0.5)' } },
+  };
+}
+function applyChartTheme() {
+  try { if (chartDetail) chartDetail.applyOptions(chartThemeOpts()); } catch (_) {}
+  try { if (chartPortfolio) chartPortfolio.applyOptions(chartThemeOpts()); } catch (_) {}
+}
+
 let chartDetail, lineSeriesDetail;
 function initDetailChart() {
   if (chartDetail) return;
+  const theme = chartThemeOpts();
   chartDetail = LightweightCharts.createChart(document.getElementById('chart-detail'), {
-    layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#6E6E80', fontFamily: 'Inter' },
-    grid: { vertLines: { color: 'rgba(255,255,255,0.03)' }, horzLines: { color: 'rgba(255,255,255,0.03)' } },
+    ...theme,
     rightPriceScale: { borderColor: 'transparent' },
     timeScale: { borderColor: 'transparent', timeVisible: true, secondsVisible: false, tickMarkFormatter: makeTickFormatter(() => STATE.detailRange) },
-    crosshair: { vertLine: { color: 'rgba(139,92,246,0.5)' }, horzLine: { color: 'rgba(139,92,246,0.5)' } },
     handleScroll: false,
     handleScale: false,
     height: 360,
@@ -13061,12 +13156,11 @@ let chartPortfolio, lineSeriesPortfolio;
 function initPortfolioChart() {
   if (chartPortfolio) return;
   const chartEl = document.getElementById('chart-portfolio');
+  const theme = chartThemeOpts();
   chartPortfolio = LightweightCharts.createChart(chartEl, {
-    layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#6E6E80', fontFamily: 'Inter' },
-    grid: { vertLines: { color: 'rgba(255,255,255,0.03)' }, horzLines: { color: 'rgba(255,255,255,0.03)' } },
+    ...theme,
     rightPriceScale: { borderColor: 'transparent' },
     timeScale: { borderColor: 'transparent', timeVisible: true, secondsVisible: false, tickMarkFormatter: makeTickFormatter(() => STATE.portfolioRange) },
-    crosshair: { vertLine: { color: 'rgba(139,92,246,0.5)' }, horzLine: { color: 'rgba(139,92,246,0.5)' } },
     handleScroll: false,
     handleScale: false,
     // Read initial height from the container so the CSS mobile override
@@ -14725,15 +14819,13 @@ function renderOrdersView() {
 
 // ============ SETTINGS ============
 const SETTINGS_SECTIONS = [
-  { id: 'appearance',  label: 'Appearance',    icon: '#i-grid' },
-  { id: 'trading',     label: 'Trading',       icon: '#i-markets' },
-  { id: 'notifs',      label: 'Notifications', icon: '#i-bell' },
-  // Privacy section intentionally hidden: all three toggles (showPortfolio,
-  // showHoldings, showHistory) save state that nothing reads because there
-  // is no public-profile-viewing-other-users surface yet. Restore this entry
-  // when that surface lands (and wire the toggles at the same time).
-  { id: 'account',     label: 'Account',       icon: '#i-settings' },
-  { id: 'data',        label: 'Data',          icon: '#i-list' },
+  { id: 'appearance',  label: 'Appearance', icon: '#i-grid' },
+  { id: 'trading',     label: 'Trading',    icon: '#i-markets' },
+  // Notifications removed in M9.2 — nothing was wired. Returns with the real
+  // notification system. Privacy stays hidden until the public-profile surface
+  // that reads showPortfolio/showHoldings/showHistory actually exists.
+  { id: 'account',     label: 'Account',    icon: '#i-settings' },
+  { id: 'data',        label: 'Data',       icon: '#i-list' },
 ];
 
 function loadSettings() {
@@ -14744,6 +14836,12 @@ function loadSettings() {
       Object.assign(STATE.settings, parsed);
     }
   } catch (e) {}
+  // M9: theme is Light/Dark only. Coerce legacy values from before the pruning
+  // pass so returning users don't land on a theme that no longer has a palette.
+  if (STATE.settings.theme === 'amoled' || STATE.settings.theme === 'midnight') {
+    STATE.settings.theme = 'dark';
+    try { saveSettings(); } catch (_) {}
+  }
 }
 
 function saveSettings() {
@@ -14766,12 +14864,11 @@ function applySettings() {
   document.documentElement.style.setProperty('--muse-motion', s.reduceMotion ? '0' : '1');
   if (s.reduceMotion) document.body.setAttribute('data-reduce-motion', '1');
   else document.body.removeAttribute('data-reduce-motion');
-  // Compact density
-  if (s.compactDensity) document.body.setAttribute('data-density', 'compact');
-  else document.body.removeAttribute('data-density');
-  // Theme
+  // Theme (light/dark only — M9 removed amoled/midnight + accent + compactDensity)
   document.body.setAttribute('data-theme', s.theme);
-  document.body.setAttribute('data-accent', s.accent);
+  // Repaint existing chart instances so grid/text colors flip with the theme
+  // without needing a page reload.
+  try { if (typeof applyChartTheme === 'function') applyChartTheme(); } catch (_) {}
   // Hide the Today/All-Time P&L chips on the Portfolio hero when off.
   // CSS rule [data-hide-pnl="1"] .pf-chips { display:none } does the work.
   if (s.showPnlInHeader === false) document.body.setAttribute('data-hide-pnl', '1');
@@ -14842,7 +14939,6 @@ function renderSettings() {
   if (!host) return;
   const s = STATE.settings;
   const currentTheme = s.theme;
-  const currentAccent = s.accent;
 
   host.innerHTML = `
     <div class="settings-hero">
@@ -14871,28 +14967,16 @@ function renderSettings() {
           </div>
           <div class="settings-card">
             <div class="st-theme-grid">
-              ${['dark','amoled','midnight'].map(t => `
+              ${['dark','light'].map(t => `
                 <button class="st-theme-card ${currentTheme === t ? 'active' : ''}" data-theme="${t}">
                   <div class="st-theme-preview"></div>
-                  <div class="st-theme-name">${t === 'dark' ? 'Dark' : t === 'amoled' ? 'AMOLED' : 'Midnight'}<span class="check">✓</span></div>
-                  <div class="st-theme-sub">${t === 'dark' ? 'Default — soft dark' : t === 'amoled' ? 'Pure black — OLED friendly' : 'Deep navy tint'}</div>
+                  <div class="st-theme-name">${t === 'dark' ? 'Dark' : 'Light'}<span class="check">✓</span></div>
+                  <div class="st-theme-sub">${t === 'dark' ? 'Default — soft dark' : 'Paper white — daytime trading'}</div>
                 </button>
               `).join('')}
             </div>
-            <div class="settings-row">
-              <div class="settings-row-l">
-                <div class="settings-row-title">Accent color</div>
-                <div class="settings-row-desc">Highlight color used across buttons, charts, and active states.</div>
-              </div>
-              <div class="settings-row-r">
-                <div class="st-accent-row">
-                  ${['purple','cyan','pink','gold'].map(a => `<button class="st-accent-dot ${currentAccent === a ? 'active' : ''}" data-accent="${a}" title="${a}"></button>`).join('')}
-                </div>
-              </div>
-            </div>
             ${rowSwitch('showTickerTape', 'Live ticker tape', 'Show the scrolling ticker bar above the main content.')}
             ${rowSwitch('reduceMotion', 'Reduce motion', 'Minimize animations and transitions across the app.')}
-            ${rowSwitch('compactDensity', 'Compact density', 'Pack more rows on screen with tighter spacing.')}
           </div>
         </div>
 
@@ -14912,32 +14996,15 @@ function renderSettings() {
           </div>
         </div>
 
-        <div class="settings-section" id="sec-notifs">
-          <div class="settings-section-head">
-            <h2 class="settings-section-title">Notifications</h2>
-            <div class="settings-section-sub">Pick what you want to hear about — and where.</div>
-          </div>
-          <div class="settings-card">
-            <div class="settings-row" style="border-bottom:1px dashed var(--border);padding-bottom:12px;margin-bottom:4px">
-              <div class="settings-row-l" style="max-width:none">
-                <div class="settings-row-title" style="color:var(--purple);display:flex;align-items:center;gap:6px">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  Notifications are on the roadmap — not live yet
-                </div>
-                <div class="settings-row-desc">Your preferences save and will apply when the system ships. Nothing fires today, regardless of what's on below.</div>
-              </div>
-            </div>
-            ${rowSwitch('notifOrderFills', 'Order fills', 'When your market orders are executed.')}
-            ${rowSwitch('notifPriceAlerts', 'Price alerts', 'Custom alerts you set from an artist page.')}
-            ${rowSwitch('notifTournaments', 'Tournament updates', 'Starts, rebalances, and final results.')}
-            ${rowSwitch('notifRankChanges', 'Rank changes', 'When your leaderboard position shifts.')}
-            ${rowSwitch('notifNewsletter', 'Weekly digest', 'A summary of movers and your portfolio each week.')}
-          </div>
-        </div>
+        <!-- Notifications section removed in M9.2: every control in it was a
+             save-to-STATE-only toggle with nothing on the wiring end. It will
+             come back as a real section when the notification system ships —
+             at that point the notif* keys get re-added to defaults. -->
 
         <!-- Privacy section hidden until public-profile-viewing-other-users
-             exists. Keeping the STATE.profile.privacy.* values + analyticsOptIn
-             alive in STATE so nothing breaks when the section re-appears. -->
+             exists. STATE.profile.privacy.* values still live on the profile
+             object and will be wired up when that view ships. -->
+
 
         <div class="settings-section" id="sec-account">
           <div class="settings-section-head">
@@ -14963,7 +15030,6 @@ function renderSettings() {
             <div class="settings-section-sub">Manage your saved paper-trading state.</div>
           </div>
           <div class="settings-card">
-            ${rowAction('Replay onboarding tour', 'Walk through the welcome flow again.', 'Replay tour', 'replay-onboarding')}
             ${rowAction('Clear favorites', 'Remove every artist currently in your favorites.', 'Clear favorites', 'clear-watchlist')}
             ${rowAction('Reset paper cash', 'Reset your balance to €10,000.00 and clear holdings.', 'Reset cash', 'reset-cash')}
             ${rowAction('Export data', 'Download a JSON snapshot of your portfolio and orders.', 'Export JSON', 'export-json')}
@@ -15024,9 +15090,6 @@ function renderSettings() {
   host.querySelectorAll('[data-theme]').forEach(btn => {
     btn.addEventListener('click', () => setSetting('theme', btn.dataset.theme));
   });
-  host.querySelectorAll('[data-accent]').forEach(btn => {
-    btn.addEventListener('click', () => setSetting('accent', btn.dataset.accent));
-  });
   host.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', () => runSettingsAction(btn.dataset.action));
   });
@@ -15046,8 +15109,6 @@ function runSettingsAction(action) {
   if (action === 'edit-profile') {
     if (typeof setView === 'function') setView('profile');
     setTimeout(() => { if (typeof openEditProfileModal === 'function') openEditProfileModal(); }, 100);
-  } else if (action === 'replay-onboarding') {
-    startOnboarding(true);
   } else if (action === 'clear-watchlist') {
     if (!STATE.watchlist.length) { showToast('Favorites list is already empty'); return; }
     if (confirm('Remove all ' + STATE.watchlist.length + ' artists from your favorites?')) {
@@ -15119,7 +15180,7 @@ const HELP_TOPICS = [
   { id: 'portfolio',       icon: '#i-portfolio',title: 'Portfolio & P&L',  desc: 'Track performance, holdings, and transaction history.',             count: 'Guide' },
   { id: 'tournaments',     icon: '#i-trophy',   title: 'Tournaments',      desc: 'Paper contests — lineups, scoring, and placement.',                 count: 'Guide' },
   { id: 'pricing',         icon: '#i-arrow-up', title: 'How prices work',  desc: 'How Spotify and YouTube stats map to artist prices.',                count: 'Guide' },
-  { id: 'account',         icon: '#i-settings', title: 'Settings',         desc: 'Trading preferences and notifications.',                            count: 'Guide' },
+  { id: 'account',         icon: '#i-settings', title: 'Settings',         desc: 'Appearance, trading preferences, and default order behavior.',       count: 'Guide' },
 ];
 
 const HELP_FAQ = [
@@ -15168,6 +15229,137 @@ const HELP_SHORTCUTS = [
   { keys: ['?'], label: 'Open this help page' },
   { keys: ['Esc'], label: 'Close modals' },
 ];
+
+// M9.5: Real content for the six help topic cards. Rendered in the
+// #help-guide-modal via openHelpGuide(id). 'pricing' and 'tournaments' are
+// stubbed — Sander to fill in his voice. The other four are drafted in a
+// generic Muses tone: short, factual, paper-trading-honest.
+const HELP_GUIDES = {
+  'getting-started': {
+    title: 'Getting started',
+    body: `
+      <p>Muses is a paper-trading exchange where you invest in artists as if they were stocks. Every new account starts with <b>€10,000 in virtual credits</b> — no deposit, no real money at stake.</p>
+      <h3>1. Pick your first artist</h3>
+      <p>The <b>Markets</b> page is the place to browse. Sort by price, 24-hour change, or market cap. Click any row to open the artist's detail page — that's where you place trades.</p>
+      <h3>2. Place your first trade</h3>
+      <p>On the artist page, use the Buy / Sell box at the top. Enter a quantity (in shares or euros — toggle in Settings) and hit <b>Buy</b>. Orders are market orders: they fill at the current live price.</p>
+      <h3>3. Watch it move</h3>
+      <p>Prices update every 30 minutes, pulled from real Spotify and YouTube stats. Check the <b>Portfolio</b> page to see your positions and P&L over time.</p>
+      <div class="guide-callout"><b>Tip:</b> Star the artists you're watching — they'll show up on your profile's watchlist so you can spot-check them without searching.</div>
+      <h3>Where to next</h3>
+      <ul>
+        <li><b>Trading</b> — the mechanics of orders and fills.</li>
+        <li><b>Portfolio &amp; P&amp;L</b> — how to read performance numbers.</li>
+        <li><b>How prices work</b> — the formula behind every price.</li>
+      </ul>
+    `,
+  },
+  'trading': {
+    title: 'Trading',
+    body: `
+      <p>Trades on Muses are <b>paper trades</b> — they move your virtual balance, not real money. The mechanics are simple on purpose, so you can focus on the call, not the order book.</p>
+      <h3>Order types</h3>
+      <p>Only <b>market orders</b> are live today. You buy or sell at the price showing on the artist page, and the order fills instantly. Limit and stop orders appear in the UI but aren't wired up yet — I'd rather ship honest buttons than fake ones.</p>
+      <h3>Buy vs. sell</h3>
+      <ul>
+        <li><b>Buy</b> — opens a position (or adds to one). Your cash goes down, your share count goes up.</li>
+        <li><b>Sell</b> — closes some or all of a position. Shares go down, cash goes up. You can't sell shares you don't hold (no shorting yet).</li>
+      </ul>
+      <h3>Quantity: shares or euros</h3>
+      <p>Toggle the quantity input between <b>shares</b> and <b>euros</b> in Settings → Trading. Euro mode is rounded down to the nearest whole share — no fractional shares.</p>
+      <h3>Order confirmation</h3>
+      <p>By default every trade pops up a review dialog before it lands. You can turn this off in Settings → Trading if you want one-tap execution.</p>
+      <h3>Orders and history</h3>
+      <p>The <b>Orders</b> page lists every filled trade with timestamp, price, quantity and total. Use it to audit your own decisions — what worked, what didn't, and why.</p>
+      <div class="guide-callout"><b>Paper trading reminder:</b> nothing here touches real money. If Muses ever introduces real trading, it will be a separate product with clear sign-up, KYC, and deposits — not a surprise switch.</div>
+    `,
+  },
+  'portfolio': {
+    title: 'Portfolio & P&L',
+    body: `
+      <p>The <b>Portfolio</b> page is where you track what you own, what it's worth, and how it's performing.</p>
+      <h3>The header</h3>
+      <p>Top of the page shows your <b>total portfolio value</b> (holdings at current market price + uninvested cash). Underneath, two chips: <b>Today</b> (change since 00:00 today) and <b>All-time</b> (change since you started).</p>
+      <h3>Holdings table</h3>
+      <p>Every position you hold, with average cost, current price, unrealized P&L, and total position value. Click a row to jump to that artist's detail page.</p>
+      <h3>The chart</h3>
+      <p>The big chart shows total portfolio value over time. Use the range buttons (1h, 6h, 1d, 7d, 90d, All) to zoom the window. Note the chart rebuilds from each artist's historical series — so if you just bought into someone, the chart still includes the pre-purchase period.</p>
+      <h3>Cash vs. invested</h3>
+      <p>Cash (your uninvested balance) sits in the header widget. Your cash goes down when you buy and up when you sell. You start at €10,000 cash, €0 invested — the goal is to shift that mix toward artists you believe will grow.</p>
+      <div class="guide-callout"><b>Reading P&L:</b> green = up, red = down, and percentages are always relative to cost basis. A 20% gain on a €100 position is €20, not €20,000.</div>
+    `,
+  },
+  'tournaments': {
+    title: 'Tournaments',
+    body: `
+      <div class="guide-stub"><b>Draft in progress</b> — Sander to fill this guide in his own voice. The card below is a placeholder so the Help page doesn't 404 while the copy lands.</div>
+      <p>Tournaments are time-boxed paper-trading contests. Pick a lineup of artists, and your placement is scored by combined return over the contest window.</p>
+      <ul>
+        <li>Browse active and upcoming tournaments on the <b>Tournaments</b> page.</li>
+        <li>Entry fees and prizes, where shown, are virtual — part of the prototype.</li>
+        <li>The <b>Leaderboard</b> page shows overall rank across all participants.</li>
+      </ul>
+      <p>Full rules, scoring breakdown, and strategy notes coming soon.</p>
+    `,
+  },
+  'pricing': {
+    title: 'How prices work',
+    body: `
+      <div class="guide-stub"><b>Draft in progress</b> — Sander to fill this guide in his own voice. The short version below is accurate; the deeper walk-through (EMA smoothing, why YouTube is a multiplier not a base, how new artists bootstrap) still needs his take.</div>
+      <p>Every artist's price comes from real streaming data, not a simulation:</p>
+      <ul>
+        <li><b>Spotify monthly listeners</b> × <b>€0.03 per 1,000,000</b> is the base price.</li>
+        <li><b>YouTube channel stats</b> apply a multiplier on top of the base.</li>
+        <li>An <b>exponential moving average</b> smooths single data pulls so prices don't whipsaw.</li>
+      </ul>
+      <p>The scheduler refreshes prices every 30 minutes, 24/7. You'll see that reflected on the artist detail page next to the "Last updated" timestamp.</p>
+    `,
+  },
+  'account': {
+    title: 'Settings',
+    body: `
+      <p>Settings lives at the <b>gear icon</b> in the nav. Everything in here either works end-to-end or was removed — no cosmetic toggles.</p>
+      <h3>Appearance</h3>
+      <ul>
+        <li><b>Theme</b> — Dark or Light. The full app re-skins instantly, no reload.</li>
+        <li><b>Reduce motion</b> — disables the chart animations and the ticker tape scroll, for accessibility or screen-recording.</li>
+        <li><b>Ticker tape</b> — show or hide the scrolling price strip at the top.</li>
+      </ul>
+      <h3>Trading</h3>
+      <ul>
+        <li><b>Default order type</b> — market or limit (limit isn't live yet, but the default sticks for when it ships).</li>
+        <li><b>Default quantity mode</b> — shares or euros. Sets the initial state of the buy/sell input.</li>
+        <li><b>Confirm trades</b> — when on, every buy/sell goes through a review dialog. Off means one-tap execution.</li>
+        <li><b>Show P&amp;L in header</b> — toggle the Today / All-time chips on the Portfolio page.</li>
+      </ul>
+      <h3>Language &amp; currency</h3>
+      <p>English and EUR are the only options today. Multi-currency is on the long-term roadmap but not a near-term ship.</p>
+      <div class="guide-callout"><b>Notifications, 2FA, privacy controls:</b> all removed in the M9 audit. They'll return when there's real infrastructure behind them — Muses won't ship toggles that don't do anything.</div>
+    `,
+  },
+};
+
+function openHelpGuide(topicId) {
+  const guide = HELP_GUIDES[topicId];
+  if (!guide) {
+    showToast('Guide not found');
+    return;
+  }
+  const titleEl = document.getElementById('help-guide-title');
+  const bodyEl = document.getElementById('help-guide-body');
+  const modal = document.getElementById('help-guide-modal');
+  if (!titleEl || !bodyEl || !modal) return;
+  titleEl.textContent = guide.title;
+  bodyEl.innerHTML = guide.body;
+  // Reset scroll so each open starts at the top of the guide.
+  bodyEl.scrollTop = 0;
+  modal.classList.add('show');
+}
+
+function closeHelpGuide() {
+  const modal = document.getElementById('help-guide-modal');
+  if (modal) modal.classList.remove('show');
+}
 
 function renderHelp() {
   const host = document.getElementById('help-wrap');
@@ -15228,7 +15420,7 @@ function renderHelp() {
             <div class="help-contact-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
             <div class="help-contact-title">Email support</div>
           </div>
-          <div class="help-contact-desc">Reply goes to sandertbroeke@hotmail.com — the whole team is one person for now, so be patient. Share screenshots, artist tickers, and what you were trying to do.</div>
+          <div class="help-contact-desc">Email <a href="mailto:hello@muses.exchange" style="color:var(--purple-2)">hello@muses.exchange</a> — one person reads it, so be patient. Screenshots, artist tickers, and what you were trying to do all help.</div>
           <button class="help-contact-btn" data-help-action="email">Contact support</button>
         </div>
       </div>
@@ -15314,7 +15506,7 @@ function renderHelp() {
 
   host.querySelectorAll('[data-topic]').forEach(btn => {
     btn.addEventListener('click', () => {
-      showToast('Opening ' + btn.dataset.topic.replace(/-/g, ' ') + '…');
+      openHelpGuide(btn.dataset.topic);
     });
   });
   host.querySelectorAll('[data-help-action]').forEach(btn => {
@@ -15324,11 +15516,11 @@ function renderHelp() {
         // Open native mail client. Subject/body pre-filled so I can triage
         // faster. Fallback to a toast if the mailto is blocked (corp iframes).
         try {
-          window.location.href = 'mailto:sandertbroeke@hotmail.com'
+          window.location.href = 'mailto:hello@muses.exchange'
             + '?subject=' + encodeURIComponent('Muses support')
             + '&body=' + encodeURIComponent('Tell me what happened — screenshots and the artist ticker help.\n\n');
         } catch (e) {
-          showToast('Email sandertbroeke@hotmail.com');
+          showToast('Email hello@muses.exchange');
         }
       }
     });
@@ -16687,7 +16879,6 @@ function renderProfile() {
         <div class="prof-hero-actions">
           <button class="btn btn-secondary" id="prof-edit">Edit profile</button>
           <button class="btn btn-secondary" id="prof-share">Share</button>
-          <button class="btn btn-secondary" id="prof-tour">Replay tour</button>
         </div>
       </div>
     </div>
@@ -16823,8 +17014,9 @@ function renderProfile() {
   if (editBtn) editBtn.onclick = () => openEditProfileModal();
   const shareBtn = document.getElementById('prof-share');
   if (shareBtn) shareBtn.onclick = () => shareProfile();
-  const tourBtn = document.getElementById('prof-tour');
-  if (tourBtn) tourBtn.onclick = () => startOnboarding(true);
+  // M9.3: Replay-tour button removed from profile + Settings Data section.
+  // startOnboarding(force=true) stays callable from the console for QA, but the
+  // user-facing entry point is gone.
   // Sync topbar chip with current profile
   syncTopbarProfile();
 }
@@ -20127,6 +20319,22 @@ document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('modal').addEventListener('click', (e) => {
   if (e.target.id === 'modal') closeModal();
 });
+
+// M9.5: help-guide modal close wiring. Close button, backdrop click, and
+// Esc key all dismiss. Esc is scoped to "only if this modal is open" so it
+// doesn't clobber other Esc handlers.
+(function wireHelpGuideModal() {
+  const modal = document.getElementById('help-guide-modal');
+  const closeBtn = document.getElementById('help-guide-close');
+  if (!modal || !closeBtn) return;
+  closeBtn.addEventListener('click', closeHelpGuide);
+  modal.addEventListener('click', (e) => {
+    if (e.target.id === 'help-guide-modal') closeHelpGuide();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('show')) closeHelpGuide();
+  });
+})();
 
 // ============ QUICK TRADE MODAL ============
 function renderQuickTradeModal() {
