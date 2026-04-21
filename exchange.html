@@ -291,6 +291,18 @@
     background: #FAFAFC;
   }
 
+  /* ── M16.7 — mobile bottom-nav in light mode ──────────────────────────
+     `.sidebar` at ≤680px is repurposed as a fixed bottom nav with a
+     hardcoded `rgba(15,15,23,0.94)` background, so it paints as a dark
+     bar even when the rest of the UI is in light mode. Override to a
+     frosted near-white so the bottom nav matches the light theme. */
+  @media (max-width: 680px) {
+    body[data-theme="light"] .sidebar {
+      background: rgba(250, 250, 252, 0.94);
+      border-top-color: var(--border);
+    }
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     background: var(--bg);
