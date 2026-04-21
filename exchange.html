@@ -17102,8 +17102,17 @@ function renderLeaderboard() {
   // was gated on portfolios.update() succeeding, migration 004 ran
   // after they started trading, etc), write their row now, then refetch
   // with force=true so the new row shows up this render cycle.
+  //
+  // M16.15 — guard against infinite render loop. Previously this ran on
+  // EVERY renderLeaderboard() invocation, and fetchLeaderboard(true)'s
+  // success path re-calls renderLeaderboard(), which re-triggered this
+  // self-heal, which re-fetched, which re-rendered… hot loop at ~55 Hz.
+  // The backfill only needs to succeed once per session — after that, the
+  // user's row is in `leaderboard` and will show up via the normal TTL-
+  // aware fetch path.
   const authed = !!(window.MUSE_USER && window.MUSE_USER.authed && window.SUPABASE);
-  if (authed) {
+  if (authed && !window.__lbSelfHealRan) {
+    window.__lbSelfHealRan = true;
     upsertLeaderboardRow()
       .then(() => fetchLeaderboard(true))
       .catch((e) => { console.warn('[Muses] Leaderboard self-heal failed:', e.message || e); fetchLeaderboard(); });
