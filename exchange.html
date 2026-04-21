@@ -8788,6 +8788,11 @@
         name: name,
         handle: handleRaw,
         authed: !!user,
+        // M16.10 — set at signup by signup.html, cleared by endOnboarding
+        // after the user skips or completes the tour. Canonical signal for
+        // "brand-new user who hasn't seen onboarding yet" — replaces the
+        // old activity-based heuristic that fired on every login.
+        tourPending: meta.tour_pending === true,
       };
     }
 
@@ -9365,8 +9370,10 @@
           <div class="card-title"><span>Tournament Credits <span class="info-tip">?<span class="tip-text">Virtual credits used for tournament entries and prize payouts. Everything in Muses is paper — no real money is involved.</span></span></span> <span class="money-badge real"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Credits</span></div>
           <div class="hero-value" style="font-size:28px">€<span id="pf-real-bal">0.00</span></div>
           <div style="font-size:11px;color:var(--text-faint);margin-top:2px;margin-bottom:10px">Tournament fees &amp; prize winnings</div>
+          <!-- M16.11 — Deposit button removed. Muses is paper-only; credits are
+               earned via tournament prizes, not deposited. Withdraw stays for
+               the legacy withdraw simulation path. -->
           <div style="display:flex;gap:8px">
-            <button class="btn btn-primary" style="flex:1;padding:8px" data-action="deposit">Deposit</button>
             <button class="btn btn-secondary" style="flex:1;padding:8px" data-action="withdraw">Withdraw</button>
           </div>
         </div>
@@ -9380,8 +9387,7 @@
           </div>
         </div>
 
-        <!-- Dynamic deposit nudge (populated by renderPortfolio) -->
-        <div id="deposit-nudge-host"></div>
+        <!-- M16.11 — deposit-nudge-host removed. Paper-only: no deposit flow. -->
 
         <div class="card">
           <div class="card-title"><span>Allocation <span class="info-tip">?<span class="tip-text">How your portfolio is spread across different artists and genres.</span></span></span>
@@ -14456,7 +14462,8 @@ function recalcDetailTrade() {
   const warnEl = document.getElementById('ad-trade-warn');
   const warnings = [];
   if (STATE.tradeSide === 'buy' && amt > STATE.cash) {
-    warnings.push('Insufficient cash · need €' + (amt - STATE.cash).toFixed(2) + ' more · <a href="#" onclick="event.preventDefault();openModal(\'deposit\')" style="color:var(--purple);text-decoration:underline">Deposit</a>');
+    // M16.11 — removed deposit link. Paper-only; user must sell or reduce size.
+    warnings.push('Insufficient cash · need €' + (amt - STATE.cash).toFixed(2) + ' more · reduce size or sell a position');
   }
   if (STATE.tradeSide === 'sell') {
     const h = STATE.holdings[a.ticker];
@@ -15146,9 +15153,7 @@ function renderSwapPage() {
     }).join('');
   }
 
-  // Wire sidebar deposit button
-  const depBtn = document.querySelector('#view-swap [data-action="deposit"]');
-  if (depBtn) depBtn.addEventListener('click', () => openModal('deposit'));
+  // M16.11 — sidebar deposit button removed. No wire-up needed.
 }
 
 function renderOrdersView() {
@@ -16550,22 +16555,8 @@ function renderPortfolio() {
   const pfRealBal = document.getElementById('pf-real-bal');
   if (pfRealBal) pfRealBal.textContent = fmtNum2(STATE.tournamentCredits);
 
-  // ---- Deposit nudge (shows when cash is low relative to portfolio) ----
-  const nudgeHost = document.getElementById('deposit-nudge-host');
-  if (nudgeHost) {
-    const cashPct = totalValue > 0 ? (STATE.cash / totalValue) * 100 : 100;
-    const showNudge = tickers.length > 0 && STATE.cash < 20_000;
-    nudgeHost.innerHTML = showNudge ? `
-      <div class="card" style="background:linear-gradient(135deg, rgba(167,139,250,0.08), rgba(109,40,217,0.08));border-color:rgba(167,139,250,0.2)">
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Running low on cash</div>
-        <div style="font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:12px">You have ${fmtPrice(STATE.cash)} left (${cashPct.toFixed(0)}% of portfolio). Deposit more to keep investing.</div>
-        <button class="btn btn-primary" style="width:100%;padding:10px" data-action="deposit">Deposit funds</button>
-      </div>
-    ` : '';
-    // Wire the deposit button if it was just inserted
-    const depBtn = nudgeHost.querySelector('[data-action="deposit"]');
-    if (depBtn) depBtn.addEventListener('click', () => openModal('deposit'));
-  }
+  // ---- M16.11 — "Running low on cash" deposit nudge removed.
+  //      Muses is paper-only; no deposit path. User rebalances by selling.
 
   // ---- Portfolio chart with benchmark ----
   let baseValue = STATE.cash + invested;
@@ -16941,13 +16932,7 @@ function renderSuggestedActions(tickers, invested, totalValue, allocPct) {
       cta: `Open ${top.ticker} →`,
       action: () => { STATE.selected = top; setView('artist'); },
     });
-    suggestions.push({
-      icon: '#i-arrow-down',
-      title: 'Add more cash',
-      msg: 'You have €' + STATE.cash.toFixed(0) + '. Top up to invest more.',
-      cta: 'Deposit →',
-      action: () => openModal('deposit'),
-    });
+    // M16.11 — "Add more cash / Deposit" suggestion removed (no deposit flow).
   }
 
   // Rule 5: Watchlist nudge
@@ -17447,7 +17432,7 @@ function renderProfile() {
       <div class="prof-kpi">
         <div class="prof-kpi-label">Tournament Credits ${tip('Virtual credits used for tournament entries and prize payouts. No real money involved.')} ${realBadge('Credits')}</div>
         <div class="prof-kpi-val">${fmtPrice(STATE.tournamentCredits)}</div>
-        <div class="prof-kpi-sub"><span style="color:var(--purple);cursor:pointer" onclick="openModal('deposit')">Top up →</span></div>
+        <div class="prof-kpi-sub">Earned from tournaments</div>
       </div>
       <div class="prof-kpi">
         <div class="prof-kpi-label">Tournaments ${tip('Total tournaments entered. Prizes are paid out in virtual tournament credits.')} ${realBadge('Credits')}</div>
@@ -19345,14 +19330,14 @@ function showSignupModal(id) {
           <span>Your credit balance</span>
           <span class="val" style="color:${hasBalance ? 'var(--up)' : 'var(--down)'}">${fmtPrice(STATE.tournamentCredits)}</span>
         </div>
-        ${!hasBalance ? `<div class="sm-row" style="color:var(--down);font-size:11px"><span>Insufficient tournament credits — deposit ${fmtPrice((t.entry - STATE.tournamentCredits))} more</span></div>` : ''}
+        ${!hasBalance ? `<div class="sm-row" style="color:var(--down);font-size:11px"><span>Insufficient tournament credits — win a tournament to earn more</span></div>` : ''}
         <div class="sm-row" style="font-size:11px;color:var(--text-faint)"><span>Balance after entry</span><span>${hasBalance ? fmtPrice(STATE.tournamentCredits - t.entry) : '—'}</span></div>
       </div>
       <div class="sm-actions">
-        <button class="btn-cancel" data-signup-cancel>Cancel</button>
+        <button class="btn-cancel" data-signup-cancel>${hasBalance ? 'Cancel' : 'Close'}</button>
         ${hasBalance
           ? `<button class="btn-confirm" data-signup-confirm="${id}">Pay ${fmtPrice(t.entry)} & enter</button>`
-          : `<button class="btn-confirm" data-signup-deposit>Deposit funds</button>`
+          : ''
         }
       </div>
     </div>
@@ -19362,16 +19347,8 @@ function showSignupModal(id) {
   overlay.querySelector('[data-signup-cancel]').onclick = () => overlay.remove();
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 
-  // Deposit button — close modal, open deposit modal, then re-open signup
-  const depositBtn = overlay.querySelector('[data-signup-deposit]');
-  if (depositBtn) {
-    depositBtn.onclick = () => {
-      overlay.remove();
-      // Store pending signup so we can resume after deposit
-      STATE._pendingSignup = id;
-      openModal('deposit');
-    };
-  }
+  // M16.11 — Tournament "Deposit funds" fallback removed. Credits are earned,
+  // not deposited. Users with insufficient balance can only close the modal.
 
   const confirmBtn = overlay.querySelector('[data-signup-confirm]');
   if (confirmBtn) {
@@ -20325,19 +20302,9 @@ function openModal(type) {
 
 function closeModal() {
   document.getElementById('modal').classList.remove('show');
-  // Resume pending tournament signup if user just deposited successfully
-  if (STATE._pendingSignup && MODAL.type === 'deposit' && MODAL.step === 4) {
-    const pendingId = STATE._pendingSignup;
-    STATE._pendingSignup = null;
-    // Reset modal state before re-opening signup
-    MODAL.step = 1; MODAL.method = null; MODAL.amount = 0;
-    setTimeout(() => showSignupModal(pendingId), 300);
-  } else {
-    // Clear stale pending signup if modal closed without completing deposit
-    STATE._pendingSignup = null;
-    // Reset modal state to prevent stale data on reopen
-    MODAL.step = 1; MODAL.method = null; MODAL.amount = 0;
-  }
+  // M16.11 — pending-signup-after-deposit resume path removed (no deposit flow).
+  // Reset modal state to prevent stale data on reopen.
+  MODAL.step = 1; MODAL.method = null; MODAL.amount = 0;
 }
 
 // ============ SWAP FLOW ============
@@ -21936,32 +21903,26 @@ const ONB_GENRES = [
 ];
 
 function startOnboarding(force) {
-  // Highest-priority gate: if we already know (from Supabase snapshot or
-  // prior dismissal in this session) that the user is onboarded, exit.
-  // This is checked first so that fetchPortfolioFromSupabase setting
-  // STATE.onboarded = true takes precedence over localStorage-only logic.
+  // M16.10 — tour shows ONLY for users whose Supabase user_metadata has
+  // tour_pending:true (set by signup.html at account creation). The flag is
+  // cleared by endOnboarding() via updateUser the moment the user skips or
+  // completes, so subsequent logins are tour-free. Returning users who
+  // never had this flag (legacy signups, guests, accounts created before
+  // M16.10) never see the tour — they've already been using the app and
+  // would find it unwelcome. `force=true` remains callable from console
+  // for QA.
   if (!force && STATE.onboarded === true) return;
   const userId = (window.MUSE_USER && window.MUSE_USER.id) || 'anon';
   const userKey = 'muse_onboarded_' + userId;
-  try {
-    // Per-user onboarded flag (Supabase era — multi-user on one browser is now a
-    // real scenario). A global 'muse_onboarded' key would have suppressed the
-    // tour for every new signup on a browser where anyone had completed it.
-    if (!force && localStorage.getItem(userKey) === '1') {
+  if (!force) {
+    if (!(window.MUSE_USER && window.MUSE_USER.tourPending === true)) {
+      // Returning user or legacy account without the flag — treat as
+      // onboarded so the rest of the app (tooltips that gate on
+      // STATE.onboarded) behaves correctly.
       STATE.onboarded = true;
       return;
     }
-    // One-time migration: legacy global flag → this user's per-user key.
-    // After this, the legacy key is cleared so future users on the same
-    // browser start fresh.
-    if (!force && localStorage.getItem('muse_onboarded') === '1') {
-      localStorage.setItem(userKey, '1');
-      localStorage.removeItem('muse_onboarded');
-      STATE.onboarded = true;
-      return;
-    }
-  } catch (e) {}
-  if (STATE.onboarded && !force) return;
+  }
   STATE.onboardingStep = 0;
   STATE.onboardingDraft = {
     name: STATE.profile.name || 'You',
@@ -21992,6 +21953,24 @@ function endOnboarding(completed) {
   try {
     if (typeof pushPortfolioToSupabase === 'function') pushPortfolioToSupabase();
   } catch (e) {}
+  // M16.10 — clear the tour_pending user_metadata flag on Supabase. This is
+  // the canonical signal for "has this user seen the tour?" — without it
+  // the next /exchange load (on any device) would re-show the tour. Keep
+  // existing metadata intact by spreading the current user_metadata before
+  // writing, since updateUser's behavior around metadata merging has been
+  // inconsistent across SDK versions.
+  try {
+    if (window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed) {
+      window.SUPABASE.auth.getUser().then(({ data }) => {
+        const currentMeta = (data && data.user && data.user.user_metadata) || {};
+        if (currentMeta.tour_pending === false) return; // already cleared
+        window.SUPABASE.auth.updateUser({
+          data: Object.assign({}, currentMeta, { tour_pending: false }),
+        }).catch(() => {});
+      }).catch(() => {});
+    }
+  } catch (e) {}
+  if (window.MUSE_USER) window.MUSE_USER.tourPending = false;
   if (completed) {
     const d = STATE.onboardingDraft;
     if (d) {

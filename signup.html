@@ -265,7 +265,12 @@ form.addEventListener('submit', async (e) => {
       email,
       password,
       options: {
-        data: { display_name: name, handle: handle },
+        // M16.10 — tour_pending:true marks this as a brand-new signup so
+        // /exchange can show the intro tour exactly once. exchange.html
+        // clears the flag (via updateUser) when the user completes or
+        // skips the tour, so subsequent logins are tour-free. Returning
+        // users without this flag never see the tour.
+        data: { display_name: name, handle: handle, tour_pending: true },
         emailRedirectTo: window.location.origin + '/signin'
       }
     });
