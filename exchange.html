@@ -9459,10 +9459,13 @@
           <div class="card-title"><span>Tournament Credits <span class="info-tip">?<span class="tip-text">Virtual credits used for tournament entries and prize payouts. Everything in Muses is paper — no real money is involved.</span></span></span> <span class="money-badge real"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Credits</span></div>
           <div class="hero-value" style="font-size:28px">€<span id="pf-real-bal">0.00</span></div>
           <div style="font-size:11px;color:var(--text-faint);margin-top:2px;margin-bottom:10px">Tournament fees &amp; prize winnings</div>
-          <!-- M16.11 — Deposit button removed. Muses is paper-only; credits are
-               earned via tournament prizes, not deposited. Withdraw stays for
-               the legacy withdraw simulation path. -->
+          <!-- M16.17 — Restored a deposit button alongside Withdraw, but semantics
+               are fully paper: Add credits transfers from Paper Balance → Tournament
+               Credits, Withdraw transfers the other way. No real money, no "iDEAL"
+               method-picker theater — just two virtual wallets the user can move
+               balance between. -->
           <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary" style="flex:1;padding:8px" data-action="deposit">Add credits</button>
             <button class="btn btn-secondary" style="flex:1;padding:8px" data-action="withdraw">Withdraw</button>
           </div>
         </div>
@@ -15266,7 +15269,11 @@ function renderOrdersView() {
   setCount('orders-count-filled', STATE.filledOrders.length);
   setCount('orders-count-cancelled', STATE.cancelledOrders.length);
   setCount('orders-count-recurring', (STATE.recurringBuys || []).length);
-  setCount('orders-count-history', (STATE.transactions || []).length);
+  // M16.17 — Orders → History shows *trades* only. TRANSFER rows (paper ↔
+  // tournament credits) are bookkeeping for a different surface, not trades,
+  // so we filter them out of both the count and the row list.
+  const tradeTxs = (STATE.transactions || []).filter(tx => tx && tx.type !== 'TRANSFER');
+  setCount('orders-count-history', tradeTxs.length);
   document.querySelectorAll('#orders-tabs .orders-tab').forEach(t => {
     t.classList.toggle('active', t.dataset.otab === STATE.ordersTab);
   });
@@ -15276,7 +15283,7 @@ function renderOrdersView() {
   if (tab === 'open') rows = STATE.openOrders;
   else if (tab === 'filled') rows = STATE.filledOrders;
   else if (tab === 'cancelled') rows = STATE.cancelledOrders;
-  else if (tab === 'history') rows = STATE.transactions || [];
+  else if (tab === 'history') rows = tradeTxs;
   else rows = STATE.recurringBuys;
 
   if (!rows.length) {
@@ -16816,10 +16823,13 @@ function renderPortfolio() {
 
   // ---- Recent activity feed ----
   const txFeed = document.getElementById('tx-feed');
-  if (STATE.transactions.length === 0) {
+  // M16.17 — Filter to trades only (BUY/SELL); transfers between paper and
+  // tournament credits are logged but shown in a different surface, not here.
+  const feedTxs = (STATE.transactions || []).filter(tx => tx && (tx.type === 'BUY' || tx.type === 'SELL'));
+  if (feedTxs.length === 0) {
     txFeed.innerHTML = '<div class="dim" style="font-size:12px;padding:14px 4px">No transactions yet.</div>';
   } else {
-    txFeed.innerHTML = STATE.transactions.slice(0, 8).map(tx => {
+    txFeed.innerHTML = feedTxs.slice(0, 8).map(tx => {
       const isBuy = tx.type === 'BUY';
       const ago = tx.ts ? Math.max(1, Math.round((Date.now() - tx.ts) / 60000)) + 'm ago' : 'just now';
       return `
@@ -17499,8 +17509,12 @@ function renderProfile() {
     .sort((a, b) => b.value - a.value)
     .slice(0, 5);
 
-  // Recent activity (last 5 transactions)
-  const recentTx = (STATE.transactions || []).slice(0, 5);
+  // Recent activity (last 5 transactions).
+  // M16.17 — Filter to trades only; TRANSFER rows (paper ↔ tournament credits)
+  // don't have ticker/price/shares, so would render as "Bought 0.00 undefined".
+  const recentTx = (STATE.transactions || [])
+    .filter(tx => tx && tx.type !== 'TRANSFER')
+    .slice(0, 5);
 
   // M14.5 — The Performance equity curve previously lived here; it's been
   // moved to Portfolio-only where it's the primary surface. Profile now
@@ -20744,14 +20758,19 @@ function renderModalStep() {
 function renderStepSimple() {
   const body = document.getElementById('modal-body');
   const isDeposit = MODAL.type === 'deposit';
-  const action = isDeposit ? 'Top up' : 'Withdraw';
-  const available = STATE.tournamentCredits;
+  const action = isDeposit ? 'Add credits' : 'Withdraw';
+  // M16.17 — show the SOURCE balance so the user knows the cap they can move.
+  //   Deposit: source = paper balance  (paper → tournament credits)
+  //   Withdraw: source = tournament credits  (tournament credits → paper)
+  const sourceBalance = isDeposit ? (STATE.cash || 0) : (STATE.tournamentCredits || 0);
+  const sourceLabel = isDeposit ? 'Paper balance' : 'Tournament credits';
+  const destLabel = isDeposit ? 'Tournament credits' : 'Paper balance';
   body.innerHTML = `
-    ${paperBanner((isDeposit ? 'Top up your tournament credits.' : 'Withdraw tournament credits.') + ' Everything in Muses is paper — no real money moves.')}
-    <div class="step-label">${isDeposit ? 'How many credits do you want to add?' : 'How many credits do you want to remove?'}</div>
+    ${paperBanner(`Move virtual balance from ${sourceLabel} to ${destLabel}. No real money moves — everything in Muses is paper.`)}
+    <div class="step-label">${isDeposit ? 'How much do you want to move into tournament credits?' : 'How much do you want to move back to paper balance?'}</div>
     <div class="amount-display">
       <span class="currency">€</span><span class="amt" id="amt-display">${MODAL.amount || 0}</span>
-      <div class="available">${isDeposit ? 'Current credits: €' + available.toFixed(2) : 'Available: €' + available.toFixed(2)}</div>
+      <div class="available">Available in ${sourceLabel}: €${sourceBalance.toFixed(2)}</div>
     </div>
     <div class="quick-amounts">
       ${QUICK_AMOUNTS.map(v => `<button class="quick-amt ${MODAL.amount === v ? 'active' : ''}" data-v="${v}">€${v}</button>`).join('')}
@@ -20787,12 +20806,27 @@ function renderStepSimple() {
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('modal-confirm').addEventListener('click', () => {
     if (MODAL.amount <= 0) return;
+    // M16.17 — FIX: withdraw now actually credits paper balance; deposit now
+    // actually debits paper balance. Previously withdraw just deleted credits
+    // (money vanished) and deposit minted credits from nothing (free money).
     if (isDeposit) {
-      STATE.tournamentCredits += MODAL.amount;
+      if (MODAL.amount > (STATE.cash || 0)) return showToast('Insufficient paper balance', true);
+      STATE.cash -= MODAL.amount;
+      STATE.tournamentCredits = (STATE.tournamentCredits || 0) + MODAL.amount;
     } else {
-      if (MODAL.amount > STATE.tournamentCredits) return showToast('Insufficient tournament credits', true);
+      if (MODAL.amount > (STATE.tournamentCredits || 0)) return showToast('Insufficient tournament credits', true);
       STATE.tournamentCredits -= MODAL.amount;
+      STATE.cash = (STATE.cash || 0) + MODAL.amount;
     }
+    // Record the transfer in the transactions feed so it shows up in Recent Activity.
+    try {
+      STATE.transactions.unshift({
+        type: 'TRANSFER',
+        direction: isDeposit ? 'to-credits' : 'to-paper',
+        amount: MODAL.amount,
+        time: new Date(),
+      });
+    } catch (_) {}
     updateCashDisplay();
     if (!document.getElementById('view-portfolio').classList.contains('hidden')) renderPortfolio();
     if (!document.getElementById('view-swap').classList.contains('hidden')) renderSwapPage();
@@ -20931,13 +20965,19 @@ function renderStepConfirm() {
 function renderStepSuccess() {
   const body = document.getElementById('modal-body');
   const isDeposit = MODAL.type === 'deposit';
+  // M16.17 — Success copy now matches the actual transfer that happened.
+  //   Deposit: paper balance → tournament credits
+  //   Withdraw: tournament credits → paper balance
+  // Old copy was backwards (said withdraw "removed from your paper balance"
+  // when withdraw actually ADDS to paper balance now that the accounting bug
+  // is fixed).
   body.innerHTML = `
     <div class="success-state">
       <div class="success-icon"><svg><use href="#i-check"/></svg></div>
-      <div class="success-title">${isDeposit ? 'Deposit simulated' : 'Withdrawal simulated'}</div>
+      <div class="success-title">${isDeposit ? 'Credits added' : 'Credits withdrawn'}</div>
       <div class="success-msg">${isDeposit
-        ? `${fmtPrice(MODAL.amount)} in virtual credits has been added to your paper balance. No real money moved — Muses is a prototype and nothing was charged.`
-        : `${fmtPrice(MODAL.amount)} in virtual credits has been removed from your paper balance. No real money moved — Muses is a prototype and nothing was sent.`}</div>
+        ? `${fmtPrice(MODAL.amount)} moved from your paper balance into tournament credits. No real money moved — Muses is a prototype and nothing was charged.`
+        : `${fmtPrice(MODAL.amount)} moved from tournament credits back into your paper balance. No real money moved — Muses is a prototype and nothing was sent.`}</div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-primary" id="modal-done">Done</button>
