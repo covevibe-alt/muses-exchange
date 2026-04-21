@@ -8572,11 +8572,20 @@
     .col-main {
       padding-bottom: max(24px, env(safe-area-inset-bottom));
     }
-    /* Prevent horizontal overflow */
+    /* M14.6.1 — mobile hero row must stack.
+       Desktop switched .pf-hero-row to `display: grid; grid-template-columns: auto 1fr`
+       so the value sits left and the chip strip sits right. On mobile that puts
+       the 44px €9,999.98 next to three chips in ~40% of the screen and they
+       clip off the right edge. Force a single-column grid here so the value
+       renders full-width and the 3 chips drop below it. The old
+       `flex-direction: column` was a no-op against a grid container. */
     .pf-hero-row {
-      flex-direction: column;
+      grid-template-columns: 1fr;
       gap: 16px;
     }
+    /* Also trim the huge value a touch so it doesn't wrap its own cents span. */
+    .pf-hero-value { font-size: 36px; }
+    .pf-hero-value .cents { font-size: 18px; }
     /* 3-col grid at mobile so Today/All-Time/Allocated stay on one row
        (old flex-basis: 50% forced a 2+1 "orphan on row 2" layout). */
     .pf-chips {
