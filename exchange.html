@@ -224,6 +224,62 @@
      style by raising specificity. */
   body[data-theme="light"] #splash { background: #FAFAFC !important; }
 
+  /* ── M16.2 — post-audit light-mode fixes ──────────────────────────────
+     Caught on a live Chrome walk after M14.8 shipped. Three holdouts
+     survived the first pass because they're painted by elements/layers
+     that don't read theme tokens. */
+
+  /* Ticker tape: background is hardcoded rgba(0,0,0,0.55) so it reads as
+     a solid dark band in light mode. Flip to a near-white tint of the
+     same weight, plus a sharper bottom border so the tape still reads
+     as a distinct strip. Status chip (LIVE pulse) and track items
+     already use tokenised colors so they follow. */
+  body[data-theme="light"] .ticker-tape {
+    background: rgba(15,15,23,0.04);
+    border-bottom-color: var(--border);
+  }
+
+  /* Profile hero: the base layer of .prof-hero-bg is a hardcoded dark
+     purple linear-gradient (#1a1430 → #0f0a22). In light mode that
+     makes the name + bio text (color: var(--text) = near-black) nearly
+     unreadable against the dark bg. Swap the base for a pale
+     lavender → pale pink wash so the identical radial purple/pink
+     glows on top still read as "hero glow" but the canvas underneath
+     is light enough for dark text. */
+  body[data-theme="light"] .prof-hero-bg {
+    background:
+      radial-gradient(circle at 20% 20%, rgba(167,139,250,0.22), transparent 50%),
+      radial-gradient(circle at 80% 60%, rgba(236,72,153,0.14), transparent 55%),
+      linear-gradient(135deg, #F5F0FF, #FDEFF6);
+  }
+  /* The tier progress bar inside the hero uses rgba(255,255,255,0.08)
+     which disappears on the new light wash. Map to the equivalent
+     dark tint so the track is visible under the filled portion. */
+  body[data-theme="light"] .prof-tier-bar {
+    background: rgba(15,15,23,0.08);
+  }
+
+  /* ── M16.4 — light-mode polish ────────────────────────────────────────
+     Tiny contrast bumps caught on the Chrome audit. Neither was outright
+     broken, just hard to read. */
+
+  /* Selected sort-tab: purple-2 (#A78BFA — light lavender) on purple-soft
+     (10% purple fill) effectively disappears on the discover card's pale
+     lavender wash. Bump to a denser fill and the stronger --purple stem
+     color so "Price"/"Trending"/etc. read as actually selected. */
+  body[data-theme="light"] .sort-tab.active {
+    background: rgba(139,92,246,0.20);
+    color: #6D4AE5;
+  }
+
+  /* Discover-hero search pill is hardcoded bg rgba(0,0,0,0.35) — a dark
+     lozenge that reads as a grey bar on the light lavender hero card.
+     Flip to a near-white fill so it looks like a proper input field
+     against the card's pale wash. */
+  body[data-theme="light"] .dh-search {
+    background: rgba(255,255,255,0.85);
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     background: var(--bg);
@@ -10373,6 +10429,32 @@ function upDownClass(val) { return val >= 0 ? 'up' : 'down'; }
 // ── Genre stats cache — recomputed every tick ──
 const GENRE_STATS = {};  // { 'Pop': { artists: [...], count, avgPrice, avgChange, totalListeners, topMover }, ... }
 
+// M16.3 — Hoisted from its original home below `genreMatches()` so that
+// recomputeGenreStats() / renderSectorStrip() / any boot-path caller that
+// touches it doesn't hit a temporal-dead-zone error. const declarations are
+// not hoisted, and applyInitialRoute() fires setView('markets') → renderMarkets
+// → renderSectorStrip which reads GENRE_KEYWORDS — if the original declaration
+// is further down in the same <script> block, the read runs before the
+// declaration executes and throws "Cannot access 'GENRE_KEYWORDS' before
+// initialization" on every cold load.
+// Genre groups: each chip maps to multiple keywords found in GENRES strings.
+// NB: 'pop' would also match 'k-pop' / 'afropop' as a substring, so we
+// use word-boundary markers (a leading space or start of string) to keep
+// chips exclusive. The matcher normalises with a leading space.
+const GENRE_KEYWORDS = {
+  all: null,
+  'Pop': [' pop'],
+  'Hip-hop': ['hip-hop', 'hip hop', 'rap'],
+  'R&B': ['r&b', 'rnb'],
+  'Indie': ['indie'],
+  'Latin': ['latin', 'reggaeton'],
+  'Alt': ['alt', 'alternative'],
+  'Country': ['country'],
+  'K-Pop': ['k-pop'],
+  'Afropop': ['afropop', 'afrobeat'],
+  'Electronic': ['electronic', 'house', 'edm', 'techno'],
+};
+
 function recomputeGenreStats() {
   const genreKeys = Object.keys(GENRE_KEYWORDS).filter(k => k !== 'all');
   for (const g of genreKeys) {
@@ -11751,12 +11833,18 @@ function tip(text, cls) { return `<span class="info-tip${cls ? ' ' + cls : ''}">
   }
 
   document.addEventListener('mouseenter', function(e) {
+    // M16.3 — guard against e.target not being an Element (some synthetic
+    // events fire with target=document or target=window, and `.closest` is
+    // an Element-only method). Was spamming "e.target.closest is not a
+    // function" in prod.
+    if (!(e.target instanceof Element)) return;
     const tip = e.target.closest('.info-tip');
     if (tip) reposition(tip);
   }, true);
 
   // Also handle touch for mobile
   document.addEventListener('touchstart', function(e) {
+    if (!(e.target instanceof Element)) return;
     const tip = e.target.closest('.info-tip');
     if (tip) reposition(tip);
   }, { passive: true });
@@ -12269,23 +12357,7 @@ function syncQuickFilterUI(scope, F) {
   }
 }
 
-// Genre groups: each chip maps to multiple keywords found in GENRES strings
-const GENRE_KEYWORDS = {
-  all: null,
-  // NB: 'pop' would also match 'k-pop' / 'afropop' as a substring, so we
-  // use word-boundary markers (a leading space or start of string) to keep
-  // chips exclusive. The matcher normalises with a leading space.
-  'Pop': [' pop'],
-  'Hip-hop': ['hip-hop', 'hip hop', 'rap'],
-  'R&B': ['r&b', 'rnb'],
-  'Indie': ['indie'],
-  'Latin': ['latin', 'reggaeton'],
-  'Alt': ['alt', 'alternative'],
-  'Country': ['country'],
-  'K-Pop': ['k-pop'],
-  'Afropop': ['afropop', 'afrobeat'],
-  'Electronic': ['electronic', 'house', 'edm', 'techno'],
-};
+// (GENRE_KEYWORDS definition moved up to line ~10375 — see M16.3 note there.)
 
 function genreMatches(a, genre) {
   if (!genre || genre === 'all') return true;
@@ -13542,11 +13614,19 @@ function makeTickFormatter(getRange) {
 function chartThemeOpts() {
   const isLight = document.body.getAttribute('data-theme') === 'light';
   const gridColor = isLight ? 'rgba(15,15,23,0.06)' : 'rgba(255,255,255,0.03)';
+  // M16.2 — crosshair priceLabel / timeLabel have a colored pill bg behind
+  // the text. Defaults are near-black so they stand out on dark mode, but
+  // on a white chart they read as harsh black chips. Flip to the brand
+  // purple on light so they read as accent rather than foreign ink.
+  const labelBg = isLight ? '#6D4AE5' : '#1F1F28';
   // textColor stays neutral grey — it reads fine on both bg tones.
   return {
     layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#6E6E80', fontFamily: 'Inter' },
     grid: { vertLines: { color: gridColor }, horzLines: { color: gridColor } },
-    crosshair: { vertLine: { color: 'rgba(139,92,246,0.5)' }, horzLine: { color: 'rgba(139,92,246,0.5)' } },
+    crosshair: {
+      vertLine: { color: 'rgba(139,92,246,0.5)', labelBackgroundColor: labelBg },
+      horzLine: { color: 'rgba(139,92,246,0.5)', labelBackgroundColor: labelBg },
+    },
   };
 }
 function applyChartTheme() {
