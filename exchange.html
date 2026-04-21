@@ -3012,6 +3012,34 @@
     #swap-holdings-list .orders-row > :nth-child(4) { text-align: left; }
   }
 
+  /* M16.22 — Recent swaps history row. Was piggy-backing on .orders-row
+     (a 6-column grid: 2fr 1fr 1fr 1fr 1fr 90px) with only 3 cells, which
+     left ghost empty columns on desktop and broke badly on narrow screens
+     because the grid can't collapse neatly. Give it its own 3-column grid
+     and a dedicated mobile layout where each row stacks cleanly. */
+  .swap-hist-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.3fr;
+    gap: 12px;
+    padding: 12px 14px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .swap-hist-row:last-child { border-bottom: none; }
+  .swap-hist-row > .sh-amt { text-align: right; font-weight: 600; }
+  .swap-hist-row > .sh-when { text-align: right; color: var(--text-dim); white-space: nowrap; }
+  @media (max-width: 540px) {
+    .swap-hist-row {
+      grid-template-columns: 1fr auto;
+      row-gap: 2px;
+      padding: 10px 12px;
+    }
+    .swap-hist-row > .sh-pair { grid-column: 1; }
+    .swap-hist-row > .sh-amt  { grid-column: 2; text-align: right; }
+    .swap-hist-row > .sh-when { grid-column: 1 / -1; text-align: left; font-size: 11px; }
+  }
+
   /* ===== Action confirmation overlay ===== */
   .confirm-overlay {
     position: fixed; inset: 0;
@@ -15466,10 +15494,13 @@ function renderSwapPage() {
       const sell = p.sell || {};
       const buy = p.buy || {};
       const when = sell.time ? new Date(sell.time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
-      return `<div class="orders-row" style="font-size:12px">
-        <span><b>${sell.ticker || '?'}</b> → <b>${buy.ticker || '?'}</b></span>
-        <span>${fmtPrice((sell.amount || 0))}</span>
-        <span class="dim">${when}</span>
+      // M16.22 — dedicated .swap-hist-row class so narrow screens can
+      // collapse the row cleanly instead of misaligning against the
+      // 6-column .orders-row grid.
+      return `<div class="swap-hist-row">
+        <span class="sh-pair"><b>${sell.ticker || '?'}</b> → <b>${buy.ticker || '?'}</b></span>
+        <span class="sh-amt">${fmtPrice((sell.amount || 0))}</span>
+        <span class="sh-when">${when}</span>
       </div>`;
     }).join('');
   }
