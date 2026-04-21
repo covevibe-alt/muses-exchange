@@ -3049,9 +3049,17 @@
     font-family: 'JetBrains Mono', monospace;
     margin-left: 6px;
   }
+  /* Boost pill prefix dot — replaces the ⚡ emoji per the no-emoji rule.
+     A small filled circle keeps the visual anchor without the glyph. */
   .boost-pill::before {
-    content: '⚡';
-    font-size: 10px;
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    margin-right: 2px;
+    vertical-align: middle;
   }
   .captain-pill {
     display: inline-flex;
@@ -3185,7 +3193,7 @@
     color: var(--text-dim);
     font-family: 'JetBrains Mono', monospace;
   }
-  .season-card .sc-tokens::before { content: '⚡'; }
+  .season-card .sc-tokens::before { content: ''; }  /* emoji removed — see boost-pill */
 
   /* ============ TOURNAMENT BUILDER MODAL ============ */
   .tb-modal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; }
@@ -3804,6 +3812,24 @@
     color: var(--text-faint);
     font-size: 12px;
     padding: 32px 12px;
+  }
+  /* CSS spinner — replaces the ⏳ emoji we used to show while Supabase
+     leaderboard fetch is in flight. Respects reduce-motion. */
+  .lb-spinner {
+    width: 28px;
+    height: 28px;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 2.5px solid var(--border);
+    border-top-color: var(--purple, #8b5cf6);
+    animation: lb-spin 0.85s linear infinite;
+  }
+  @keyframes lb-spin {
+    to { transform: rotate(360deg); }
+  }
+  body[data-reduce-motion="1"] .lb-spinner {
+    animation: none;
+    opacity: 0.5;
   }
   .lb-more {
     width: 100%;
@@ -10174,6 +10200,18 @@ function seriesFromHistory(artist) {
 }
 
 function rebuildAllSeries(skipPriceReset) {
+  // Two-pass update so a.price is fully canonical BEFORE series build.
+  // Pass 1: set every a.price against the stable, fully-populated roster.
+  // Previously we did price + series inside one loop, which meant the
+  // seriesFromHistory call for early artists used a.price values that
+  // were being computed against half-updated totals. Splitting the pass
+  // guarantees every downstream call (seriesFromHistory, buildSeries,
+  // compute24hChange) reads a consistent a.price snapshot.
+  if (!skipPriceReset) {
+    ARTISTS.forEach(a => { a.price = computeDisplayPrice(a); });
+  }
+  // Pass 2: build chart series + rolling change values from the now-stable
+  // a.price values.
   ARTISTS.forEach(a => {
     const real = seriesFromHistory(a);
     // Use real history when we have ≥2 points; otherwise fall back to a
@@ -10181,11 +10219,6 @@ function rebuildAllSeries(skipPriceReset) {
     // render without blowing up.
     a.series = (real && real.length >= 2) ? real : buildSeries(a);
     a.hasRealHistory = Array.isArray(real) && real.length >= 2;
-    // Only reset price if NOT restoring from saved state. When restoring,
-    // the saved price is authoritative and must not be overwritten.
-    if (!skipPriceReset) {
-      a.price = computeDisplayPrice(a);
-    }
     // Derive changes from real rolling history when we have it;
     // otherwise fall back to the change already reported by the fetcher.
     const realChg = compute24hChange(a);
@@ -10331,6 +10364,23 @@ async function fetchPortfolioFromSupabase() {
       if (Array.isArray(snap.openOrders)) STATE.openOrders = snap.openOrders;
       if (Array.isArray(snap.filledOrders)) STATE.filledOrders = snap.filledOrders;
       if (typeof snap.firstBuyAt === 'number' || snap.firstBuyAt === null) STATE.firstBuyAt = snap.firstBuyAt;
+      // Onboarding-completed flag is the authoritative cross-device signal.
+      // localStorage is per-browser so a user on a new device/private
+      // window would get the tour again — hence Sander's bug report. Any
+      // of three signals is proof the user already onboarded: explicit
+      // flag, existing holdings, or prior transactions. Once inferred,
+      // mirror to localStorage so offline loads also skip the tour.
+      const alreadyOnboarded =
+        snap.onboardingCompleted === true
+        || (snap.holdings && Object.keys(snap.holdings).length > 0)
+        || (Array.isArray(snap.transactions) && snap.transactions.length > 0);
+      if (alreadyOnboarded) {
+        STATE.onboarded = true;
+        try {
+          const uid = (window.MUSE_USER && window.MUSE_USER.id) || 'anon';
+          localStorage.setItem('muse_onboarded_' + uid, '1');
+        } catch (_) {}
+      }
       console.log('✓ Portfolio restored from Supabase (' + Math.round((Date.now() - (snap.savedAt || 0)) / 60000) + 'm ago)');
     } else {
       // Fresh row from the trigger — just carry cash + realized
@@ -10365,6 +10415,10 @@ async function pushPortfolioToSupabase() {
         openOrders: STATE.openOrders || [],
         filledOrders: (STATE.filledOrders || []).slice(-100),
         firstBuyAt: STATE.firstBuyAt || null,
+        // Cross-device onboarding flag. localStorage alone is per-browser,
+        // which made the intro tour reappear on every new device/private
+        // window. Persisting here means the fetch path can skip the tour.
+        onboardingCompleted: STATE.onboarded === true,
         savedAt: Date.now(),
       };
       const { error } = await window.SUPABASE
@@ -10443,6 +10497,19 @@ async function fetchLeaderboard(force) {
     return;
   }
   if (!force && LEADERBOARD_ROWS && (Date.now() - LEADERBOARD_FETCH_AT) < LEADERBOARD_TTL_MS) return;
+  // Watchdog: if Supabase's promise never resolves (network hung), promote
+  // LEADERBOARD_ROWS from null to [] after 6s so the spinner can give way
+  // to the empty-state copy instead of lingering forever.
+  const watchdog = setTimeout(() => {
+    if (LEADERBOARD_ROWS === null) {
+      LEADERBOARD_ROWS = [];
+      LEADERBOARD_FETCH_AT = Date.now();
+      const lv = document.getElementById('view-leaderboard');
+      if (lv && !lv.classList.contains('hidden') && typeof renderLeaderboard === 'function') {
+        renderLeaderboard();
+      }
+    }
+  }, 6000);
   try {
     const { data, error } = await window.SUPABASE
       .from('leaderboard')
@@ -10462,6 +10529,8 @@ async function fetchLeaderboard(force) {
     // Prevent infinite loading state on persistent failure.
     if (LEADERBOARD_ROWS === null) LEADERBOARD_ROWS = [];
     LEADERBOARD_FETCH_AT = Date.now();
+  } finally {
+    clearTimeout(watchdog);
   }
 }
 
@@ -10872,7 +10941,18 @@ async function loadLivePrices(opts) {
       topLosers: (data.topLosers || []).filter(g => !DELISTED.has(g.ticker)),
       updatedAt: data.updatedAt,
     };
-    rebuildAllSeries(true);   // skipPriceReset — prices already set fresh above
+    // NOTE: pass skipPriceReset=FALSE. The forEach above assigns a.price
+    // while it's also updating a.monthlyListeners for each artist in
+    // sequence — meaning the first artist's price is computed against a
+    // getTotalMarketListeners() total that still holds stale listener
+    // counts for artists later in the loop. That mismatch is what caused
+    // the chart (which pins to a fresh computeDisplayPrice per render) to
+    // disagree with a.price (which was rendered into cards/headers). By
+    // running rebuildAllSeries with skipPriceReset=false, we do a clean
+    // second pass over fully-updated data so every artist's a.price is
+    // computed against the final, stable total — guaranteed consistent
+    // with what the chart pins to. DO NOT switch this back to true.
+    rebuildAllSeries(false);
     // _restoredPrice is no longer set anywhere (per-user price restore was
     // removed to keep all accounts on the same shared market state).
     // Catalyst system removed — prices now driven by fair value only.
@@ -15995,12 +16075,13 @@ function renderLeaderboard() {
 
   // First visit before fetch resolves — show a brief loading state rather
   // than rendering the "opens at launch" placeholder, which would misleading-
-  // ly imply the leaderboard isn't live yet.
+  // ly imply the leaderboard isn't live yet. CSS spinner instead of emoji
+  // (no emojis anywhere in product UI — standing rule).
   if (LEADERBOARD_ROWS === null) {
     host.innerHTML = `
-      <div style="text-align:center;padding:40px 16px;color:var(--text-dim);font-size:13px">
-        <div style="font-size:24px;margin-bottom:10px">⏳</div>
-        Loading leaderboard…
+      <div style="text-align:center;padding:48px 16px;color:var(--text-dim);font-size:13px">
+        <div class="lb-spinner" aria-hidden="true"></div>
+        <div style="margin-top:14px">Loading leaderboard…</div>
       </div>
     `;
     return;
@@ -16136,9 +16217,9 @@ function renderLeaderboard() {
 
   // STATS STRIP
   if (!fullRanking.length) {
+    // Zero-user empty state — no emoji, just plain copy.
     host.innerHTML = `
-      <div style="text-align:center;padding:40px 16px;color:var(--text-dim);font-size:13px;line-height:1.6">
-        <div style="font-size:32px;margin-bottom:12px">🏆</div>
+      <div style="text-align:center;padding:48px 16px;color:var(--text-dim);font-size:13px;line-height:1.6">
         <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:15px">Nobody here yet</div>
         <div>Be the first to appear on the leaderboard — make a trade and you'll show up automatically.</div>
       </div>
@@ -18201,7 +18282,7 @@ function recomputeTournamentReturns() {
       expired.forEach(b => {
         const a = ARTISTS.find(x => x.ticker === b.ticker);
         if (a) pushNotification('boost', 'Boost expired',
-          `Your ⚡ boost on ${a.name} just ended.`, t.id);
+          `Your boost on ${a.name} just ended.`, t.id);
       });
     }
     let ret = 0;
@@ -18622,7 +18703,7 @@ function renderTournamentDetail() {
 
     if (needsLineup) {
       // Paid but tournament is now live — prompt lineup build
-      enterBtn.textContent = '🎯 Build your lineup now';
+      enterBtn.textContent = 'Build your lineup now';
       enterBtn.classList.remove('btn-secondary');
       enterBtn.classList.add('btn-primary');
       enterBtn.disabled = false;
@@ -18741,7 +18822,7 @@ function renderTournamentDetail() {
           <div class="weight">${(p.weight * 100).toFixed(0)}%</div>
           <div class="ret-num ${cls}">${r >= 0 ? '+' : ''}${r.toFixed(2)}%</div>
           <div class="lr-actions">
-            <button class="lr-boost" data-boost="${p.ticker}" disabled title="Boost feature disabled">⚡ Boost</button>
+            <button class="lr-boost" data-boost="${p.ticker}" disabled title="Boost feature disabled">Boost</button>
           </div>
         </div>
       `;
@@ -18875,9 +18956,8 @@ function renderTournamentDetail() {
     const lbHost = document.getElementById('td-leaderboard');
     if (lbHost) {
       lbHost.innerHTML = `
-        <div style="text-align:center;padding:32px 16px;color:var(--text-dim);font-size:13px;line-height:1.6">
-          <div style="font-size:28px;margin-bottom:10px">🏁</div>
-          <div style="font-weight:700;color:var(--text);margin-bottom:4px">Leaderboard opens at launch</div>
+        <div style="text-align:center;padding:40px 16px;color:var(--text-dim);font-size:13px;line-height:1.6">
+          <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:15px">Leaderboard opens at launch</div>
           <div>Once the tournament starts, live rankings will appear here. ${entered ? 'You\'re in — entry fee paid!' : 'Sign up to compete.'}</div>
         </div>
       `;
@@ -20921,6 +21001,11 @@ const ONB_GENRES = [
 ];
 
 function startOnboarding(force) {
+  // Highest-priority gate: if we already know (from Supabase snapshot or
+  // prior dismissal in this session) that the user is onboarded, exit.
+  // This is checked first so that fetchPortfolioFromSupabase setting
+  // STATE.onboarded = true takes precedence over localStorage-only logic.
+  if (!force && STATE.onboarded === true) return;
   const userId = (window.MUSE_USER && window.MUSE_USER.id) || 'anon';
   const userKey = 'muse_onboarded_' + userId;
   try {
@@ -20967,6 +21052,11 @@ function endOnboarding(completed) {
     const userId = (window.MUSE_USER && window.MUSE_USER.id) || 'anon';
     localStorage.setItem('muse_onboarded_' + userId, '1');
   } catch (e) {}
+  // Propagate the completion flag to Supabase so the tour stays dismissed
+  // across devices and private-window sessions.
+  try {
+    if (typeof pushPortfolioToSupabase === 'function') pushPortfolioToSupabase();
+  } catch (e) {}
   if (completed) {
     const d = STATE.onboardingDraft;
     if (d) {
@@ -20991,7 +21081,7 @@ function endOnboarding(completed) {
       const pv = document.getElementById('view-profile');
       if (pv && !pv.classList.contains('hidden')) renderProfile();
     }
-    if (typeof showToast === 'function') showToast('Welcome to Muses, ' + STATE.profile.name + ' 🎉');
+    if (typeof showToast === 'function') showToast('Welcome to Muses, ' + STATE.profile.name);
   }
   STATE.onboardingDraft = null;
 }
@@ -21296,20 +21386,26 @@ startPricePersistence(); // save prices + history to localStorage every 30s
 // snapshot, it overlays and re-renders. New users (no row yet) just keep
 // the trigger-default €10,000 cash.
 fetchPortfolioFromSupabase().then(ok => {
-  if (!ok) return;
-  try { updateCashDisplay(); } catch (e) {}
-  try { renderMarkets(); } catch (e) {}
-  try { if (typeof renderPortfolio === 'function' && CURRENT_VIEW === 'portfolio') renderPortfolio(); } catch (e) {}
-  try { if (typeof renderOrdersView === 'function' && CURRENT_VIEW === 'orders') renderOrdersView(); } catch (e) {}
+  if (ok) {
+    try { updateCashDisplay(); } catch (e) {}
+    try { renderMarkets(); } catch (e) {}
+    try { if (typeof renderPortfolio === 'function' && CURRENT_VIEW === 'portfolio') renderPortfolio(); } catch (e) {}
+    try { if (typeof renderOrdersView === 'function' && CURRENT_VIEW === 'orders') renderOrdersView(); } catch (e) {}
+  }
+  // Kick off the onboarding tour AFTER the Supabase fetch resolves — the
+  // fetch sets STATE.onboarded=true for any returning user (via explicit
+  // flag, existing holdings, or prior transactions). If we started the
+  // tour synchronously at boot it would flash up on every login before
+  // the fetch could clear it, which is what Sander flagged. Anons and
+  // network-failed fetches fall through to startOnboarding's own
+  // localStorage-based check.
+  if (typeof startOnboarding === 'function') startOnboarding();
 });
 setInterval(() => {
   if (typeof processRecurringBuys === 'function') {
     try { processRecurringBuys(); } catch (e) {}
   }
 }, 30000);
-
-// Kick off onboarding flow on first run
-startOnboarding();
 
 // ============ MOBILE DRAWER ============
 function wireMobileDrawer() {
