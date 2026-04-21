@@ -105,6 +105,20 @@
       <div class="auth-hint">You'll confirm your email before you can sign in.</div>
     </div>
 
+    <!-- M12.2 — Confirm password. Inline match status updates as the
+         user types; submission is blocked until both fields agree. -->
+    <div class="signup-field">
+      <label class="signup-label" for="password2">Confirm password</label>
+      <div class="pw-wrap">
+        <input class="signup-input" type="password" id="password2" placeholder="Re-enter password" autocomplete="new-password" required minlength="8">
+        <button type="button" class="pw-toggle" aria-label="Show password" data-target="password2">
+          <svg class="pw-eye" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="pw-eye-off" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+      <div class="handle-status neutral" id="pw-match-status">Re-enter the password above so we know you typed it right.</div>
+    </div>
+
     <div class="signup-actions" style="margin-top:28px;">
       <button type="submit" class="signup-btn primary" id="signup-submit">Create account</button>
     </div>
@@ -190,16 +204,48 @@ handleInput.addEventListener('input', () => {
   }, 400);
 });
 
+// ── Confirm-password live match status (M12.2) ──────────────────────
+const pw1     = document.getElementById('password');
+const pw2     = document.getElementById('password2');
+const pwMatch = document.getElementById('pw-match-status');
+
+function setPwMatchStatus(kind, msg){
+  pwMatch.className = 'handle-status ' + kind;
+  pwMatch.textContent = msg;
+}
+
+function refreshPwMatch(){
+  const a = pw1.value, b = pw2.value;
+  if (b.length === 0){
+    setPwMatchStatus('neutral', 'Re-enter the password above so we know you typed it right.');
+    return;
+  }
+  if (a === b){
+    setPwMatchStatus('ok', 'Passwords match.');
+  } else {
+    setPwMatchStatus('err', "Passwords don't match yet.");
+  }
+}
+
+pw1.addEventListener('input', refreshPwMatch);
+pw2.addEventListener('input', refreshPwMatch);
+
 // ── Submit ─────────────────────────────────────────────────────────
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const name     = document.getElementById('name').value.trim();
-  const handle   = handleInput.value.trim().toLowerCase();
-  const email    = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+  const name      = document.getElementById('name').value.trim();
+  const handle    = handleInput.value.trim().toLowerCase();
+  const email     = document.getElementById('email').value.trim();
+  const password  = pw1.value;
+  const password2 = pw2.value;
 
   if (!name || !handle || !email || password.length < 8){
     showAlert('err', 'Please fill in every field. Password must be at least 8 characters.');
+    return;
+  }
+  if (password !== password2){
+    showAlert('err', "Passwords don't match. Re-enter the confirmation and try again.");
+    pw2.focus();
     return;
   }
   if (!/^[a-z0-9_]{3,24}$/.test(handle)){
