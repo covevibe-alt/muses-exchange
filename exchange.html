@@ -6323,6 +6323,22 @@
     box-sizing: border-box;
   }
 
+  /* M13.3 — dedicated horizontal-scroll container for artist tables.
+     The old approach made the .card itself overflow-x: auto, which
+     scrolled the filter bar and sort tabs off-screen with the table.
+     Wrapping just the table in .markets-scroll (a) lets the filter bar
+     and sort tabs stay pinned, and (b) bleeds the scroll area past the
+     card's padding via negative margins, so sticky cells pin flush to
+     the card edge instead of leaving a padding-wide gap on the left. */
+  .markets-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -22px;
+  }
+  @media (max-width: 680px) {
+    .markets-scroll { margin: 0 -16px; }
+  }
+
   /* ── M13 — sticky first-column block (star + rank + artist name) ──
      Pins the star, rank number, and artist name so they stay visible
      as the data columns (listeners / trend / price / 24h / 7d / 30d)
@@ -7861,14 +7877,11 @@
     /* Cards reduce padding */
     .card { padding: 16px !important; border-radius: var(--radius-md); }
 
-    /* Tables: allow horizontal scroll if they overflow */
+    /* Tables: artist-table scroll is handled by .markets-scroll (see
+       M13.3). The card itself must NOT scroll horizontally anymore —
+       doing so dragged the filter chips and sort tabs off-screen along
+       with the table. */
     table { font-size: 12px; }
-    .col-main > .card:has(table),
-    .card > div:has(table),
-    [class*="table"]:not(td):not(th) {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
 
     /* M13 — sticky first-column block (star + rank + artist name) is
        now defined at the base .markets-table level so all three artist
@@ -8964,22 +8977,24 @@
             </div>
           </div>
           <div class="artist-grid" id="artist-grid"></div>
-          <table class="markets-table" id="artist-table" style="display:none">
-            <thead>
-              <tr>
-                <th class="col-star"></th>
-                <th class="col-rank">#</th>
-                <th class="sortable" data-col-sort="name">Artist<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="sortable" data-col-sort="listeners">Listeners<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th>Trend</th>
-                <th class="right sortable" data-col-sort="price">Price<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="right sortable" data-col-sort="change">24h<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="right sortable" data-col-sort="change7d">7d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="right sortable" data-col-sort="change30d">30d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-              </tr>
-            </thead>
-            <tbody id="markets-body"></tbody>
-          </table>
+          <div class="markets-scroll">
+            <table class="markets-table" id="artist-table" style="display:none">
+              <thead>
+                <tr>
+                  <th class="col-star"></th>
+                  <th class="col-rank">#</th>
+                  <th class="sortable" data-col-sort="name">Artist<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="sortable" data-col-sort="listeners">Listeners<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th>Trend</th>
+                  <th class="right sortable" data-col-sort="price">Price<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="right sortable" data-col-sort="change">24h<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="right sortable" data-col-sort="change7d">7d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="right sortable" data-col-sort="change30d">30d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                </tr>
+              </thead>
+              <tbody id="markets-body"></tbody>
+            </table>
+          </div>
         </div>
 
       </div>
@@ -9579,22 +9594,24 @@
             </div>
           </div>
           <div class="artist-grid" id="artists-grid"></div>
-          <table class="markets-table" id="artists-table" style="display:none">
-            <thead>
-              <tr>
-                <th class="col-star"></th>
-                <th class="col-rank">#</th>
-                <th class="sortable" data-col-sort="name">Artist<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="sortable" data-col-sort="listeners">Listeners<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th>Trend</th>
-                <th class="right sortable" data-col-sort="price">Price<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="right sortable" data-col-sort="change">24h<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="right sortable" data-col-sort="change7d">7d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="right sortable" data-col-sort="change30d">30d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-              </tr>
-            </thead>
-            <tbody id="artists-tbody"></tbody>
-          </table>
+          <div class="markets-scroll">
+            <table class="markets-table" id="artists-table" style="display:none">
+              <thead>
+                <tr>
+                  <th class="col-star"></th>
+                  <th class="col-rank">#</th>
+                  <th class="sortable" data-col-sort="name">Artist<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="sortable" data-col-sort="listeners">Listeners<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th>Trend</th>
+                  <th class="right sortable" data-col-sort="price">Price<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="right sortable" data-col-sort="change">24h<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="right sortable" data-col-sort="change7d">7d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="right sortable" data-col-sort="change30d">30d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                </tr>
+              </thead>
+              <tbody id="artists-tbody"></tbody>
+            </table>
+          </div>
         </div>
 
       </div>
@@ -9775,22 +9792,24 @@
             </div>
           </div>
           <div class="artist-grid" id="genre-artist-grid"></div>
-          <table class="markets-table" id="genre-artist-table" style="display:none">
-            <thead>
-              <tr>
-                <th class="col-star"></th>
-                <th class="col-rank">#</th>
-                <th class="sortable" data-col-sort="name">Artist<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="sortable" data-col-sort="listeners">Listeners<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th>Trend</th>
-                <th class="right sortable" data-col-sort="price">Price<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="right sortable" data-col-sort="change">24h<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="right sortable" data-col-sort="change7d">7d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-                <th class="right sortable" data-col-sort="change30d">30d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
-              </tr>
-            </thead>
-            <tbody id="genre-artist-tbody"></tbody>
-          </table>
+          <div class="markets-scroll">
+            <table class="markets-table" id="genre-artist-table" style="display:none">
+              <thead>
+                <tr>
+                  <th class="col-star"></th>
+                  <th class="col-rank">#</th>
+                  <th class="sortable" data-col-sort="name">Artist<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="sortable" data-col-sort="listeners">Listeners<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th>Trend</th>
+                  <th class="right sortable" data-col-sort="price">Price<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="right sortable" data-col-sort="change">24h<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="right sortable" data-col-sort="change7d">7d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                  <th class="right sortable" data-col-sort="change30d">30d<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
+                </tr>
+              </thead>
+              <tbody id="genre-artist-tbody"></tbody>
+            </table>
+          </div>
         </div>
 
         <div class="card">
