@@ -10898,9 +10898,10 @@ const MUSE_SAVE_INTERVAL = 30_000; // save every 30 seconds
  * history.json every boot. Only user-scoped portfolio data is cached here.
  */
 function saveMusePriceState() {
+  const savedAt = Date.now();
   try {
     const snapshot = {
-      savedAt: Date.now(),
+      savedAt,
       cash: STATE.cash,
       tournamentCredits: STATE.tournamentCredits || 0,
       holdings: STATE.holdings,
@@ -10914,6 +10915,13 @@ function saveMusePriceState() {
       notifUnread: STATE.notifUnread || 0,
     };
     localStorage.setItem(MUSE_STATE_KEY, JSON.stringify(snapshot));
+    // M16.18 — remember the savedAt we just wrote so the Realtime echo of
+    // our own push (portfolios row UPDATE triggered by pushPortfolioToSupabase
+    // below) doesn't look like a fresh remote change and cause a redundant
+    // re-render.
+    if (typeof _lastAppliedSnapAt !== 'undefined') _lastAppliedSnapAt = savedAt;
+    // M16.18 — nudge sibling tabs in the same browser. Zero-network, instant.
+    try { broadcastPortfolioChanged(savedAt); } catch (_) {}
   } catch (e) {
     // localStorage full or blocked — silently ignore
   }
@@ -11021,6 +11029,10 @@ async function fetchPortfolioFromSupabase() {
       if (Array.isArray(snap.openOrders)) STATE.openOrders = snap.openOrders;
       if (Array.isArray(snap.filledOrders)) STATE.filledOrders = snap.filledOrders;
       if (typeof snap.firstBuyAt === 'number' || snap.firstBuyAt === null) STATE.firstBuyAt = snap.firstBuyAt;
+      // M16.18 — mark this snapshot as already-applied so the Realtime
+      // subscription doesn't treat the identical payload that echoes back
+      // as a fresh change.
+      try { if (typeof _lastAppliedSnapAt !== 'undefined' && snap.savedAt) _lastAppliedSnapAt = snap.savedAt; } catch (_) {}
       // Onboarding-completed flag is the authoritative cross-device signal.
       // localStorage is per-browser so a user on a new device/private
       // window would get the tour again — hence Sander's bug report. Any
@@ -11135,6 +11147,174 @@ async function pushPortfolioToSupabase() {
     _pushInFlight = false;
   }
 }
+
+// ══════════════════════════════════════════════════════════════════════
+// M16.18 — CROSS-TAB / CROSS-DEVICE PORTFOLIO SYNC
+// ══════════════════════════════════════════════════════════════════════
+// Before this, fetchPortfolioFromSupabase() ran exactly once at boot
+// and never again — so if you bought HAYR on your phone, your desktop
+// tab stayed stale until reload. Three mechanisms keep every view in
+// sync:
+//
+//   (a) Supabase Realtime subscription on public.portfolios. Push
+//       updates propagate across devices in ~200ms. REQUIRES realtime
+//       to be enabled on the portfolios table in the Supabase
+//       dashboard (Database → Replication → portfolios). If the
+//       subscription fails to start, (c) is the fallback.
+//
+//   (b) BroadcastChannel("muse-portfolio-{uid}"). Instant propagation
+//       between tabs of the same browser — siblings re-read the
+//       localStorage snapshot the active tab just wrote. Zero network
+//       round-trip, sub-frame latency.
+//
+//   (c) visibilitychange + window focus refetch. When a backgrounded
+//       tab returns to the foreground we pull fresh from Supabase
+//       (debounced to 5s). Safety net for when Realtime is disconnected
+//       (laptop sleep, flaky wifi, realtime not enabled on the table).
+//
+// All three converge on rerenderAfterPortfolioSync(), which redraws
+// whatever view is currently active plus the header cash widget.
+// ══════════════════════════════════════════════════════════════════════
+
+// Per-tab identity — used to drop BroadcastChannel echoes of our own writes.
+window.__museTabId = 't-' + Math.random().toString(36).slice(2, 10);
+
+let _portfolioChannel = null;     // BroadcastChannel, same-browser tabs
+let _portfolioRealtime = null;    // Supabase Realtime subscription
+let _lastPortfolioSyncAt = 0;     // focus-refetch debounce
+let _lastAppliedSnapAt = 0;       // drop stale/echoed snapshots
+
+// Redraw whatever view is visible so the user sees the synced values
+// without switching tabs. CURRENT_VIEW is set by setView() every nav.
+// Wrapped in try/catch because some render functions may not be wired
+// yet during the initial hydration race.
+function rerenderAfterPortfolioSync() {
+  try { if (typeof updateCashDisplay === 'function') updateCashDisplay(); } catch (_) {}
+  try {
+    if (typeof CURRENT_VIEW !== 'string') return;
+    if (CURRENT_VIEW === 'markets' && typeof renderMarkets === 'function') renderMarkets();
+    else if (CURRENT_VIEW === 'portfolio' && typeof renderPortfolio === 'function') renderPortfolio();
+    else if (CURRENT_VIEW === 'profile' && typeof renderProfile === 'function') renderProfile();
+    else if (CURRENT_VIEW === 'orders' && typeof renderOrdersView === 'function') renderOrdersView();
+    else if (CURRENT_VIEW === 'swap' && typeof renderSwapPage === 'function') renderSwapPage();
+    else if (CURRENT_VIEW === 'tournaments' && typeof renderTournaments === 'function') renderTournaments();
+    else if (CURRENT_VIEW === 'tournament' && typeof renderTournamentDetail === 'function') renderTournamentDetail();
+    else if (CURRENT_VIEW === 'artist' && typeof renderArtistDetail === 'function') renderArtistDetail();
+  } catch (e) {
+    console.warn('[Muses] rerender after sync failed:', e.message || e);
+  }
+}
+
+// Apply a portfolio snapshot (same shape saveMusePriceState and
+// pushPortfolioToSupabase write). Idempotent — applying the same
+// snapshot twice is safe. Returns true if the snapshot was newer than
+// the last one we applied.
+function applyPortfolioSnapshot(snap) {
+  if (!snap || typeof snap !== 'object') return false;
+  const ts = snap.savedAt || 0;
+  // Drop echoes of our own writes and stale messages. Only apply if
+  // strictly newer than the last snapshot we applied.
+  if (ts && ts <= _lastAppliedSnapAt) return false;
+  if (ts) _lastAppliedSnapAt = ts;
+  if (typeof snap.cash === 'number') STATE.cash = snap.cash;
+  if (typeof snap.realized === 'number') STATE.realized = snap.realized;
+  if (typeof snap.tournamentCredits === 'number') STATE.tournamentCredits = snap.tournamentCredits;
+  if (snap.holdings && typeof snap.holdings === 'object') STATE.holdings = snap.holdings;
+  if (Array.isArray(snap.transactions)) STATE.transactions = snap.transactions;
+  if (Array.isArray(snap.openOrders)) STATE.openOrders = snap.openOrders;
+  if (Array.isArray(snap.filledOrders)) STATE.filledOrders = snap.filledOrders;
+  return true;
+}
+
+// Tier-1(c) — pull fresh from Supabase and re-render. Debounced to 5s.
+// Called by visibilitychange/focus so a tab you just uncovered reflects
+// trades done on another device while it was backgrounded.
+async function refetchPortfolioIfStale(force) {
+  if (!(window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed)) return;
+  if (!force && Date.now() - _lastPortfolioSyncAt < 5000) return;
+  _lastPortfolioSyncAt = Date.now();
+  const ok = await fetchPortfolioFromSupabase().catch(() => false);
+  if (ok) rerenderAfterPortfolioSync();
+}
+
+// Tier-1(b) — BroadcastChannel. Listener is installed once per page.
+// Posting side lives in saveMusePriceState (patched below), which fires
+// a message after every localStorage write. Siblings re-read localStorage
+// (zero network) and re-render.
+function initPortfolioBroadcastChannel() {
+  if (_portfolioChannel) return;
+  if (typeof BroadcastChannel === 'undefined') return;
+  const uid = (window.MUSE_USER && window.MUSE_USER.id) || 'anon';
+  try {
+    _portfolioChannel = new BroadcastChannel('muse-portfolio-' + uid);
+  } catch (_) { return; }
+  _portfolioChannel.addEventListener('message', (e) => {
+    const msg = e && e.data;
+    if (!msg || msg.type !== 'portfolio-changed') return;
+    if (msg.sourceTab === window.__museTabId) return; // our own echo
+    try {
+      const raw = localStorage.getItem(MUSE_STATE_KEY);
+      if (!raw) return;
+      const snap = JSON.parse(raw);
+      if (applyPortfolioSnapshot(snap)) rerenderAfterPortfolioSync();
+    } catch (_) {}
+  });
+}
+
+// Tier-2 — Supabase Realtime on public.portfolios. Silently no-ops if
+// the subscription fails to start (e.g. realtime not enabled on the
+// table) — the visibility-refetch covers that gap.
+function initPortfolioRealtime() {
+  if (_portfolioRealtime) return;
+  if (!(window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed)) return;
+  if (typeof window.SUPABASE.channel !== 'function') return; // supabase-js too old
+  const uid = window.MUSE_USER.id;
+  try {
+    _portfolioRealtime = window.SUPABASE
+      .channel('portfolio-realtime-' + uid)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'portfolios',
+        filter: 'user_id=eq.' + uid,
+      }, (payload) => {
+        const row = payload && (payload.new || payload.record);
+        const snap = row && row.snapshot;
+        if (!snap) return;
+        if (applyPortfolioSnapshot(snap)) rerenderAfterPortfolioSync();
+      })
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✓ Portfolio realtime subscribed');
+        } else if (err) {
+          console.warn('[Muses] Portfolio realtime error:', err.message || err);
+        }
+      });
+  } catch (e) {
+    console.warn('[Muses] Portfolio realtime init failed:', e.message || e);
+  }
+}
+
+// Fire-and-forget notification to sibling tabs that we just wrote a new
+// snapshot to localStorage. Called from saveMusePriceState.
+function broadcastPortfolioChanged(savedAt) {
+  if (!_portfolioChannel) return;
+  try {
+    _portfolioChannel.postMessage({
+      type: 'portfolio-changed',
+      savedAt: savedAt || Date.now(),
+      sourceTab: window.__museTabId,
+    });
+  } catch (_) {}
+}
+
+// Tier-1(c) — refetch on focus/visibility. Mirrors the prices.json
+// refetch wired up a few hundred lines above, but for portfolio data.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  refetchPortfolioIfStale();
+});
+window.addEventListener('focus', () => refetchPortfolioIfStale());
 
 // ─────────────────────────────────────────────────────────────────────
 // LEADERBOARD — public ranking table (migration 004)
@@ -22479,6 +22659,11 @@ fetchPortfolioFromSupabase().then(ok => {
     try { if (typeof renderPortfolio === 'function' && CURRENT_VIEW === 'portfolio') renderPortfolio(); } catch (e) {}
     try { if (typeof renderOrdersView === 'function' && CURRENT_VIEW === 'orders') renderOrdersView(); } catch (e) {}
   }
+  // M16.18 — now that auth + initial portfolio fetch have resolved, start
+  // the cross-tab (BroadcastChannel) and cross-device (Supabase Realtime)
+  // sync machinery. Both are idempotent no-ops if unauthed / unsupported.
+  try { initPortfolioBroadcastChannel(); } catch (e) {}
+  try { initPortfolioRealtime(); } catch (e) {}
   // Kick off the onboarding tour AFTER the Supabase fetch resolves — the
   // fetch sets STATE.onboarded=true for any returning user (via explicit
   // flag, existing holdings, or prior transactions). If we started the
