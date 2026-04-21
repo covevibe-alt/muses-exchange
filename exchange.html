@@ -9388,6 +9388,11 @@
             <div class="v" id="pf-realized">—</div>
             <div class="d dim">Locked in</div>
           </div>
+          <div class="stat-tile">
+            <div class="l">Unrealized Gains <span class="info-tip">?<span class="tip-text">Paper gain or loss on positions you still hold. Equals current market value minus what you paid for the shares. Becomes "realized" when you sell.</span></span></div>
+            <div class="v" id="pf-unrealized">—</div>
+            <div class="d dim" id="pf-unrealized-sub">On open positions</div>
+          </div>
         </div>
 
         <!-- CHART -->
@@ -16854,6 +16859,24 @@ function renderPortfolio() {
   document.getElementById('pf-num').textContent = tickers.length;
   document.getElementById('pf-realized').textContent = fmtPrice(STATE.realized || 0);
 
+  // M16.20 — Unrealized Gains = (current market value of holdings) − (what you paid for them).
+  // totalPL and totalPLPct are already computed above from invested + totalCost, so this is
+  // just surfacing the number. Sign-prefix + up/down color to match how the hero chips render.
+  const unrealEl = document.getElementById('pf-unrealized');
+  const unrealSub = document.getElementById('pf-unrealized-sub');
+  if (unrealEl) {
+    if (tickers.length === 0) {
+      unrealEl.textContent = '—';
+      unrealEl.style.color = '';
+      if (unrealSub) unrealSub.textContent = 'On open positions';
+    } else {
+      const sign = totalPL >= 0 ? '+' : '−';
+      unrealEl.textContent = sign + fmtPrice(Math.abs(totalPL));
+      unrealEl.style.color = totalPL >= 0 ? 'var(--up)' : 'var(--down)';
+      if (unrealSub) unrealSub.textContent = (totalPLPct >= 0 ? '+' : '') + totalPLPct.toFixed(2) + '% on open';
+    }
+  }
+
   // ---- Real money balance in sidebar ----
   const pfRealBal = document.getElementById('pf-real-bal');
   if (pfRealBal) pfRealBal.textContent = fmtNum2(STATE.tournamentCredits);
@@ -17299,6 +17322,36 @@ function syntheticLineupFor(name) {
   return picks.map((a, i) => ({ ticker: a.ticker, weight: ws[i] / sum }));
 }
 
+// M16.20 — For the "this is you" row, use the user's ACTUAL holdings instead
+// of a hash-seeded synthetic mix. Other players' lineups stay synthetic (we
+// don't expose others' portfolios publicly). Returns null if the user holds
+// nothing, so the caller can fall back to the synthetic lineup gracefully
+// rather than showing an empty expand panel. Shape matches syntheticLineupFor:
+// [{ ticker, weight }] with weights summing to ≈1. Capped at 5 to match the
+// synthetic lineup's max size.
+function userOwnLineup() {
+  try {
+    const tickers = Object.keys(STATE.holdings || {});
+    if (tickers.length === 0) return null;
+    const weighted = tickers
+      .map(t => {
+        const h = STATE.holdings[t];
+        const a = ARTISTS.find(x => x.ticker === t);
+        if (!h || !a || !(h.shares > 0)) return null;
+        return { ticker: t, value: h.shares * a.price };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+    if (weighted.length === 0) return null;
+    const total = weighted.reduce((s, w) => s + w.value, 0);
+    if (total <= 0) return null;
+    return weighted.map(w => ({ ticker: w.ticker, weight: w.value / total }));
+  } catch (_) {
+    return null;
+  }
+}
+
 function renderLeaderboard() {
   // Per-page state lives under STATE.lbState['_global']
   const lb = getLbState('_global');
@@ -17346,15 +17399,23 @@ function renderLeaderboard() {
   // expects. `lineup` stays synthetic — we deliberately do not expose other
   // users' holdings publicly.
   const yourId = window.MUSE_USER && window.MUSE_USER.id;
+  // M16.20 — compute the real user lineup once so we can drop it into the
+  // isYou row instead of the hash-seeded synthetic mix. Shown in the expand
+  // panel only; other players' lineups stay synthetic (don't expose their
+  // portfolios publicly).
+  const myLineup = userOwnLineup();
   const all = LEADERBOARD_ROWS.map(r => {
     const name = (r.display_name && r.display_name.trim()) || 'trader';
+    const isYou = !!(yourId && r.user_id === yourId);
     return {
       name,                        // raw — used as dict key + hash seed
       nameHtml: escapeHTML(name),  // M16.13 — XSS guard for HTML interpolation
       tag: '',                     // Reserved for phase-2 metadata (location, club, etc.)
       ret: Number(r.return_pct) || 0,
-      isYou: !!(yourId && r.user_id === yourId),
-      lineup: syntheticLineupFor(name),
+      isYou,
+      // Use real holdings for the user's own row (fallback to synthetic if they
+      // hold nothing yet so the panel isn't empty). Others stay synthetic.
+      lineup: (isYou && myLineup) ? myLineup : syntheticLineupFor(name),
     };
   });
 
