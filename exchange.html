@@ -11666,8 +11666,11 @@ async function loadLivePrices(opts) {
     // (e.g. a just-added signing that wasn't in the prefill). Rebuild the
     // slug/ticker map so deep links like /exchange/<new-artist> resolve.
     try { if (typeof buildArtistRouteMap === 'function') buildArtistRouteMap(); } catch (_) {}
-    // Show a toast so the user can visually confirm the full roster loaded.
-    if (!periodic) showLiveLoadToast(ARTISTS.length, added);
+    // M16.16 — Debug toast suppressed. The "● Live: N artists · +X new" pop-up
+    // was a dev aid to confirm prices.json was being picked up from CDN; it now
+    // just visually noise-pollutes every refresh for real users. Function kept
+    // for manual debugging via console.
+    // if (!periodic) showLiveLoadToast(ARTISTS.length, added);
     hideConnectionBanner();
     if (!periodic) hideLoadingBar();
   } catch (err) {
