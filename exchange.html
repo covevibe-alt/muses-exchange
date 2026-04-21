@@ -8848,12 +8848,18 @@
 
       // Handle sign-out from any tab. Reload into guest mode so the user stays
       // on /exchange and can browse freely after signing out.
+      // M16.8 — do NOT wipe the per-user portfolio snapshot from localStorage
+      // on sign-out. The key is already namespaced by user id
+      // (muse_price_state_v8_<uid>), so a different account signing in on the
+      // same device reads a different key and never sees the previous user's
+      // data. Wiping here caused Sander's bug: after signing out and back in,
+      // localStorage was empty while the Supabase fetch was still in flight,
+      // so the portfolio view flashed with the default €10,000 / no-holdings
+      // state until the fetch resolved. Keeping the cache means re-login
+      // paints instantly from localStorage; Supabase overlays the
+      // authoritative copy on top when it resolves.
       window.SUPABASE.auth.onAuthStateChange((event) => {
         if (event === 'SIGNED_OUT'){
-          try {
-            const key = 'muse_price_state_v8_' + (window.MUSE_USER && window.MUSE_USER.id);
-            localStorage.removeItem(key);
-          } catch(e){}
           window.location.reload();
         }
       });
@@ -10941,6 +10947,35 @@ async function fetchPortfolioFromSupabase() {
 
 let _pushInFlight = false;
 let _pushQueued = false;
+// M16.8 — awaitable flush used at sign-out. Guarantees any pending push
+// (including a coalesced-queued follow-up) reaches Supabase BEFORE the
+// auth cookie is dropped and the page reloads. Without this, the last few
+// seconds of state (the just-executed buy the user is staring at) could
+// be lost to an aborted fetch. Timeout prevents a hung network from
+// blocking sign-out indefinitely — we surrender after 4s and let
+// localStorage be the recovery layer on next login.
+async function flushPortfolioToSupabase(timeoutMs = 4000) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return;
+  const start = Date.now();
+  try { await pushPortfolioToSupabase(); } catch (e) {}
+  while (_pushInFlight || _pushQueued) {
+    if (Date.now() - start > timeoutMs) break;
+    await new Promise(r => setTimeout(r, 50));
+  }
+}
+
+// Single source of truth for sign-out. Awaits the final portfolio flush,
+// then signs out. The onAuthStateChange listener reloads the page into
+// guest mode; the 800ms redirect fallback covers auth-state event loss.
+async function signOutWithFlush() {
+  if (!(window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed)) {
+    if (typeof showToast === 'function') showToast('Not signed in');
+    return;
+  }
+  try { await flushPortfolioToSupabase(4000); } catch (e) {}
+  try { await window.SUPABASE.auth.signOut(); } catch (e) {}
+  setTimeout(() => { window.location.href = '/signin'; }, 800);
+}
 async function pushPortfolioToSupabase() {
   if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return;
   // Coalesce: if a push is already in flight, mark that another is needed
@@ -12198,14 +12233,9 @@ document.querySelectorAll('[data-nav]').forEach(el => {
         return;
       }
       if (!confirm('Sign out of Muses on this device?')) return;
-      // Flush the latest portfolio state before dropping the session so no
-      // trades-in-the-last-second get lost.
-      try { pushPortfolioToSupabase(); } catch (e) {}
-      window.SUPABASE.auth.signOut().then(() => {
-        // The onAuthStateChange handler above should redirect — fallback
-        // in case it doesn't fire within 600ms.
-        setTimeout(() => { window.location.href = '/signin'; }, 600);
-      });
+      // M16.8 — signOutWithFlush awaits the final portfolio push so
+      // trades in the last few seconds can't get lost to an aborted fetch.
+      signOutWithFlush();
     });
   }
 })();
@@ -15694,13 +15724,9 @@ function runSettingsAction(action) {
   } else if (action === 'sign-out') {
     if (window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed){
       if (confirm('Sign out of Muses on this device?')){
-        // Final flush before signing out so the latest state is in Supabase.
-        try { pushPortfolioToSupabase(); } catch (e) {}
-        window.SUPABASE.auth.signOut().then(() => {
-          // onAuthStateChange handler in the auth gate above will redirect.
-          // Fallback in case it doesn't fire:
-          setTimeout(() => { window.location.href = '/signin'; }, 600);
-        });
+        // M16.8 — awaits the final push before signing out so recent
+        // trades can't be lost to an aborted in-flight fetch.
+        signOutWithFlush();
       }
     } else {
       showToast('Not signed in');
@@ -22387,10 +22413,8 @@ function wireMobileDrawer() {
         return;
       }
       if (!confirm('Sign out of Muses on this device?')) return;
-      try { pushPortfolioToSupabase(); } catch (e) {}
-      window.SUPABASE.auth.signOut().then(() => {
-        setTimeout(() => { window.location.href = '/signin'; }, 600);
-      });
+      // M16.8 — flush + signOut via shared helper.
+      signOutWithFlush();
     });
   }
 }
