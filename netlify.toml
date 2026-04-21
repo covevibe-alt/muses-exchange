@@ -34,6 +34,70 @@
   status = 301
   force = true
 
+# ── SPA fallbacks (M8) ──────────────────────────────────────────────────────
+# The exchange app (exchange.html) owns client-side routes under /exchange/*
+# (markets, artists directory, per-artist detail, per-genre pages) as well as
+# the eight single-segment app routes at site root. Each of these is a 200
+# rewrite — the URL in the address bar stays put, but Netlify serves
+# exchange.html so the in-file router can pick up the path and render the
+# right view. status = 200 (NOT 301) is critical: a 301 would rewrite the URL
+# and the router would never see the deep-linked path.
+#
+# These rules sit AFTER the /*.html → /:splat canonicalizer so hits to
+# /portfolio.html etc. still get 301'd to the clean URL first, then caught
+# here. They sit BEFORE the default headers block (which isn't a redirect and
+# therefore doesn't interact).
+
+[[redirects]]
+  from = "/exchange/*"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/orders"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/portfolio"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/swap"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/tournaments"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/tournaments/*"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/leaderboard"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/profile"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/settings"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/help"
+  to = "/exchange.html"
+  status = 200
+
 # ── Sensible default headers ────────────────────────────────────────────────
 [[headers]]
   for = "/*"

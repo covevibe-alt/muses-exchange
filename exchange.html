@@ -10973,6 +10973,10 @@ async function loadLivePrices(opts) {
     }
     // Re-render the ticker tape with real change data.
     if (typeof renderTickerTape === 'function') renderTickerTape();
+    // M8: loadLivePrices may have pushed newly-onboarded artists into ARTISTS
+    // (e.g. a just-added signing that wasn't in the prefill). Rebuild the
+    // slug/ticker map so deep links like /exchange/<new-artist> resolve.
+    try { if (typeof buildArtistRouteMap === 'function') buildArtistRouteMap(); } catch (_) {}
     // Show a toast so the user can visually confirm the full roster loaded.
     if (!periodic) showLiveLoadToast(ARTISTS.length, added);
     hideConnectionBanner();
@@ -11402,8 +11406,200 @@ function setView(name) {
   if (name === 'swap') renderSwapPage();
   if (name === 'settings' && typeof renderSettings === 'function') renderSettings();
   if (name === 'help' && typeof renderHelp === 'function') renderHelp();
+  // M8: keep the URL in sync with the current view. No-op during popstate /
+  // initial route application (the flag is raised by the routing module below).
+  try { if (typeof updateHistoryFromView === 'function') updateHistoryFromView(false); } catch (_) {}
 }
 window.setView = setView;
+
+// ============ URL ROUTING (M8) ============
+// Client-side router. Two route shapes:
+//   /exchange[/markets]           → markets view (also default when bare /exchange)
+//   /exchange/artists             → all-artists directory
+//   /exchange/genres              → genres directory
+//   /exchange/genre/<slug>        → genre detail
+//   /exchange/<artist-slug>       → artist detail (primary)
+//   /exchange/<ticker-lower>      → artist detail (short alternative)
+//   /orders /portfolio /swap /tournaments /leaderboard /profile /settings /help
+//                                 → matching in-app view, at site root per M8 spec
+//   /tournaments/<id>             → tournament detail
+// Netlify SPA rewrite (M8.3) serves exchange.html for all of these paths so the
+// router below can take over after boot.
+const ROUTE_RESERVED = new Set(['markets','artists','genres','genre','portfolio','orders','swap','tournaments','leaderboard','profile','settings','help']);
+const ROOT_SINGLE_ROUTES = new Set(['orders','portfolio','swap','tournaments','leaderboard','profile','settings','help']);
+let ARTIST_BY_SLUG = {};
+let ARTIST_BY_TICKER = {};
+let ARTIST_TO_SLUG = {};
+function slugifyName(name) {
+  return (name || '')
+    .toString()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')   // strip diacritics (Beyoncé → beyonce)
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[\u2018\u2019\u201A\u201B']/g, '')   // smart & straight apostrophes
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+}
+function buildArtistRouteMap() {
+  ARTIST_BY_SLUG = {};
+  ARTIST_BY_TICKER = {};
+  ARTIST_TO_SLUG = {};
+  if (!Array.isArray(ARTISTS)) return;
+  ARTISTS.forEach(a => {
+    const base = slugifyName(a.name) || (a.ticker || '').toLowerCase();
+    let slug = base;
+    // Collision handling: reserved word OR another artist already claimed this
+    // slug ("Lil X" twice etc.) → fall back to {base}-{ticker}. Tickers are
+    // unique per artist so this always resolves to a distinct URL.
+    if (!slug || ROUTE_RESERVED.has(slug) || ARTIST_BY_SLUG[slug]) {
+      const tk = (a.ticker || '').toLowerCase();
+      slug = base ? (base + (tk ? '-' + tk : '')) : tk;
+    }
+    if (!slug) return;  // no name and no ticker — skip rather than crash
+    ARTIST_BY_SLUG[slug] = a;
+    ARTIST_TO_SLUG[a.ticker] = slug;
+    const tk = (a.ticker || '').toLowerCase();
+    if (tk && !ARTIST_BY_TICKER[tk] && !ROUTE_RESERVED.has(tk) && !ARTIST_BY_SLUG[tk]) {
+      ARTIST_BY_TICKER[tk] = a;
+    } else if (tk && ROUTE_RESERVED.has(tk)) {
+      console.warn('[routing] ticker "' + a.ticker + '" collides with a reserved route name; short /exchange/' + tk + ' link disabled for this artist.');
+    }
+  });
+}
+
+// Compose the URL path for the currently-active view + STATE selection.
+function routeForState(name) {
+  if (!name || name === 'markets') return '/exchange/markets';
+  if (name === 'artist') {
+    const a = STATE.selected;
+    const slug = a && ARTIST_TO_SLUG[a.ticker];
+    return slug ? ('/exchange/' + slug) : '/exchange/markets';
+  }
+  if (name === 'artists') return '/exchange/artists';
+  if (name === 'genres') return '/exchange/genres';
+  if (name === 'genre') {
+    const g = slugifyName(STATE.selectedGenre || 'Pop') || 'pop';
+    return '/exchange/genre/' + g;
+  }
+  if (name === 'tournament') {
+    const id = STATE.selectedTournament || '';
+    return id ? ('/tournaments/' + encodeURIComponent(id)) : '/tournaments';
+  }
+  if (ROOT_SINGLE_ROUTES.has(name)) return '/' + name;
+  return '/exchange/markets';
+}
+
+function updateDocumentTitle() {
+  try {
+    let title = 'Muse';
+    if (CURRENT_VIEW === 'artist' && STATE.selected) title = STATE.selected.name + ' · Muse';
+    else if (VIEW_TITLES[CURRENT_VIEW]) title = VIEW_TITLES[CURRENT_VIEW] + ' · Muse';
+    document.title = title;
+  } catch (_) {}
+}
+
+let __routingSuppressPush = false;
+function updateHistoryFromView(replace) {
+  // Title always follows CURRENT_VIEW — whether we came from a nav click,
+  // popstate, or the initial deep-link load. (Keeping it outside the push
+  // guard fixes a bug where direct-load of /exchange/<artist> left the tab
+  // title at "Muse" because the URL already matched and we early-returned.)
+  updateDocumentTitle();
+  if (__routingSuppressPush) return;
+  const path = routeForState(CURRENT_VIEW);
+  if (path === location.pathname) return;   // no-op if URL already matches (prevents dup history entries on re-renders)
+  try {
+    history[replace ? 'replaceState' : 'pushState'](
+      { view: CURRENT_VIEW, ticker: STATE.selected && STATE.selected.ticker || null },
+      '',
+      path
+    );
+  } catch (_) { /* sandbox / cross-origin → silent */ }
+}
+
+// Parse a URL path into a route descriptor. Returns null for non-app paths
+// (marketing pages) so boot doesn't hijack /signin, /about, etc.
+function parsePathToRoute(path) {
+  path = (path || '/').split('?')[0].split('#')[0];
+  // Strip trailing slash except for root
+  if (path.length > 1) path = path.replace(/\/+$/, '');
+  const root = path.slice(1);   // drop leading "/"
+  // Single-segment app routes at site root
+  if (ROOT_SINGLE_ROUTES.has(root)) return { view: root };
+  // /tournaments/<id>
+  if (root.startsWith('tournaments/')) {
+    const id = decodeURIComponent(root.slice('tournaments/'.length).split('/')[0]);
+    return { view: 'tournament', tournamentId: id };
+  }
+  // /exchange[/...]
+  if (path === '/exchange' || path === '/exchange/' || path === '/exchange/markets') {
+    return { view: 'markets' };
+  }
+  if (path === '/exchange/artists') return { view: 'artists' };
+  if (path === '/exchange/genres') return { view: 'genres' };
+  if (path.startsWith('/exchange/genre/')) {
+    const g = decodeURIComponent(path.slice('/exchange/genre/'.length).split('/')[0] || '');
+    return { view: 'genre', genreSlug: g };
+  }
+  if (path.startsWith('/exchange/')) {
+    const seg = decodeURIComponent(path.slice('/exchange/'.length).split('/')[0]).toLowerCase();
+    if (!seg) return { view: 'markets' };
+    const a = ARTIST_BY_SLUG[seg] || ARTIST_BY_TICKER[seg];
+    if (a) return { view: 'artist', artist: a };
+    // Unknown segment under /exchange/ — send to markets rather than showing a broken detail page
+    return { view: 'markets', unknown: seg };
+  }
+  return null;   // marketing page: /, /signin, /about, …
+}
+
+function applyRoute(route, opts) {
+  if (!route) return;
+  opts = opts || {};
+  if (route.artist) STATE.selected = route.artist;
+  if (route.tournamentId) STATE.selectedTournament = route.tournamentId;
+  if (route.genreSlug) {
+    // Match slug back to a display-name genre if we know them; else pass through capitalised.
+    let match = route.genreSlug;
+    try {
+      if (typeof GENRE_PAGE_FILTERS === 'object' || true) {
+        // Look for canonical genre by slugified match across ARTISTS
+        const genres = new Set();
+        ARTISTS.forEach(a => { if (a.genre) genres.add(a.genre.split('·')[0].trim()); });
+        genres.forEach(g => { if (slugifyName(g) === route.genreSlug) match = g; });
+      }
+    } catch (_) {}
+    STATE.selectedGenre = match;
+  }
+  __routingSuppressPush = true;
+  try { setView(route.view); }
+  finally { __routingSuppressPush = false; }
+  if (opts.replaceState) updateHistoryFromView(true);
+}
+
+function applyInitialRoute() {
+  buildArtistRouteMap();
+  const route = parsePathToRoute(location.pathname);
+  if (!route) {
+    // Bare /exchange served the app but path is something unrouted (rare). Replace
+    // state with the current view's canonical URL so back-button lands sensibly.
+    try { updateHistoryFromView(true); } catch (_) {}
+    return;
+  }
+  applyRoute(route, { replaceState: true });
+}
+
+window.addEventListener('popstate', function () {
+  const route = parsePathToRoute(location.pathname);
+  if (!route) return;
+  applyRoute(route);
+});
+
+// Rebuild the artist map and apply whatever URL the user loaded with. Safe to
+// call now: ARTISTS has been populated (mergeMusePricesSync ran at line ~10726)
+// and the DOM for every view shell exists in the static HTML above.
+try { applyInitialRoute(); } catch (e) { console.warn('[routing] init failed', e); }
 function goBack() {
   if (STATE.viewHistory.length) {
     const prev = STATE.viewHistory.pop();
