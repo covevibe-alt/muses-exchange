@@ -10816,6 +10816,10 @@ function saveMusePriceState() {
       transactions: (STATE.transactions || []).slice(-100), // cap at last 100
       openOrders: STATE.openOrders || [],
       filledOrders: (STATE.filledOrders || []).slice(-50),
+      // M16.12 — persist the notifications inbox so unread counts survive reload.
+      // Cap at 50 (same cap pushNotification enforces). Read state is preserved.
+      notifications: (STATE.notifications || []).slice(0, 50),
+      notifUnread: STATE.notifUnread || 0,
     };
     localStorage.setItem(MUSE_STATE_KEY, JSON.stringify(snapshot));
   } catch (e) {
@@ -10865,6 +10869,11 @@ function restoreMusePriceState() {
       // is not yet shipped and leaving old entries would fire unsolicited
       // "Recurring buy executed" notifications after restore.
       STATE.recurringBuys = [];
+      // M16.12 — restore the notifications inbox. _notifId is synced defensively
+      // inside pushNotification (max(existing)+1), so no hoisting gymnastics
+      // are required here. renderNotifBadge() runs later from wireNotifications.
+      if (Array.isArray(snap.notifications)) STATE.notifications = snap.notifications.slice(0, 50);
+      if (typeof snap.notifUnread === 'number') STATE.notifUnread = snap.notifUnread;
     }
 
     console.log(`✓ Restored portfolio (saved ${Math.round((Date.now() - snap.savedAt) / 60000)}m ago)`);
@@ -18622,8 +18631,14 @@ function renderTournaments() {
 // ============ NOTIFICATIONS ============
 let _notifId = 1;
 function pushNotification(type, title, body, tournamentId) {
+  // M16.12 — derive next ID from max(existing, counter)+1. Handles restored
+  // snapshots where STATE.notifications has pre-existing ids and the local
+  // counter hasn't caught up yet.
+  const maxExisting = STATE.notifications.reduce((m, n) => n.id > m ? n.id : m, 0);
+  const newId = Math.max(_notifId, maxExisting + 1);
+  _notifId = newId + 1;
   STATE.notifications.unshift({
-    id: _notifId++,
+    id: newId,
     type, title, body,
     tournamentId,
     time: Date.now(),
@@ -18632,6 +18647,9 @@ function pushNotification(type, title, body, tournamentId) {
   if (STATE.notifications.length > 50) STATE.notifications.pop();
   STATE.notifUnread = STATE.notifications.filter(n => !n.read).length;
   renderNotifBadge();
+  // M16.12 — persist immediately. saveMusePriceState is cheap (single
+  // localStorage write) and the Supabase portfolio push is coalesced.
+  try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (e) {}
 }
 
 function renderNotifBadge() {
@@ -18704,6 +18722,8 @@ function wireNotifications() {
         STATE.notifUnread = STATE.notifications.filter(x => !x.read).length;
         renderNotifBadge();
         renderNotifPanel();
+        // M16.12 — persist read-state change
+        try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (e) {}
       }
       if (item.dataset.tournament) {
         STATE.selectedTournament = item.dataset.tournament;
@@ -18717,7 +18737,11 @@ function wireNotifications() {
     STATE.notifUnread = 0;
     renderNotifBadge();
     renderNotifPanel();
+    // M16.12 — persist "mark all read"
+    try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (e) {}
   });
+  // M16.12 — render badge once at boot so restored notifUnread shows up.
+  renderNotifBadge();
 }
 
 // ============ SEASON POINTS ============
