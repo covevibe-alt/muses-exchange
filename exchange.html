@@ -1661,7 +1661,10 @@
     border-radius: 999px;
   }
 
-  .markets-table { width: 100%; border-collapse: collapse; }
+  /* border-collapse: separate is required for sticky <td>/<th> to paint
+     cleanly — collapsed borders drop out during sticky repaint in Safari
+     and the cell background flickers in Chrome. */
+  .markets-table { width: 100%; border-collapse: separate; border-spacing: 0; }
   .markets-table thead th {
     text-align: left;
     font-size: 11px;
@@ -1698,16 +1701,24 @@
   }
   .card:has(> .listing-bar) { --sticky-filter-h: 56px; }
   .markets-table tbody tr {
-    border-bottom: 1px solid var(--border);
     transition: background .12s ease;
     cursor: pointer;
   }
-  .markets-table tbody tr:hover { background: rgba(255,255,255,0.02); }
-  .markets-table tbody tr:last-child { border-bottom: none; }
+  /* Hover tint needs to be SOLID (not semi-transparent) or rows will show
+     through the sticky first columns as the user scrolls horizontally.
+     --card-2 is already a subtle variant of --card tuned per theme. */
+  .markets-table tbody tr:hover td { background: var(--card-2); }
+  /* border-collapse: separate drops tr-level borders, so put the row
+     divider on each td's bottom instead. */
+  .markets-table tbody td {
+    border-bottom: 1px solid var(--border);
+  }
+  .markets-table tbody tr:last-child td { border-bottom: none; }
   .markets-table td {
     padding: 16px 14px;
     font-size: 13px;
     vertical-align: middle;
+    background: var(--card);
   }
   .markets-table td.right { text-align: right; }
   .artist-cell { display: flex; align-items: center; gap: 12px; }
@@ -6312,6 +6323,72 @@
     box-sizing: border-box;
   }
 
+  /* ── M13 — sticky first-column block (star + rank + artist name) ──
+     Pins the star, rank number, and artist name so they stay visible
+     as the data columns (listeners / trend / price / 24h / 7d / 30d)
+     scroll horizontally. Same pattern CoinGecko uses.
+
+     - col-star  (40px) → left: 0
+     - col-rank  (34px) → left: 40px
+     - nth-child(3) artist name → left: 74px, with drop shadow as the
+       visual edge between frozen block and scrolling block.
+
+     thead cells get z-index: 4 so the corner stays above body-sticky
+     cells (which sit at z-index: 2). Backgrounds must be solid so
+     scrolling rows don't bleed through. */
+  .markets-table td.col-rank,
+  .markets-table th.col-rank {
+    width: 34px;
+    min-width: 34px;
+    max-width: 34px;
+    padding-left: 0;
+    padding-right: 6px;
+    text-align: right;
+    box-sizing: border-box;
+    font-variant-numeric: tabular-nums;
+  }
+  .markets-table tbody td.col-rank {
+    color: var(--text-faint);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .markets-table td.col-star,
+  .markets-table th.col-star {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+  }
+  .markets-table td.col-rank,
+  .markets-table th.col-rank {
+    position: sticky;
+    left: 40px;
+    z-index: 2;
+  }
+  .markets-table td:nth-child(3),
+  .markets-table th:nth-child(3) {
+    position: sticky;
+    left: 74px;
+    z-index: 2;
+    box-shadow: 6px 0 8px -6px rgba(0,0,0,0.25);
+  }
+  /* Header-row sticky cells need to sit above scrolling body sticky
+     cells at the left edge (otherwise the rank column header gets
+     painted under a scrolling star cell). */
+  .markets-table thead th.col-star,
+  .markets-table thead th.col-rank,
+  .markets-table thead th:nth-child(3) {
+    z-index: 4;
+  }
+  /* Force mobile-width overflow so sticky actually pins. Without this
+     the table collapses down to the viewport width and nothing scrolls
+     horizontally, which is what the user was hitting before. */
+  @media (max-width: 900px) {
+    #artist-table,
+    #artists-table,
+    #genre-artist-table { min-width: 760px; }
+  }
+
   /* PORTFOLIO HOLDINGS — card-style rows */
   .holding-row {
     display: grid;
@@ -7793,47 +7870,10 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    /* ── M3.3 All Artists: freeze Artist column, scroll the data ──
-       Force the table wider than the viewport so overflow-x triggers,
-       then stick the first two <td>/<th> (star + artist name) to the
-       left edge. Border-collapse: separate avoids a Safari quirk where
-       collapsed borders drop out during sticky paint. */
-    #artists-table {
-      min-width: 720px;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-    /* M10.4 — star and name columns need to behave as one frozen block.
-       Previously col-star had padding-left:4px padding-right:8px with
-       content-box sizing, so its actual rendered width was 44+4+8 = 56px
-       while the name column's sticky `left: 44px` assumed exactly 44.
-       That 12px mismatch showed as either a visual gap or a tiny overlap
-       as you scrolled horizontally. Lock both columns to exact widths
-       with border-box and zero out the col-star inner padding — the star
-       button has its own 32px circle so the column reads fine at 40px. */
-    #artists-table th.col-star,
-    #artists-table td.col-star {
-      position: sticky;
-      left: 0;
-      z-index: 2;
-      background: var(--card);
-      width: 40px;
-      min-width: 40px;
-      max-width: 40px;
-      padding-left: 4px;
-      padding-right: 0;
-      box-sizing: border-box;
-    }
-    #artists-table th:nth-child(2),
-    #artists-table td:nth-child(2) {
-      position: sticky;
-      left: 40px;  /* flush with col-star trailing edge */
-      z-index: 2;
-      background: var(--card);
-      box-shadow: 6px 0 8px -6px rgba(0,0,0,0.5);
-      padding-left: 6px;  /* small breathing room between star and name */
-      box-sizing: border-box;
-    }
+    /* M13 — sticky first-column block (star + rank + artist name) is
+       now defined at the base .markets-table level so all three artist
+       tables (Markets, All Artists, Genre) share the same behavior on
+       all viewport widths. Mobile min-width is handled there too. */
 
     /* ── M3.8 Holdings: same treatment, freeze Artist name column ──
        Wrapping scroll container (.holdings-scroll) extends past the
@@ -8928,6 +8968,7 @@
             <thead>
               <tr>
                 <th class="col-star"></th>
+                <th class="col-rank">#</th>
                 <th class="sortable" data-col-sort="name">Artist<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
                 <th class="sortable" data-col-sort="listeners">Listeners<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
                 <th>Trend</th>
@@ -9542,6 +9583,7 @@
             <thead>
               <tr>
                 <th class="col-star"></th>
+                <th class="col-rank">#</th>
                 <th class="sortable" data-col-sort="name">Artist<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
                 <th class="sortable" data-col-sort="listeners">Listeners<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
                 <th>Trend</th>
@@ -9737,6 +9779,7 @@
             <thead>
               <tr>
                 <th class="col-star"></th>
+                <th class="col-rank">#</th>
                 <th class="sortable" data-col-sort="name">Artist<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
                 <th class="sortable" data-col-sort="listeners">Listeners<svg class="sort-arrow" aria-hidden="true"><use href="#i-sort"/></svg></th>
                 <th>Trend</th>
@@ -12323,11 +12366,12 @@ function renderAllArtists() {
   } else {
     grid.style.display = 'none';
     grid.innerHTML = '';
-    tbody.innerHTML = list.map(a => {
+    tbody.innerHTML = list.map((a, i) => {
       const g = GENRES[a.ticker] || '';
       return `
         <tr data-ticker="${a.ticker}">
           <td class="col-star">${starHTML(a.ticker)}</td>
+          <td class="col-rank">${i + 1}</td>
           <td>
             <div class="artist-cell">
               ${bubbleHTML(a)}
@@ -12666,10 +12710,11 @@ function renderGenrePage() {
     grid.style.display = 'none';
     grid.innerHTML = '';
     table.style.display = 'table';
-    tbody.innerHTML = filtered.map(a => {
+    tbody.innerHTML = filtered.map((a, i) => {
       return `
         <tr data-ticker="${a.ticker}">
           <td class="col-star">${starHTML(a.ticker)}</td>
+          <td class="col-rank">${i + 1}</td>
           <td>
             <div class="artist-cell">
               ${bubbleHTML(a)}
@@ -13061,10 +13106,11 @@ function renderArtistList() {
     // TABLE VIEW
     grid.style.display = 'none';
     grid.innerHTML = '';
-    tbody.innerHTML = list.map(a => {
+    tbody.innerHTML = list.map((a, i) => {
       return `
         <tr data-ticker="${a.ticker}">
           <td class="col-star">${starHTML(a.ticker)}</td>
+          <td class="col-rank">${i + 1}</td>
           <td>
             <div class="artist-cell">
               ${bubbleHTML(a)}
