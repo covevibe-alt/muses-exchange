@@ -10371,11 +10371,91 @@ async function pushPortfolioToSupabase() {
         })
         .eq('user_id', window.MUSE_USER.id);
       if (error) throw error;
+      // After the private snapshot push, upsert the public leaderboard row.
+      // Independent try/catch — a leaderboard hiccup must never block the
+      // primary portfolio persistence path.
+      try { await upsertLeaderboardRow(); }
+      catch (e) { console.warn('[Muses] Leaderboard upsert failed:', e.message || e); }
     } while (_pushQueued);
   } catch (e) {
     console.warn('[Muses] Supabase portfolio push failed:', e.message || e);
   } finally {
     _pushInFlight = false;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// LEADERBOARD — public ranking table (migration 004)
+// ─────────────────────────────────────────────────────────────────────
+// Upsert this user's row in public.leaderboard. Called after every successful
+// portfolio push. Computes portfolio_value from current STATE (cash + shares ×
+// current price) so the value reflects live prices, not stale snapshots.
+async function upsertLeaderboardRow() {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return;
+
+  // Portfolio value = cash + Σ (shares × current price)
+  let portfolioValue = STATE.cash || 0;
+  Object.keys(STATE.holdings || {}).forEach(t => {
+    const a = ARTISTS.find(x => x.ticker === t);
+    const h = STATE.holdings[t];
+    if (a && h && h.shares) portfolioValue += h.shares * a.price;
+  });
+  const STARTING_BALANCE = 10000;
+  const returnPct = ((portfolioValue - STARTING_BALANCE) / STARTING_BALANCE) * 100;
+
+  // Display name: user-set handle → email-prefix → generic fallback.
+  // Length-capped so a malicious client can't stuff 10KB into the leaderboard.
+  const handle = ((STATE.profile && STATE.profile.handle) || '').trim();
+  const emailPrefix = ((window.MUSE_USER.email) || '').split('@')[0];
+  const displayName = (handle || emailPrefix || 'trader').slice(0, 40);
+
+  const { error } = await window.SUPABASE
+    .from('leaderboard')
+    .upsert({
+      user_id: window.MUSE_USER.id,
+      display_name: displayName,
+      portfolio_value: +portfolioValue.toFixed(2),
+      return_pct: +returnPct.toFixed(2),
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id' });
+  if (error) throw error;
+
+  // Invalidate the leaderboard cache so the next render refetches.
+  LEADERBOARD_FETCH_AT = 0;
+}
+
+// Cache for leaderboard rows. null = never fetched yet (show loading state).
+// TTL avoids hammering Supabase on every tab switch.
+let LEADERBOARD_ROWS = null;
+let LEADERBOARD_FETCH_AT = 0;
+const LEADERBOARD_TTL_MS = 60_000;
+
+async function fetchLeaderboard(force) {
+  if (!window.SUPABASE) {
+    // Supabase SDK failed to load — render empty state rather than spinner-forever.
+    if (LEADERBOARD_ROWS === null) LEADERBOARD_ROWS = [];
+    return;
+  }
+  if (!force && LEADERBOARD_ROWS && (Date.now() - LEADERBOARD_FETCH_AT) < LEADERBOARD_TTL_MS) return;
+  try {
+    const { data, error } = await window.SUPABASE
+      .from('leaderboard')
+      .select('user_id, display_name, portfolio_value, return_pct, updated_at')
+      .order('portfolio_value', { ascending: false, nullsFirst: false })
+      .limit(200);
+    if (error) throw error;
+    LEADERBOARD_ROWS = Array.isArray(data) ? data : [];
+    LEADERBOARD_FETCH_AT = Date.now();
+    // If the leaderboard view is currently showing, re-render with fresh data.
+    const lv = document.getElementById('view-leaderboard');
+    if (lv && !lv.classList.contains('hidden') && typeof renderLeaderboard === 'function') {
+      renderLeaderboard();
+    }
+  } catch (e) {
+    console.warn('[Muses] Leaderboard fetch failed:', e.message || e);
+    // Prevent infinite loading state on persistent failure.
+    if (LEADERBOARD_ROWS === null) LEADERBOARD_ROWS = [];
+    LEADERBOARD_FETCH_AT = Date.now();
   }
 }
 
@@ -12729,14 +12809,16 @@ function initPortfolioChart() {
 }
 
 
-function computePortfolioSeries() {
+function computePortfolioSeries(rangeOverride) {
   // Build a backtest using each artist's historical series tail.
   // Honors STATE.portfolioRange — supports time-based (1h, 6h, 1d) and
   // day-count (7, 90, all) ranges, matching the detail chart.
+  // rangeOverride lets callers (e.g. profile "30 days" chart) request a
+  // fixed window without clobbering the Portfolio page's current range.
   const tickers = Object.keys(STATE.holdings);
   const sample = ARTISTS[0].series;
   if (!sample || sample.length === 0) return [];
-  const range = STATE.portfolioRange;
+  const range = rangeOverride || STATE.portfolioRange;
 
   // Slice the sample series using the same sliceRange() used by detail charts
   const sliced = sliceRange(sample, range);
@@ -15779,15 +15861,36 @@ function renderLeaderboard() {
   const host = document.getElementById('lb-list');
   if (!host) return;
 
-  // Build enriched rows with `isYou` flag + synthetic lineups
-  const yourName = STATE.profile.name || 'You';
-  const all = FAKE_USERS.map(u => ({
-    name: u.name === '__YOU__' ? yourName : u.name,
-    tag: u.tag,
-    ret: u.ret,
-    isYou: u.name === '__YOU__',
-    lineup: syntheticLineupFor(u.name),
-  }));
+  // Kick off (or refresh) the real-data fetch. Idempotent + TTL-bounded.
+  fetchLeaderboard();
+
+  // First visit before fetch resolves — show a brief loading state rather
+  // than rendering the "opens at launch" placeholder, which would misleading-
+  // ly imply the leaderboard isn't live yet.
+  if (LEADERBOARD_ROWS === null) {
+    host.innerHTML = `
+      <div style="text-align:center;padding:40px 16px;color:var(--text-dim);font-size:13px">
+        <div style="font-size:24px;margin-bottom:10px">⏳</div>
+        Loading leaderboard…
+      </div>
+    `;
+    return;
+  }
+
+  // Map real Supabase rows into the enriched shape the rest of this function
+  // expects. `lineup` stays synthetic — we deliberately do not expose other
+  // users' holdings publicly.
+  const yourId = window.MUSE_USER && window.MUSE_USER.id;
+  const all = LEADERBOARD_ROWS.map(r => {
+    const name = (r.display_name && r.display_name.trim()) || 'trader';
+    return {
+      name,
+      tag: '',  // Reserved for phase-2 metadata (location, club, etc.)
+      ret: Number(r.return_pct) || 0,
+      isYou: !!(yourId && r.user_id === yourId),
+      lineup: syntheticLineupFor(name),
+    };
+  });
 
   // Compute stable absolute ranking
   const fullRanking = all.slice().sort((a, b) => b.ret - a.ret);
@@ -15907,8 +16010,8 @@ function renderLeaderboard() {
     host.innerHTML = `
       <div style="text-align:center;padding:40px 16px;color:var(--text-dim);font-size:13px;line-height:1.6">
         <div style="font-size:32px;margin-bottom:12px">🏆</div>
-        <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:15px">Leaderboard opens at launch</div>
-        <div>Once Muses goes live, player rankings will appear here based on real portfolio performance.</div>
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:15px">Nobody here yet</div>
+        <div>Be the first to appear on the leaderboard — make a trade and you'll show up automatically.</div>
       </div>
     `;
     return;
@@ -16133,24 +16236,22 @@ function renderProfile() {
   // Recent activity (last 5 transactions)
   const recentTx = (STATE.transactions || []).slice(0, 5);
 
-  // 30-day equity curve. Only show a synthetic curve once the user has actually
-  // started trading — before that, a flat line at the starting balance is honest.
-  const points = 30;
-  const hasTraded = (STATE.transactions || []).length > 0;
+  // 30-day equity curve — same source as the Portfolio page chart.
+  // computePortfolioSeries('30') backtests the user's current holdings
+  // against each artist's real 30-day history, so the curve honestly
+  // reflects what this portfolio would have done over the window.
+  // Pre-trade users get a flat line at starting cash.
+  const hasTraded = (STATE.transactions || []).length > 0 &&
+                    Object.keys(STATE.holdings || {}).length > 0;
   let curve = [];
   if (hasTraded) {
-    const curveRng = mulberry32(_hashStr(STATE.profile.name || 'You'));
-    let v = 10000;
-    for (let i = 0; i < points; i++) {
-      v *= 1 + (curveRng() - 0.48) * 0.02;
-      curve.push(v);
-    }
-    // Anchor end to actual current value
-    const lastVal = curve[curve.length - 1];
-    curve = curve.map((x) => x * (s.totalValue / lastVal));
-  } else {
-    // Flat line at current (= starting) balance
-    for (let i = 0; i < points; i++) curve.push(s.totalValue);
+    const series = computePortfolioSeries('30');
+    curve = series.map(p => p.value);
+  }
+  if (curve.length < 2) {
+    // Fallback: flat line at current value (or starting cash if no portfolio yet)
+    const flat = Number.isFinite(s.totalValue) ? s.totalValue : 10000;
+    curve = new Array(30).fill(flat);
   }
   const minV = Math.min(...curve), maxV = Math.max(...curve);
   const W = 760, H = 140, pad = 8;
@@ -16306,7 +16407,7 @@ function renderProfile() {
   const editBtn = document.getElementById('prof-edit');
   if (editBtn) editBtn.onclick = () => openEditProfileModal();
   const shareBtn = document.getElementById('prof-share');
-  if (shareBtn) shareBtn.onclick = () => showToast('Share link copied (demo)');
+  if (shareBtn) shareBtn.onclick = () => shareProfile();
   const tourBtn = document.getElementById('prof-tour');
   if (tourBtn) tourBtn.onclick = () => startOnboarding(true);
   // Sync topbar chip with current profile
@@ -18962,6 +19063,46 @@ function renderTournamentDetail() {
   if (shareBtn) {
     shareBtn.onclick = () => shareTournament(t);
   }
+}
+
+// Share the user's profile. Mirrors shareTournament: native share sheet
+// when available, clipboard fallback, textarea fallback for old browsers.
+// Text includes handle + all-time return so the link stands on its own.
+function shareProfile() {
+  const s = (typeof computeProfileStats === 'function') ? computeProfileStats() : null;
+  const handle = (STATE.profile && STATE.profile.handle) ? '@' + STATE.profile.handle : '';
+  const retStr = s && Number.isFinite(s.totalReturnPct)
+    ? (s.totalReturnPct >= 0 ? '+' : '') + s.totalReturnPct.toFixed(2) + '%'
+    : null;
+  const parts = ['Check out my Muses portfolio'];
+  if (handle) parts.push(handle);
+  if (retStr) parts.push('— currently ' + retStr + ' all-time');
+  const shareText = parts.join(' ') + '. Trade artists like stocks at muses.exchange.';
+  const shareUrl = window.location.origin + '/';
+  if (navigator.share) {
+    navigator.share({ title: 'Muses — ' + (handle || 'my portfolio'), text: shareText, url: shareUrl })
+      .catch(() => {});
+  } else {
+    const full = shareText + '\n' + shareUrl;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(full).then(() => {
+        showToast('Share link copied to clipboard');
+      }).catch(() => {
+        _shareProfileFallbackCopy(full);
+      });
+    } else {
+      _shareProfileFallbackCopy(full);
+    }
+  }
+}
+function _shareProfileFallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast('Share link copied to clipboard'); }
+  catch (e) { showToast('Copy failed — please copy manually'); }
+  ta.remove();
 }
 
 function shareTournament(t) {
