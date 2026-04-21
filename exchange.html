@@ -4222,6 +4222,61 @@
     font-size: 12px;
   }
 
+  /* M16.13 — Mobile leaderboard polish.
+     Desktop grid = 4 stats × 1fr + 7-col row grid with bubbles & gap columns.
+     That layout collapses below ~700px: labels wrap 3-5 lines, the 32/42/1fr/
+     auto/68/72/24 row grid leaves ~80px for names. On mobile we show only the
+     signal columns (rank, name, return, chevron) and stack the controls. */
+  @media (max-width: 700px) {
+    .lb-stats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .lb-stat { padding: 10px 12px; }
+    .lb-stat-label { font-size: 10px; margin-bottom: 4px; }
+    .lb-stat-val { font-size: 18px; }
+    .lb-stat-sub { font-size: 10px; }
+    .lb-stat-val .lb-stat-sub { font-size: 11px; }
+    .lb-controls {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .lb-sort {
+      justify-content: space-between;
+      overflow-x: auto;
+    }
+    .lb-sort button {
+      flex: 1;
+      padding: 8px 6px;
+    }
+    .lb-row.v2 {
+      grid-template-columns: 32px 1fr auto 20px;
+      gap: 10px;
+      padding: 12px 8px;
+    }
+    /* Hide dense columns that don't carry signal on mobile.
+       Delta/picks/gap reintroduce at desktop widths. */
+    .lb-row.v2 .lb-delta,
+    .lb-row.v2 .lb-picks,
+    .lb-row.v2 .lb-gap2 { display: none; }
+    .lb-return { font-size: 15px; }
+    .lb-user .n { font-size: 13px; }
+    .lb-podium {
+      padding: 10px 2px 14px;
+      gap: 6px;
+    }
+    .podium-card { padding: 10px 6px; }
+    .podium-card.place-1 {
+      padding-top: 18px;
+      padding-bottom: 14px;
+    }
+    .podium-name { font-size: 11px; }
+    .podium-ret { font-size: 13px; }
+    .lb-jump { width: 100%; padding: 8px 12px; }
+  }
+
   /* PROFILE PAGE */
   .prof-hero {
     position: relative;
@@ -17043,8 +17098,9 @@ function renderLeaderboard() {
   const all = LEADERBOARD_ROWS.map(r => {
     const name = (r.display_name && r.display_name.trim()) || 'trader';
     return {
-      name,
-      tag: '',  // Reserved for phase-2 metadata (location, club, etc.)
+      name,                        // raw — used as dict key + hash seed
+      nameHtml: escapeHTML(name),  // M16.13 — XSS guard for HTML interpolation
+      tag: '',                     // Reserved for phase-2 metadata (location, club, etc.)
       ret: Number(r.return_pct) || 0,
       isYou: !!(yourId && r.user_id === yourId),
       lineup: syntheticLineupFor(name),
@@ -17134,23 +17190,26 @@ function renderLeaderboard() {
     if (delta > 0) deltaHTML = `<span class="lb-delta up">▲${delta}</span>`;
     else if (delta < 0) deltaHTML = `<span class="lb-delta down">▼${-delta}</span>`;
     const gap = u.ret - leader.ret;
+    // M16.13 — format as Δ so it doesn't masquerade as a return column.
     const gapHTML = u.absRank === 1
       ? '<span class="lb-gap2 leader">leader</span>'
-      : `<span class="lb-gap2">${gap.toFixed(2)}%</span>`;
+      : `<span class="lb-gap2">Δ ${gap.toFixed(2)}</span>`;
     const youAttr = u.isYou ? ' data-you="1"' : '';
     const expanded = lb.expanded === u.name;
+    // M16.13 — nameHtml is pre-escaped for safe interpolation (XSS guard).
+    const nameStr = u.nameHtml || escapeHTML(u.name || 'trader');
     return `
-      <div class="lb-row v2 ${u.isYou ? 'is-you' : ''} ${expanded ? 'expanded' : ''}" data-lb-row="${u.name}"${youAttr}>
+      <div class="lb-row v2 ${u.isYou ? 'is-you' : ''} ${expanded ? 'expanded' : ''}" data-lb-row="${nameStr}"${youAttr}>
         <div class="lb-rank ${cls}">${rank}</div>
         ${deltaHTML}
         <div class="lb-user">
-          <div class="n">${u.name}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
+          <div class="n">${nameStr}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
           <div class="t">${u.tag}</div>
         </div>
         ${lineupBubbles(u.lineup)}
         ${gapHTML}
         <div class="lb-return ${u.ret >= 0 ? 'up' : 'down'}">${u.ret >= 0 ? '+' : ''}${u.ret.toFixed(2)}%</div>
-        <button class="lb-chev" data-lb-toggle="${u.name}" title="${expanded ? 'Collapse' : 'Expand lineup'}">
+        <button class="lb-chev" data-lb-toggle="${nameStr}" title="${expanded ? 'Collapse' : 'Expand lineup'}">
           <svg style="width:14px;height:14px;transform:rotate(${expanded ? 180 : 0}deg);transition:transform .15s"><use href="#i-chev-down"/></svg>
         </button>
       </div>
@@ -17177,8 +17236,9 @@ function renderLeaderboard() {
   }
   const yourPct = fullRanking.length ? Math.round((yourRank / fullRanking.length) * 100) : 0;
   const positives = fullRanking.filter(r => r.ret > 0).length;
-  // Solo-entrant guard — don't render "#1 of 1" on a thin field.
-  const rankIsMeaningful = fullRanking.length >= 20;
+  // M16.13 — was 20 (felt "broken" with a dozen real users). 5 is the minimum
+  // at which percentile math stops being absurd.
+  const rankIsMeaningful = fullRanking.length >= 5;
   let html = `
     <div class="lb-stats">
       <div class="lb-stat">
@@ -17191,8 +17251,8 @@ function renderLeaderboard() {
       </div>
       <div class="lb-stat">
         <div class="lb-stat-label">Top return</div>
-        <div class="lb-stat-val up">+${leader ? leader.ret.toFixed(1) : '0.0'}%</div>
-        <div class="lb-stat-sub">${leader ? leader.name : '—'}</div>
+        <div class="lb-stat-val up">${leader && leader.ret>=0?'+':''}${leader ? leader.ret.toFixed(2) : '0.00'}%</div>
+        <div class="lb-stat-sub">${leader ? (leader.isYou ? 'you' : escapeHTML(leader.name)) : '—'}</div>
       </div>
       <div class="lb-stat">
         <div class="lb-stat-label">Top percentile</div>
@@ -17200,9 +17260,10 @@ function renderLeaderboard() {
         <div class="lb-stat-sub">${positives} in profit</div>
       </div>
     </div>
+    ${(!yourInVisible && yourRank) ? `
     <div class="lb-tabs">
       <button class="lb-jump" id="lb-jump-g">Jump to me · #${yourRank}</button>
-    </div>
+    </div>` : ''}
     <div class="lb-controls">
       <div class="lb-search">
         <svg><use href="#i-search"/></svg>
@@ -17227,7 +17288,7 @@ function renderLeaderboard() {
           return `
             <div class="podium-card place-${place}">
               <div class="podium-rank ${cls}">${place}</div>
-              <div class="podium-name">${p.isYou ? 'You' : p.name}</div>
+              <div class="podium-name">${p.isYou ? 'You' : escapeHTML(p.name)}</div>
               <div class="podium-ret ${p.ret>=0?'up':'down'}">${p.ret>=0?'+':''}${p.ret.toFixed(2)}%</div>
             </div>
           `;
@@ -19995,18 +20056,20 @@ function renderTournamentDetail() {
       : `<span class="lb-gap2">${gap.toFixed(2)}%</span>`;
     const youAttr = u.isYou ? ' data-you="1"' : '';
     const expanded = lb.expanded === u.name;
+    // M16.13 — nameHtml is pre-escaped for safe interpolation (XSS guard).
+    const nameStr = u.nameHtml || escapeHTML(u.name || 'trader');
     return `
-      <div class="lb-row v2 ${u.isYou ? 'is-you' : ''} ${expanded ? 'expanded' : ''}" data-lb-row="${u.name}"${youAttr}>
+      <div class="lb-row v2 ${u.isYou ? 'is-you' : ''} ${expanded ? 'expanded' : ''}" data-lb-row="${nameStr}"${youAttr}>
         <div class="lb-rank ${cls}">${rank}</div>
         ${deltaHTML}
         <div class="lb-user">
-          <div class="n">${u.name}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
+          <div class="n">${nameStr}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
           <div class="t">${u.tag}</div>
         </div>
         ${lineupBubbles(u.lineup)}
         ${gapHTML}
         <div class="lb-return ${u.ret >= 0 ? 'up' : 'down'}">${u.ret >= 0 ? '+' : ''}${u.ret.toFixed(2)}%</div>
-        <button class="lb-chev" data-lb-toggle="${u.name}" title="${expanded ? 'Collapse' : 'Expand lineup'}">
+        <button class="lb-chev" data-lb-toggle="${nameStr}" title="${expanded ? 'Collapse' : 'Expand lineup'}">
           <svg style="width:14px;height:14px;transform:rotate(${expanded ? 180 : 0}deg);transition:transform .15s"><use href="#i-chev-down"/></svg>
         </button>
       </div>
@@ -20049,7 +20112,7 @@ function renderTournamentDetail() {
           return `
             <div class="podium-card place-${place}">
               <div class="podium-rank ${cls}">${place}</div>
-              <div class="podium-name">${p.isYou ? 'You' : p.name}</div>
+              <div class="podium-name">${p.isYou ? 'You' : escapeHTML(p.name)}</div>
               <div class="podium-ret ${p.ret>=0?'up':'down'}">${p.ret>=0?'+':''}${p.ret.toFixed(2)}%</div>
             </div>
           `;
