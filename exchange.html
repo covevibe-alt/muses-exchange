@@ -10667,16 +10667,20 @@ function fmtInt(n)        { return (+n || 0).toLocaleString('en-US'); }
 function fmtNum2(n)       { return (+n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function fmtPct(ratio)    { const v = (ratio * 100).toFixed(2); return (ratio >= 0 ? '+' : '') + v + '%'; }
 function fmtPct24(ratio)  { return fmtPct(ratio) + ' · 24h'; }
-// M16.25 — near-zero values (|v| < 0.05%) render as 'flat', not 'up'/'down'.
-// Before, -0.0001 (-0.01%) coloured bold red next to a flat-looking
-// sparkline, reading alarmist for what is effectively no movement.
+// M16.39 — Sander wants ANY non-zero displayed value to colour up/down;
+// only a value that renders as "0.00%" should be grey/flat. Previous
+// threshold was 0.05% (M16.25 intent: dampen alarmist red on near-zero
+// movement), but it meant -0.04% and +0.03% also read as flat, which
+// felt like a bug — you could clearly see a number but it wasn't
+// coloured. fmtPct uses toFixed(2), so anything with |v| >= 0.00005
+// (i.e. 0.005%) rounds to at least 0.01% on screen. That's the new cut.
+// Below 0.005% the screen shows "0.00%" and we keep it neutral grey.
 // 'flat' has explicit CSS in a few places (e.g. .lb-delta.flat) and
-// falls back to the inherited text colour everywhere else — exactly
-// the neutral rendering we want for near-zero deltas.
+// falls back to the inherited text colour everywhere else.
 function upDownClass(val) {
   const v = +val || 0;
-  if (Math.abs(v) < 0.0005) return 'flat';
-  return v >= 0 ? 'up' : 'down';
+  if (Math.abs(v) < 0.00005) return 'flat';
+  return v > 0 ? 'up' : 'down';
 }
 
 // ── Genre stats cache — recomputed every tick ──
