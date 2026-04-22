@@ -22037,7 +22037,13 @@ function updatePricesInPlace(priceBefore) {
         chipToday.classList.remove('price-flash-up', 'price-flash-down');
         const oldChipText = chipToday.textContent;
         chipToday.textContent = newChipText;
-        chipToday.className = 'pf-chip ' + (up ? 'up' : 'down');
+        // M16.33 — keep pf-chip-v (value styling) and only toggle up/down.
+        // A previous pass reassigned className to 'pf-chip …' here, which
+        // stripped pf-chip-v and made the inner value element inherit the
+        // full tile's border + padding → the stray pill around +$X.XX
+        // during live ticks.
+        chipToday.classList.remove('up', 'down');
+        chipToday.classList.add(up ? 'up' : 'down');
         if (oldChipText !== newChipText) {
           void chipToday.offsetWidth;
           chipToday.classList.add(up ? 'price-flash-up' : 'price-flash-down');
@@ -22046,7 +22052,9 @@ function updatePricesInPlace(priceBefore) {
       const chipTodaySub = document.getElementById('pf-chip-today-sub');
       if (chipTodaySub && invested > 0) {
         const plUp = todayPL >= 0;
-        const newSubText = (plUp ? '+' : '') + ((todayPL / invested) * 100).toFixed(2) + '% today';
+        // M16.33 — match the renderPortfolio format ("+X.XX% · 24h") so the
+        // label doesn't visibly shift between full re-render and live ticks.
+        const newSubText = (plUp ? '+' : '') + ((todayPL / invested) * 100).toFixed(2) + '% · 24h';
         chipTodaySub.classList.remove('price-flash-up', 'price-flash-down');
         const oldSubText = chipTodaySub.textContent;
         chipTodaySub.textContent = newSubText;
