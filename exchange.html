@@ -4065,6 +4065,9 @@
     display: grid; place-items: center;
   }
   .lb-chev:hover { color: var(--text); }
+  /* M16.26 — invisible placeholder so peer rows (no expand button) keep the
+     7-column grid aligned with the user's own row. */
+  .lb-chev-spacer { display: block; width: 24px; height: 24px; }
 
   /* Expanded detail */
   .lb-expand {
@@ -4318,6 +4321,8 @@
       font-size: 16px;
       touch-action: manipulation;
     }
+    /* M16.26 — grow spacer to match mobile chev target (32px slot). */
+    .lb-chev-spacer { width: 32px; height: 32px; }
     .lb-podium {
       padding: 10px 2px 14px;
       gap: 6px;
@@ -17672,22 +17677,26 @@ function renderLeaderboard() {
     const expanded = lb.expanded === u.name;
     // M16.13 — nameHtml is pre-escaped for safe interpolation (XSS guard).
     const nameStr = u.nameHtml || escapeHTML(u.name || 'trader');
+    // M16.26 — peer lineups are private. Only the user sees their own
+    // bubbles / expand-chev / expanded detail on the leaderboard row.
+    // Keeps the backend plumbing (top_holdings column, opt-in toggle)
+    // intact for a possible phase-2 "public lineup" model.
     return `
-      <div class="lb-row v2 ${u.isYou ? 'is-you' : ''} ${expanded ? 'expanded' : ''}" data-lb-row="${nameStr}"${youAttr}>
+      <div class="lb-row v2 ${u.isYou ? 'is-you' : ''} ${expanded && u.isYou ? 'expanded' : ''}" data-lb-row="${nameStr}"${youAttr}>
         <div class="lb-rank ${cls}">${rank}</div>
         ${deltaHTML}
         <div class="lb-user">
           <div class="n">${nameStr}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
           <div class="t">${u.tag}</div>
         </div>
-        ${lineupBubbles(u.lineup)}
+        ${u.isYou ? lineupBubbles(u.lineup) : '<div class="lb-picks" aria-hidden="true"></div>'}
         ${gapHTML}
         <div class="lb-return ${u.ret >= 0 ? 'up' : 'down'}">${u.ret >= 0 ? '+' : ''}${u.ret.toFixed(2)}%</div>
-        <button class="lb-chev" data-lb-toggle="${nameStr}" title="${expanded ? 'Collapse' : 'Expand lineup'}">
+        ${u.isYou ? `<button class="lb-chev" data-lb-toggle="${nameStr}" title="${expanded ? 'Collapse' : 'Expand lineup'}">
           <svg style="width:14px;height:14px;transform:rotate(${expanded ? 180 : 0}deg);transition:transform .15s"><use href="#i-chev-down"/></svg>
-        </button>
+        </button>` : '<span class="lb-chev-spacer" aria-hidden="true"></span>'}
       </div>
-      ${expanded ? expandedDetail(u) : ''}
+      ${expanded && u.isYou ? expandedDetail(u) : ''}
     `;
   };
 
@@ -17717,7 +17726,7 @@ function renderLeaderboard() {
     <div class="lb-stats">
       <div class="lb-stat">
         <div class="lb-stat-label">Your rank</div>
-        <div class="lb-stat-val purple">${rankIsMeaningful ? `#${yourRank || '—'} <span class="lb-stat-sub">of ${fullRanking.length}</span>` : `— <span class="lb-stat-sub">awaiting more players</span>`}</div>
+        <div class="lb-stat-val purple">${yourRank ? `#${yourRank} <span class="lb-stat-sub">of ${fullRanking.length}</span>` : `— <span class="lb-stat-sub">make a trade to rank</span>`}</div>
       </div>
       <div class="lb-stat">
         <div class="lb-stat-label">Your return</div>
@@ -17729,9 +17738,9 @@ function renderLeaderboard() {
         <div class="lb-stat-sub">${leader ? (leader.isYou ? 'you' : escapeHTML(leader.name)) : '—'}</div>
       </div>
       <div class="lb-stat">
-        <div class="lb-stat-label">Top percentile</div>
-        <div class="lb-stat-val">${yourPct}%</div>
-        <div class="lb-stat-sub">${positives} in profit</div>
+        <div class="lb-stat-label">${rankIsMeaningful ? 'Top percentile' : 'Players'}</div>
+        <div class="lb-stat-val">${rankIsMeaningful ? yourPct + '%' : fullRanking.length}</div>
+        <div class="lb-stat-sub">${rankIsMeaningful ? positives + ' in profit' : 'need 5 for percentile'}</div>
       </div>
     </div>
     ${(!yourInVisible && yourRank) ? `
@@ -18181,7 +18190,10 @@ function renderEditProfileModal() {
       <div class="pe-toggles">
         ${[
           ['showPortfolio', 'Show portfolio value', 'Display total portfolio value on your public profile.'],
-          ['showHoldings',  'Publish my lineup',    'Show your top 5 holdings publicly on the leaderboard. Off by default.'],
+          // M16.26 — "Publish my lineup" toggle hidden from UI; peer lineups
+          // are now private across the leaderboard. Keep the key in the
+          // privacy schema + backend column so phase-2 can reinstate it.
+          // ['showHoldings',  'Publish my lineup',    'Show your top 5 holdings publicly on the leaderboard. Off by default.'],
           ['showHistory',   'Show tournament history', 'Let others see your past tournament finishes.'],
         ].map(([key, label, desc]) => `
           <div class="pe-toggle">
@@ -20544,22 +20556,24 @@ function renderTournamentDetail() {
     const expanded = lb.expanded === u.name;
     // M16.13 — nameHtml is pre-escaped for safe interpolation (XSS guard).
     const nameStr = u.nameHtml || escapeHTML(u.name || 'trader');
+    // M16.26 — peer lineups are private on the tournament leaderboard too.
+    // Only the user sees their own bubbles / expand-chev / expanded detail.
     return `
-      <div class="lb-row v2 ${u.isYou ? 'is-you' : ''} ${expanded ? 'expanded' : ''}" data-lb-row="${nameStr}"${youAttr}>
+      <div class="lb-row v2 ${u.isYou ? 'is-you' : ''} ${expanded && u.isYou ? 'expanded' : ''}" data-lb-row="${nameStr}"${youAttr}>
         <div class="lb-rank ${cls}">${rank}</div>
         ${deltaHTML}
         <div class="lb-user">
           <div class="n">${nameStr}${u.isYou ? ' <span class="dim" style="font-weight:400">(you)</span>' : ''}</div>
           <div class="t">${u.tag}</div>
         </div>
-        ${lineupBubbles(u.lineup)}
+        ${u.isYou ? lineupBubbles(u.lineup) : '<div class="lb-picks" aria-hidden="true"></div>'}
         ${gapHTML}
         <div class="lb-return ${u.ret >= 0 ? 'up' : 'down'}">${u.ret >= 0 ? '+' : ''}${u.ret.toFixed(2)}%</div>
-        <button class="lb-chev" data-lb-toggle="${nameStr}" title="${expanded ? 'Collapse' : 'Expand lineup'}">
+        ${u.isYou ? `<button class="lb-chev" data-lb-toggle="${nameStr}" title="${expanded ? 'Collapse' : 'Expand lineup'}">
           <svg style="width:14px;height:14px;transform:rotate(${expanded ? 180 : 0}deg);transition:transform .15s"><use href="#i-chev-down"/></svg>
-        </button>
+        </button>` : '<span class="lb-chev-spacer" aria-hidden="true"></span>'}
       </div>
-      ${expanded ? expandedDetail(u) : ''}
+      ${expanded && u.isYou ? expandedDetail(u) : ''}
     `;
   };
 
