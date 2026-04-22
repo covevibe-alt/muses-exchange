@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>How it works — Muses</title>
-<meta name="description" content="How Muses turns Spotify listeners and YouTube stats into a live, paper-traded price for 105 artists. The data, the formula, the honest caveats.">
+<meta name="description" content="The data, the formula, and the mechanics behind Muses Exchange — a paper-traded market where Spotify listeners and YouTube stats set the price for every listed artist.">
 <meta property="og:title" content="How Muses works">
 <meta property="og:description" content="The pricing formula, data sources, and the honest status of the Muses prototype.">
 <meta property="og:type" content="website">
@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="muse-shared.css?v=20260420b">
+<link rel="stylesheet" href="muse-shared.css?v=20260422a">
 </head>
 <body data-page="how">
 
@@ -62,7 +62,7 @@
     <div class="section-eyebrow reveal"><span class="eyebrow-dot"></span>How it works</div>
     <h1 class="page-hero-title reveal">From stream<br>to <em>portfolio.</em></h1>
     <p class="page-hero-lede reveal">
-      Four steps between you and a virtual portfolio of artist "stocks." Here's the honest picture — the data Muses uses, the formula that sets the price, and what the prototype does and doesn't do today.
+      Four steps between you and a virtual portfolio of artist "stocks." This is exactly how Muses Exchange works — the data it runs on, the formula that sets every price, and where the prototype currently draws the line.
     </p>
     <div class="page-hero-cta reveal">
       <a class="btn-primary" href="/signup">Sign up — it's free <svg><use href="#i-arrow-up-right"/></svg></a>
@@ -119,9 +119,9 @@
         <div class="how-icon"><svg><use href="#i-coin"/></svg></div>
         <div class="bs-step-num">Step 02</div>
         <h3>Invest</h3>
-        <p>Buy shares at the current price with a market order. Every new account starts with $10,000 in virtual credits — no deposit, no KYC, nothing real at risk. Buy as little or as much as you want and build the portfolio you'd build if this were real.</p>
+        <p>Buy shares at the current price with a market order, or set a limit order to execute only at the price you want. Every new account starts with $10,000 in virtual credits — no deposit, no KYC, nothing real at risk. Build the portfolio you'd build if this were real.</p>
         <ul class="bs-checks">
-          <li><svg><use href="#i-check"/></svg>Market orders (more types on the roadmap)</li>
+          <li><svg><use href="#i-check"/></svg>Market and limit orders</li>
           <li><svg><use href="#i-check"/></svg>$10,000 in virtual credits to start</li>
           <li><svg><use href="#i-check"/></svg>Free account — no deposit, no KYC</li>
         </ul>
@@ -142,11 +142,11 @@
         <div class="how-icon"><svg><use href="#i-trend"/></svg></div>
         <div class="bs-step-num">Step 03</div>
         <h3>Track</h3>
-        <p>Prices refresh every 30 minutes, 24/7 — driven by Spotify monthly listeners and YouTube channel stats, with boosts for chart position and radio play. Your virtual portfolio is saved in your browser so you can come back and see how it's holding up.</p>
+        <p>Prices refresh every 30 minutes, 24/7 — driven by Spotify monthly listeners and YouTube channel stats, with boosts for chart position and radio play. Your portfolio is tied to your account and follows you across devices — open it on desktop, close the tab, pick it up on your phone.</p>
         <ul class="bs-checks">
           <li><svg><use href="#i-check"/></svg>Live price + P&amp;L, updated every 30 min</li>
           <li><svg><use href="#i-check"/></svg>Full price history per artist</li>
-          <li><svg><use href="#i-check"/></svg>Portfolio saved locally in your browser</li>
+          <li><svg><use href="#i-check"/></svg>Portfolio synced across devices</li>
         </ul>
       </div>
       <div class="bs-visual">
@@ -169,11 +169,11 @@
         <div class="how-icon"><svg><use href="#i-portfolio"/></svg></div>
         <div class="bs-step-num">Step 04</div>
         <h3>Compare</h3>
-        <p>Sell any position at any time to lock in a virtual gain or cut a virtual loss. Watch how your picks perform against the market, against other artists, and against your own earlier self. It's a sandbox for the thesis: <em>could I actually spot a rising artist before the charts do?</em></p>
+        <p>Sell any position at any time to lock in a virtual gain or cut a virtual loss. Watch how your picks perform against the market, against other artists, and — if you opt in — against every other trader on the public leaderboard. The thesis under test: <em>can you spot a rising artist before the charts do?</em></p>
         <ul class="bs-checks">
           <li><svg><use href="#i-check"/></svg>Sell any time — no delays, no lock-ups</li>
-          <li><svg><use href="#i-check"/></svg>Track cumulative P&amp;L since you started</li>
-          <li><svg><use href="#i-check"/></svg>Honest caveat: this is paper trading</li>
+          <li><svg><use href="#i-check"/></svg>Cumulative P&amp;L since your first buy</li>
+          <li><svg><use href="#i-check"/></svg>Public leaderboard (opt-in)</li>
         </ul>
       </div>
       <div class="bs-visual">
@@ -239,14 +239,15 @@
     <div class="reveal">
       <div class="section-eyebrow">What it costs</div>
       <h2 class="section-title">Nothing —<br><em>it's paper.</em></h2>
-      <p class="section-lede">Muses is a prototype, not a brokerage. Accounts are free, there's no deposit, no real money, and no real fees. If Muses ever becomes a real product, the cost model will be public before anything charges a cent.</p>
+      <p class="section-lede">Muses Exchange is a prototype, not a brokerage. Accounts are free, there is no deposit, no real money, and no real fees. Any future paid product will publish its full cost model before a single user is charged.</p>
     </div>
     <div class="fee-table reveal">
       <div class="fee-row"><span>Starting balance</span><strong>$10,000 virtual</strong></div>
       <div class="fee-row"><span>Trading fees</span><strong>None (paper)</strong></div>
       <div class="fee-row"><span>Deposits / withdrawals</span><strong>N/A</strong></div>
       <div class="fee-row"><span>Account minimum</span><strong>None</strong></div>
-      <div class="fee-row"><span>Sign-up required</span><strong>No</strong></div>
+      <div class="fee-row"><span>Sign-up required</span><strong>Yes (free, email)</strong></div>
+      <div class="fee-row"><span>Cross-device sync</span><strong>Included</strong></div>
       <div class="fee-row"><span>Data refresh cadence</span><strong>Every 30 min</strong></div>
     </div>
   </div>
@@ -271,12 +272,12 @@
     <div class="sec-card reveal">
       <div class="how-icon"><svg><use href="#i-zap"/></svg></div>
       <h3>Independently built</h3>
-      <p>Muses is a long-running, self-funded product — not venture-backed. Bugs happen. Data outages happen. The roadmap moves deliberately, not against quarterly targets.</p>
+      <p>Muses Exchange is a long-running, self-funded product — not venture-backed. The roadmap is set deliberately, with no quarterly growth targets to chase. When a bug or data outage occurs, it is disclosed and fixed rather than hidden.</p>
     </div>
     <div class="sec-card reveal">
       <div class="how-icon"><svg><use href="#i-trend"/></svg></div>
       <h3>Not a regulated exchange</h3>
-      <p>Muses is not a broker, not a fund, not a securities exchange. If that ever changes it will be obvious, loud, and licensed first.</p>
+      <p>Muses Exchange is not a broker, not a fund, and not a securities exchange. Any move into regulated territory will be announced publicly and fully licensed before launch.</p>
     </div>
   </div>
 </section>
@@ -299,7 +300,7 @@
 
 <div id="footer-mount"></div>
 
-<script src="muse-shared.js?v=20260420b"></script>
+<script src="muse-shared.js?v=20260422a"></script>
 <script src="app/prices.js" defer onerror="console.warn('app/prices.js not found — run app/fetch-prices.py to generate it')"></script>
 <script>
 /* Sync artist count from live prices if available */
