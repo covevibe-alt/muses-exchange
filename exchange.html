@@ -6293,30 +6293,8 @@
     display: inline-flex; align-items: center; gap: 4px;
   }
 
-  /* BEST / WORST 2-UP GRID */
-  .bw-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  /* M1.7 — stack to a single column on mobile. Side-by-side at 428px
-     was too narrow for an avatar + name + ticker + price + percent to
-     coexist without the artist name wrapping to two lines on one tile
-     and not the other, which made the two cards visibly misaligned
-     (different heights, content at different y-offsets). Full-width
-     tiles stacked vertically keep everything on single lines and read
-     like a clean 2-row list. */
-  @media (max-width: 680px) {
-    .bw-grid { grid-template-columns: 1fr; gap: 12px; }
-  }
-  .bw-card .card-title { display: flex; align-items: center; gap: 8px; }
-  .bw-card .bw-tag {
-    font-size: 9px; letter-spacing: 0.1em;
-    padding: 3px 8px; border-radius: 999px;
-    text-transform: uppercase; font-weight: 700;
-  }
-  .bw-card .bw-tag.up { background: var(--up-soft); color: var(--up); }
-  .bw-card .bw-tag.down { background: var(--down-soft); color: var(--down); }
+  /* M16.37 — .bw-grid / .bw-card / .bw-tag styles removed along with
+     the Best Performer / Biggest Drag cards on the Portfolio page. */
 
   /* HOLDINGS SORT HEADER
      M13.5 — dropped the `%` allocation column (its info was already
@@ -9547,17 +9525,10 @@
           <div id="chart-portfolio"></div>
         </div>
 
-        <!-- BEST / WORST 2-UP -->
-        <div class="bw-grid" id="bw-grid">
-          <div class="card bw-card">
-            <div class="card-title"><span>Best Performer <span class="info-tip">?<span class="tip-text">The holding in your portfolio with the highest percentage return since purchase.</span></span></span> <span class="bw-tag up">TOP</span></div>
-            <div id="best-performer"><div class="dim" style="font-size:12px;padding:14px 4px">No holdings yet.</div></div>
-          </div>
-          <div class="card bw-card">
-            <div class="card-title"><span>Biggest Drag <span class="info-tip">?<span class="tip-text">The holding with the worst performance — your biggest loss since purchase.</span></span></span> <span class="bw-tag down">DOWN</span></div>
-            <div id="worst-performer"><div class="dim" style="font-size:12px;padding:14px 4px">No holdings yet.</div></div>
-          </div>
-        </div>
+        <!-- M16.37 — Best Performer / Biggest Drag 2-up removed per
+             Sander: the Holdings table already shows P&L per row, so
+             the cards were restating what's visible right below them.
+             See renderBestWorst() removal in the JS + .bw-* CSS. -->
 
         <!-- HOLDINGS -->
         <div class="card">
@@ -17303,8 +17274,9 @@ function renderPortfolio() {
     }).join('');
   }
 
-  // ---- Best / Worst performer ----
-  renderBestWorst(tickers);
+  // M16.37 — Best / Worst performer cards removed; renderBestWorst call
+  // dropped along with the function. P&L per holding is already visible
+  // in the Holdings table directly below, so the 2-up was restating it.
 
   // ---- Suggested actions ----
   renderSuggestedActions(tickers, invested, totalValue, allocPct);
@@ -17328,61 +17300,10 @@ const GENRE_PALETTE = {
   'Music': '#6E6E80',
 };
 
-function renderBestWorst(tickers) {
-  const bestEl = document.getElementById('best-performer');
-  const worstEl = document.getElementById('worst-performer');
-  if (tickers.length === 0) {
-    bestEl.innerHTML = '<div class="dim" style="font-size:12px;padding:14px 4px">No holdings yet.</div>';
-    worstEl.innerHTML = '<div class="dim" style="font-size:12px;padding:14px 4px">No holdings yet.</div>';
-    return;
-  }
-  const enriched = tickers.map(t => {
-    const h = STATE.holdings[t];
-    const a = ARTISTS.find(x => x.ticker === t);
-    const value = h.shares * a.price;
-    const pct = h.cost > 0 ? ((a.price - h.cost) / h.cost) * 100 : 0;
-    const pl = value - h.shares * h.cost;
-    return { a, t, pct, pl, value };
-  });
-  const sortedByPct = [...enriched].sort((x, y) => y.pct - x.pct);
-  const best = sortedByPct[0];
-  const worst = sortedByPct[sortedByPct.length - 1];
-  const renderRow = (target, item, kind) => {
-    const upDown = item.pct >= 0 ? 'up' : 'down';
-    // M1.7 — simplified sub-line. Was "TICKER · $VALUE" but the value
-    // duplicated the price in the right column (value = shares × price,
-    // and most users hold 1 share at launch), causing "+0.82%" to render
-    // twice and the mono-font text to wrap unpredictably. Now: just the
-    // ticker. Alignment with the peer card is clean because both lines
-    // are single-line short strings.
-    target.innerHTML = `
-      <div class="holding-row" data-ticker="${item.t}" style="border-bottom:none;padding:10px 0;grid-template-columns:auto 1fr auto">
-        ${bubbleHTML(item.a, 44)}
-        <div class="h-meta">
-          <div class="h-name">${item.a.name}</div>
-          <div class="h-shares">${item.t}</div>
-        </div>
-        <div class="h-price" style="text-align:right">
-          <div class="pv">${fmtPrice(item.a.price)}</div>
-          <div class="ppct ${upDown}">${item.pct >= 0 ? '+' : ''}${item.pct.toFixed(2)}%</div>
-        </div>
-      </div>
-    `;
-    const row = target.querySelector('.holding-row');
-    row.style.cursor = 'pointer';
-    row.addEventListener('click', () => {
-      STATE.selected = item.a;
-      setView('artist');
-    });
-  };
-  renderRow(bestEl, best, 'best');
-  // If only one holding, show "—" for worst
-  if (sortedByPct.length === 1) {
-    worstEl.innerHTML = '<div class="dim" style="font-size:12px;padding:14px 4px">Buy a second artist to see comparisons.</div>';
-  } else {
-    renderRow(worstEl, worst, 'worst');
-  }
-}
+// M16.37 — renderBestWorst() removed. The Portfolio "Best Performer /
+// Biggest Drag" 2-up cards were pulled because P&L per holding is
+// already visible in the Holdings table directly below, so the cards
+// were restating what was about to be shown.
 
 function renderSuggestedActions(tickers, invested, totalValue, allocPct) {
   const strip = document.getElementById('sugg-strip');
