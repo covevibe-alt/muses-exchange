@@ -63,6 +63,61 @@
   } catch (e) { /* localStorage disabled — skip */ }
 })();
 </script>
+<!-- Sentry — error reporting. M16.41. Loaded async, same pattern as Plausible.
+     PASTE YOUR DSN INTO MUSE_SENTRY_DSN BELOW. With it empty, the block is a
+     no-op — the existing [muse-error] console path still runs, nothing is sent
+     anywhere. DSN is a client-side identifier (not a secret — it ends up in the
+     HTML); it's project-specific so you get it from Sentry → Settings → Client
+     Keys. Localhost/file:// is skipped so local dev doesn't pollute the dashboard.
+     Version pin 8.55.0 — bump the URL when you want newer; the captureException
+     API is stable across 7.x / 8.x / 9.x. -->
+<script>
+(function(){
+  // ↓↓↓  PASTE YOUR SENTRY DSN HERE  ↓↓↓
+  window.MUSE_SENTRY_DSN = '';
+  // ↑↑↑  PASTE YOUR SENTRY DSN HERE  ↑↑↑
+  window.MUSE_RELEASE = 'muses-exchange@2026.04.22-M16.41';
+  var h = location.hostname;
+  if (!window.MUSE_SENTRY_DSN) return;
+  if (!h || h === 'localhost' || h === '127.0.0.1' || location.protocol === 'file:') return;
+  var s = document.createElement('script');
+  s.src = 'https://browser.sentry-cdn.com/8.55.0/bundle.min.js';
+  s.crossOrigin = 'anonymous';
+  s.async = true;
+  s.onload = function(){
+    try {
+      window.Sentry.init({
+        dsn: window.MUSE_SENTRY_DSN,
+        release: window.MUSE_RELEASE,
+        environment: location.hostname,
+        // Error tracking only — no performance/session replay. We don't need
+        // to pay for traces on a paper-trading prototype, and session replay
+        // has privacy implications we haven't worked through.
+        tracesSampleRate: 0,
+        // Strip query strings from URLs sent to Sentry (reduces chance of
+        // leaking anything sensitive that a future feature might put there).
+        beforeBreadcrumb: function(b){
+          try { if (b && b.data && b.data.url) b.data.url = String(b.data.url).split('?')[0]; } catch(_){}
+          return b;
+        },
+      });
+      // Flush any user-context that the auth gate queued before the SDK
+      // finished loading (Sentry init is async, auth-gate is sync, so the
+      // auth path usually wins the race).
+      try {
+        if (window.__MUSE_PENDING_SENTRY_USER && typeof window.Sentry.setUser === 'function') {
+          window.Sentry.setUser(window.__MUSE_PENDING_SENTRY_USER);
+          window.__MUSE_PENDING_SENTRY_USER = null;
+        } else if (window.MUSE_USER && window.MUSE_USER.authed && window.MUSE_USER.id && typeof window.Sentry.setUser === 'function') {
+          window.Sentry.setUser({ id: window.MUSE_USER.id });
+        }
+      } catch (_) {}
+    } catch (e) { console.warn('[sentry] init failed', e); }
+  };
+  s.onerror = function(){ console.warn('[sentry] SDK failed to load — errors will still hit the console'); };
+  document.head.appendChild(s);
+})();
+</script>
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <!--
   Live data from the fetcher. These files are written by app/fetch-prices.py
@@ -8973,25 +9028,42 @@
       if (v == null) return '';
       try { return String(v).slice(0, max || 500); } catch (_) { return '[unstringifiable]'; }
     }
+    // M16.41 — Forward to Sentry when loaded. Guarded on window.Sentry so
+    // this is a no-op when the SDK isn't initialised (no DSN, localhost,
+    // CDN blocked, etc.). Use captureException with a real Error object
+    // when we have one — Sentry stacks are much better that way — and
+    // fall back to captureMessage otherwise.
+    function toSentry(err, extra){
+      try {
+        if (!(window.Sentry && typeof window.Sentry.captureException === 'function')) return;
+        if (err && err instanceof Error) window.Sentry.captureException(err, { extra: extra });
+        else if (err) window.Sentry.captureException(new Error(String(err)), { extra: extra });
+        else window.Sentry.captureMessage((extra && extra.msg) || 'unknown error', { extra: extra });
+      } catch (_) {}
+    }
     window.addEventListener('error', function(e){
       try {
-        console.error('[muse-error]', {
+        const payload = {
           type: 'error',
           msg: safeStr(e.message),
           src: safeStr(e.filename, 200),
           line: e.lineno, col: e.colno,
           stack: e.error && e.error.stack ? safeStr(e.error.stack, 1200) : null,
-        });
+        };
+        console.error('[muse-error]', payload);
+        toSentry(e.error, payload);
       } catch (_) {}
     });
     window.addEventListener('unhandledrejection', function(e){
       try {
         const r = e.reason;
-        console.error('[muse-error]', {
+        const payload = {
           type: 'unhandledrejection',
           msg: safeStr(r && r.message ? r.message : r),
           stack: r && r.stack ? safeStr(r.stack, 1200) : null,
-        });
+        };
+        console.error('[muse-error]', payload);
+        toSentry(r, payload);
       } catch (_) {}
     });
   })();
@@ -9039,6 +9111,20 @@
         // old activity-based heuristic that fired on every login.
         tourPending: meta.tour_pending === true,
       };
+      // M16.41 — Tag the Sentry scope with the user's Supabase UUID so
+      // captured exceptions are grouped per-user and we can search by
+      // "users affected". ID only — no email — to keep PII out of Sentry.
+      // Guarded on Sentry being loaded; init runs async so it may not be
+      // ready yet on first auth read (harmless — next capture will pick up
+      // the user via a re-attempt below via setUser-on-SDK-load).
+      try {
+        if (window.Sentry && typeof window.Sentry.setUser === 'function' && user && user.id) {
+          window.Sentry.setUser({ id: user.id });
+        } else if (user && user.id) {
+          // Queue the user so we can apply it once the SDK finishes loading.
+          window.__MUSE_PENDING_SENTRY_USER = { id: user.id };
+        }
+      } catch (_) {}
     }
 
     // Synchronously probe the cached Supabase session from localStorage.
@@ -11428,6 +11514,14 @@ async function signOutWithFlush() {
   const keepUid = window.MUSE_USER && window.MUSE_USER.id;
   try { await flushPortfolioToSupabase(4000); } catch (e) {}
   try { sweepStaleMuseKeys(keepUid); } catch (e) {}
+  // M16.41 — clear the Sentry user scope so any errors hit after sign-out
+  // (including errors during the sign-out flow itself) aren't attributed
+  // to the user who just left. Guarded — no-op when SDK isn't loaded.
+  try {
+    if (window.Sentry && typeof window.Sentry.setUser === 'function') {
+      window.Sentry.setUser(null);
+    }
+  } catch (_) {}
   try { await window.SUPABASE.auth.signOut(); } catch (e) {}
   setTimeout(() => { window.location.href = '/signin'; }, 800);
 }
