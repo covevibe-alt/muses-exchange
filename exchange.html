@@ -11271,6 +11271,22 @@ async function fetchPortfolioFromSupabase() {
         const live = new Set((typeof ARTISTS !== 'undefined' ? ARTISTS : []).map(a => a.ticker));
         STATE.watchlist = snap.watchlist.filter(t => live.has(t));
       }
+      // M16.41 — restore UI settings from the server snapshot. Merge into
+      // STATE.settings (not replace) so a NEW setting key we ship in the
+      // future keeps its in-code default for returning users whose saved
+      // snapshot predates it. After merging, push back to localStorage via
+      // saveSettings() so the next boot is already correct, and call
+      // applySettings() so theme/ticker-tape/reduce-motion flip live
+      // instead of waiting for the next interaction.
+      if (snap.settings && typeof snap.settings === 'object' && STATE.settings) {
+        Object.assign(STATE.settings, snap.settings);
+        // Coerce legacy theme values (same safeguard loadSettings applies).
+        if (STATE.settings.theme === 'amoled' || STATE.settings.theme === 'midnight') {
+          STATE.settings.theme = 'dark';
+        }
+        try { if (typeof saveSettings === 'function') saveSettings(); } catch (_) {}
+        try { if (typeof applySettings === 'function') applySettings(); } catch (_) {}
+      }
       // M16.18 — mark this snapshot as already-applied so the Realtime
       // subscription doesn't treat the identical payload that echoes back
       // as a fresh change.
@@ -11308,6 +11324,37 @@ async function fetchPortfolioFromSupabase() {
 
 let _pushInFlight = false;
 let _pushQueued = false;
+// M16.41 — Throttled user-visible notice when a cloud save fails. Before,
+// pushPortfolioToSupabase() silently console.warned on failure, so a user
+// whose network dropped had no way to know their session wasn't reaching
+// Supabase — they just saw their trades working in-app and assumed sync.
+// localStorage is still the recovery layer so this is a warning, not an
+// error. Throttle to once per 60s so a sustained outage doesn't spam.
+let _lastCloudFailToastAt = 0;
+let _cloudWasFailing = false;
+function noticeCloudSaveFailed() {
+  try {
+    const now = Date.now();
+    if (now - _lastCloudFailToastAt < 60_000) return;
+    _lastCloudFailToastAt = now;
+    _cloudWasFailing = true;
+    if (typeof showToast === 'function') {
+      showToast("Couldn't sync to the cloud — your session is safe locally", true);
+    }
+  } catch (_) {}
+}
+function noticeCloudSaveRecovered() {
+  // Only fire the "back online" toast if we previously told the user we
+  // were down. Prevents a gratuitous green toast on the first successful
+  // push of a clean session.
+  try {
+    if (!_cloudWasFailing) return;
+    _cloudWasFailing = false;
+    if (typeof showToast === 'function') {
+      showToast('Cloud sync restored');
+    }
+  } catch (_) {}
+}
 // M16.8 — awaitable flush used at sign-out. Guarantees any pending push
 // (including a coalesced-queued follow-up) reaches Supabase BEFORE the
 // auth cookie is dropped and the page reloads. Without this, the last few
@@ -11420,6 +11467,16 @@ async function pushPortfolioToSupabase() {
         // signing in on a new device or a private window would show an
         // empty favorites list. Array of tickers only.
         watchlist: Array.isArray(STATE.watchlist) ? STATE.watchlist.slice() : [],
+        // M16.41 — UI preferences travel in the snapshot so theme,
+        // ticker-tape visibility, reduce-motion, defaultOrderType, etc.
+        // follow the user across devices. localStorage keeps them
+        // per-browser; the Supabase copy is the cross-device source of
+        // truth. Deep-cloned so a later STATE mutation can't accidentally
+        // mutate what we just serialised. Safe to ship as a plain
+        // object — SETTINGS_SECTIONS defines a closed enum of scalars.
+        settings: STATE.settings
+          ? JSON.parse(JSON.stringify(STATE.settings))
+          : null,
         savedAt: Date.now(),
       };
       const { error } = await window.SUPABASE
@@ -11440,12 +11497,22 @@ async function pushPortfolioToSupabase() {
       // row still gets written.
       if (error) {
         console.warn('[Muses] Supabase portfolio update failed:', error.message || error);
+        // M16.41 — user-visible notice (throttled to once per 60s).
+        noticeCloudSaveFailed();
+      } else {
+        // M16.41 — clear the "we were down" flag on a successful push so
+        // the next failure can toast again immediately rather than waiting
+        // out the 60s throttle from a stale previous notice.
+        noticeCloudSaveRecovered();
       }
       try { await upsertLeaderboardRow(); }
       catch (e) { console.warn('[Muses] Leaderboard upsert failed:', e.message || e); }
     } while (_pushQueued);
   } catch (e) {
     console.warn('[Muses] Supabase portfolio push failed:', e.message || e);
+    // M16.41 — network throw path (fetch aborted, DNS fail, etc.) also
+    // surfaces to the user, same throttle as the .update() error branch.
+    noticeCloudSaveFailed();
   } finally {
     _pushInFlight = false;
   }
