@@ -10014,15 +10014,16 @@
         <div class="section-head">
           <div>
             <h1>Orders <span class="money-badge paper" style="vertical-align:middle;margin-left:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Paper Trading</span></h1>
-            <div class="sub">Your trade history and open orders.</div>
+            <div class="sub">Your trade history.</div>
           </div>
         </div>
-        <div class="orders-tabs" id="orders-tabs">
-          <button class="orders-tab active" data-otab="open">Open <span class="orders-tab-count" id="orders-count-open">0</span></button>
-          <button class="orders-tab" data-otab="filled">Filled <span class="orders-tab-count" id="orders-count-filled">0</span></button>
-          <button class="orders-tab" data-otab="history">History <span class="orders-tab-count" id="orders-count-history">0</span></button>
-          <button class="orders-tab" data-otab="cancelled">Cancelled <span class="orders-tab-count" id="orders-count-cancelled">0</span></button>
-        </div>
+        <!-- M16.32 — Open / Filled / Cancelled tabs removed. Market orders
+             fill instantly so they were always empty except for History;
+             limit/stop orders aren't live yet. Leaving History as the
+             only view keeps the page useful without empty-state noise.
+             STATE.openOrders / filledOrders / cancelledOrders are still
+             populated and persisted — re-enable tabs when limit/stop
+             orders ship. -->
         <div class="card">
           <div id="orders-list"></div>
         </div>
@@ -12099,7 +12100,7 @@ const STATE = {
   filledOrders: [],          // history of filled non-market orders
   cancelledOrders: [],
   recurringBuys: [],         // {id, ticker, amount, freq, nextRunAt, createdAt}
-  ordersTab: 'open',         // 'open' | 'filled' | 'cancelled' | 'recurring'
+  ordersTab: 'history',      // M16.32 — only 'history' renders in the UI now; other values are harmless but unused
   onboarded: false,          // becomes true after first-run flow completes
   onboardingStep: 0,         // 0..4
   onboardingDraft: null,     // staged values during the flow
@@ -15707,46 +15708,22 @@ function renderSwapPage() {
 }
 
 function renderOrdersView() {
-  const setCount = (id, val) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = val;
-  };
-  setCount('orders-count-open', STATE.openOrders.length);
-  setCount('orders-count-filled', STATE.filledOrders.length);
-  setCount('orders-count-cancelled', STATE.cancelledOrders.length);
-  setCount('orders-count-recurring', (STATE.recurringBuys || []).length);
-  // M16.17 — Orders → History shows *trades* only. TRANSFER rows (paper ↔
-  // tournament credits) are bookkeeping for a different surface, not trades,
-  // so we filter them out of both the count and the row list.
+  // M16.32 — simplified to history-only. Open/Filled/Cancelled tabs are
+  // gone; the branching below (`if (tab === 'history')`) stays so the
+  // original history renderer code is untouched, but `tab` is pinned
+  // to 'history' for every call now.
+  // M16.17 — TRANSFER rows (paper ↔ tournament credits) are bookkeeping,
+  // not trades, so they're excluded from the trade history feed.
   const tradeTxs = (STATE.transactions || []).filter(tx => tx && tx.type !== 'TRANSFER');
-  setCount('orders-count-history', tradeTxs.length);
-  document.querySelectorAll('#orders-tabs .orders-tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.otab === STATE.ordersTab);
-  });
   const list = document.getElementById('orders-list');
-  const tab = STATE.ordersTab;
-  let rows = [];
-  if (tab === 'open') rows = STATE.openOrders;
-  else if (tab === 'filled') rows = STATE.filledOrders;
-  else if (tab === 'cancelled') rows = STATE.cancelledOrders;
-  else if (tab === 'history') rows = tradeTxs;
-  else rows = STATE.recurringBuys;
+  const tab = 'history';
+  const rows = tradeTxs;
 
   if (!rows.length) {
-    const emptyCopy = tab === 'open'
-        ? 'Limit and stop orders are on the roadmap — market orders fill instantly, so they don\'t sit here.'
-      : tab === 'recurring'
-        ? 'Recurring buys are on the roadmap — not live yet.'
-      : tab === 'history'
-        ? 'No trades yet. Every market buy, sell and swap will show up here.'
-      : tab === 'filled'
-        ? 'No filled orders yet. When a limit or stop order executes, it\'ll appear here. Market orders show up under History.'
-      : '';
-    const emptyLabel = tab === 'history' ? 'trades' : tab + ' orders';
     list.innerHTML = `<div class="orders-empty">
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.4"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div>No ${emptyLabel}</div>
-      <div class="dim" style="font-size:12px">${emptyCopy}</div>
+      <div>No trades</div>
+      <div class="dim" style="font-size:12px">No trades yet. Every market buy, sell and swap will show up here.</div>
     </div>`;
     return;
   }
@@ -15794,151 +15771,8 @@ function renderOrdersView() {
     });
     return;
   }
-
-  if (tab === 'recurring') {
-    list.innerHTML = `
-      <div class="orders-thead">
-        <span>Artist</span><span>Amount</span><span>Frequency</span><span>Next run</span><span>Created</span><span></span>
-      </div>
-    ` + rows.map(r => {
-      const a = ARTISTS.find(x => x.ticker === r.ticker);
-      const next = new Date(r.nextRunAt);
-      const created = new Date(r.createdAt);
-      return `
-        <div class="orders-row">
-          <span class="ord-art">
-            <span class="ord-bubble" style="background:${a?a.color:'#888'}">${a?(a.imgUrl?`<img src="${a.imgUrl}" onerror="this.remove()"/>`:a.ticker.slice(0,2)):'?'}</span>
-            <span><b>${r.name}</b><span class="dim"> · ${r.ticker}</span></span>
-          </span>
-          <b>${fmtPrice(r.amount)}</b>
-          <span class="ord-tag">${r.freq}</span>
-          <span>${next.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span>
-          <span class="dim">${created.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span>
-          <button class="ord-cancel-btn" data-rid="${r.id}">Cancel</button>
-        </div>
-      `;
-    }).join('');
-    list.querySelectorAll('.ord-cancel-btn').forEach(b => {
-      b.onclick = () => {
-        if (b.dataset.confirm) {
-          const id = b.dataset.rid;
-          const rec = STATE.recurringBuys.find(r => r.id === id);
-          const recName = rec ? rec.name : 'Unknown';
-          const recAmount = rec ? rec.amount : 0;
-          const recFreq = rec ? rec.freq : '';
-          STATE.recurringBuys = STATE.recurringBuys.filter(r => r.id !== id);
-          renderOrdersView();
-          showConfirmation({
-            icon: 'info',
-            title: 'Recurring buy cancelled',
-            badge: paperBadge('Paper'),
-            subtitle: `Auto-buy for ${recName} has been stopped`,
-            details: [
-              { label: 'Artist', value: recName },
-              { label: 'Amount', value: `${fmtPrice(recAmount)}` },
-              { label: 'Frequency', value: recFreq },
-              { label: 'Status', value: 'Cancelled — no future buys' },
-            ],
-            buttons: [
-              { label: 'View orders', action: () => setView('orders'), primary: true },
-            ],
-          });
-        } else {
-          b.dataset.confirm = '1';
-          b.textContent = 'Sure?';
-          b.style.color = 'var(--down)';
-          b.style.borderColor = 'var(--down)';
-          setTimeout(() => { if (b.isConnected) { delete b.dataset.confirm; b.textContent = 'Cancel'; b.style.color = ''; b.style.borderColor = ''; } }, 3000);
-        }
-      };
-    });
-    return;
-  }
-
-  list.innerHTML = `
-    <div class="orders-thead">
-      <span>Artist</span><span>Side</span><span>Type</span><span>Amount</span><span>Trigger</span><span>${tab==='filled'?'Filled @':tab==='cancelled'?'Cancelled':'Created'}</span><span></span>
-    </div>
-  ` + rows.map(o => {
-    const a = ARTISTS.find(x => x.ticker === o.ticker);
-    const trig = o.type === 'market' ? '—' :
-      o.type === 'limit' ? fmtPrice(o.limitPrice) :
-      fmtPrice(o.stopPrice);
-    const time = tab === 'filled' ? fmtPrice(o.fillPrice||0) :
-                 tab === 'cancelled' ? new Date(o.cancelledAt||o.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) :
-                 new Date(o.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-    return `
-      <div class="orders-row" data-ticker="${o.ticker}">
-        <span class="ord-art">
-          <span class="ord-bubble" style="background:${a?a.color:'#888'}">${a?(a.imgUrl?`<img src="${a.imgUrl}" onerror="this.remove()"/>`:a.ticker.slice(0,2)):'?'}</span>
-          <span><b>${o.name}</b><span class="dim"> · ${o.ticker}</span></span>
-        </span>
-        <span class="ord-side ${o.side}">${o.side.toUpperCase()}</span>
-        <span class="ord-tag">${o.type}</span>
-        <b>${fmtPrice(o.amount)}</b>
-        <span class="${o.type==='market'?'dim':''}">${trig}</span>
-        <span>${time}</span>
-        ${tab === 'open' ? `<button class="ord-cancel-btn" data-oid="${o.id}">Cancel</button>` : '<span></span>'}
-      </div>
-    `;
-  }).join('');
-  if (tab === 'open') {
-    list.querySelectorAll('.ord-cancel-btn').forEach(b => {
-      b.onclick = (e) => {
-        e.stopPropagation();
-        if (b.dataset.confirm) {
-          const id = b.dataset.oid;
-          const o = STATE.openOrders.find(x => x.id === id);
-          if (!o) return;
-          const orderName = o.name || o.ticker || 'Unknown';
-          const orderSide = o.side || 'buy';
-          const orderType = o.type || 'limit';
-          const orderShares = o.shares || 0;
-          const orderPrice = o.price || 0;
-          const refunded = (o.side === 'buy' && o.reservedCash) ? o.reservedCash : 0;
-          const refundLabel = o.side === 'buy' && refunded > 0 ? 'Cash refunded' : null;
-          if (refunded) STATE.cash += refunded;
-          o.status = 'cancelled';
-          o.cancelledAt = Date.now();
-          STATE.cancelledOrders.unshift(o);
-          STATE.openOrders = STATE.openOrders.filter(x => x.id !== id);
-          updateCashDisplay();
-          renderOrdersView();
-          showConfirmation({
-            icon: 'info',
-            title: 'Order cancelled',
-            badge: paperBadge('Paper'),
-            subtitle: `${orderSide === 'buy' ? 'Buy' : 'Sell'} order for ${orderName} has been cancelled`,
-            details: [
-              { label: 'Order type', value: `${orderType.charAt(0).toUpperCase() + orderType.slice(1)} ${orderSide}` },
-              { label: 'Artist', value: orderName },
-              { label: 'Shares', value: orderShares.toFixed(4) },
-              { label: 'Price', value: `${fmtPrice(orderPrice)}` },
-              ...(refundLabel ? [{ label: refundLabel, value: `${fmtPrice(refunded)}` }] : []),
-              { label: 'Paper balance', value: `${fmtPrice(STATE.cash)}` },
-            ],
-            buttons: [
-              { label: 'View orders', action: () => setView('orders'), primary: true },
-            ],
-          });
-        } else {
-          b.dataset.confirm = '1';
-          b.textContent = 'Sure?';
-          b.style.color = 'var(--down)';
-          b.style.borderColor = 'var(--down)';
-          setTimeout(() => { if (b.isConnected) { delete b.dataset.confirm; b.textContent = 'Cancel'; b.style.color = ''; b.style.borderColor = ''; } }, 3000);
-        }
-      };
-    });
-  }
-  // Click row → open artist
-  list.querySelectorAll('.orders-row[data-ticker]').forEach(row => {
-    row.addEventListener('click', () => {
-      const t = row.dataset.ticker;
-      const a = ARTISTS.find(x => x.ticker === t);
-      if (a) { STATE.selected = a; setView('artist'); }
-    });
-  });
+  // M16.32 — open/filled/cancelled/recurring branches removed. History is
+  // the only tab now; the early returns above are the only render paths.
 }
 
 // ============ SETTINGS ============
@@ -16743,12 +16577,8 @@ loadSettings();
   });
 })();
 
-document.querySelectorAll('#orders-tabs .orders-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    STATE.ordersTab = tab.dataset.otab;
-    renderOrdersView();
-  });
-});
+// M16.32 — orders-tabs click handler removed along with the tab buttons.
+// Orders page renders history only now, so there's nothing to switch.
 // Close order modal interactions
 document.getElementById('order-modal-close').addEventListener('click', closeOrderReviewModal);
 document.getElementById('order-modal').addEventListener('click', (e) => {
