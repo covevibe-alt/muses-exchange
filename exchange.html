@@ -73,9 +73,10 @@
      API is stable across 7.x / 8.x / 9.x. -->
 <script>
 (function(){
-  // ↓↓↓  PASTE YOUR SENTRY DSN HERE  ↓↓↓
-  window.MUSE_SENTRY_DSN = '';
-  // ↑↑↑  PASTE YOUR SENTRY DSN HERE  ↑↑↑
+  // Sentry project DSN — EU region (o4511264751550464). DSN is a client-side
+  // identifier, not a secret (it ends up in the HTML). Rotating is done in
+  // Sentry → Settings → Client Keys.
+  window.MUSE_SENTRY_DSN = 'https://5639c8b67c16d66a76ed127cfc9ca504@o4511264751550464.ingest.de.sentry.io/4511264758890576';
   window.MUSE_RELEASE = 'muses-exchange@2026.04.22-M16.41';
   var h = location.hostname;
   if (!window.MUSE_SENTRY_DSN) return;
