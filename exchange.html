@@ -324,6 +324,9 @@
   .mono { font-family: 'JetBrains Mono', monospace; }
   .up { color: var(--up); }
   .down { color: var(--down); }
+  /* M16.25 — 'flat' is what upDownClass() returns for |val| < 0.05%; a
+     muted neutral colour so near-zero deltas don't read as red losses. */
+  .flat { color: var(--text-faint); }
   .dim { color: var(--text-dim); }
   .faint { color: var(--text-faint); }
 
@@ -10584,7 +10587,17 @@ function fmtInt(n)        { return (+n || 0).toLocaleString('en-US'); }
 function fmtNum2(n)       { return (+n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function fmtPct(ratio)    { const v = (ratio * 100).toFixed(2); return (ratio >= 0 ? '+' : '') + v + '%'; }
 function fmtPct24(ratio)  { return fmtPct(ratio) + ' · 24h'; }
-function upDownClass(val) { return val >= 0 ? 'up' : 'down'; }
+// M16.25 — near-zero values (|v| < 0.05%) render as 'flat', not 'up'/'down'.
+// Before, -0.0001 (-0.01%) coloured bold red next to a flat-looking
+// sparkline, reading alarmist for what is effectively no movement.
+// 'flat' has explicit CSS in a few places (e.g. .lb-delta.flat) and
+// falls back to the inherited text colour everywhere else — exactly
+// the neutral rendering we want for near-zero deltas.
+function upDownClass(val) {
+  const v = +val || 0;
+  if (Math.abs(v) < 0.0005) return 'flat';
+  return v >= 0 ? 'up' : 'down';
+}
 
 // ── Genre stats cache — recomputed every tick ──
 const GENRE_STATS = {};  // { 'Pop': { artists: [...], count, avgPrice, avgChange, totalListeners, topMover }, ... }
@@ -10961,6 +10974,11 @@ function saveMusePriceState() {
       // Cap at 50 (same cap pushNotification enforces). Read state is preserved.
       notifications: (STATE.notifications || []).slice(0, 50),
       notifUnread: STATE.notifUnread || 0,
+      // M16.25 — persist the favorites list. Before this, watchlist was
+      // purely in-memory: starring Post Malone worked in the session, but
+      // reloading (or signing out and back in) reset it to [] because it
+      // wasn't in the snapshot. Plain array of tickers, tiny footprint.
+      watchlist: Array.isArray(STATE.watchlist) ? STATE.watchlist.slice() : [],
     };
     localStorage.setItem(MUSE_STATE_KEY, JSON.stringify(snapshot));
     // M16.18 — remember the savedAt we just wrote so the Realtime echo of
@@ -11036,6 +11054,12 @@ function restoreMusePriceState() {
       // are required here. renderNotifBadge() runs later from wireNotifications.
       if (Array.isArray(snap.notifications)) STATE.notifications = snap.notifications.slice(0, 50);
       if (typeof snap.notifUnread === 'number') STATE.notifUnread = snap.notifUnread;
+      // M16.25 — restore favorites. Filter to tickers that still exist in
+      // ARTISTS so a retired/renamed artist doesn't leave a dead row.
+      if (Array.isArray(snap.watchlist)) {
+        const live = new Set((typeof ARTISTS !== 'undefined' ? ARTISTS : []).map(a => a.ticker));
+        STATE.watchlist = snap.watchlist.filter(t => live.has(t));
+      }
     }
 
     console.log(`✓ Restored portfolio (saved ${Math.round((Date.now() - snap.savedAt) / 60000)}m ago)`);
@@ -11096,6 +11120,12 @@ async function fetchPortfolioFromSupabase() {
       // default in-code rather than disappearing for returning users.
       if (snap.privacy && typeof snap.privacy === 'object' && STATE.profile && STATE.profile.privacy) {
         Object.assign(STATE.profile.privacy, snap.privacy);
+      }
+      // M16.25 — restore favorites from the server snapshot so they carry
+      // across devices and post-logout logins.
+      if (Array.isArray(snap.watchlist)) {
+        const live = new Set((typeof ARTISTS !== 'undefined' ? ARTISTS : []).map(a => a.ticker));
+        STATE.watchlist = snap.watchlist.filter(t => live.has(t));
       }
       // M16.18 — mark this snapshot as already-applied so the Realtime
       // subscription doesn't treat the identical payload that echoes back
@@ -11191,6 +11221,11 @@ async function pushPortfolioToSupabase() {
         privacy: (STATE.profile && STATE.profile.privacy)
           ? JSON.parse(JSON.stringify(STATE.profile.privacy))
           : null,
+        // M16.25 — Favorites follow the user across devices too. Same
+        // rationale as privacy: localStorage alone is per-browser, so
+        // signing in on a new device or a private window would show an
+        // empty favorites list. Array of tickers only.
+        watchlist: Array.isArray(STATE.watchlist) ? STATE.watchlist.slice() : [],
         savedAt: Date.now(),
       };
       const { error } = await window.SUPABASE
@@ -11301,6 +11336,12 @@ function applyPortfolioSnapshot(snap) {
   if (snap.privacy && typeof snap.privacy === 'object'
       && STATE.profile && STATE.profile.privacy) {
     Object.assign(STATE.profile.privacy, snap.privacy);
+  }
+  // M16.25 — keep favorites in sync across tabs so starring on mobile
+  // shows up on desktop without a manual refresh.
+  if (Array.isArray(snap.watchlist)) {
+    const live = new Set((typeof ARTISTS !== 'undefined' ? ARTISTS : []).map(a => a.ticker));
+    STATE.watchlist = snap.watchlist.filter(t => live.has(t));
   }
   return true;
 }
@@ -17098,7 +17139,12 @@ function renderPortfolio() {
     watchBody.innerHTML = STATE.watchlist.map(tk => {
       const a = ARTISTS.find(x => x.ticker === tk);
       if (!a) return '';
-      const up = a.change24h >= 0;
+      // M16.25 — the sparkline is a 7-day series coloured by change7d,
+      // so the percent label next to it should be 7d too. Before, the
+      // label used change24h, which could read -0.01% red next to a
+      // cheerfully green 7-day line for the same artist. Same window
+      // on both removes the cognitive mismatch.
+      const pct = (typeof a.change7d === 'number') ? a.change7d : (a.change24h || 0);
       return `
         <div class="watch-row" data-ticker="${tk}">
           ${bubbleHTML(a, 38)}
@@ -17109,7 +17155,7 @@ function renderPortfolio() {
           <div class="w-spark">${spark7d(a, 80, 28)}</div>
           <div>
             <div class="w-price" data-pr="${tk}">${fmtPrice(a.price)}</div>
-            <div class="w-pct ${upDownClass(a.change24h)}">${fmtPct(a.change24h)}</div>
+            <div class="w-pct ${upDownClass(pct)}">${fmtPct(pct)}</div>
           </div>
           <button class="w-remove" data-remove-ticker="${tk}" title="Remove from favorites" aria-label="Remove from favorites"><svg><use href="#i-star-filled"/></svg></button>
           <button class="w-action" data-buy-ticker="${tk}">Buy</button>
@@ -21776,7 +21822,10 @@ function updatePricesInPlace(priceBefore) {
     const a = byTicker[tk];
     if (!a) return;
     upd(row.querySelector('.w-price'), fmtPrice(a.price), tk);
-    updPct(row.querySelector('.w-pct'), fmtPct(a.change24h), a.change24h >= 0, tk);
+    // M16.25 — match the 7-day sparkline next to this label (see the
+    // equivalent change in renderPortfolio's watchlist render).
+    const wpct = (typeof a.change7d === 'number') ? a.change7d : (a.change24h || 0);
+    updPct(row.querySelector('.w-pct'), fmtPct(wpct), wpct >= 0, tk);
   });
 
   // ── Similar artist cards — .ad-sim-card .ad-sim-px, .ad-sim-ch ──
