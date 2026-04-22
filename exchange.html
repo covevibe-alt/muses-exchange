@@ -13242,8 +13242,43 @@ function wireAllArtistsControls() {
   });
 }
 
+// M16.30 — compute dynamic Max Price slider bounds from live data.
+// The hardcoded max=1000 / step=10 made the slider unusable once prices
+// settled under $5: every single artist lived in the first 0.5% of the
+// slider's travel. This picks a ceiling ~20% above the live peak and a
+// step sized to the magnitude, so the handle actually has useful travel.
+function computePriceMaxSliderBounds() {
+  const prices = (typeof ARTISTS !== 'undefined' ? ARTISTS : [])
+    .map(a => +a.price || 0).filter(p => p > 0);
+  if (!prices.length) return { max: 10, step: 0.1 };
+  const peak = prices.reduce((m, p) => p > m ? p : m, 0);
+  const ceiling = peak * 1.2; // 20% headroom
+  // Step sizes are picked so the slider has roughly 100–400 stops of travel
+  // regardless of where prices land — enough precision that you can filter
+  // under-$20 rows even when the top of the market is $250+.
+  if (ceiling <= 5)    return { max: Math.max(1, Math.ceil(ceiling * 2) / 2), step: 0.05 };
+  if (ceiling <= 25)   return { max: Math.ceil(ceiling),                       step: 0.25 };
+  if (ceiling <= 100)  return { max: Math.ceil(ceiling / 5) * 5,               step: 1 };
+  if (ceiling <= 500)  return { max: Math.ceil(ceiling / 10) * 10,             step: 1 };
+  if (ceiling <= 2000) return { max: Math.ceil(ceiling / 50) * 50,             step: 5 };
+  return                      { max: Math.ceil(ceiling / 100) * 100,           step: 10 };
+}
+
+function updatePriceMaxSliderBounds() {
+  const { max, step } = computePriceMaxSliderBounds();
+  document.querySelectorAll('input[type=range][data-range="priceMax"]').forEach(s => {
+    const wasAtMax = Number(s.value) >= Number(s.max);
+    s.max = String(max);
+    s.step = String(step);
+    if (wasAtMax || Number(s.value) > max) s.value = String(max);
+  });
+}
+
 // Shared quick-filter event wiring (preset chips, popover, sliders, pills)
 function wireQuickFilters() {
+  // M16.30 — rescale price slider before wiring handlers so the first
+  // reading of slider.max reflects live data, not the 1000 placeholder.
+  updatePriceMaxSliderBounds();
   const scopes = {
     markets:  { F: MARKET_FILTERS,  render: () => renderMarkets() },
     artists:  { F: ARTISTS_FILTERS, render: () => renderAllArtists() },
