@@ -26,7 +26,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="muse-shared.css?v=20260420b">
+<link rel="stylesheet" href="muse-shared.css?v=20260422a">
+
+<!-- JSON-LD structured data — FAQPage (must mirror visible content) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is Muses?", "acceptedAnswer": { "@type": "Answer", "text": "Muses is a paper-trading platform where you can 'invest' in artists as if they were stocks. Each artist has a live price computed from real Spotify and YouTube data. You trade with virtual credits — no real money, no deposits, no KYC." } },
+    { "@type": "Question", "name": "Is this real investing?", "acceptedAnswer": { "@type": "Answer", "text": "No. Today, Muses is a sandbox — a way to see if you can spot a rising artist before the charts do. Nothing you do here costs or earns you actual money. If Muses ever moves to a real product it will be obvious, loud, and regulated first." } },
+    { "@type": "Question", "name": "Do I need to sign up?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — a free account with email and password. The moment you confirm your email, $10,000 in virtual credits land in your portfolio. No deposit, no KYC, no credit card. Your portfolio syncs across devices so you can pick up on phone, tablet, or laptop." } },
+    { "@type": "Question", "name": "How are prices calculated?", "acceptedAnswer": { "@type": "Answer", "text": "The core formula is: monthly Spotify listeners × $0.03 per 1,000,000. On top of that, YouTube channel scale, chart position, and recent radio play add small, bounded boosts. An exponential moving average smooths out the noise so the price doesn't whiplash on every refresh." } },
+    { "@type": "Question", "name": "How often do prices update?", "acceptedAnswer": { "@type": "Answer", "text": "Every 30 minutes, 24/7. A scheduled job pulls fresh Spotify and YouTube numbers and recomputes every listed artist's price." } },
+    { "@type": "Question", "name": "Which data sources does Muses use?", "acceptedAnswer": { "@type": "Answer", "text": "Just Spotify (monthly listeners) and YouTube (channel subscribers and total views) today. No Apple Music, no TikTok, no Shazam — those might come later, but only if they meaningfully improve the price signal." } },
+    { "@type": "Question", "name": "What order types are supported?", "acceptedAnswer": { "@type": "Answer", "text": "Market orders only, for now. Limit, stop, and trailing orders are on the roadmap but not live — this page will be updated the day any of them ship." } },
+    { "@type": "Question", "name": "Where is my portfolio stored?", "acceptedAnswer": { "@type": "Answer", "text": "On the Muses servers, tied to your account, with a local cache in your browser for speed. That's what lets the portfolio follow you between phone, tablet, and laptop. Clearing site data only drops the local cache — your real portfolio is safe and will resync the moment you sign back in." } },
+    { "@type": "Question", "name": "What fees does Muses charge?", "acceptedAnswer": { "@type": "Answer", "text": "None. There's no real money moving anywhere, so there's nothing to charge a fee on. If Muses ever becomes a real product, the cost model will be published openly before anything is charged." } },
+    { "@type": "Question", "name": "Can I deposit or withdraw real money?", "acceptedAnswer": { "@type": "Answer", "text": "No. There are no deposits, no withdrawals, no bank links, no payment rails. The $10,000 you start with is a virtual balance only." } },
+    { "@type": "Question", "name": "How are artists chosen?", "acceptedAnswer": { "@type": "Answer", "text": "By hand. The roster is a mix of major global artists, interesting mid-tier names, and a few picks across the genres Muses covers. It's intentionally eclectic." } },
+    { "@type": "Question", "name": "How many artists are listed?", "acceptedAnswer": { "@type": "Answer", "text": "Currently 105. New artists are added in small batches — if you want someone added, email hello@muses.exchange." } },
+    { "@type": "Question", "name": "Is Muses regulated?", "acceptedAnswer": { "@type": "Answer", "text": "No. Muses is a paper-trading platform. It is not a broker, not a fund, not a securities exchange, and holds no financial licenses. Nothing on Muses is investment advice." } },
+    { "@type": "Question", "name": "What's on the roadmap?", "acceptedAnswer": { "@type": "Answer", "text": "More artists, more order types, better charts, leaderboards, and sharper data signals. Muses ships incrementally rather than against fixed deadlines — the honest answer is: when it's ready." } }
+  ]
+}
+</script>
 </head>
 <body data-page="faq">
 
@@ -99,7 +123,7 @@
 
 <div id="footer-mount"></div>
 
-<script src="muse-shared.js?v=20260420b"></script>
+<script src="muse-shared.js?v=20260422a"></script>
 <script src="app/prices.js" defer onerror="console.warn('app/prices.js not found — run app/fetch-prices.py to generate it')"></script>
 <script>
 /* ============ FAQ DATA ============ */
@@ -132,7 +156,7 @@ const FAQ_DATA = [
       { q: "What order types are supported?", a: "Market orders only, for now. Limit, stop, and trailing orders are on the roadmap but not live — this page will be updated the day any of them ship." },
       { q: "What's the minimum trade?", a: "There isn't one. You can buy tiny slivers of an artist or go all-in — it's virtual money." },
       { q: "Can I short an artist?", a: "Not today. Shorting is on the wish list but not built." },
-      { q: "Where is my portfolio stored?", a: "In your browser's local storage. If you clear site data or switch devices, the portfolio starts over. There's no cloud account syncing it across devices." },
+      { q: "Where is my portfolio stored?", a: "On the Muses servers, tied to your account, with a local cache in your browser for speed. That's what lets the portfolio follow you between phone, tablet, and laptop. Clearing site data only drops the local cache — your real portfolio is safe and will resync the moment you sign back in." },
       { q: "Can I reset my portfolio?", a: "Yes — use the reset option in the app or clear site data for muses.exchange in your browser. You'll get a fresh $10,000 to start again." },
     ]
   },

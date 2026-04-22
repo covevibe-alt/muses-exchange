@@ -1,5 +1,25 @@
+# robots.txt for muses.exchange
+# Last updated 2026-04-22
+
 User-agent: *
 Allow: /
+
+# Authenticated paper-trading application — don't index app shells
+Disallow: /exchange
+Disallow: /exchange.html
+Disallow: /exchange/
+
+# Post-auth flows — nothing here is useful in a SERP
+Disallow: /signin
+Disallow: /signin.html
+Disallow: /signup
+Disallow: /signup.html
+
+# Stale dev artifacts (kept for safety in case anything still links them)
 Disallow: /Muse - Exchange Prototype.html
+Disallow: /test-root.txt
+
+# Crawl politeness
+Crawl-delay: 5
 
 Sitemap: https://muses.exchange/sitemap.xml

@@ -1544,6 +1544,42 @@
     });
   });
 </script>
+
+<!-- JSON-LD structured data — Organization + WebSite -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://muses.exchange/#organization",
+      "name": "Muses Exchange",
+      "alternateName": "Muses",
+      "url": "https://muses.exchange/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://muses.exchange/og-image.png",
+        "width": 1200,
+        "height": 630
+      },
+      "sameAs": [
+        "https://x.com/muses_exchange",
+        "https://www.instagram.com/muses.exchange/"
+      ],
+      "description": "A paper-trading platform where you invest in artists as if they were stocks, with prices derived from real Spotify and YouTube data."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://muses.exchange/#website",
+      "url": "https://muses.exchange/",
+      "name": "Muses — A stock market for music",
+      "description": "Paper-trade a curated roster of music artists with virtual credits. Prices are driven by real streaming data.",
+      "publisher": { "@id": "https://muses.exchange/#organization" },
+      "inLanguage": "en"
+    }
+  ]
+}
+</script>
 </head>
 <body data-page="home">
 
