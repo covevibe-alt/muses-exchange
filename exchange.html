@@ -9813,7 +9813,10 @@
           <div class="card-title">How is this price calculated?</div>
           <div class="dim" style="font-size:12px;margin-top:-4px;margin-bottom:4px">Muses combines real-time streaming, social, and chart data to price every artist.</div>
           <div class="pf-panel" id="ad-pf"></div>
-          <div class="pf-disclaimer">Prices update every hour based on the latest data. When live trading launches, buy and sell activity will also influence price.</div>
+          <!-- M16.27 — removed stale "every hour / live trading launches" disclaimer.
+               The pf-panel body now owns the authoritative summary: market share
+               valuation, boosts, ±N% trading-activity deviation (already live for
+               paper trades), and the 5-second tick cadence. -->
         </div>
 
       </div>
