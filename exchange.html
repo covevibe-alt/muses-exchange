@@ -23105,6 +23105,16 @@ function startOnboarding(force) {
     avatarImage: STATE.profile.avatarImage || null,
     genres: [],
   };
+  // Funnel instrumentation — by the time we reach this line, the user
+  // has confirmed their email, signed in, and landed on the authed app
+  // for the first time (tour_pending is the signal). This is the
+  // counterpart to plausible('signup_started') in signup.html; the
+  // ratio between the two is the email-confirmation drop-off rate.
+  try {
+    if (typeof window.plausible === 'function') {
+      window.plausible('signup_completed');
+    }
+  } catch (_) {}
   document.getElementById('onb-modal').classList.add('show');
   renderOnboardingStep();
 }

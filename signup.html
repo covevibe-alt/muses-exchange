@@ -444,6 +444,16 @@ form.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   submitBtn.textContent = 'Creating account…';
 
+  // Funnel instrumentation — fires the moment the user commits to the
+  // signup, before any network round-trip. This is what we compare
+  // against `signup_completed` (fired on first authed app load) to get
+  // an email-confirmation funnel.
+  try {
+    if (typeof window.plausible === 'function') {
+      window.plausible('signup_started');
+    }
+  } catch (_) {}
+
   try {
     const { data, error } = await supabase.auth.signUp({
       email,
