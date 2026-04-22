@@ -11206,6 +11206,18 @@ function saveMusePriceState() {
       // reloading (or signing out and back in) reset it to [] because it
       // wasn't in the snapshot. Plain array of tickers, tiny footprint.
       watchlist: Array.isArray(STATE.watchlist) ? STATE.watchlist.slice() : [],
+      // M16.41 — chart range + sort UI prefs. Small scalars; persisting
+      // them means a user who picked "30D" on the portfolio chart doesn't
+      // lose that choice on reload, and "sort holdings by 24h %" stays
+      // sticky across sessions. ordersTab is included for forward-compat
+      // — it's currently a dead field (M16.32 left only 'history' rendering)
+      // but the snapshot shape should be stable when the tabs return.
+      detailRange: STATE.detailRange,
+      portfolioRange: STATE.portfolioRange,
+      holdingsSort: STATE.holdingsSort
+        ? { key: STATE.holdingsSort.key, dir: STATE.holdingsSort.dir }
+        : null,
+      ordersTab: STATE.ordersTab || 'history',
     };
     localStorage.setItem(MUSE_STATE_KEY, JSON.stringify(snapshot));
     // M16.18 — remember the savedAt we just wrote so the Realtime echo of
@@ -11288,6 +11300,25 @@ function restoreMusePriceState() {
       if (Array.isArray(snap.watchlist)) {
         const live = new Set((typeof ARTISTS !== 'undefined' ? ARTISTS : []).map(a => a.ticker));
         STATE.watchlist = snap.watchlist.filter(t => live.has(t));
+      }
+      // M16.41 — restore UI prefs through validators so a hand-edited or
+      // version-skewed snapshot can't put STATE into an invalid shape that
+      // breaks rendering. Invalid values fall back to the in-code default.
+      if (typeof snap.detailRange !== 'undefined') {
+        const v = validRange(snap.detailRange);
+        if (v !== null) STATE.detailRange = v;
+      }
+      if (typeof snap.portfolioRange !== 'undefined') {
+        const v = validRange(snap.portfolioRange);
+        if (v !== null) STATE.portfolioRange = v;
+      }
+      if (snap.holdingsSort) {
+        const v = validHoldingsSort(snap.holdingsSort);
+        if (v) STATE.holdingsSort = v;
+      }
+      if (typeof snap.ordersTab === 'string') {
+        const v = validOrdersTab(snap.ordersTab);
+        if (v) STATE.ordersTab = v;
       }
     }
 
@@ -11374,6 +11405,28 @@ async function fetchPortfolioFromSupabase() {
         try { if (typeof saveSettings === 'function') saveSettings(); } catch (_) {}
         try { if (typeof applySettings === 'function') applySettings(); } catch (_) {}
       }
+      // M16.41 (part 4) — restore chart/sort UI prefs through the same
+      // validators the local path uses. Mirror the localStorage restore
+      // so behaviour is identical whether the user boots from cache or
+      // from Supabase. syncUIPrefsButtons() fires after so the button
+      // highlight matches the persisted choice immediately.
+      if (typeof snap.detailRange !== 'undefined') {
+        const v = validRange(snap.detailRange);
+        if (v !== null) STATE.detailRange = v;
+      }
+      if (typeof snap.portfolioRange !== 'undefined') {
+        const v = validRange(snap.portfolioRange);
+        if (v !== null) STATE.portfolioRange = v;
+      }
+      if (snap.holdingsSort) {
+        const v = validHoldingsSort(snap.holdingsSort);
+        if (v) STATE.holdingsSort = v;
+      }
+      if (typeof snap.ordersTab === 'string') {
+        const v = validOrdersTab(snap.ordersTab);
+        if (v) STATE.ordersTab = v;
+      }
+      try { if (typeof syncUIPrefsButtons === 'function') syncUIPrefsButtons(); } catch (_) {}
       // M16.18 — mark this snapshot as already-applied so the Realtime
       // subscription doesn't treat the identical payload that echoes back
       // as a fresh change.
@@ -11572,6 +11625,16 @@ async function pushPortfolioToSupabase() {
         settings: STATE.settings
           ? JSON.parse(JSON.stringify(STATE.settings))
           : null,
+        // M16.41 (part 4) — chart range + sort UI prefs cross devices too.
+        // Same rationale as settings above: localStorage is per-browser,
+        // so without these your "sort holdings by 24h % desc" choice
+        // wouldn't follow you when you opened the app on your phone.
+        detailRange: STATE.detailRange,
+        portfolioRange: STATE.portfolioRange,
+        holdingsSort: STATE.holdingsSort
+          ? { key: STATE.holdingsSort.key, dir: STATE.holdingsSort.dir }
+          : null,
+        ordersTab: STATE.ordersTab || 'history',
         savedAt: Date.now(),
       };
       const { error } = await window.SUPABASE
@@ -13503,6 +13566,8 @@ function wirePortfolioControls() {
         STATE.holdingsSort.key = key;
         STATE.holdingsSort.dir = 'desc';
       }
+      // M16.41 — persist so the sort choice survives reload.
+      try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (_) {}
       renderPortfolio();
     });
   }
@@ -16186,6 +16251,61 @@ function loadSettings() {
 
 function saveSettings() {
   try { localStorage.setItem('muse_settings', JSON.stringify(STATE.settings)); } catch (e) {}
+}
+
+// M16.41 (part 4) — Validation helpers for UI-state prefs that now travel
+// in the portfolio snapshot. Restore paths run these instead of trusting
+// the raw snapshot values — a hand-edited (or version-skewed) snapshot
+// can't put STATE into an invalid state that breaks rendering.
+const RANGE_VALUES = ['6h', '1d', '7', '30', '90', 'all'];
+const HOLDINGS_SORT_KEYS = ['name', 'value', 'pl', 'd24'];
+const HOLDINGS_SORT_DIRS = ['asc', 'desc'];
+function validRange(v) {
+  // Buttons emit '7' / '30' / '90' as strings, but the in-code default is
+  // the number 30. Accept both shapes so older snapshots keep working.
+  const s = String(v);
+  return RANGE_VALUES.indexOf(s) !== -1 ? (s === '6h' || s === '1d' || s === 'all' ? s : Number(s)) : null;
+}
+function validHoldingsSort(v) {
+  if (!v || typeof v !== 'object') return null;
+  if (HOLDINGS_SORT_KEYS.indexOf(v.key) === -1) return null;
+  if (HOLDINGS_SORT_DIRS.indexOf(v.dir) === -1) return null;
+  return { key: v.key, dir: v.dir };
+}
+// ordersTab currently only has 'history' as a rendered branch (M16.32), but
+// leave the door open for when the other tabs return — keep the known enum
+// here and restore unknown values as null (falls back to the STATE default).
+const ORDERS_TAB_VALUES = ['history', 'open', 'filled', 'cancelled', 'recurring'];
+function validOrdersTab(v) {
+  return ORDERS_TAB_VALUES.indexOf(v) !== -1 ? v : null;
+}
+
+// Sync the on-DOM "active" class on range buttons and the holdings header
+// to match STATE. The range buttons hard-code active=1d / active=7 in HTML,
+// and wireRangeButtons only reacts to clicks — so without this call, a
+// user who reloads with a restored portfolioRange of 90 still sees the
+// 7D button highlighted until they click something. No-op when the DOM
+// isn't mounted yet; safe to call multiple times.
+function syncUIPrefsButtons() {
+  try {
+    [
+      ['chart-detail-ranges',    STATE.detailRange],
+      ['chart-portfolio-ranges', STATE.portfolioRange],
+    ].forEach(([id, val]) => {
+      const group = document.getElementById(id);
+      if (!group) return;
+      const want = String(val);
+      group.querySelectorAll('.range-btn').forEach(b => {
+        b.classList.toggle('active', String(b.dataset.range) === want);
+      });
+    });
+    const hh = document.getElementById('holdings-header');
+    if (hh && STATE.holdingsSort && STATE.holdingsSort.key) {
+      hh.querySelectorAll('.hh-cell[data-sort]').forEach(c => {
+        c.classList.toggle('active', c.dataset.sort === STATE.holdingsSort.key);
+      });
+    }
+  } catch (_) {}
 }
 
 function setSetting(key, value) {
@@ -22639,6 +22759,8 @@ function wireRangeButtons(groupId, onPick) {
 }
 wireRangeButtons('chart-detail-ranges', (r) => {
   STATE.detailRange = r;
+  // M16.41 — persist the new range so it survives reload and crosses devices.
+  try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (_) {}
   if (STATE.selected && lineSeriesDetail) {
     lineSeriesDetail.setData(sliceRange(STATE.selected.series, r));
     chartDetail.timeScale().fitContent();
@@ -22647,6 +22769,8 @@ wireRangeButtons('chart-detail-ranges', (r) => {
 });
 wireRangeButtons('chart-portfolio-ranges', (r) => {
   STATE.portfolioRange = r;
+  // M16.41 — persist portfolio chart range, same rationale as detailRange.
+  try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (_) {}
   if (lineSeriesPortfolio) {
     const tickers = Object.keys(STATE.holdings);
     if (tickers.length > 0) {
@@ -23362,6 +23486,12 @@ if (document.readyState === 'loading') {
 
 // Apply persisted settings (theme, ticker tape, reduce motion) on load
 if (typeof applySettings === 'function') applySettings();
+// M16.41 (part 4) — sync range-btn / holdings-header active class to the
+// restored STATE values. The local restore runs before DOM is mounted, so
+// its inline call is a no-op; this second call fires after the main script
+// finishes and the DOM for these buttons exists. Safe to call again later
+// (e.g. from the Supabase restore) — it's idempotent.
+if (typeof syncUIPrefsButtons === 'function') syncUIPrefsButtons();
 </script>
 
 <!-- ============ MOBILE DRAWER ============ -->
