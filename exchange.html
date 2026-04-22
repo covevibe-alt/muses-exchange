@@ -15285,8 +15285,29 @@ function executeMarketOrder(a, side, amt) {
     h.cost = (h.cost * h.shares + amt) / (h.shares + shares);
     h.shares += shares;
     STATE.holdings[a.ticker] = h;
-    const isFirstBuy = !STATE.firstBuyAt;
-    if (isFirstBuy) STATE.firstBuyAt = Date.now();
+    // M16.36 — Confetti predicate used to be a bare `!STATE.firstBuyAt`,
+    // which fires in three false-positive cases that aren't actually a
+    // first buy:
+    //  (a) Fresh-browser / incognito race: fetchPortfolioFromSupabase()
+    //      runs async and doesn't block UI. localStorage is empty, so
+    //      STATE.firstBuyAt is the null default. If the user taps Buy
+    //      before the Supabase fetch resolves, the predicate is true
+    //      even for a long-time user — this is the main complaint.
+    //  (b) Legacy pre-M16.19 snapshots don't carry firstBuyAt, and the
+    //      restore guard rejects undefined, leaving the flag at null.
+    //  (c) Any state-wipe path that nulls firstBuyAt without also
+    //      clearing transactions.
+    // Stronger invariant: celebrate only when we're confident this is
+    // a real first buy — no prior BUY transactions, and (for authed
+    // users) the Supabase restore attempt has resolved. Also backfill
+    // STATE.firstBuyAt unconditionally so future sessions have it set
+    // even if the legacy snapshot never did.
+    const hasPriorBuy = Array.isArray(STATE.transactions)
+      && STATE.transactions.some(t => t && t.type === 'BUY');
+    const needsServerRestore = !!(window.MUSE_USER && window.MUSE_USER.authed)
+      && !window._musePortfolioLoaded;
+    const isFirstBuy = !STATE.firstBuyAt && !hasPriorBuy && !needsServerRestore;
+    if (!STATE.firstBuyAt) STATE.firstBuyAt = Date.now();
     STATE.transactions.unshift({ type: 'BUY', ticker: a.ticker, name: a.name, shares, price: a.price, total: amt, time: new Date() });
     recordUserOrderFlow(a, 'buy', shares);
     showConfirmation({
@@ -22992,6 +23013,12 @@ startPricePersistence(); // save prices + history to localStorage every 30s
 // snapshot, it overlays and re-renders. New users (no row yet) just keep
 // the trigger-default $10,000 cash.
 fetchPortfolioFromSupabase().then(ok => {
+  // M16.36 — Mark the Supabase restore as resolved so the first-buy
+  // confetti predicate can stop suppressing itself. Set regardless of
+  // success: a fetch that returned false (no row, network error, etc.)
+  // still counts as "we've done our best to hydrate from the server",
+  // and for that user client-side state IS the truth.
+  window._musePortfolioLoaded = true;
   if (ok) {
     try { updateCashDisplay(); } catch (e) {}
     try { renderMarkets(); } catch (e) {}
