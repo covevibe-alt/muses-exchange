@@ -8949,6 +8949,53 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   // ═══════════════════════════════════════════════════════════════
+  // M16.40 — Global error handlers.
+  //
+  // Installed as early as possible so they catch boot-time failures too.
+  // Before M16.40 there was no window.onerror and no unhandledrejection
+  // listener, which meant any thrown exception or rejected promise just
+  // disappeared into the console. That's how the GENRES temporal-dead-zone
+  // error at boot went unnoticed for weeks — the try/catch around
+  // applyInitialRoute swallowed it, and without a global net we had zero
+  // visibility.
+  //
+  // These handlers intentionally do NOT show a UI toast (too noisy for
+  // harmless third-party extension errors) — they just log structured info
+  // to the console with a `[muse-error]` prefix. Sander can grep devtools
+  // for that prefix, and when we wire up Sentry (M16.41) it's a single
+  // hook swap.
+  //
+  // Error detail is deliberately bounded: we truncate messages and stacks
+  // so one rapid-firing loop can't flood the console and freeze the tab.
+  // ═══════════════════════════════════════════════════════════════
+  (function(){
+    function safeStr(v, max){
+      if (v == null) return '';
+      try { return String(v).slice(0, max || 500); } catch (_) { return '[unstringifiable]'; }
+    }
+    window.addEventListener('error', function(e){
+      try {
+        console.error('[muse-error]', {
+          type: 'error',
+          msg: safeStr(e.message),
+          src: safeStr(e.filename, 200),
+          line: e.lineno, col: e.colno,
+          stack: e.error && e.error.stack ? safeStr(e.error.stack, 1200) : null,
+        });
+      } catch (_) {}
+    });
+    window.addEventListener('unhandledrejection', function(e){
+      try {
+        const r = e.reason;
+        console.error('[muse-error]', {
+          type: 'unhandledrejection',
+          msg: safeStr(r && r.message ? r.message : r),
+          stack: r && r.stack ? safeStr(r.stack, 1200) : null,
+        });
+      } catch (_) {}
+    });
+  })();
+  // ═══════════════════════════════════════════════════════════════
   // Auth gate — runs synchronously before the main app boots.
   // Requires the user to be signed in via Supabase Auth.
   // Exposes:
@@ -11050,6 +11097,11 @@ function saveMusePriceState() {
       // re-fired on the next buy. That's why confetti kept re-appearing every
       // session for users who had already celebrated their first buy.
       firstBuyAt: STATE.firstBuyAt || null,
+      // M16.40 — Same pattern for firstSellAt. Previously set in memory on the
+      // first sell (line ~15324) but never written to the snapshot, so the
+      // first_sell Plausible event re-fired every session for a user who'd
+      // already sold once. Persist alongside firstBuyAt.
+      firstSellAt: STATE.firstSellAt || null,
       // M16.24 — persist profile.privacy so "Show top holdings" (and the
       // other privacy toggles) survive reload. Without this, the toggle
       // resets to its default every session and the user's intent is lost.
@@ -11127,6 +11179,8 @@ function restoreMusePriceState() {
       // M16.19 — restore firstBuyAt so the confetti celebration fires exactly
       // once per user, not once per browser session.
       if (typeof snap.firstBuyAt === 'number' || snap.firstBuyAt === null) STATE.firstBuyAt = snap.firstBuyAt;
+      // M16.40 — same pattern for firstSellAt.
+      if (typeof snap.firstSellAt === 'number' || snap.firstSellAt === null) STATE.firstSellAt = snap.firstSellAt;
       // M16.24 — restore profile.privacy if persisted. Merge rather than
       // replace so any NEW privacy keys we add in the future get their
       // in-code defaults for returning users instead of disappearing.
@@ -11203,6 +11257,8 @@ async function fetchPortfolioFromSupabase() {
       if (Array.isArray(snap.openOrders)) STATE.openOrders = snap.openOrders;
       if (Array.isArray(snap.filledOrders)) STATE.filledOrders = snap.filledOrders;
       if (typeof snap.firstBuyAt === 'number' || snap.firstBuyAt === null) STATE.firstBuyAt = snap.firstBuyAt;
+      // M16.40 — firstSellAt restore from Supabase (mirrors localStorage path).
+      if (typeof snap.firstSellAt === 'number' || snap.firstSellAt === null) STATE.firstSellAt = snap.firstSellAt;
       // M16.24 — restore privacy prefs so the toggle survives new devices
       // too (not just localStorage on the same browser). Merge so new keys
       // default in-code rather than disappearing for returning users.
@@ -11269,6 +11325,47 @@ async function flushPortfolioToSupabase(timeoutMs = 4000) {
   }
 }
 
+// M16.40 — Sweep stale per-user localStorage keys that don't belong to the
+// user who's about to sign out OR the user currently signed in. This cleans
+// up ghost snapshots left behind when multiple accounts have used the same
+// browser over time. Before: a single user's audit showed three extra users'
+// snapshots still sitting in localStorage, one of them 519 KB. Across
+// account switches that adds up and eventually exhausts the 5 MB cap.
+//
+// We keep: the current user's snapshot, the unscoped legacy key (back-compat
+// for pre-account users), first-visit timestamp, onboarded flags for the
+// current user, settings, and the Supabase auth token. We drop: snapshots
+// and onboarded flags for any OTHER user UUID.
+//
+// Called from signOutWithFlush so the sweep happens while we still know who
+// the user is. Also safe to call standalone.
+function sweepStaleMuseKeys(keepUid) {
+  try {
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      // Per-user snapshot keys: muse_price_state_v8_<uuid>
+      const snapMatch = k.match(/^muse_price_state_v8_(.+)$/);
+      if (snapMatch) {
+        const uid = snapMatch[1];
+        if (uid !== keepUid && uid !== 'local-dev') toRemove.push(k);
+        continue;
+      }
+      // Per-user onboarded flags: muse_onboarded_<uuid>
+      const onbMatch = k.match(/^muse_onboarded_(.+)$/);
+      if (onbMatch) {
+        const uid = onbMatch[1];
+        if (uid !== keepUid && uid !== 'local-dev') toRemove.push(k);
+      }
+    }
+    for (const k of toRemove) {
+      try { localStorage.removeItem(k); } catch (_) {}
+    }
+    if (toRemove.length) console.log('[muse-sweep] removed', toRemove.length, 'stale keys');
+  } catch (e) { console.warn('[muse-sweep] failed', e); }
+}
+
 // Single source of truth for sign-out. Awaits the final portfolio flush,
 // then signs out. The onAuthStateChange listener reloads the page into
 // guest mode; the 800ms redirect fallback covers auth-state event loss.
@@ -11277,7 +11374,13 @@ async function signOutWithFlush() {
     if (typeof showToast === 'function') showToast('Not signed in');
     return;
   }
+  // Capture the current UID BEFORE signOut — once the SDK clears its session,
+  // window.MUSE_USER.id can be cleared too. We pass it to the sweep so we keep
+  // the just-signed-out user's snapshot intact (in case they sign back in on
+  // this device) and only prune other users' leftovers.
+  const keepUid = window.MUSE_USER && window.MUSE_USER.id;
   try { await flushPortfolioToSupabase(4000); } catch (e) {}
+  try { sweepStaleMuseKeys(keepUid); } catch (e) {}
   try { await window.SUPABASE.auth.signOut(); } catch (e) {}
   setTimeout(() => { window.location.href = '/signin'; }, 800);
 }
@@ -11299,6 +11402,9 @@ async function pushPortfolioToSupabase() {
         openOrders: STATE.openOrders || [],
         filledOrders: (STATE.filledOrders || []).slice(0, 100), // M16.31 — newest 100 (was slice(-100))
         firstBuyAt: STATE.firstBuyAt || null,
+        // M16.40 — firstSellAt in the Supabase snapshot so the first_sell
+        // Plausible event stops re-firing on every session.
+        firstSellAt: STATE.firstSellAt || null,
         // Cross-device onboarding flag. localStorage alone is per-browser,
         // which made the intro tour reappear on every new device/private
         // window. Persisting here means the fetch path can skip the tour.
@@ -12171,6 +12277,7 @@ const STATE = {
   allocMode: 'artist',
   holdingsSort: { key: 'pl', dir: 'desc' },
   firstBuyAt: null,
+  firstSellAt: null, // M16.40 — persisted alongside firstBuyAt
   notifications: [],
   notifUnread: 0,
   // M4.12: Fake friends removed pre-launch. Kept as empty array so any
@@ -12691,10 +12798,18 @@ window.addEventListener('popstate', function () {
   applyRoute(route);
 });
 
-// Rebuild the artist map and apply whatever URL the user loaded with. Safe to
-// call now: ARTISTS has been populated (mergeMusePricesSync ran at line ~10726)
-// and the DOM for every view shell exists in the static HTML above.
-try { applyInitialRoute(); } catch (e) { console.warn('[routing] init failed', e); }
+// Rebuild the artist map and apply whatever URL the user loaded with.
+// M16.40 — Deferred to a microtask so all top-level const declarations
+// (notably GENRES at ~line 14180) finish evaluating before applyInitialRoute
+// runs. renderFeatured reads GENRES, and when this call was synchronous it
+// hit a temporal-dead-zone ReferenceError on every boot, swallowed by the
+// try/catch below as a warning — the featured grid quietly failed to paint
+// on first render. A microtask fires after the current script finishes but
+// before the next repaint, so routing still happens "immediately" from the
+// user's perspective but with the module fully initialised.
+queueMicrotask(() => {
+  try { applyInitialRoute(); } catch (e) { console.warn('[routing] init failed', e); }
+});
 function goBack() {
   if (STATE.viewHistory.length) {
     const prev = STATE.viewHistory.pop();
@@ -15246,10 +15361,22 @@ function submitTradeFromState() {
 }
 
 function executeMarketOrder(a, side, amt) {
+  // M16.40 — Strict side whitelist. Before: `if (side === 'buy') {...} else
+  // {...sell...}`, so any caller passing `'BUY'`, `'Buy'`, or anything else
+  // silently fell into the sell branch. That's a loaded gun — a limit-order
+  // trigger or tournament auto-submit passing the wrong case would execute
+  // the opposite side against the user's position. Reject anything that's
+  // not an exact lowercase 'buy'/'sell' up front.
+  if (side !== 'buy' && side !== 'sell') {
+    console.error('[executeMarketOrder] invalid side:', side);
+    showToast('Invalid order side', true);
+    return false;
+  }
   // Guest safety net — the UI gates trade submit, but this catches any
   // other entry points (limit-order triggers, tournament auto-submits)
   // that could reach executeMarketOrder for an unauthenticated session.
   if (!isAuthed()) { showAuthPrompt({ action: side === 'sell' ? 'sell shares' : 'place this trade' }); return false; }
+  if (!a || !a.ticker) { showToast('Artist not available', true); return false; }
   if (!a.price || a.price <= 0) { showToast('Artist price unavailable', true); return false; }
   const shares = amt / a.price;
   if (!isFinite(shares) || shares <= 0) { showToast('Invalid trade amount', true); return false; }
@@ -15445,6 +15572,7 @@ function recordUserOrderFlow(a, side, shares) {
 function processOpenOrders() {
   if (!STATE.openOrders || !STATE.openOrders.length) return;
   const stillOpen = [];
+  let anyFilled = false; // M16.40 — track whether we mutated filledOrders/openOrders
   STATE.openOrders.forEach(o => {
     const a = ARTISTS.find(x => x.ticker === o.ticker);
     if (!a) { stillOpen.push(o); return; }
@@ -15472,10 +15600,25 @@ function processOpenOrders() {
     o.filledAt = Date.now();
     o.fillPrice = a.price;
     STATE.filledOrders.unshift(o);
+    anyFilled = true;
     pushNotification('order', 'Order filled',
       `${o.side === 'buy' ? 'Bought' : 'Sold'} ${fmtPrice(o.amount)} of ${o.ticker} @ ${fmtPrice(a.price)}`, null);
   });
   STATE.openOrders = stillOpen;
+  // M16.40 — Save after openOrders/filledOrders mutation. executeMarketOrder()
+  // internally calls saveMusePriceState() BEFORE we flip o.status to 'filled'
+  // and remove the order from STATE.openOrders, so the snapshot captured a
+  // transitional state where the order was already executed (cash/holdings
+  // updated) but still listed as "open". If the tab died between that inner
+  // save and here — hard crash, mobile app-swap kill, OS memory pressure —
+  // the next boot's processOpenOrders tick would see the same trigger
+  // condition met and execute the order a second time. This save closes that
+  // window. beforeunload/pagehide also flush, but aren't guaranteed on every
+  // platform, so we don't rely on them for correctness. Only save if we
+  // actually mutated something.
+  if (anyFilled && typeof saveMusePriceState === 'function') {
+    try { saveMusePriceState(); } catch (e) { console.warn('[orders] post-fill save failed', e); }
+  }
   // If orders view is open, refresh it
   const ov = document.getElementById('view-orders');
   if (ov && !ov.classList.contains('hidden')) renderOrdersView();
@@ -16166,6 +16309,7 @@ function runSettingsAction(action) {
       STATE.recurringBuys = [];
       STATE.realized = 0;
       STATE.firstBuyAt = null;
+      STATE.firstSellAt = null; // M16.40 — reset together with firstBuyAt
       // Clear saved state so the reset sticks across refreshes
       try { localStorage.removeItem(MUSE_STATE_KEY); } catch (e) {}
       // Push reset to Supabase so it persists across devices
