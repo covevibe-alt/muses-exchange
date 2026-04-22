@@ -16482,6 +16482,13 @@ function renderSettings() {
                 <button class="st-action-btn" data-action="edit-profile">Edit profile</button>
               </div>
             </div>
+            ${(window.MUSE_USER && window.MUSE_USER.authed) ? rowAction(
+              'Delete my account',
+              'Permanently delete your account, profile, portfolio, trading history, and leaderboard row. This action cannot be undone. Anonymous analytics and error diagnostics are unaffected and are retained under the policies in the privacy notice.',
+              'Delete account',
+              'delete-account',
+              'danger'
+            ) : ''}
           </div>
         </div>
 
@@ -16632,6 +16639,105 @@ function runSettingsAction(action) {
     } else {
       showToast('Not signed in');
     }
+  } else if (action === 'delete-account') {
+    deleteAccountFlow();
+  }
+}
+
+// ============ ACCOUNT DELETION (GDPR Art. 17) ============
+// Talks to the delete-account Edge Function. The anon key we hold in the
+// browser cannot call auth.admin.deleteUser; the Edge Function holds the
+// service role key and validates the caller's JWT before deleting.
+async function deleteAccountFlow() {
+  if (!(window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed)) {
+    showToast('You need to be signed in to delete your account');
+    return;
+  }
+
+  // Two-step confirm: native prompt requiring the literal string "DELETE"
+  // so fat-fingering a button can't wipe an account.
+  const typed = prompt(
+    'This permanently deletes your account, profile, portfolio, and leaderboard row. ' +
+    'This cannot be undone.\n\nType DELETE (all caps) to confirm.'
+  );
+  if (typed !== 'DELETE') {
+    showToast('Account deletion cancelled');
+    return;
+  }
+
+  showToast('Deleting your account…');
+
+  try {
+    // Get a fresh session so the JWT we send isn't near expiry.
+    const sessionRes = await window.SUPABASE.auth.getSession();
+    const token = sessionRes && sessionRes.data && sessionRes.data.session
+      && sessionRes.data.session.access_token;
+    if (!token) {
+      showToast('Session not found — please sign in again', true);
+      return;
+    }
+
+    // The Supabase JS client exposes .supabaseUrl — avoids duplicating
+    // the URL constant, which lives in a different IIFE scope.
+    const SB_URL = (window.SUPABASE && window.SUPABASE.supabaseUrl) || '';
+    if (!SB_URL) {
+      showToast('Cannot reach delete endpoint — contact privacy@muses.exchange', true);
+      return;
+    }
+
+    const res = await fetch(SB_URL.replace(/\/$/, '') + '/functions/v1/delete-account', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    });
+
+    if (!res.ok) {
+      let detail = '';
+      try { const j = await res.json(); detail = j && (j.detail || j.error) || ''; } catch (_) {}
+      console.warn('[delete-account] failed', res.status, detail);
+      showToast('Account deletion failed — please email privacy@muses.exchange', true);
+      return;
+    }
+
+    // Success — purge local storage for this user before signing out so
+    // the browser-cache copy can't be re-pushed on a flushPortfolioToSupabase
+    // race, and so the device doesn't look "signed in" after reload.
+    try {
+      const uid = window.MUSE_USER && window.MUSE_USER.id;
+      if (uid && typeof sweepStaleMuseKeys === 'function') {
+        // sweepStaleMuseKeys(keepUid) prunes everyone else — we want the
+        // opposite (purge THIS uid). Walk localStorage directly.
+        const prefixes = ['muse_', 'MUSE_', 'muses_'];
+        const keep = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (!k) continue;
+          if (k.includes(uid)) keep.push(k);
+        }
+        keep.forEach(k => { try { localStorage.removeItem(k); } catch (_) {} });
+      }
+    } catch (_) {}
+    try {
+      if (window.Sentry && typeof window.Sentry.setUser === 'function') {
+        window.Sentry.setUser(null);
+      }
+    } catch (_) {}
+    try { await window.SUPABASE.auth.signOut(); } catch (_) {}
+
+    showToast('Your account has been deleted');
+    // Slight delay so the toast is seen, then land on the home page.
+    setTimeout(() => { window.location.href = '/'; }, 1200);
+  } catch (err) {
+    console.warn('[delete-account] error', err);
+    try {
+      if (window.Sentry && typeof window.Sentry.captureException === 'function') {
+        window.Sentry.captureException(err);
+      }
+    } catch (_) {}
+    showToast('Account deletion failed — please email privacy@muses.exchange', true);
   }
 }
 
