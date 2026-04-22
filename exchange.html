@@ -4961,6 +4961,20 @@
   }
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast.error { border-color: var(--down); box-shadow: 0 0 32px var(--down-glow); }
+  /* M16.28 — inline clickable link inside a toast (e.g. "See favorites"). */
+  .toast-action {
+    background: transparent;
+    border: none;
+    color: var(--purple);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
+    padding: 0 0 0 10px;
+    margin-left: 6px;
+    border-left: 1px solid var(--border-strong);
+    text-decoration: none;
+  }
+  .toast-action:hover { color: var(--purple-2, var(--purple)); text-decoration: underline; }
 
   /* SECTION HEADER */
   .section-head {
@@ -14631,7 +14645,17 @@ document.addEventListener('click', (e) => {
     try { renderPortfolio(); } catch (_) {}
   }
   if (typeof showToast === 'function') {
-    showToast(STATE.watchlist.includes(ticker) ? 'Added to favorites' : 'Removed from favorites');
+    const added = STATE.watchlist.includes(ticker);
+    // M16.28 — surface a "See favorites" action on the add toast so users
+    // can jump straight to the favorites modal. No action on remove.
+    if (added) {
+      showToast('Added to favorites', false, {
+        label: 'See favorites',
+        handler: () => { try { openModal('favorites'); } catch (_) {} }
+      });
+    } else {
+      showToast('Removed from favorites');
+    }
   }
 }, true);
 
@@ -14984,7 +15008,16 @@ function refreshAmtChipsState() {
 document.getElementById('ad-watch-btn').addEventListener('click', () => {
   if (!STATE.selected) return;
   toggleWatchlist(STATE.selected.ticker);
-  showToast(STATE.watchlist.includes(STATE.selected.ticker) ? 'Added to favorites' : 'Removed from favorites');
+  // M16.28 — show "See favorites" link on add; plain toast on remove.
+  const added = STATE.watchlist.includes(STATE.selected.ticker);
+  if (added) {
+    showToast('Added to favorites', false, {
+      label: 'See favorites',
+      handler: () => { try { openModal('favorites'); } catch (_) {} }
+    });
+  } else {
+    showToast('Removed from favorites');
+  }
 });
 document.getElementById('ad-tab-buy').addEventListener('click', () => {
   STATE.tradeSide = 'buy';
@@ -16627,7 +16660,16 @@ loadSettings();
       toggleWatchlist(t);
       if (typeof refreshStars === 'function') refreshStars();
       if (typeof showToast === 'function') {
-        showToast(STATE.watchlist.includes(t) ? 'Added to favorites' : 'Removed from favorites');
+        // M16.28 — "See favorites" link on add; plain toast on remove.
+        const added = STATE.watchlist.includes(t);
+        if (added) {
+          showToast('Added to favorites', false, {
+            label: 'See favorites',
+            handler: () => { try { openModal('favorites'); } catch (_) {} }
+          });
+        } else {
+          showToast('Removed from favorites');
+        }
       }
       return;
     }
@@ -18438,11 +18480,36 @@ function showSkeleton(container, rows = 4) {
   container.innerHTML = html;
 }
 
-function showToast(msg, isError) {
+// M16.28 — showToast now accepts an optional action:
+//   showToast('Added to favorites', false, { label: 'See favorites', handler: () => openModal('favorites') })
+// The action renders as a clickable link inside the toast. We stretch
+// the dismiss timeout to 4.5s when an action is present, so users have
+// time to notice and click before it disappears.
+function showToast(msg, isError, action) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  const safeMsg = String(msg).replace(/</g, '&lt;');
+  if (action && action.label && typeof action.handler === 'function') {
+    const safeLabel = String(action.label).replace(/</g, '&lt;');
+    t.innerHTML = safeMsg +
+      ' <button class="toast-action" type="button">' + safeLabel + '</button>';
+    const btn = t.querySelector('.toast-action');
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        try { action.handler(); } catch (_) {}
+        t.className = 'toast' + (isError ? ' error' : '');
+      });
+    }
+  } else {
+    t.textContent = msg;
+  }
   t.className = 'toast show' + (isError ? ' error' : '');
-  setTimeout(() => { t.className = 'toast' + (isError ? ' error' : ''); }, 2400);
+  const dismissAfter = (action ? 4500 : 2400);
+  clearTimeout(t._dismissTimer);
+  t._dismissTimer = setTimeout(() => {
+    t.className = 'toast' + (isError ? ' error' : '');
+  }, dismissAfter);
 }
 
 /**
