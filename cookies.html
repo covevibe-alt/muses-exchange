@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cookies — Muses Exchange</title>
-<meta name="description" content="Muses doesn't use tracking cookies. The short, honest version is on this page.">
+<title>Cookies Policy — Muses Exchange</title>
+<meta name="description" content="Muses Exchange does not use tracking cookies. Full technical detail, including the browser storage the platform does use.">
 <meta name="robots" content="index,follow">
 <meta property="og:title" content="Cookies — Muses Exchange">
 <meta property="og:description" content="Muses doesn't use tracking cookies. The short, honest version.">
@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="muse-shared.css?v=20260420b">
+<link rel="stylesheet" href="muse-shared.css?v=20260422a">
 </head>
 <body data-page="cookies">
 
@@ -46,51 +46,57 @@
 
 <section class="page-hero">
   <div class="section-eyebrow reveal"><span class="eyebrow-dot"></span>Legal</div>
-  <h1 class="page-hero-title reveal">Cookies on <em>Muses.</em></h1>
-  <p class="page-hero-lede reveal">There's not much to say here. Short version: Muses doesn't set tracking cookies, so you won't see a consent banner.</p>
+  <h1 class="page-hero-title reveal">Cookies <em>policy.</em></h1>
+  <p class="page-hero-lede reveal">Muses Exchange does not set tracking cookies. This page explains, in full technical detail, what the platform uses instead.</p>
 </section>
 
 <section class="block">
   <div class="legal-layout">
     <div class="legal-doc reveal" style="margin:0 auto;">
-      <div class="legal-stamp">● Last updated April 19, 2026</div>
+      <div class="legal-stamp">● Last updated April 22, 2026</div>
 
       <div class="legal-callout">
         <strong>Plain-English summary</strong>
-        Muses uses cookieless analytics (Plausible) and stores your virtual portfolio in your browser's local storage. If you create a sign-in account, Netlify Identity stores a login token — also in local storage, not a cookie. Nothing tracks you across other sites. That's why there's no cookie banner.
+        We use a cookieless analytics provider (Plausible) and store your preferences and authentication session in your browser's local storage, which is a different mechanism from cookies. No third-party tracking or advertising cookies are used. For that reason, no cookie-consent banner is displayed.
       </div>
 
-      <h2>What Muses sets</h2>
-      <p><strong>Nothing, under normal use.</strong> The site itself does not set any first-party cookies.</p>
+      <h2>Cookies set by the Service</h2>
+      <p><strong>None, under normal use.</strong> The Service does not set any first-party cookies for analytics, advertising, personalisation, or any other non-essential purpose.</p>
 
       <h2>Local storage (not cookies)</h2>
-      <p>The paper-trading prototype uses your browser's <em>local storage</em> — a separate mechanism from cookies — to keep two things on your device:</p>
+      <p>The Service uses the browser's <em>local storage</em> API — a separate mechanism from cookies, not transmitted with each HTTP request — to keep the following on your device:</p>
       <ul>
-        <li>Your virtual portfolio: trades, balance, watchlist, price history snapshots. This never leaves your browser.</li>
-        <li>If you create a sign-in account via Netlify Identity, a login token (JWT) so you stay signed in between visits.</li>
+        <li><strong>Session token (JWT).</strong> When you sign in, the authentication provider (Supabase Auth) stores a JSON Web Token in local storage so you remain signed in across visits and browser tabs. The token is scoped to <code>muses.exchange</code> and never transmitted to third parties.</li>
+        <li><strong>User-interface preferences.</strong> Your selected theme, ticker-tape toggle, reduce-motion preference, default order type, chart timeframe, and similar UI state. These never leave your browser.</li>
+        <li><strong>Cached portfolio snapshot.</strong> A local copy of your paper-trading portfolio and recent price data, kept to speed up page loads. The authoritative copy lives in our database; the local copy is a mirror.</li>
       </ul>
-      <p>You can clear both at any time by clearing site data in your browser's settings, or by signing out of the app.</p>
+      <p>You can clear the above at any time by clearing site data in your browser's settings or by signing out of the Service. Signing out invalidates the session token server-side and removes it from local storage.</p>
 
-      <h2>What our processors might set</h2>
+      <h2>Cookies set by our processors</h2>
       <ul>
-        <li><strong>Plausible Analytics.</strong> Does not set any cookies and does not generate a persistent visitor ID. See <a href="https://plausible.io/data-policy" target="_blank" rel="noopener">their data policy</a>.</li>
-        <li><strong>Netlify</strong> (our host). Netlify may set security cookies for DDoS and bot protection on the edge. These are classified as "strictly necessary" under the EU ePrivacy Directive and do not require consent. See <a href="https://www.netlify.com/privacy/" target="_blank" rel="noopener">Netlify's privacy policy</a>.</li>
+        <li><strong>Plausible Analytics.</strong> Does not set any cookies and does not generate a persistent visitor identifier. See the Plausible <a href="https://plausible.io/data-policy" target="_blank" rel="noopener">data policy</a> for technical detail.</li>
+        <li><strong>Netlify</strong> (hosting provider). Netlify may set short-lived security cookies at the edge for DDoS and bot protection. These are classified as <strong>strictly necessary</strong> under Article 5(3) of the ePrivacy Directive and its national transpositions, and therefore do not require consent. See the Netlify <a href="https://www.netlify.com/privacy/" target="_blank" rel="noopener">privacy notice</a>.</li>
+        <li><strong>Supabase</strong> (authentication and database provider). Supabase does not set any cookies on your browser in the course of providing our authentication flow; the session token is held in local storage, as described above.</li>
+        <li><strong>Sentry</strong> (error reporting). Sentry does not set any cookies on your browser. Error reports are transmitted directly by the in-page SDK using <code>fetch()</code> requests.</li>
       </ul>
 
       <h2>Why no cookie banner?</h2>
-      <p>Consent banners are required under the ePrivacy Directive only for cookies that are not strictly necessary — most commonly tracking, advertising, and non-essential analytics cookies. Muses doesn't use any of those, so there is nothing to consent to. If that ever changes, you'll see a banner before anything non-essential is set.</p>
+      <p>The consent obligation in Article 5(3) of the ePrivacy Directive applies to the storing of, or gaining access to, information on a user's device where that storage or access is not strictly necessary for the service expressly requested by the user. The Service does not use any cookies or similar technologies in that category: its analytics are cookieless, its authentication session is strictly necessary, and there are no advertising, profiling, or cross-site tracking technologies in play. Accordingly, there is nothing on which to request consent. If that position ever changes, a banner will be displayed before any non-essential storage or access takes place.</p>
 
       <h2>Third-party embeds</h2>
-      <p>Muses does not currently embed third-party videos, maps, comment systems, or social widgets that would set their own cookies. If we add any in the future, we'll update this page and — if they require consent — add a banner for them.</p>
+      <p>The Service does not currently embed third-party video players, maps, comment systems, or social-media widgets that would set their own cookies in your browser. If any such embed is added in the future, this page will be updated and — where consent is required — a banner will be presented before the embed loads.</p>
+
+      <h2>Browser controls</h2>
+      <p>Most browsers let you refuse cookies, clear existing cookies and local storage, or receive a prompt before storing them. Because Muses Exchange does not depend on third-party cookies, disabling them will not affect your experience. Clearing local storage, however, will sign you out and reset local UI preferences.</p>
 
       <hr>
-      <p class="legal-foot">More context on data handling: <a href="/privacy">privacy policy</a>. Questions? Email <a href="mailto:hello@muses.exchange">hello@muses.exchange</a>.</p>
+      <p class="legal-foot">See also: <a href="/privacy">privacy policy</a>, <a href="/terms">terms of use</a>. Questions: <a href="mailto:privacy@muses.exchange">privacy@muses.exchange</a>.</p>
     </div>
   </div>
 </section>
 
 <div id="footer-mount"></div>
 
-<script src="muse-shared.js?v=20260420b"></script>
+<script src="muse-shared.js?v=20260422a"></script>
 </body>
 </html>
