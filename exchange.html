@@ -6427,6 +6427,64 @@
     .holding-row.with-bar { min-width: 560px; }
   }
 
+  /* M16.35 — Mobile holdings: collapse the 4-col horizontal-scroll table
+     into a clean 2-col card-row layout. The desktop grid (Artist | Value
+     | P&L | 24h) with sticky-left Artist column was fine on desktop but
+     on mobile the table was wider than the viewport, the P&L and 24h
+     columns scrolled off-screen, and the Artist column was squeezed so
+     hard that the shares line ("0.44 sh · $226.24 avg") wrapped
+     character-by-character into 3-4 lines. The name also truncated to
+     "Just…" / "Tam…" / "Skril…" even though there was space elsewhere.
+       Fix here:
+       • overflow-x: visible — no more horizontal scroll
+       • min-width: 0 on the header + row so the grid reflows to viewport
+       • hide P&L-% and 24h-% cells (they're redundant with the $ P&L
+         already shown in h-value; power users can tap the row)
+       • un-stick the Artist column now that there's no scroll
+       • force h-shares to one-line ellipsis so the avatar stops looking
+         visually disconnected from the (previously wrapping) text */
+  @media (max-width: 700px) {
+    .holdings-scroll {
+      overflow-x: visible;
+      margin: 0;
+      padding: 0;
+    }
+    .holdings-header,
+    .holding-row.with-bar {
+      min-width: 0;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+    .holdings-header .hh-cell[data-sort="pl"],
+    .holdings-header .hh-cell[data-sort="d24"] {
+      display: none;
+    }
+    .holdings-header .hh-cell.name,
+    .holding-row .h-artist {
+      position: static;
+      box-shadow: none;
+      padding-right: 0;
+      background: transparent;
+    }
+    .holding-row.with-bar {
+      padding: 14px 12px;
+      align-items: center;
+    }
+    .holding-row .h-artist {
+      gap: 12px;
+    }
+    .holding-row .h-meta .h-shares {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .holding-row .h-price,
+    .holding-row .h-d24 {
+      display: none;
+    }
+    .holding-row .h-value { align-self: center; }
+  }
+
   /* ALLOCATION TOGGLE */
   .alloc-toggle {
     display: inline-flex;
