@@ -10979,9 +10979,13 @@ function saveMusePriceState() {
       tournamentCredits: STATE.tournamentCredits || 0,
       holdings: STATE.holdings,
       realized: STATE.realized || 0,
-      transactions: (STATE.transactions || []).slice(-100), // cap at last 100
+      // M16.31 — was slice(-100). STATE.transactions is unshift-ordered
+      // (newest at index 0), so slice(-100) kept the *oldest* 100 and
+      // silently dropped the newest entries — which explains why recent
+      // swaps went missing on reload for users near the cap.
+      transactions: (STATE.transactions || []).slice(0, 100), // cap at newest 100
       openOrders: STATE.openOrders || [],
-      filledOrders: (STATE.filledOrders || []).slice(-50),
+      filledOrders: (STATE.filledOrders || []).slice(0, 50), // M16.31 — newest 50 (was slice(-50))
       // M16.19 — persist firstBuyAt in the localStorage snapshot too (not just
       // the Supabase snapshot). Without this, a user who reloads before the
       // Supabase fetch completes falls back to localStorage, which had no
@@ -11234,9 +11238,9 @@ async function pushPortfolioToSupabase() {
         realized: STATE.realized || 0,
         tournamentCredits: STATE.tournamentCredits || 0,
         holdings: STATE.holdings || {},
-        transactions: (STATE.transactions || []).slice(-200),
+        transactions: (STATE.transactions || []).slice(0, 200), // M16.31 — newest 200 (was slice(-200), which kept the oldest)
         openOrders: STATE.openOrders || [],
-        filledOrders: (STATE.filledOrders || []).slice(-100),
+        filledOrders: (STATE.filledOrders || []).slice(0, 100), // M16.31 — newest 100 (was slice(-100))
         firstBuyAt: STATE.firstBuyAt || null,
         // Cross-device onboarding flag. localStorage alone is per-browser,
         // which made the intro tour reappear on every new device/private
@@ -15650,13 +15654,36 @@ function renderSwapPage() {
   // Recent swaps history
   const sh = document.getElementById('swap-history');
   const swapTxs = STATE.transactions.filter(t => t.type === 'swap-sell' || t.type === 'swap-buy');
-  // Pair them up: swap-sell followed by swap-buy
+  // M16.31 — pair sell/buy legs by explicit swapId (added for every new
+  // swap). Legacy rows that predate the swapId field fall back to the
+  // old "adjacent pair in unshift order" heuristic so existing histories
+  // still render instead of showing partial rows.
   const swapPairs = [];
-  for (let i = 0; i < swapTxs.length - 1; i += 2) {
-    if (swapTxs[i].type === 'swap-sell' && swapTxs[i+1] && swapTxs[i+1].type === 'swap-buy') {
-      // swap-buy is first in array (unshift order), but pair them
+  const consumed = new Set();
+  for (let i = 0; i < swapTxs.length; i++) {
+    const tx = swapTxs[i];
+    if (consumed.has(i)) continue;
+    let mate = null, mateIdx = -1;
+    if (tx.swapId) {
+      for (let j = i + 1; j < swapTxs.length; j++) {
+        if (!consumed.has(j) && swapTxs[j].swapId === tx.swapId && swapTxs[j].type !== tx.type) {
+          mate = swapTxs[j]; mateIdx = j; break;
+        }
+      }
     }
-    swapPairs.push({ sell: swapTxs[i].type === 'swap-sell' ? swapTxs[i] : swapTxs[i+1], buy: swapTxs[i].type === 'swap-buy' ? swapTxs[i] : swapTxs[i+1] });
+    if (!mate) {
+      // Legacy fallback — pair with next unconsumed row of opposite type.
+      for (let j = i + 1; j < swapTxs.length; j++) {
+        if (!consumed.has(j) && !swapTxs[j].swapId && swapTxs[j].type !== tx.type) {
+          mate = swapTxs[j]; mateIdx = j; break;
+        }
+      }
+    }
+    if (!mate) continue; // orphan leg — skip rather than render a half-row
+    consumed.add(i); consumed.add(mateIdx);
+    const sell = tx.type === 'swap-sell' ? tx : mate;
+    const buy  = tx.type === 'swap-buy'  ? tx : mate;
+    swapPairs.push({ sell, buy });
   }
   if (!swapPairs.length) {
     sh.innerHTML = `<div style="text-align:center;padding:24px;color:var(--text-faint);font-size:13px">No swaps yet. Make your first swap above!</div>`;
@@ -21251,9 +21278,14 @@ function executeSwap(fromArtist, toArtist, amount) {
   th.shares += buyShares;
   STATE.holdings[to.ticker] = th;
 
-  // Record transactions
+  // Record transactions — share a swapId so the Recent Swaps renderer
+  // can pair sell/buy legs unambiguously even if the transaction list
+  // ever gets interleaved with non-swap rows or loses one leg.
+  const swapId = 'sw-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+  const nowTs = Date.now();
   STATE.transactions.unshift({
-    id: 'tx-' + Date.now(),
+    id: 'tx-' + nowTs,
+    swapId,
     type: 'swap-sell',
     ticker: from.ticker,
     name: from.name,
@@ -21261,10 +21293,11 @@ function executeSwap(fromArtist, toArtist, amount) {
     amount: amount,
     shares: sellShares,
     price: from.price,
-    time: Date.now(),
+    time: nowTs,
   });
   STATE.transactions.unshift({
-    id: 'tx-' + (Date.now() + 1),
+    id: 'tx-' + (nowTs + 1),
+    swapId,
     type: 'swap-buy',
     ticker: to.ticker,
     name: to.name,
@@ -21272,13 +21305,27 @@ function executeSwap(fromArtist, toArtist, amount) {
     amount: amount,
     shares: buyShares,
     price: to.price,
-    time: Date.now(),
+    time: nowTs,
   });
+
+  // M16.31 — persist immediately. executeSwap used to mutate STATE but
+  // never hit localStorage or Supabase, so swaps disappeared on reload
+  // and didn't sync across devices. Mirrors the confirmTrade pattern.
+  try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (_) {}
+  try { if (typeof pushPortfolioToSupabase === 'function') pushPortfolioToSupabase(); } catch (_) {}
 
   // Close modal, show confirmation overlay
   closeModal();
   updateCashDisplay();
   if (typeof renderPortfolio === 'function') renderPortfolio();
+  // M16.31 — refresh the swap view so the "Recent Swaps" list updates
+  // in-session even if the user dismisses the confirmation via backdrop.
+  try {
+    const swapView = document.getElementById('view-swap');
+    if (swapView && !swapView.classList.contains('hidden') && typeof renderSwapPage === 'function') {
+      renderSwapPage();
+    }
+  } catch (_) {}
   showConfirmation({
     icon: 'success',
     title: 'Swap complete',
