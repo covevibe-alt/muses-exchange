@@ -6081,6 +6081,18 @@
       justify-self: stretch;
       margin-top: 4px;
     }
+    /* M16.34 — align rows 2 & 3 (chips / total / @price / date) with the
+       name text in row 1 instead of the tile's left padding. Without
+       this, the avatar-offset name creates a staircase where BUY/MARKET
+       and the @price sit flush-left while the name is indented past
+       them. Shifting the column-1 cells by avatar-width + gap puts the
+       whole data block on a single left edge under the name. */
+    #orders-list .orders-row:not(.recurring) > :nth-child(2) { /* .ord-side (BUY) */
+      margin-left: 44px;
+    }
+    #orders-list .orders-row:not(.recurring) > :nth-child(5) { /* @ price */
+      margin-left: 44px;
+    }
     /* Recurring tab keeps the legacy 2-col stack */
     .orders-row.recurring {
       grid-template-columns: 1fr 1fr;
@@ -8275,11 +8287,22 @@
     .onb-avatar-row { flex-direction: column; align-items: stretch; }
     .onb-grad-grid { grid-template-columns: repeat(6, 1fr) !important; }
 
-    /* Notifications panel: full width drawer feel */
+    /* Notifications panel: full-width drawer feel.
+       M16.34 — switch to position: fixed on mobile so the panel is
+       anchored to the viewport, not to the bell's .notif-wrap (which
+       sits at the viewport's right edge). The old rule used
+       `right: -8px !important; left: -8px; width: calc(100vw - 32px)
+       !important`, but since `width` was !important it overrode `left`,
+       leaving the panel's right edge 8px past the viewport edge — the
+       whole panel clipped off-screen on the right. Fixed positioning
+       with symmetric left/right anchors keeps it fully on screen
+       regardless of where the bell lives. */
     .notif-panel {
-      right: -8px !important;
-      left: -8px;
-      width: calc(100vw - 32px) !important;
+      position: fixed !important;
+      top: 64px !important;
+      left: 12px !important;
+      right: 12px !important;
+      width: auto !important;
       max-width: none !important;
     }
 
