@@ -5210,12 +5210,17 @@
   .badge-chip.badge-rare      { border-color: rgba(96,165,250,0.30); }
   .badge-chip.badge-legendary { border-color: rgba(251,191,36,0.45); background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,191,36,0.02)); }
 
-  /* Custom hover tooltip — renders above the chip with an arrow. */
+  /* Custom hover tooltip — renders above the chip with an arrow.
+     Right-anchored (extends leftward from chip's right edge) so chips
+     near the right side don't get clipped by the sidebar. For chips at
+     the very left edge of the content area, the tooltip could extend
+     past the left edge in extreme cases — if that becomes a problem
+     we'll add a JS-driven dynamic anchor later. */
   .badge-chip .bc-tip {
     position: absolute;
     bottom: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%) translateY(6px);
+    right: -8px;
+    transform: translateY(6px);
     min-width: 200px;
     max-width: 280px;
     padding: 10px 12px;
@@ -5234,8 +5239,7 @@
     content: "";
     position: absolute;
     top: 100%;
-    left: 50%;
-    margin-left: -6px;
+    right: 22px;
     border: 6px solid transparent;
     border-top-color: rgba(139,92,246,0.35);
   }
@@ -5243,7 +5247,7 @@
   .badge-chip:focus-visible .bc-tip,
   .badge-chip:focus .bc-tip {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
   .badge-chip .bc-tip-title {
     font-size: 12px; font-weight: 700; color: #fff;
@@ -5265,19 +5269,9 @@
     font-size: 12px; font-weight: 400; color: #c8c4d0;
     line-height: 1.45;
   }
-  /* On very narrow viewports, left-align the tooltip to the chip so it
-     doesn't get clipped by the viewport edge. */
-  @media (max-width: 480px) {
-    .badge-chip .bc-tip {
-      left: 0; transform: translateY(6px);
-    }
-    .badge-chip .bc-tip::after { left: 16px; margin-left: 0; }
-    .badge-chip:hover .bc-tip,
-    .badge-chip:focus-visible .bc-tip,
-    .badge-chip:focus .bc-tip {
-      transform: translateY(0);
-    }
-  }
+  /* Right-anchor works across viewport sizes — no mobile override
+     needed. If a left-edge chip on a narrow screen ever clips, we'll
+     reintroduce a width-media-query flip here. */
 
   /* ARTIST DETAIL */
   .artist-hero {
