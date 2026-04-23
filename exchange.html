@@ -5157,6 +5157,54 @@
     .matchup-card .mc-vs-sep { text-align: center; padding: 4px 0; }
   }
 
+  /* BADGES STRIP — earned-collectibles row below matchup card */
+  .badges-strip {
+    margin: 0 0 18px;
+  }
+  .badges-strip .bs-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .badges-strip .bs-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 18px;
+    padding: 0 6px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 11px;
+    color: var(--text);
+  }
+  .badges-strip .bs-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .badge-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: default;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .badge-chip:hover { transform: translateY(-1px); }
+  .badge-chip .bc-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+  .badge-chip.badge-common    .bc-dot { background: #8a8a9b; }
+  .badge-chip.badge-uncommon  .bc-dot { background: #6effb8; }
+  .badge-chip.badge-rare      .bc-dot { background: #60a5fa; }
+  .badge-chip.badge-legendary .bc-dot { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,0.5); }
+  .badge-chip.badge-uncommon  { border-color: rgba(110,255,184,0.28); }
+  .badge-chip.badge-rare      { border-color: rgba(96,165,250,0.30); }
+  .badge-chip.badge-legendary { border-color: rgba(251,191,36,0.45); background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,191,36,0.02)); }
+
   /* ARTIST DETAIL */
   .artist-hero {
     display: flex;
@@ -10192,6 +10240,9 @@
         <!-- Phase 1 — head-to-head matchup card. Painted by renderMatchupCard(). -->
         <div id="lb-matchup-card"></div>
 
+        <!-- Phase 2 — badges strip. Painted by renderBadgesStrip(). -->
+        <div id="lb-badges-strip"></div>
+
         <!-- Leaderboard will populate with real users once trading opens -->
 
         <div class="card">
@@ -12265,6 +12316,83 @@ function renderMatchupCard() {
         </div>
       </div>
       ${leadLabel ? `<div class="mc-foot">${leadLabel}</div>` : ''}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// BADGES — earned-collectible strip (migrations 006 + 011)
+// ══════════════════════════════════════════════════════════════════════
+// Badges are awarded server-side by SQL triggers on filled_orders and
+// leaderboard updates (migration 011). The client just reads user_badges
+// and renders a compact chip strip below the matchup card. One fetch
+// per leaderboard-view mount, TTL-cached.
+// ══════════════════════════════════════════════════════════════════════
+let USER_BADGES = null;              // array or null = never fetched
+let _userBadgesFetchAt = 0;
+const USER_BADGES_TTL_MS = 60_000;
+
+async function fetchUserBadges(force) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return null;
+  if (!force && USER_BADGES && (Date.now() - _userBadgesFetchAt) < USER_BADGES_TTL_MS) {
+    return USER_BADGES;
+  }
+
+  try {
+    // Join user_badges → badges in one query via the nested-select syntax
+    // Supabase exposes on foreign-key relationships.
+    const { data, error } = await window.SUPABASE
+      .from('user_badges')
+      .select('awarded_at, metadata, badges(slug, name, description, rarity, icon)')
+      .eq('user_id', window.MUSE_USER.id)
+      .order('awarded_at', { ascending: false });
+
+    if (error) {
+      console.warn('[Muses] fetchUserBadges failed:', error.message || error);
+      return null;
+    }
+
+    USER_BADGES = (data || [])
+      .filter(r => r && r.badges)
+      .map(r => ({
+        slug:        r.badges.slug,
+        name:        r.badges.name,
+        description: r.badges.description,
+        rarity:      r.badges.rarity || 'common',
+        awarded_at:  r.awarded_at,
+      }));
+    _userBadgesFetchAt = Date.now();
+    return USER_BADGES;
+  } catch (e) {
+    console.warn('[Muses] fetchUserBadges threw:', e.message || e);
+    return null;
+  }
+}
+
+function renderBadgesStrip() {
+  const host = document.getElementById('lb-badges-strip');
+  if (!host) return;
+  if (!USER_BADGES || USER_BADGES.length === 0) { host.innerHTML = ''; return; }
+
+  // Rarity determines chip accent color. Sort rarity-desc so the flashy
+  // ones render first (legendary → rare → uncommon → common).
+  const rarityRank = { legendary: 4, rare: 3, uncommon: 2, common: 1 };
+  const sorted = [...USER_BADGES].sort((a, b) =>
+    (rarityRank[b.rarity] || 0) - (rarityRank[a.rarity] || 0)
+  );
+
+  const chips = sorted.map(b => {
+    const title = `${b.name} — ${b.description}`;
+    return `<div class="badge-chip badge-${b.rarity}" title="${escapeHTML(title)}">
+      <div class="bc-dot"></div>
+      <div class="bc-name">${escapeHTML(b.name)}</div>
+    </div>`;
+  }).join('');
+
+  host.innerHTML = `
+    <div class="badges-strip">
+      <div class="bs-label">Your badges <span class="bs-count">${USER_BADGES.length}</span></div>
+      <div class="bs-chips">${chips}</div>
     </div>
   `;
 }
@@ -18484,6 +18612,13 @@ function renderLeaderboard() {
   // the fresh opponent number.
   try { renderMatchupCard(); } catch (_e) { /* non-fatal */ }
   fetchActiveMatchup().then(() => { try { renderMatchupCard(); } catch (_e) {} });
+
+  // Phase 2 — paint the badges strip. Fetch-and-repaint follows the
+  // same TTL-cached pattern as the matchup card. Hides itself when the
+  // user has zero badges (rare, since early-adopter + email-subscriber
+  // are backfilled to everyone).
+  try { renderBadgesStrip(); } catch (_e) { /* non-fatal */ }
+  fetchUserBadges().then(() => { try { renderBadgesStrip(); } catch (_e) {} });
 
   // M14.1 — self-heal path. If the user is signed in but has never been
   // upserted (old account, trade happened while upsertLeaderboardRow
