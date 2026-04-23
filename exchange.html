@@ -5076,6 +5076,87 @@
     100% { box-shadow: 0 0 0 0   rgba(185,143,255,0);    }
   }
 
+  /* MATCHUP CARD — head-to-head weekly matchup */
+  .matchup-card {
+    background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(139,92,246,0.02));
+    border: 1px solid rgba(139,92,246,0.22);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin: 0 0 18px;
+  }
+  .matchup-card.matchup-bye { padding: 14px 20px; }
+  .matchup-card .mc-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px; margin-bottom: 14px;
+  }
+  .matchup-card .mc-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .matchup-card .mc-tail {
+    font-size: 12px; color: var(--text-dim);
+  }
+  .matchup-card .mc-vs {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 14px;
+    align-items: center;
+  }
+  .matchup-card .mc-side {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    min-width: 0;
+  }
+  .matchup-card .mc-side.winner {
+    border-color: rgba(110,255,184,0.45);
+    background: linear-gradient(135deg, rgba(110,255,184,0.10), rgba(110,255,184,0.02));
+  }
+  .matchup-card .mc-name {
+    font-size: 15px; font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .matchup-card .mc-sub {
+    font-size: 11px; color: var(--text-dim);
+    margin-top: 2px; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .matchup-card .mc-return {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px; font-weight: 700;
+    margin-top: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .matchup-card .mc-return.up   { color: #6effb8; }
+  .matchup-card .mc-return.down { color: #ff7a7a; }
+  .matchup-card .mc-vs-sep {
+    font-size: 12px; color: var(--text-faint);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .matchup-card .mc-foot {
+    margin-top: 12px;
+    font-size: 13px; color: var(--text-dim);
+    text-align: center;
+  }
+  .matchup-card .mc-result {
+    font-size: 13px; font-weight: 700;
+    padding: 3px 10px; border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .matchup-card .mc-result.won  { background: rgba(110,255,184,0.15); color: #6effb8; }
+  .matchup-card .mc-result.lost { background: rgba(255,122,122,0.15); color: #ff7a7a; }
+  .matchup-card .mc-result.draw { background: rgba(255,255,255,0.08); color: var(--text-dim); }
+  .matchup-card .mc-note {
+    font-size: 13px; color: var(--text-dim); line-height: 1.5;
+    margin-top: 6px;
+  }
+  @media (max-width: 600px) {
+    .matchup-card .mc-vs { grid-template-columns: 1fr; }
+    .matchup-card .mc-vs-sep { text-align: center; padding: 4px 0; }
+  }
+
   /* ARTIST DETAIL */
   .artist-hero {
     display: flex;
@@ -10108,6 +10189,9 @@
         <!-- Phase 0 — season countdown banner. Painted by renderSeasonBanner(). -->
         <div id="lb-season-banner"></div>
 
+        <!-- Phase 1 — head-to-head matchup card. Painted by renderMatchupCard(). -->
+        <div id="lb-matchup-card"></div>
+
         <!-- Leaderboard will populate with real users once trading opens -->
 
         <div class="card">
@@ -12000,6 +12084,189 @@ async function ensureSeasonReady() {
     }
   })();
   return _seasonReadyPromise;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// MATCHUPS — head-to-head weekly matchups (migration 009)
+// ══════════════════════════════════════════════════════════════════════
+// Every Monday, pair_weekly_matchups() cron inserts one row into
+// public.matchups for each active trader with an opponent of similar
+// ELO rating. The card below shows the live delta: my return-% this
+// week (vs. the Monday baseline) against the opponent's return-%.
+//
+// Scoring is continuous — updated on every leaderboard render — because
+// the underlying portfolio_value values in public.leaderboard tick
+// with every price refresh. The final Friday-close delta is authoritative
+// and written by resolve_weekly_matchups() to matchups.user_{a,b}_final.
+// ══════════════════════════════════════════════════════════════════════
+let ACTIVE_MATCHUP = null;         // { id, week_end, my_side, opp_id, my_baseline, opp_baseline, status, winner_user_id }
+let _matchupFetchAt = 0;
+const MATCHUP_TTL_MS = 30_000;
+
+async function fetchActiveMatchup(force) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return null;
+  if (!force && ACTIVE_MATCHUP && (Date.now() - _matchupFetchAt) < MATCHUP_TTL_MS) {
+    return ACTIVE_MATCHUP;
+  }
+
+  try {
+    // Most recent matchup involving this user, active or resolved-this-week.
+    // Ordered by week_end desc so if the user somehow has old rows, we pick
+    // the latest. status='active' during the week; flips to 'resolved' when
+    // the cron runs Friday 18:05 UTC.
+    const { data, error } = await window.SUPABASE
+      .from('matchups')
+      .select('id, week_end, user_a, user_b, user_a_baseline, user_b_baseline, user_a_final, user_b_final, winner_user_id, status')
+      .or(`user_a.eq.${window.MUSE_USER.id},user_b.eq.${window.MUSE_USER.id}`)
+      .order('week_end', { ascending: false })
+      .limit(1);
+    if (error) {
+      console.warn('[Muses] Matchup fetch failed:', error.message || error);
+      return null;
+    }
+
+    const row = Array.isArray(data) && data[0];
+    if (!row) {
+      ACTIVE_MATCHUP = null;
+      _matchupFetchAt = Date.now();
+      return null;
+    }
+
+    // Only surface a resolved match for one week (so "You won!" banner
+    // doesn't stick around forever). Active matches always surface.
+    const weekEndMs = new Date(row.week_end + 'T00:00:00Z').getTime();
+    const aWeekAgo  = Date.now() - 7 * 86400000;
+    if (row.status === 'resolved' && weekEndMs < aWeekAgo) {
+      ACTIVE_MATCHUP = null;
+      _matchupFetchAt = Date.now();
+      return null;
+    }
+
+    const iAmA = row.user_a === window.MUSE_USER.id;
+    ACTIVE_MATCHUP = {
+      id:              row.id,
+      week_end:        row.week_end,
+      my_side:         iAmA ? 'a' : 'b',
+      opp_id:          iAmA ? row.user_b : row.user_a,
+      my_baseline:     +(iAmA ? row.user_a_baseline : row.user_b_baseline),
+      opp_baseline:    +(iAmA ? row.user_b_baseline : row.user_a_baseline),
+      my_final:        iAmA ? row.user_a_final : row.user_b_final,
+      opp_final:       iAmA ? row.user_b_final : row.user_a_final,
+      status:          row.status,
+      winner_user_id:  row.winner_user_id,
+    };
+    _matchupFetchAt = Date.now();
+    return ACTIVE_MATCHUP;
+  } catch (e) {
+    console.warn('[Muses] fetchActiveMatchup failed:', e.message || e);
+    return null;
+  }
+}
+
+// Find the opponent's display_name + current portfolio_value from the
+// cached leaderboard rows (already fetched for the main leaderboard
+// view, so this is free after the first render).
+function _matchupOpponentInfo() {
+  const rows = LEADERBOARD_ROWS || [];
+  const row = rows.find(r => r && r.user_id === (ACTIVE_MATCHUP && ACTIVE_MATCHUP.opp_id));
+  return {
+    name:           (row && row.display_name && row.display_name.trim()) || 'trader',
+    portfolioValue: row ? +row.portfolio_value : null,
+  };
+}
+
+function renderMatchupCard() {
+  const host = document.getElementById('lb-matchup-card');
+  if (!host) return;
+  if (!ACTIVE_MATCHUP) { host.innerHTML = ''; return; }
+
+  const isBye = ACTIVE_MATCHUP.opp_id === window.MUSE_USER.id;
+  if (isBye) {
+    // Odd-count weeks — user gets a pass, no opponent.
+    host.innerHTML = `
+      <div class="matchup-card matchup-bye">
+        <div class="mc-row">
+          <div class="mc-label">This Week's Matchup</div>
+          <div class="mc-note">Bye week — no opponent this round. Trade anyway — your P&amp;L still counts toward the season leaderboard.</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // My live return-% this week. Use live STATE for me (instant), and
+  // leaderboard row for opponent (30-min TTL is fine).
+  const myLivePV  = (typeof computeCurrentPortfolioValue === 'function')
+    ? computeCurrentPortfolioValue()
+    : (window.MUSE_USER && LEADERBOARD_ROWS && (LEADERBOARD_ROWS.find(r => r.user_id === window.MUSE_USER.id) || {}).portfolio_value) || ACTIVE_MATCHUP.my_baseline;
+  const myReturn  = ACTIVE_MATCHUP.my_baseline > 0
+    ? ((myLivePV - ACTIVE_MATCHUP.my_baseline) / ACTIVE_MATCHUP.my_baseline) * 100
+    : 0;
+
+  const opp = _matchupOpponentInfo();
+  const oppPV = opp.portfolioValue != null ? opp.portfolioValue : ACTIVE_MATCHUP.opp_baseline;
+  const oppReturn = ACTIVE_MATCHUP.opp_baseline > 0
+    ? ((oppPV - ACTIVE_MATCHUP.opp_baseline) / ACTIVE_MATCHUP.opp_baseline) * 100
+    : 0;
+
+  const resolved = ACTIVE_MATCHUP.status === 'resolved';
+  const won      = resolved && ACTIVE_MATCHUP.winner_user_id === window.MUSE_USER.id;
+  const drew     = resolved && !ACTIVE_MATCHUP.winner_user_id;
+  const lost     = resolved && !won && !drew;
+
+  // Countdown to Friday close for active matches.
+  const endMs   = new Date(ACTIVE_MATCHUP.week_end + 'T18:00:00Z').getTime();
+  const msLeft  = endMs - Date.now();
+  const daysLeft = Math.max(0, Math.ceil(msLeft / 86400000));
+  let tail;
+  if (resolved) {
+    tail = won  ? '<span class="mc-result won">You won</span>'
+         : lost ? '<span class="mc-result lost">You lost</span>'
+         : drew ? '<span class="mc-result draw">Draw</span>'
+         : '';
+  } else {
+    tail = daysLeft <= 0 ? 'Closing now' :
+           daysLeft === 1 ? 'Closes tomorrow' :
+           `Closes in ${daysLeft} days`;
+  }
+
+  // Leading margin for the active state.
+  const diff = myReturn - oppReturn;
+  const leadLabel = resolved
+    ? ''
+    : Math.abs(diff) < 0.01
+      ? 'Dead even'
+      : (diff > 0 ? `Leading by ${diff.toFixed(2)}%` : `Down by ${Math.abs(diff).toFixed(2)}%`);
+
+  const myName  = ((STATE.profile && STATE.profile.handle) || (window.MUSE_USER && window.MUSE_USER.email || '').split('@')[0] || 'you').slice(0, 40);
+  const oppName = (opp.name || 'opponent').slice(0, 40);
+  const myRetCls  = myReturn  >= 0 ? 'up' : 'down';
+  const oppRetCls = oppReturn >= 0 ? 'up' : 'down';
+  const myRetStr  = (myReturn  >= 0 ? '+' : '') + myReturn.toFixed(2)  + '%';
+  const oppRetStr = (oppReturn >= 0 ? '+' : '') + oppReturn.toFixed(2) + '%';
+
+  host.innerHTML = `
+    <div class="matchup-card">
+      <div class="mc-head">
+        <div class="mc-label">This Week's Matchup</div>
+        <div class="mc-tail">${tail}</div>
+      </div>
+      <div class="mc-vs">
+        <div class="mc-side ${won ? 'winner' : ''}">
+          <div class="mc-name">${escapeHTML(myName)}</div>
+          <div class="mc-sub">you</div>
+          <div class="mc-return ${myRetCls}">${myRetStr}</div>
+        </div>
+        <div class="mc-vs-sep">vs</div>
+        <div class="mc-side ${lost ? 'winner' : ''}">
+          <div class="mc-name">${escapeHTML(oppName)}</div>
+          <div class="mc-sub">opponent</div>
+          <div class="mc-return ${oppRetCls}">${oppRetStr}</div>
+        </div>
+      </div>
+      ${leadLabel ? `<div class="mc-foot">${leadLabel}</div>` : ''}
+    </div>
+  `;
 }
 
 // Season-banner renderer — called from renderLeaderboard. Outputs a
@@ -18210,6 +18477,13 @@ function renderLeaderboard() {
   // enough to call on every leaderboard render.
   try { renderSeasonBanner(); } catch (_e) { /* non-fatal */ }
   ensureSeasonReady().then(() => { try { renderSeasonBanner(); } catch (_e) {} });
+
+  // Phase 1 — paint the matchup card. TTL-cached; repaint cheap. The
+  // opponent's live portfolio value comes from LEADERBOARD_ROWS, so
+  // after the board fetches this turn, we also re-render the card with
+  // the fresh opponent number.
+  try { renderMatchupCard(); } catch (_e) { /* non-fatal */ }
+  fetchActiveMatchup().then(() => { try { renderMatchupCard(); } catch (_e) {} });
 
   // M14.1 — self-heal path. If the user is signed in but has never been
   // upserted (old account, trade happened while upsertLeaderboardRow
