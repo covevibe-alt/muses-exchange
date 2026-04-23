@@ -22930,7 +22930,14 @@ function tickPrices() {
   });
 
   // Refresh artist detail price if open
-  if (STATE.selected && !document.getElementById('view-artist').classList.contains('hidden')) {
+  // Null-guard the getElementById: the view section normally exists in the
+  // static markup, but during view transitions / hot reloads / page unloads
+  // a single tick can fire while the element is momentarily null. Sentry
+  // was flagging this as "Cannot read properties of null (reading
+  // 'classList')" on /leaderboard (MUSES-EXCHANGE-1). One null tick per
+  // navigation is harmless; don't crash.
+  const _viewArtistEl = document.getElementById('view-artist');
+  if (STATE.selected && _viewArtistEl && !_viewArtistEl.classList.contains('hidden')) {
     const a = STATE.selected;
     const prev = priceBefore[a.ticker];
     const intPart = Math.floor(a.price);
