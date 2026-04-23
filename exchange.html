@@ -5211,16 +5211,14 @@
   .badge-chip.badge-legendary { border-color: rgba(251,191,36,0.45); background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,191,36,0.02)); }
 
   /* Custom hover tooltip — renders above the chip with an arrow.
-     Right-anchored (extends leftward from chip's right edge) so chips
-     near the right side don't get clipped by the sidebar. For chips at
-     the very left edge of the content area, the tooltip could extend
-     past the left edge in extreme cases — if that becomes a problem
-     we'll add a JS-driven dynamic anchor later. */
+     Anchor is set dynamically by setBadgeTooltipAnchor() on hover/focus:
+     chips in the left third of the viewport get .tip-right (tooltip
+     extends rightward, away from the left sidebar); chips in the right
+     third get .tip-left (extends leftward); everything else centers.
+     Default styles target the center variant. */
   .badge-chip .bc-tip {
     position: absolute;
     bottom: calc(100% + 10px);
-    right: -8px;
-    transform: translateY(6px);
     min-width: 200px;
     max-width: 280px;
     padding: 10px 12px;
@@ -5234,12 +5232,16 @@
     z-index: 100;
     text-align: left;
     white-space: normal;
+    /* Default (center-anchor). .tip-left / .tip-right override below. */
+    left: 50%;
+    transform: translateX(-50%) translateY(6px);
   }
   .badge-chip .bc-tip::after {
     content: "";
     position: absolute;
     top: 100%;
-    right: 22px;
+    left: 50%;
+    margin-left: -6px;
     border: 6px solid transparent;
     border-top-color: rgba(139,92,246,0.35);
   }
@@ -5247,6 +5249,41 @@
   .badge-chip:focus-visible .bc-tip,
   .badge-chip:focus .bc-tip {
     opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Left-anchored (extends rightward) — used for chips near the left
+     edge of the viewport, where a center-anchored tooltip would collide
+     with the left sidebar. */
+  .badge-chip.tip-right .bc-tip {
+    left: -8px;
+    transform: translateY(6px);
+  }
+  .badge-chip.tip-right .bc-tip::after {
+    left: 22px;
+    margin-left: 0;
+  }
+  .badge-chip.tip-right:hover .bc-tip,
+  .badge-chip.tip-right:focus-visible .bc-tip,
+  .badge-chip.tip-right:focus .bc-tip {
+    transform: translateY(0);
+  }
+
+  /* Right-anchored (extends leftward) — used for chips near the right
+     edge of the viewport. */
+  .badge-chip.tip-left .bc-tip {
+    left: auto;
+    right: -8px;
+    transform: translateY(6px);
+  }
+  .badge-chip.tip-left .bc-tip::after {
+    left: auto;
+    right: 22px;
+    margin-left: 0;
+  }
+  .badge-chip.tip-left:hover .bc-tip,
+  .badge-chip.tip-left:focus-visible .bc-tip,
+  .badge-chip.tip-left:focus .bc-tip {
     transform: translateY(0);
   }
   .badge-chip .bc-tip-title {
@@ -12435,6 +12472,44 @@ async function fetchUserBadges(force) {
     console.warn('[Muses] fetchUserBadges threw:', e.message || e);
     return null;
   }
+}
+
+// Decide which side the tooltip extends from, based on the chip's
+// position relative to the viewport. Called on hover/focus so even
+// after window resizes we pick the right anchor the moment the user
+// tries to show the tooltip.
+//
+//   Chip in left 33% of viewport → .tip-right (extends rightward,
+//     clears the left sidebar)
+//   Chip in right 33% of viewport → .tip-left (extends leftward,
+//     clears the right edge)
+//   Otherwise → center-anchored (CSS default)
+function setBadgeTooltipAnchor(chipEl) {
+  if (!chipEl || !chipEl.getBoundingClientRect) return;
+  const rect = chipEl.getBoundingClientRect();
+  const vw = window.innerWidth;
+  chipEl.classList.remove('tip-left', 'tip-right');
+  if (rect.left < vw * 0.34) {
+    chipEl.classList.add('tip-right');
+  } else if (rect.right > vw * 0.66) {
+    chipEl.classList.add('tip-left');
+  }
+  // else: no class → center-anchor default
+}
+
+// Event delegation for badge chips. Bound once at module scope — the
+// badges-strip re-renders don't need to re-bind. Uses the capture phase
+// because mouseenter/focus don't bubble.
+if (!window.__badgeTooltipBound) {
+  window.__badgeTooltipBound = true;
+  ['mouseenter', 'focus'].forEach(ev => {
+    document.addEventListener(ev, (e) => {
+      const t = e.target;
+      if (t && t.classList && t.classList.contains('badge-chip')) {
+        setBadgeTooltipAnchor(t);
+      }
+    }, true);
+  });
 }
 
 function renderBadgesStrip() {
