@@ -5046,6 +5046,36 @@
   }
   .section-head .sub { color: var(--text-dim); font-size: 13px; margin-top: 4px; }
 
+  /* SEASON BANNER — compact countdown above the leaderboard */
+  .season-banner {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 14px;
+    margin: 6px 0 14px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(185,143,255,0.12), rgba(185,143,255,0.04));
+    border: 1px solid rgba(185,143,255,0.24);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+  .season-banner .sb-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #b98fff;
+    box-shadow: 0 0 0 0 rgba(185,143,255,0.7);
+    animation: season-pulse 2s infinite;
+    flex-shrink: 0;
+  }
+  .season-banner .sb-name { font-weight: 600; }
+  .season-banner .sb-sep  { color: var(--text-dim); }
+  .season-banner .sb-count { color: var(--text-dim); }
+  @keyframes season-pulse {
+    0%   { box-shadow: 0 0 0 0   rgba(185,143,255,0.55); }
+    70%  { box-shadow: 0 0 0 8px rgba(185,143,255,0);    }
+    100% { box-shadow: 0 0 0 0   rgba(185,143,255,0);    }
+  }
+
   /* ARTIST DETAIL */
   .artist-hero {
     display: flex;
@@ -10075,6 +10105,9 @@
           </div>
         </div>
 
+        <!-- Phase 0 — season countdown banner. Painted by renderSeasonBanner(). -->
+        <div id="lb-season-banner"></div>
+
         <!-- Leaderboard will populate with real users once trading opens -->
 
         <div class="card">
@@ -11856,6 +11889,144 @@ document.addEventListener('visibilitychange', () => {
 });
 window.addEventListener('focus', () => refetchPortfolioIfStale());
 
+// ══════════════════════════════════════════════════════════════════════
+// SEASONS — per-season competitive windows (migrations 006 + 007)
+// ══════════════════════════════════════════════════════════════════════
+// Option C semantics: the portfolio persists forever. Each season has
+// its own leaderboard measuring return-% since the user *joined* that
+// particular season. A user who first trades in week 2 of Season 4 is
+// scored on their growth from their join-moment baseline — they don't
+// arrive permanently behind everyone who started earlier.
+//
+// Wire-up:
+//   1. ensureSeasonReady() — idempotently fetches the active season,
+//      looks up (or inserts) this user's participation row with their
+//      current portfolio value as baseline. Resolves once, caches in
+//      ACTIVE_SEASON + SEASON_BASELINE module-level state.
+//   2. upsertLeaderboardRow() awaits it, then includes season_return_pct
+//      + current_season_id on every upsert.
+//   3. renderSeasonBanner() paints a countdown strip above the board.
+// ══════════════════════════════════════════════════════════════════════
+let ACTIVE_SEASON = null;          // { id, slug, name, starts_at, ends_at } or null
+let SEASON_BASELINE = null;        // numeric — this user's portfolio_value at join time
+let _seasonReadyPromise = null;    // single-flight guard
+
+function computeCurrentPortfolioValue() {
+  let v = STATE.cash || 0;
+  Object.keys(STATE.holdings || {}).forEach(t => {
+    const a = ARTISTS.find(x => x.ticker === t);
+    const h = STATE.holdings[t];
+    if (a && h && h.shares) v += h.shares * a.price;
+  });
+  return v;
+}
+
+async function ensureSeasonReady() {
+  if (_seasonReadyPromise) return _seasonReadyPromise;
+
+  _seasonReadyPromise = (async () => {
+    try {
+      if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return null;
+
+      // 1. Fetch the single active season. Partial unique index on status
+      // enforces at most one, so limit(1) is safe and deterministic.
+      const { data: seasons, error: sErr } = await window.SUPABASE
+        .from('seasons')
+        .select('id, slug, name, starts_at, ends_at')
+        .eq('status', 'active')
+        .limit(1);
+      if (sErr || !Array.isArray(seasons) || seasons.length === 0) return null;
+      ACTIVE_SEASON = seasons[0];
+
+      // 2. Look up this user's participation row. RLS scopes to own row,
+      // so a missing row means they haven't joined yet (not that one exists
+      // but is hidden).
+      const { data: parts, error: pErr } = await window.SUPABASE
+        .from('season_participations')
+        .select('baseline_portfolio_value')
+        .eq('season_id', ACTIVE_SEASON.id)
+        .eq('user_id', window.MUSE_USER.id)
+        .limit(1);
+      if (pErr) {
+        console.warn('[Muses] Season participation lookup failed:', pErr.message || pErr);
+        return null;
+      }
+
+      if (Array.isArray(parts) && parts.length > 0) {
+        SEASON_BASELINE = +parts[0].baseline_portfolio_value;
+        return { season: ACTIVE_SEASON, baseline: SEASON_BASELINE };
+      }
+
+      // 3. First time this user sees this season — write their baseline.
+      // A baseline of 0 is invalid (check constraint rejects it); guard
+      // rather than write garbage.
+      const currentValue = computeCurrentPortfolioValue();
+      if (!currentValue || currentValue <= 0) return null;
+
+      const baseline = +currentValue.toFixed(2);
+      const { error: iErr } = await window.SUPABASE
+        .from('season_participations')
+        .insert({
+          season_id: ACTIVE_SEASON.id,
+          user_id: window.MUSE_USER.id,
+          baseline_portfolio_value: baseline,
+        });
+
+      // A unique-violation here means another tab/device already joined
+      // this season in the meantime. That's benign — fetch the existing
+      // baseline so we're consistent across tabs.
+      if (iErr) {
+        if (iErr.code === '23505') {
+          const { data: refetch } = await window.SUPABASE
+            .from('season_participations')
+            .select('baseline_portfolio_value')
+            .eq('season_id', ACTIVE_SEASON.id)
+            .eq('user_id', window.MUSE_USER.id)
+            .limit(1);
+          if (refetch && refetch.length > 0) {
+            SEASON_BASELINE = +refetch[0].baseline_portfolio_value;
+            return { season: ACTIVE_SEASON, baseline: SEASON_BASELINE };
+          }
+        }
+        console.warn('[Muses] Season participation insert failed:', iErr.message || iErr);
+        return null;
+      }
+
+      SEASON_BASELINE = baseline;
+      return { season: ACTIVE_SEASON, baseline: SEASON_BASELINE };
+    } catch (e) {
+      console.warn('[Muses] ensureSeasonReady failed:', e.message || e);
+      return null;
+    }
+  })();
+  return _seasonReadyPromise;
+}
+
+// Season-banner renderer — called from renderLeaderboard. Outputs a
+// compact countdown strip: "Season 1 — Spring 2026 · ends in 68 days".
+function renderSeasonBanner() {
+  const host = document.getElementById('lb-season-banner');
+  if (!host) return;
+  if (!ACTIVE_SEASON) { host.innerHTML = ''; return; }
+
+  const endsAt = new Date(ACTIVE_SEASON.ends_at);
+  const msLeft = endsAt.getTime() - Date.now();
+  const daysLeft = Math.max(0, Math.ceil(msLeft / 86400000));
+  const countdown = daysLeft <= 0
+    ? 'Final day'
+    : (daysLeft === 1 ? 'Ends tomorrow' : `Ends in ${daysLeft} days`);
+
+  const name = escapeHTML(ACTIVE_SEASON.name || 'Season');
+  host.innerHTML = `
+    <div class="season-banner">
+      <div class="sb-dot"></div>
+      <div class="sb-name">${name}</div>
+      <div class="sb-sep">·</div>
+      <div class="sb-count">${countdown}</div>
+    </div>
+  `;
+}
+
 // ─────────────────────────────────────────────────────────────────────
 // LEADERBOARD — public ranking table (migration 004)
 // ─────────────────────────────────────────────────────────────────────
@@ -11864,6 +12035,12 @@ window.addEventListener('focus', () => refetchPortfolioIfStale());
 // current price) so the value reflects live prices, not stale snapshots.
 async function upsertLeaderboardRow() {
   if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return;
+
+  // Resolve season context before computing so season_return_pct lands
+  // on the very first upsert (instead of being null until the second
+  // push). ensureSeasonReady is single-flight + cached, so repeated calls
+  // are effectively free.
+  try { await ensureSeasonReady(); } catch (_e) { /* graceful degrade */ }
 
   // Portfolio value = cash + Σ (shares × current price)
   let portfolioValue = STATE.cash || 0;
@@ -11874,6 +12051,14 @@ async function upsertLeaderboardRow() {
   });
   const STARTING_BALANCE = 10000;
   const returnPct = ((portfolioValue - STARTING_BALANCE) / STARTING_BALANCE) * 100;
+
+  // Season return-% — null if we couldn't resolve the season or baseline.
+  // Server-side check constraint guarantees baseline > 0 if present, so
+  // the division is safe whenever SEASON_BASELINE is non-null.
+  let seasonReturnPct = null;
+  if (ACTIVE_SEASON && SEASON_BASELINE && SEASON_BASELINE > 0) {
+    seasonReturnPct = ((portfolioValue - SEASON_BASELINE) / SEASON_BASELINE) * 100;
+  }
 
   // Display name: user-set handle → email-prefix → generic fallback.
   // Length-capped so a malicious client can't stuff 10KB into the leaderboard.
@@ -11899,6 +12084,13 @@ async function upsertLeaderboardRow() {
       // M16.24 — when opted out OR portfolio empty, wipe any prior lineup.
       top_holdings: publicLineup,           // jsonb: array or null
       show_lineup: !!optedIn,               // boolean: explicit opt-in flag
+      // Phase 0 (seasons) — denormalized onto the leaderboard row so a
+      // per-season sort is a single-table query. Both fields fall back
+      // to null if ensureSeasonReady hasn't resolved yet; null sorts
+      // last by the partial index so the user simply doesn't appear on
+      // the season board until their baseline is recorded.
+      season_return_pct: seasonReturnPct !== null ? +seasonReturnPct.toFixed(2) : null,
+      current_season_id: ACTIVE_SEASON ? ACTIVE_SEASON.id : null,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' });
   if (error) throw error;
@@ -18011,6 +18203,13 @@ function renderLeaderboard() {
   const lb = getLbState('_global');
   const host = document.getElementById('lb-list');
   if (!host) return;
+
+  // Phase 0 — paint the season banner. ensureSeasonReady hydrates
+  // ACTIVE_SEASON asynchronously; first visit may render with an empty
+  // banner slot, then re-paint as soon as the season resolves. Cheap
+  // enough to call on every leaderboard render.
+  try { renderSeasonBanner(); } catch (_e) { /* non-fatal */ }
+  ensureSeasonReady().then(() => { try { renderSeasonBanner(); } catch (_e) {} });
 
   // M14.1 — self-heal path. If the user is signed in but has never been
   // upserted (old account, trade happened while upsertLeaderboardRow
