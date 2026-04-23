@@ -14811,17 +14811,32 @@ function starHTML(ticker, variant) {
 function renderMarketStats() {
   // Read from centralized cache (refreshed every tick)
   const M = MARKET_STATS_CACHE;
-  document.getElementById('ms-mcap').textContent = fmtBigEuro(M.totalMcap);
+
+  // Early-return when the market tiles aren't in the DOM. They live
+  // inside #view-markets, so on other routes (e.g. /leaderboard) a
+  // post-boot loadArtistImages → renderMarkets → renderMarketStats
+  // chain would throw "Cannot set properties of null (setting
+  // 'textContent')". Sentry MUSES-EXCHANGE-2.
+  const mcEl = document.getElementById('ms-mcap');
+  if (!mcEl) return;
+  mcEl.textContent = fmtBigEuro(M.totalMcap);
   const mcd = document.getElementById('ms-mcap-d');
-  mcd.textContent = fmtPct24(M.avgChange);
-  mcd.className = 'd ' + upDownClass(M.avgChange);
-  document.getElementById('ms-vol').textContent = fmtBigNum(M.totalListeners);
-  document.getElementById('ms-count').textContent = ARTISTS.length;
+  if (mcd) {
+    mcd.textContent = fmtPct24(M.avgChange);
+    mcd.className = 'd ' + upDownClass(M.avgChange);
+  }
+  const volEl = document.getElementById('ms-vol');
+  if (volEl) volEl.textContent = fmtBigNum(M.totalListeners);
+  const countEl = document.getElementById('ms-count');
+  if (countEl) countEl.textContent = ARTISTS.length;
   if (M.topMover) {
-    document.getElementById('ms-top').textContent = M.topMover.ticker;
+    const topEl = document.getElementById('ms-top');
+    if (topEl) topEl.textContent = M.topMover.ticker;
     const tcd = document.getElementById('ms-top-d');
-    tcd.textContent = M.topMover.name + ' · ' + fmtPct(M.topMover.change24h);
-    tcd.className = 'd ' + upDownClass(M.topMover.change24h);
+    if (tcd) {
+      tcd.textContent = M.topMover.name + ' · ' + fmtPct(M.topMover.change24h);
+      tcd.className = 'd ' + upDownClass(M.topMover.change24h);
+    }
   }
   // MVIX tile is dormant during the solo paper-trading phase — with no
   // organic order flow the score pins at ~1 and reads as broken. Keep the
