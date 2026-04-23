@@ -5178,10 +5178,13 @@
     font-size: 11px;
     color: var(--text);
   }
+  /* overflow:visible so .bc-tip popovers can escape the strip bounds */
   .badges-strip .bs-chips {
     display: flex; flex-wrap: wrap; gap: 6px;
+    overflow: visible;
   }
   .badge-chip {
+    position: relative;
     display: inline-flex; align-items: center; gap: 6px;
     padding: 6px 11px;
     border-radius: 999px;
@@ -5192,8 +5195,10 @@
     color: var(--text);
     cursor: default;
     transition: transform 0.15s ease, border-color 0.15s ease;
+    outline: none;
   }
   .badge-chip:hover { transform: translateY(-1px); }
+  .badge-chip:focus-visible { box-shadow: 0 0 0 2px rgba(185,143,255,0.45); }
   .badge-chip .bc-dot {
     width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
   }
@@ -5204,6 +5209,75 @@
   .badge-chip.badge-uncommon  { border-color: rgba(110,255,184,0.28); }
   .badge-chip.badge-rare      { border-color: rgba(96,165,250,0.30); }
   .badge-chip.badge-legendary { border-color: rgba(251,191,36,0.45); background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,191,36,0.02)); }
+
+  /* Custom hover tooltip — renders above the chip with an arrow. */
+  .badge-chip .bc-tip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    min-width: 200px;
+    max-width: 280px;
+    padding: 10px 12px;
+    background: #0d0a14;
+    border: 1px solid rgba(139,92,246,0.35);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 100;
+    text-align: left;
+    white-space: normal;
+  }
+  .badge-chip .bc-tip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border: 6px solid transparent;
+    border-top-color: rgba(139,92,246,0.35);
+  }
+  .badge-chip:hover .bc-tip,
+  .badge-chip:focus-visible .bc-tip,
+  .badge-chip:focus .bc-tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .badge-chip .bc-tip-title {
+    font-size: 12px; font-weight: 700; color: #fff;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .badge-chip .bc-tip-rarity {
+    font-size: 10px; font-weight: 500;
+    padding: 1px 6px;
+    border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+  }
+  .badge-chip.badge-uncommon  .bc-tip-rarity { background: rgba(110,255,184,0.12); color: #6effb8; }
+  .badge-chip.badge-rare      .bc-tip-rarity { background: rgba(96,165,250,0.14);  color: #60a5fa; }
+  .badge-chip.badge-legendary .bc-tip-rarity { background: rgba(251,191,36,0.16);  color: #fbbf24; }
+  .badge-chip .bc-tip-desc {
+    font-size: 12px; font-weight: 400; color: #c8c4d0;
+    line-height: 1.45;
+  }
+  /* On very narrow viewports, left-align the tooltip to the chip so it
+     doesn't get clipped by the viewport edge. */
+  @media (max-width: 480px) {
+    .badge-chip .bc-tip {
+      left: 0; transform: translateY(6px);
+    }
+    .badge-chip .bc-tip::after { left: 16px; margin-left: 0; }
+    .badge-chip:hover .bc-tip,
+    .badge-chip:focus-visible .bc-tip,
+    .badge-chip:focus .bc-tip {
+      transform: translateY(0);
+    }
+  }
 
   /* ARTIST DETAIL */
   .artist-hero {
@@ -12382,10 +12456,17 @@ function renderBadgesStrip() {
   );
 
   const chips = sorted.map(b => {
-    const title = `${b.name} — ${b.description}`;
-    return `<div class="badge-chip badge-${b.rarity}" title="${escapeHTML(title)}">
+    // Custom CSS hover tooltip instead of a native `title` attribute —
+    // native tooltips don't show on mobile, have a 500ms+ browser delay,
+    // and can't be styled. The .bc-tip child renders on hover/focus.
+    const rarityLabel = b.rarity.charAt(0).toUpperCase() + b.rarity.slice(1);
+    return `<div class="badge-chip badge-${b.rarity}" tabindex="0">
       <div class="bc-dot"></div>
       <div class="bc-name">${escapeHTML(b.name)}</div>
+      <div class="bc-tip">
+        <div class="bc-tip-title">${escapeHTML(b.name)} <span class="bc-tip-rarity">${escapeHTML(rarityLabel)}</span></div>
+        <div class="bc-tip-desc">${escapeHTML(b.description)}</div>
+      </div>
     </div>`;
   }).join('');
 
