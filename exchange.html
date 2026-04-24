@@ -5587,6 +5587,147 @@
     }
     .ipo-countdown { text-align: left; }
   }
+
+  /* PREDICTION MARKETS — leaderboard card + full modal */
+  .pred-card {
+    background: linear-gradient(135deg, rgba(96,165,250,0.08), rgba(96,165,250,0.02));
+    border: 1px solid rgba(96,165,250,0.22);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin: 0 0 18px;
+  }
+  .pred-card-head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .pred-card-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .pred-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 18px; padding: 0 6px;
+    background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.28);
+    border-radius: 999px; font-size: 11px; color: #60a5fa;
+    letter-spacing: normal; text-transform: none;
+  }
+  .pred-card-sub {
+    font-size: 12px; color: var(--text-dim); line-height: 1.5;
+  }
+
+  /* Predictions modal */
+  .pred-modal { max-width: 640px; }
+  .pred-modal-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .pred-balance {
+    background: var(--card-2); border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    text-align: right;
+    min-width: 140px;
+  }
+  .pred-balance-label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .pred-balance-value {
+    font-size: 18px; font-weight: 700;
+    color: #60a5fa;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .pred-markets {
+    display: flex; flex-direction: column; gap: 10px;
+    max-height: 480px; overflow-y: auto;
+    padding-right: 2px;
+  }
+  .pred-market {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .pred-market-q {
+    font-size: 14px; font-weight: 600; color: #fff;
+    line-height: 1.4;
+  }
+  .pred-market-meta {
+    font-size: 11px; color: var(--text-dim);
+    margin-top: 4px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .pred-odds {
+    margin: 12px 0 10px;
+  }
+  .pred-odds-bar {
+    display: flex; height: 28px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--border);
+  }
+  .pred-odds-yes, .pred-odds-no {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    color: #fff;
+    transition: width 0.3s ease;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .pred-odds-yes { background: rgba(110,255,184,0.35); color: #06251b; min-width: 20%; }
+  .pred-odds-no  { background: rgba(255,122,122,0.35); color: #3a0a0a; min-width: 20%; }
+  .pred-odds-yes span, .pred-odds-no span { padding: 0 8px; }
+
+  .pred-bet-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .pred-bet-amount {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit; font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .pred-bet-amount:focus { border-color: var(--purple); }
+  .pred-bet-yes {
+    background: rgba(110,255,184,0.15);
+    border-color: rgba(110,255,184,0.32);
+    color: #6effb8;
+  }
+  .pred-bet-yes:hover:not(:disabled) { background: rgba(110,255,184,0.25); }
+  .pred-bet-no {
+    background: rgba(255,122,122,0.12);
+    border-color: rgba(255,122,122,0.30);
+    color: #ff7a7a;
+  }
+  .pred-bet-no:hover:not(:disabled) { background: rgba(255,122,122,0.22); }
+  .pred-mybet {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .pred-mybet .up   { color: #6effb8; font-weight: 600; }
+  .pred-mybet .down { color: #ff7a7a; font-weight: 600; }
+
+  @media (max-width: 540px) {
+    .pred-bet-row { grid-template-columns: 1fr; }
+    .pred-balance { text-align: left; min-width: 0; }
+  }
   .badge-chip .bc-tip-desc {
     font-size: 12px; font-weight: 400; color: #c8c4d0;
     line-height: 1.45;
@@ -10640,6 +10781,9 @@
         <!-- Phase 3 — private leagues card. Painted by renderLeaguesCard(). -->
         <div id="lb-leagues-card"></div>
 
+        <!-- Phase 4 — prediction markets card. Painted by renderPredictionsCard(). -->
+        <div id="lb-predictions-card"></div>
+
         <!-- Leaderboard will populate with real users once trading opens -->
 
         <div class="card">
@@ -13360,7 +13504,265 @@ async function openLeagueDetailModal(leagueId) {
 }
 
 // ══════════════════════════════════════════════════════════════════════
-// IPO EVENTS — new-artist 24h listing window (migration 016)
+// PREDICTION MARKETS — parimutuel YES/NO binary markets (migration 017)
+// ══════════════════════════════════════════════════════════════════════
+// Separate $10k paper-credit balance per user (prediction_balances),
+// isolated from STATE.cash. Bets add to YES or NO pools. Winners split
+// the full pot pro-rata on resolution. Market creation + resolution is
+// admin-only (service role); betting is user-facing via place_prediction_bet().
+// ══════════════════════════════════════════════════════════════════════
+let PREDICTION_MARKETS = null;
+let PREDICTION_BALANCE = null;
+let _predictionsFetchAt = 0;
+const PREDICTIONS_TTL_MS = 30_000;
+
+async function fetchPredictionMarkets(force) {
+  if (!window.SUPABASE) return null;
+  if (!force && PREDICTION_MARKETS && (Date.now() - _predictionsFetchAt) < PREDICTIONS_TTL_MS) {
+    return PREDICTION_MARKETS;
+  }
+  try {
+    const { data, error } = await window.SUPABASE
+      .from('prediction_markets')
+      .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status')
+      .in('status', ['open', 'resolved'])
+      .order('resolves_at', { ascending: true })
+      .limit(50);
+    if (error) {
+      console.warn('[Muses] fetchPredictionMarkets failed:', error.message || error);
+      return null;
+    }
+    PREDICTION_MARKETS = (data || []);
+    _predictionsFetchAt = Date.now();
+    return PREDICTION_MARKETS;
+  } catch (e) {
+    console.warn('[Muses] fetchPredictionMarkets threw:', e.message || e);
+    return null;
+  }
+}
+
+async function fetchPredictionBalance() {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return null;
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_my_prediction_balance');
+    if (error) { console.warn('[Muses] fetchPredictionBalance failed:', error.message); return null; }
+    PREDICTION_BALANCE = typeof data === 'number' ? data : +data;
+    return PREDICTION_BALANCE;
+  } catch (e) { return null; }
+}
+
+async function placePredictionBet(marketId, side, amount) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return { error: 'not_signed_in' };
+  try {
+    const { data, error } = await window.SUPABASE.rpc('place_prediction_bet', {
+      p_market_id: marketId,
+      p_side: side,
+      p_amount: amount,
+    });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e.message || String(e) }; }
+}
+
+async function fetchMyPredictionBets() {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return [];
+  try {
+    const { data, error } = await window.SUPABASE
+      .from('prediction_bets')
+      .select('id, market_id, side, amount, placed_at, payout')
+      .eq('user_id', window.MUSE_USER.id)
+      .order('placed_at', { ascending: false })
+      .limit(25);
+    if (error) return [];
+    return data || [];
+  } catch (e) { return []; }
+}
+
+function renderPredictionsCard() {
+  const host = document.getElementById('lb-predictions-card');
+  if (!host) return;
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) { host.innerHTML = ''; return; }
+  const markets = (PREDICTION_MARKETS || []).filter(m => m.status === 'open');
+
+  host.innerHTML = `
+    <div class="pred-card">
+      <div class="pred-card-head">
+        <div class="pred-card-label">Prediction Markets ${markets.length ? `<span class="pred-count">${markets.length}</span>` : ''}</div>
+        <button class="lg-btn lg-btn-primary" data-pred-action="open">
+          ${markets.length ? 'Place a bet' : 'See markets'}
+        </button>
+      </div>
+      <div class="pred-card-sub">
+        Binary YES/NO markets paid in paper credits. Separate $10k bankroll — your stock cash is untouched.
+      </div>
+    </div>
+  `;
+  host.querySelector('[data-pred-action="open"]').onclick = () => openPredictionsModal();
+}
+
+async function openPredictionsModal() {
+  // Fetch everything needed in parallel.
+  const [markets, balance, myBets] = await Promise.all([
+    fetchPredictionMarkets(true),
+    fetchPredictionBalance(),
+    fetchMyPredictionBets(),
+  ]);
+
+  const betsByMarket = new Map();
+  (myBets || []).forEach(b => {
+    if (!betsByMarket.has(b.market_id)) betsByMarket.set(b.market_id, []);
+    betsByMarket.get(b.market_id).push(b);
+  });
+
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  wrap.innerHTML = `
+    <div class="lg-modal lg-modal-wide pred-modal">
+      <div class="pred-modal-head">
+        <div>
+          <div class="lg-modal-title">Prediction Markets</div>
+          <div class="lg-modal-sub">Parimutuel betting — winners split the full pot pro-rata.</div>
+        </div>
+        <div class="pred-balance">
+          <div class="pred-balance-label">Your balance</div>
+          <div class="pred-balance-value">${balance != null ? '$' + (+balance).toLocaleString('en-US', { maximumFractionDigits: 2 }) : '—'}</div>
+        </div>
+      </div>
+      <div class="pred-markets" id="pred-markets-host"></div>
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-primary" data-act="close">Done</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  wrap.querySelector('[data-act="close"]').onclick = close;
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+
+  const mhost = wrap.querySelector('#pred-markets-host');
+  const paintMarkets = () => {
+    if (!markets || markets.length === 0) {
+      mhost.innerHTML = '<div class="lg-empty">No prediction markets yet. Check back soon.</div>';
+      return;
+    }
+    mhost.innerHTML = markets.map(m => renderMarketCard(m, betsByMarket.get(m.id) || [])).join('');
+    // Bet-flow wiring per card.
+    mhost.querySelectorAll('[data-bet-market]').forEach(card => {
+      const marketId = parseInt(card.dataset.betMarket, 10);
+      const m = markets.find(mm => mm.id === marketId);
+      if (!m) return;
+      card.querySelectorAll('[data-bet-side]').forEach(btn => {
+        btn.onclick = async () => {
+          const side = btn.dataset.betSide;
+          const amtInput = card.querySelector('.pred-bet-amount');
+          const amt = parseFloat(amtInput && amtInput.value);
+          if (!amt || amt <= 0) {
+            if (typeof showToast === 'function') showToast('Enter a bet amount', true);
+            return;
+          }
+          btn.disabled = true;
+          const res = await placePredictionBet(marketId, side, amt);
+          btn.disabled = false;
+          if (res.error) {
+            if (typeof showToast === 'function') showToast(errorToHumanPred(res.error), true);
+            return;
+          }
+          // Refresh state + repaint.
+          PREDICTION_BALANCE = typeof res.balance === 'number' ? res.balance : PREDICTION_BALANCE;
+          const marketIdx = markets.findIndex(mm => mm.id === marketId);
+          if (marketIdx >= 0) {
+            markets[marketIdx].yes_pool = res.yes_pool ?? markets[marketIdx].yes_pool;
+            markets[marketIdx].no_pool  = res.no_pool  ?? markets[marketIdx].no_pool;
+          }
+          // Re-fetch bets for updated history on this market.
+          const freshBets = await fetchMyPredictionBets();
+          betsByMarket.clear();
+          (freshBets || []).forEach(b => {
+            if (!betsByMarket.has(b.market_id)) betsByMarket.set(b.market_id, []);
+            betsByMarket.get(b.market_id).push(b);
+          });
+          // Update balance display.
+          const balEl = wrap.querySelector('.pred-balance-value');
+          if (balEl && PREDICTION_BALANCE != null) {
+            balEl.textContent = '$' + (+PREDICTION_BALANCE).toLocaleString('en-US', { maximumFractionDigits: 2 });
+          }
+          paintMarkets();
+          if (typeof showToast === 'function') {
+            showToast(`Bet placed: $${amt.toFixed(2)} on ${side.toUpperCase()}`);
+          }
+        };
+      });
+    });
+  };
+  paintMarkets();
+}
+
+function errorToHumanPred(code) {
+  switch (code) {
+    case 'not_authenticated':     return 'Please sign in first.';
+    case 'invalid_side':          return 'Pick YES or NO.';
+    case 'invalid_amount':        return 'Enter a positive amount.';
+    case 'market_not_found':      return 'That market no longer exists.';
+    case 'market_closed':         return 'This market is closed to new bets.';
+    case 'market_expired':        return 'This market has already expired.';
+    case 'insufficient_balance':  return 'Not enough balance for that bet.';
+    default:                       return String(code || 'Something went wrong');
+  }
+}
+
+function renderMarketCard(m, userBets) {
+  const totalPool = (+m.yes_pool || 0) + (+m.no_pool || 0);
+  const yesPct = totalPool > 0 ? (m.yes_pool / totalPool) * 100 : 50;
+  const noPct  = totalPool > 0 ? (m.no_pool  / totalPool) * 100 : 50;
+  const endsIn = new Date(m.resolves_at).getTime() - Date.now();
+  const endsLabel = endsIn <= 0
+    ? (m.status === 'resolved'
+        ? 'Resolved: ' + String(m.resolution || '').toUpperCase()
+        : 'Awaiting resolution')
+    : (() => {
+        const d = Math.floor(endsIn / 86400000);
+        const h = Math.floor((endsIn % 86400000) / 3600000);
+        if (d >= 1) return `Resolves in ${d}d ${h}h`;
+        return `Resolves in ${h}h`;
+      })();
+
+  const betsSummary = userBets.length
+    ? `<div class="pred-mybet">
+         Your stake: ${userBets.map(b => {
+           const cls = b.side === 'yes' ? 'up' : 'down';
+           const payout = b.payout;
+           let payoutStr = '';
+           if (payout != null) {
+             const isWin = +payout > 0;
+             payoutStr = ` · ${isWin ? 'won $' + (+payout).toFixed(2) : 'lost'}`;
+           }
+           return `<span class="${cls}">$${(+b.amount).toFixed(2)} on ${b.side.toUpperCase()}</span>${payoutStr}`;
+         }).join(' · ')}
+       </div>`
+    : '';
+
+  const isClosed = m.status !== 'open' || endsIn <= 0;
+  return `
+    <div class="pred-market" data-bet-market="${m.id}">
+      <div class="pred-market-q">${escapeHTML(m.question)}</div>
+      <div class="pred-market-meta">${escapeHTML(endsLabel)} · pool $${totalPool.toFixed(0)}</div>
+      <div class="pred-odds">
+        <div class="pred-odds-bar">
+          <div class="pred-odds-yes" style="width: ${yesPct.toFixed(1)}%"><span>${Math.round(yesPct)}% YES</span></div>
+          <div class="pred-odds-no"  style="width: ${noPct.toFixed(1)}%"><span>${Math.round(noPct)}% NO</span></div>
+        </div>
+      </div>
+      ${isClosed ? '' : `
+        <div class="pred-bet-row">
+          <input type="number" class="pred-bet-amount" placeholder="Amount" min="1" step="1" />
+          <button class="lg-btn pred-bet-yes" data-bet-side="yes">Bet YES</button>
+          <button class="lg-btn pred-bet-no"  data-bet-side="no">Bet NO</button>
+        </div>
+      `}
+      ${betsSummary}
+    </div>
+  `;
+}
 // ══════════════════════════════════════════════════════════════════════
 // artist_ipos rows mark tickers that are within their launch window.
 // When the user opens an artist detail that matches an active IPO, a
@@ -19706,6 +20108,11 @@ function renderLeaderboard() {
   // Phase 3 — paint the leagues card. Same cache-and-repaint pattern.
   try { renderLeaguesCard(); } catch (_e) { /* non-fatal */ }
   fetchUserLeagues().then(() => { try { renderLeaguesCard(); } catch (_e) {} });
+
+  // Phase 4 — paint the predictions card. Shows open market count and
+  // a "Place a bet" button that opens the full modal.
+  try { renderPredictionsCard(); } catch (_e) { /* non-fatal */ }
+  fetchPredictionMarkets().then(() => { try { renderPredictionsCard(); } catch (_e) {} });
 
   // M14.1 — self-heal path. If the user is signed in but has never been
   // upserted (old account, trade happened while upsertLeaderboardRow
