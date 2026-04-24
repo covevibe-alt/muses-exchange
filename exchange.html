@@ -5334,6 +5334,185 @@
   .badge-chip.badge-uncommon  .bc-tip-rarity { background: rgba(110,255,184,0.12); color: #6effb8; }
   .badge-chip.badge-rare      .bc-tip-rarity { background: rgba(96,165,250,0.14);  color: #60a5fa; }
   .badge-chip.badge-legendary .bc-tip-rarity { background: rgba(251,191,36,0.16);  color: #fbbf24; }
+
+  /* PRIVATE LEAGUES CARD + MODALS */
+  .leagues-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin: 0 0 18px;
+  }
+  .leagues-card .lg-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .leagues-card .lg-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .leagues-card .lg-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 18px; padding: 0 6px;
+    background: var(--card-2); border: 1px solid var(--border);
+    border-radius: 999px; font-size: 11px; color: var(--text);
+    letter-spacing: normal; text-transform: none;
+  }
+  .leagues-card .lg-actions { display: flex; gap: 6px; }
+  .lg-btn {
+    font-family: inherit;
+    font-size: 12px; font-weight: 600;
+    padding: 7px 13px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card-2);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .lg-btn:hover:not(:disabled) { transform: translateY(-1px); border-color: var(--border-strong); }
+  .lg-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .lg-btn-primary {
+    background: var(--purple); border-color: var(--purple); color: #fff;
+  }
+  .lg-btn-primary:hover:not(:disabled) { background: var(--purple-2); border-color: var(--purple-2); }
+  .lg-btn-ghost { background: transparent; }
+
+  .leagues-card .lg-empty {
+    font-size: 13px; color: var(--text-dim); line-height: 1.5;
+    padding: 6px 2px;
+  }
+  .leagues-card .lg-list { display: flex; flex-direction: column; gap: 6px; }
+  .leagues-card .lg-item {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  .leagues-card .lg-item:hover {
+    transform: translateY(-1px);
+    border-color: rgba(139,92,246,0.3);
+  }
+  .leagues-card .lg-item-main { min-width: 0; }
+  .leagues-card .lg-item-name {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .leagues-card .lg-item-meta {
+    font-size: 11px; color: var(--text-dim); margin-top: 2px;
+  }
+  .leagues-card .lg-item-open {
+    font-size: 12px; font-weight: 600; color: #b98fff;
+    white-space: nowrap;
+  }
+
+  /* League modals (create / join / detail) */
+  .lg-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(4,3,7,0.75);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 10000;
+    animation: lg-fade-in 0.15s ease;
+  }
+  @keyframes lg-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .lg-modal {
+    background: #13101a;
+    border: 1px solid #2a2440;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 420px; width: 100%;
+    box-shadow: 0 25px 60px -15px rgba(0,0,0,0.6);
+    animation: lg-lift-in 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  .lg-modal-wide { max-width: 520px; }
+  @keyframes lg-lift-in { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .lg-modal-title {
+    font-size: 20px; font-weight: 700; color: #fff;
+    margin-bottom: 6px;
+  }
+  .lg-modal-sub {
+    font-size: 13px; color: var(--text-dim); line-height: 1.5;
+    margin-bottom: 18px;
+  }
+  .lg-modal-input {
+    width: 100%;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit; font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .lg-modal-input:focus { border-color: var(--purple); }
+  .lg-modal-error {
+    margin-top: 8px;
+    font-size: 12px; color: #ff7a7a;
+  }
+  .lg-modal-row {
+    display: flex; justify-content: flex-end; gap: 8px;
+    margin-top: 18px;
+  }
+  .lg-code {
+    font-family: 'SF Mono', Monaco, monospace;
+    background: rgba(185,143,255,0.1);
+    color: #b98fff;
+    padding: 3px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: background 0.15s ease;
+  }
+  .lg-code:hover { background: rgba(185,143,255,0.2); }
+  .lg-members {
+    margin-top: 14px;
+    max-height: 360px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .lg-row {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .lg-row:last-child { border-bottom: 0; }
+  .lg-row-you { background: rgba(185,143,255,0.06); }
+  .lg-row-rank { color: var(--text-dim); font-weight: 600; }
+  .lg-row-name { color: var(--text); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lg-row-ret { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .lg-row-ret .up { color: #6effb8; }
+  .lg-row-ret .down { color: #ff7a7a; }
+  .lg-row-ret .lg-dim { color: var(--text-faint); }
+  .lg-you-tag {
+    display: inline-block; margin-left: 6px;
+    font-size: 10px; font-weight: 700;
+    background: rgba(185,143,255,0.15); color: #b98fff;
+    padding: 1px 6px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .lg-owner-tag {
+    display: inline-block; margin-left: 6px;
+    font-size: 10px; font-weight: 700;
+    background: rgba(251,191,36,0.12); color: #fbbf24;
+    padding: 1px 6px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
   .badge-chip .bc-tip-desc {
     font-size: 12px; font-weight: 400; color: #c8c4d0;
     line-height: 1.45;
@@ -10380,6 +10559,9 @@
         <!-- Phase 2 — badges strip. Painted by renderBadgesStrip(). -->
         <div id="lb-badges-strip"></div>
 
+        <!-- Phase 3 — private leagues card. Painted by renderLeaguesCard(). -->
+        <div id="lb-leagues-card"></div>
+
         <!-- Leaderboard will populate with real users once trading opens -->
 
         <div class="card">
@@ -12737,6 +12919,366 @@ function renderBadgesStrip() {
       <div class="bs-chips">${chips}</div>
     </div>
   `;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// PRIVATE LEAGUES — invite-code groups w/ scoped leaderboard (migration 015)
+// ══════════════════════════════════════════════════════════════════════
+// Users create a league, share the invite code with friends, and see a
+// leaderboard scoped to the league members. All writes go through RPCs
+// (create_league / join_league / leave_league) that enforce invariants
+// service-role-style. Reads go through RLS: you only see leagues you're
+// in, and only members of those leagues.
+// ══════════════════════════════════════════════════════════════════════
+let USER_LEAGUES = null;            // array or null = never fetched
+let _userLeaguesFetchAt = 0;
+const USER_LEAGUES_TTL_MS = 60_000;
+
+async function fetchUserLeagues(force) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return null;
+  if (!force && USER_LEAGUES && (Date.now() - _userLeaguesFetchAt) < USER_LEAGUES_TTL_MS) {
+    return USER_LEAGUES;
+  }
+  try {
+    // Pull leagues via league_members. The RLS policy scopes this to
+    // leagues the user belongs to.
+    const { data, error } = await window.SUPABASE
+      .from('league_members')
+      .select('role, joined_at, leagues(id, slug, name, description, invite_code, owner_id, max_members, status)')
+      .eq('user_id', window.MUSE_USER.id);
+    if (error) {
+      console.warn('[Muses] fetchUserLeagues failed:', error.message || error);
+      return null;
+    }
+    USER_LEAGUES = (data || [])
+      .filter(r => r && r.leagues && r.leagues.status === 'active')
+      .map(r => ({
+        id:          r.leagues.id,
+        slug:        r.leagues.slug,
+        name:        r.leagues.name,
+        description: r.leagues.description,
+        inviteCode:  r.leagues.invite_code,
+        ownerId:     r.leagues.owner_id,
+        maxMembers:  r.leagues.max_members,
+        role:        r.role,
+        joinedAt:    r.joined_at,
+      }));
+    _userLeaguesFetchAt = Date.now();
+    return USER_LEAGUES;
+  } catch (e) {
+    console.warn('[Muses] fetchUserLeagues threw:', e.message || e);
+    return null;
+  }
+}
+
+async function fetchLeagueMembers(leagueId) {
+  if (!window.SUPABASE) return [];
+  try {
+    // Members of this league. RLS lets us see all members of leagues
+    // we're in.
+    const { data, error } = await window.SUPABASE
+      .from('league_members')
+      .select('user_id, role, joined_at')
+      .eq('league_id', leagueId);
+    if (error || !Array.isArray(data)) return [];
+    // Hydrate with leaderboard info for display_name + metrics.
+    const userIds = data.map(r => r.user_id);
+    if (!userIds.length) return [];
+    const { data: lbRows } = await window.SUPABASE
+      .from('leaderboard')
+      .select('user_id, display_name, portfolio_value, return_pct, season_return_pct')
+      .in('user_id', userIds);
+    const byId = new Map((lbRows || []).map(r => [r.user_id, r]));
+    return data.map(r => {
+      const lb = byId.get(r.user_id);
+      return {
+        userId:     r.user_id,
+        role:       r.role,
+        joinedAt:   r.joined_at,
+        name:       (lb && lb.display_name) || 'trader',
+        pv:         lb ? +lb.portfolio_value : null,
+        retPct:     lb ? +lb.return_pct : null,
+        seasonPct:  (lb && lb.season_return_pct != null) ? +lb.season_return_pct : null,
+      };
+    });
+  } catch (e) {
+    console.warn('[Muses] fetchLeagueMembers threw:', e.message || e);
+    return [];
+  }
+}
+
+async function createLeagueRPC(name, description) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) {
+    return { error: 'not_signed_in' };
+  }
+  try {
+    const { data, error } = await window.SUPABASE.rpc('create_league', {
+      p_name: name,
+      p_description: description || null,
+      p_max_members: 50,
+    });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e.message || String(e) }; }
+}
+
+async function joinLeagueRPC(code) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) {
+    return { error: 'not_signed_in' };
+  }
+  try {
+    const { data, error } = await window.SUPABASE.rpc('join_league', {
+      p_invite_code: code,
+    });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e.message || String(e) }; }
+}
+
+async function leaveLeagueRPC(leagueId) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) {
+    return { error: 'not_signed_in' };
+  }
+  try {
+    const { data, error } = await window.SUPABASE.rpc('leave_league', {
+      p_league_id: leagueId,
+    });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e.message || String(e) }; }
+}
+
+// Render the "Your Leagues" card on the leaderboard. Shows up to 3
+// joined leagues + Create/Join buttons. Clicking a league opens a
+// detail modal with the member leaderboard and invite code.
+function renderLeaguesCard() {
+  const host = document.getElementById('lb-leagues-card');
+  if (!host) return;
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) { host.innerHTML = ''; return; }
+
+  const leagues = USER_LEAGUES || [];
+  const items = leagues.slice(0, 3).map(l => `
+    <div class="lg-item" data-league-id="${l.id}">
+      <div class="lg-item-main">
+        <div class="lg-item-name">${escapeHTML(l.name)}</div>
+        <div class="lg-item-meta">${l.role === 'owner' ? 'Owner · ' : ''}Code ${escapeHTML(l.inviteCode)}</div>
+      </div>
+      <div class="lg-item-open">View →</div>
+    </div>
+  `).join('');
+
+  host.innerHTML = `
+    <div class="leagues-card">
+      <div class="lg-head">
+        <div class="lg-label">Your Leagues${leagues.length > 3 ? ` <span class="lg-count">${leagues.length}</span>` : ''}</div>
+        <div class="lg-actions">
+          <button class="lg-btn lg-btn-ghost" data-lg-action="join">Join with code</button>
+          <button class="lg-btn lg-btn-primary" data-lg-action="create">Create league</button>
+        </div>
+      </div>
+      ${leagues.length === 0
+        ? `<div class="lg-empty">Create a league or paste an invite code from a friend. Only members see each other's board.</div>`
+        : `<div class="lg-list">${items}</div>`
+      }
+    </div>
+  `;
+
+  // Click wiring.
+  host.querySelectorAll('[data-lg-action]').forEach(btn => {
+    btn.onclick = () => {
+      const action = btn.dataset.lgAction;
+      if (action === 'create') openCreateLeagueModal();
+      else if (action === 'join') openJoinLeagueModal();
+    };
+  });
+  host.querySelectorAll('[data-league-id]').forEach(row => {
+    row.onclick = () => {
+      const id = parseInt(row.dataset.leagueId, 10);
+      if (id) openLeagueDetailModal(id);
+    };
+  });
+}
+
+// Minimal in-app modal helper used by the league flows. Reuses the
+// existing .confirmation-overlay pattern from showConfirmation where
+// possible, but simpler — text + input + two buttons.
+function showPromptModal(opts) {
+  // opts: { title, subtitle, placeholder, confirmLabel, onConfirm(val) }
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  wrap.innerHTML = `
+    <div class="lg-modal">
+      <div class="lg-modal-title">${escapeHTML(opts.title || '')}</div>
+      ${opts.subtitle ? `<div class="lg-modal-sub">${escapeHTML(opts.subtitle)}</div>` : ''}
+      <input type="text" class="lg-modal-input" placeholder="${escapeHTML(opts.placeholder || '')}" maxlength="${opts.maxLength || 50}" autocomplete="off" />
+      <div class="lg-modal-error" hidden></div>
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-ghost" data-act="cancel">Cancel</button>
+        <button class="lg-btn lg-btn-primary" data-act="confirm">${escapeHTML(opts.confirmLabel || 'Confirm')}</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  const input = wrap.querySelector('.lg-modal-input');
+  const errEl = wrap.querySelector('.lg-modal-error');
+  setTimeout(() => { try { input.focus(); } catch (_) {} }, 40);
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  const confirm = async () => {
+    const val = (input.value || '').trim();
+    if (!val) return;
+    wrap.querySelector('[data-act="confirm"]').disabled = true;
+    try {
+      const err = await opts.onConfirm(val);
+      if (err) {
+        errEl.textContent = err;
+        errEl.hidden = false;
+        wrap.querySelector('[data-act="confirm"]').disabled = false;
+        return;
+      }
+      close();
+    } catch (e) {
+      errEl.textContent = e.message || 'Something went wrong';
+      errEl.hidden = false;
+      wrap.querySelector('[data-act="confirm"]').disabled = false;
+    }
+  };
+  wrap.querySelector('[data-act="cancel"]').onclick = close;
+  wrap.querySelector('[data-act="confirm"]').onclick = confirm;
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') confirm();
+    else if (e.key === 'Escape') close();
+  });
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+}
+
+function errorToHuman(code) {
+  switch (code) {
+    case 'not_authenticated':              return 'Please sign in first.';
+    case 'invalid_name':                    return 'Name must be 2–50 characters.';
+    case 'invalid_code':                    return 'That invite code is not valid.';
+    case 'league_full':                     return 'This league is at capacity.';
+    case 'not_a_member':                    return 'You are not a member of this league.';
+    case 'owner_cannot_leave_while_members':return 'Owners must transfer ownership before leaving. (Coming soon — for now, remove other members first.)';
+    case 'code_generation_failed':          return 'Could not generate an invite code — try again.';
+    default:                                 return String(code || 'Something went wrong');
+  }
+}
+
+function openCreateLeagueModal() {
+  showPromptModal({
+    title: 'Create a league',
+    subtitle: 'Give it a name your friends will recognize. You\'ll get an invite code to share.',
+    placeholder: 'Office League',
+    confirmLabel: 'Create',
+    onConfirm: async (name) => {
+      const res = await createLeagueRPC(name, null);
+      if (res.error) return errorToHuman(res.error);
+      await fetchUserLeagues(true);
+      renderLeaguesCard();
+      if (typeof showToast === 'function') {
+        showToast(`League "${res.name || name}" created — code: ${res.invite_code}`, false, {
+          label: 'Open league',
+          handler: () => openLeagueDetailModal(res.league_id),
+        });
+      }
+      return null;
+    },
+  });
+}
+
+function openJoinLeagueModal() {
+  showPromptModal({
+    title: 'Join a league',
+    subtitle: 'Paste the 8-character invite code a friend shared with you.',
+    placeholder: 'ABC2DEF6',
+    maxLength: 12,
+    confirmLabel: 'Join',
+    onConfirm: async (code) => {
+      const res = await joinLeagueRPC(code);
+      if (res.error) return errorToHuman(res.error);
+      await fetchUserLeagues(true);
+      renderLeaguesCard();
+      if (typeof showToast === 'function') {
+        const msg = res.already_member
+          ? `Already a member of "${res.name}".`
+          : `Joined "${res.name}".`;
+        showToast(msg, false, {
+          label: 'Open league',
+          handler: () => openLeagueDetailModal(res.league_id),
+        });
+      }
+      return null;
+    },
+  });
+}
+
+async function openLeagueDetailModal(leagueId) {
+  const league = (USER_LEAGUES || []).find(l => l.id === leagueId);
+  if (!league) return;
+  const members = await fetchLeagueMembers(leagueId);
+  // Sort by portfolio_value desc, nulls last.
+  members.sort((a, b) => {
+    if (a.pv == null && b.pv == null) return 0;
+    if (a.pv == null) return 1;
+    if (b.pv == null) return -1;
+    return b.pv - a.pv;
+  });
+
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  const rows = members.map((m, i) => {
+    const ret = m.retPct;
+    const retStr = (ret != null)
+      ? `<span class="${ret >= 0 ? 'up' : 'down'}">${ret >= 0 ? '+' : ''}${ret.toFixed(2)}%</span>`
+      : '<span class="lg-dim">—</span>';
+    const isYou = m.userId === window.MUSE_USER.id;
+    return `
+      <div class="lg-row ${isYou ? 'lg-row-you' : ''}">
+        <div class="lg-row-rank">#${i + 1}</div>
+        <div class="lg-row-name">${escapeHTML(m.name)}${isYou ? ' <span class="lg-you-tag">you</span>' : ''}${m.role === 'owner' ? ' <span class="lg-owner-tag">owner</span>' : ''}</div>
+        <div class="lg-row-ret">${retStr}</div>
+      </div>
+    `;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="lg-modal lg-modal-wide">
+      <div class="lg-modal-title">${escapeHTML(league.name)}</div>
+      <div class="lg-modal-sub">${members.length} member${members.length === 1 ? '' : 's'} · invite code <span class="lg-code" data-copy="${escapeHTML(league.inviteCode)}">${escapeHTML(league.inviteCode)}</span></div>
+      <div class="lg-members">${rows || '<div class="lg-empty">No members yet.</div>'}</div>
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-ghost" data-act="leave">Leave league</button>
+        <button class="lg-btn lg-btn-primary" data-act="close">Close</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  wrap.querySelector('[data-act="close"]').onclick = close;
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+
+  // Copy-to-clipboard on the invite code.
+  const codeEl = wrap.querySelector('[data-copy]');
+  if (codeEl) {
+    codeEl.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(codeEl.dataset.copy);
+        if (typeof showToast === 'function') showToast('Invite code copied');
+      } catch (_) {}
+    };
+  }
+
+  wrap.querySelector('[data-act="leave"]').onclick = async () => {
+    const res = await leaveLeagueRPC(leagueId);
+    if (res.error) {
+      if (typeof showToast === 'function') showToast(errorToHuman(res.error), true);
+      return;
+    }
+    await fetchUserLeagues(true);
+    renderLeaguesCard();
+    close();
+    if (typeof showToast === 'function') showToast('Left the league');
+  };
 }
 
 // Season-banner renderer — called from renderLeaderboard. Outputs a
@@ -18984,6 +19526,10 @@ function renderLeaderboard() {
   // are backfilled to everyone).
   try { renderBadgesStrip(); } catch (_e) { /* non-fatal */ }
   fetchUserBadges().then(() => { try { renderBadgesStrip(); } catch (_e) {} });
+
+  // Phase 3 — paint the leagues card. Same cache-and-repaint pattern.
+  try { renderLeaguesCard(); } catch (_e) { /* non-fatal */ }
+  fetchUserLeagues().then(() => { try { renderLeaguesCard(); } catch (_e) {} });
 
   // M14.1 — self-heal path. If the user is signed in but has never been
   // upserted (old account, trade happened while upsertLeaderboardRow
