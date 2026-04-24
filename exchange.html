@@ -12494,6 +12494,10 @@ let USER_BADGES = null;              // array or null = never fetched
 let _userBadgesFetchAt = 0;
 const USER_BADGES_TTL_MS = 60_000;
 
+// Track previously-seen badge slugs across fetchUserBadges calls so
+// we can detect and toast on freshly-earned ones.
+let _prevBadgeSlugs = null;
+
 async function fetchUserBadges(force) {
   if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return null;
   if (!force && USER_BADGES && (Date.now() - _userBadgesFetchAt) < USER_BADGES_TTL_MS) {
@@ -12514,7 +12518,7 @@ async function fetchUserBadges(force) {
       return null;
     }
 
-    USER_BADGES = (data || [])
+    const next = (data || [])
       .filter(r => r && r.badges)
       .map(r => ({
         slug:        r.badges.slug,
@@ -12523,11 +12527,142 @@ async function fetchUserBadges(force) {
         rarity:      r.badges.rarity || 'common',
         awarded_at:  r.awarded_at,
       }));
+
+    // Detect freshly-earned badges and toast them. First load of the
+    // session snapshots the baseline without toasting (user already had
+    // these before this tab opened — showing a toast for every badge
+    // they already own would be obnoxious).
+    const nextSlugSet = new Set(next.map(b => b.slug));
+    if (_prevBadgeSlugs !== null && typeof showToast === 'function') {
+      for (const b of next) {
+        if (!_prevBadgeSlugs.has(b.slug)) {
+          const emoji = b.rarity === 'legendary' ? '🏆' :
+                        b.rarity === 'rare' ? '✨' : '🎖';
+          showToast(`${emoji} Badge earned: ${b.name}`, false, {
+            label: 'See all',
+            handler: () => { try { setView('leaderboard'); } catch (_) {} }
+          });
+        }
+      }
+    }
+    _prevBadgeSlugs = nextSlugSet;
+
+    USER_BADGES = next;
     _userBadgesFetchAt = Date.now();
     return USER_BADGES;
   } catch (e) {
     console.warn('[Muses] fetchUserBadges threw:', e.message || e);
     return null;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// BADGE DETECTION — client-side rules for diamond-hands + sold-the-top
+// ══════════════════════════════════════════════════════════════════════
+// Both badges require signals Muses doesn't have server-side: historical
+// peak per holding (diamond-hands), and the all-time high from
+// __MUSE_HISTORY (sold-the-top). Client detects, calls claim_badge()
+// RPC. The RPC is allowlisted to only these two slugs — migration 013 —
+// so this can't be used to forge season / portfolio-threshold awards.
+//
+// Eligibility rules:
+//   diamond-hands:
+//     For each held ticker, track highWater since acquisition. If price
+//     at any point drops ≥ 50% below highWater ("drawdownHit"), and then
+//     recovers back to highWater or above, award once and clear flag.
+//   sold-the-top:
+//     On any sell order, if the sale price is within 5% of the ticker's
+//     all-time high (from __MUSE_HISTORY), award once.
+// ══════════════════════════════════════════════════════════════════════
+
+async function claimBadgeRPC(slug, metadata) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return false;
+  try {
+    const { data, error } = await window.SUPABASE.rpc('claim_badge', {
+      p_badge_slug: slug,
+      p_metadata: metadata || {},
+    });
+    if (error) {
+      console.warn('[Muses] claim_badge(' + slug + ') failed:', error.message || error);
+      return false;
+    }
+    // If the claim succeeded, force-refresh badges so the toast fires
+    // this render cycle instead of on the next leaderboard open.
+    if (data === true) {
+      try { await fetchUserBadges(true); } catch (_) {}
+    }
+    return data === true;
+  } catch (e) {
+    console.warn('[Muses] claim_badge threw:', e.message || e);
+    return false;
+  }
+}
+
+// Diamond-hands tracker — lives in STATE so it persists via portfolio
+// sync. Shape: { TICKER: { highWater: number, drawdownHit: bool } }.
+// Initialized lazily; cleared when a ticker is fully sold.
+function checkDiamondHandsOnTick() {
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) return;
+  if (!STATE.drawdownTracker) STATE.drawdownTracker = {};
+  const held = STATE.holdings || {};
+
+  // Clean up trackers for tickers no longer held.
+  for (const t of Object.keys(STATE.drawdownTracker)) {
+    if (!held[t] || !held[t].shares) delete STATE.drawdownTracker[t];
+  }
+
+  // Scan current holdings.
+  for (const ticker of Object.keys(held)) {
+    const h = held[ticker];
+    if (!h || !h.shares) continue;
+    const a = ARTISTS.find(x => x.ticker === ticker);
+    if (!a || !a.price) continue;
+
+    let tr = STATE.drawdownTracker[ticker];
+    if (!tr) {
+      tr = STATE.drawdownTracker[ticker] = {
+        highWater: Math.max(a.price, h.cost || a.price),
+        drawdownHit: false,
+      };
+    }
+
+    if (a.price > tr.highWater) tr.highWater = a.price;
+
+    if (!tr.drawdownHit && tr.highWater > 0 && a.price <= tr.highWater * 0.5) {
+      tr.drawdownHit = true;
+    }
+
+    if (tr.drawdownHit && a.price >= tr.highWater) {
+      // Recovered from a 50%+ drawdown. Fire once, clear flag.
+      tr.drawdownHit = false;
+      claimBadgeRPC('diamond-hands', {
+        ticker,
+        high_water: +tr.highWater.toFixed(4),
+        recovery_price: +a.price.toFixed(4),
+      });
+    }
+  }
+}
+
+// Sold-the-top — called right after a successful sell.
+function checkSoldTheTopOnSell(ticker, sellPrice) {
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) return;
+  try {
+    const hist = (window.__MUSE_HISTORY && window.__MUSE_HISTORY[ticker]) || null;
+    if (!Array.isArray(hist) || hist.length < 3) return;
+    let ath = 0;
+    for (const pt of hist) { if (pt && typeof pt.p === 'number' && pt.p > ath) ath = pt.p; }
+    if (ath <= 0) return;
+    // Within 5% of all-time high.
+    if (sellPrice >= ath * 0.95) {
+      claimBadgeRPC('sold-the-top', {
+        ticker,
+        sell_price: +sellPrice.toFixed(4),
+        ath: +ath.toFixed(4),
+      });
+    }
+  } catch (e) {
+    console.warn('[Muses] checkSoldTheTopOnSell threw:', e.message || e);
   }
 }
 
@@ -16492,6 +16627,10 @@ function executeMarketOrder(a, side, amt) {
     if (isFirstSell) STATE.firstSellAt = Date.now();
     STATE.transactions.unshift({ type: 'SELL', ticker: a.ticker, name: a.name, shares, price: a.price, total: amt, time: new Date() });
     recordUserOrderFlow(a, 'sell', shares);
+    // Phase-2 badge — fire-and-forget sold-the-top detection. Reads
+    // __MUSE_HISTORY for the ticker's all-time high; awards if sell
+    // price is within 5% of ATH.
+    try { checkSoldTheTopOnSell(a.ticker, a.price); } catch (_e) { /* non-fatal */ }
     showConfirmation({
       icon: 'success',
       title: 'Shares sold',
@@ -23599,6 +23738,11 @@ function tickPrices() {
   // Refresh centralized computed caches (market stats, genre stats)
   // BEFORE any rendering so all views read consistent data.
   refreshComputedData();
+
+  // Phase-2 badge detection — diamond-hands scan on every tick. Cheap
+  // (O(#holdings)), and tickPrices is the only place the full ARTISTS
+  // prices array is freshly re-evaluated so it's the natural hook.
+  try { checkDiamondHandsOnTick(); } catch (_e) { /* non-fatal */ }
 
   // Update flash state BEFORE any rendering so templates pick it up
   ARTISTS.forEach(a => {
