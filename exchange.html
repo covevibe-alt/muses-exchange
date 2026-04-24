@@ -5728,6 +5728,195 @@
     .pred-bet-row { grid-template-columns: 1fr; }
     .pred-balance { text-align: left; min-width: 0; }
   }
+
+  /* THESIS CONTEST — leaderboard card + modal */
+  .thesis-card {
+    background: linear-gradient(135deg, rgba(251,191,36,0.07), rgba(251,191,36,0.01));
+    border: 1px solid rgba(251,191,36,0.22);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin: 0 0 18px;
+  }
+  .thesis-card-head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .thesis-card-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .thesis-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 18px; padding: 0 6px;
+    background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.28);
+    border-radius: 999px; font-size: 11px; color: #fbbf24;
+    letter-spacing: normal; text-transform: none;
+  }
+  .thesis-card-sub {
+    font-size: 12px; color: var(--text-dim); line-height: 1.5;
+  }
+
+  /* Thesis modal */
+  .thesis-modal { max-width: 620px; }
+  .thesis-my-entry {
+    background: var(--card-2); border: 1px solid var(--border);
+    border-left: 3px solid #fbbf24;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+  }
+  .thesis-my-label {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: #fbbf24;
+    margin-bottom: 6px;
+  }
+  .thesis-my-pill {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .thesis-my-text {
+    font-size: 14px; color: var(--text); line-height: 1.5;
+  }
+  .thesis-my-meta {
+    font-size: 11px; color: var(--text-dim); margin-top: 8px;
+  }
+  .thesis-dir {
+    display: inline-block;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .thesis-dir-up   { background: rgba(110,255,184,0.15); color: #6effb8; }
+  .thesis-dir-down { background: rgba(255,122,122,0.15); color: #ff7a7a; }
+  .thesis-ticker {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 13px; font-weight: 700;
+    color: #b98fff;
+  }
+  .thesis-author {
+    font-size: 12px; color: var(--text-dim);
+    margin-left: auto;
+  }
+
+  /* Submit form */
+  .thesis-form {
+    background: var(--card-2); border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 18px;
+  }
+  .thesis-form-row {
+    display: flex; gap: 8px; align-items: center;
+    margin-bottom: 8px;
+  }
+  .thesis-form-row:last-child { margin-bottom: 0; justify-content: space-between; }
+  .thesis-input-ticker {
+    flex: 0 0 120px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 14px; font-weight: 700;
+    padding: 10px 12px;
+    outline: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .thesis-input-ticker:focus { border-color: var(--purple); }
+  .thesis-select-dir {
+    flex: 1 1 auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    cursor: pointer;
+  }
+  .thesis-input-text {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 12px;
+    outline: none;
+    resize: vertical;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+  }
+  .thesis-input-text:focus { border-color: var(--purple); }
+  .thesis-char-count {
+    font-size: 11px; color: var(--text);
+  }
+  .thesis-char-count.dim { color: var(--text-faint); }
+  .thesis-submit-err {
+    margin-top: 8px;
+    font-size: 12px; color: #ff7a7a;
+  }
+
+  /* Feed */
+  .thesis-feed-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 10px;
+  }
+  .thesis-feed {
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 440px; overflow-y: auto;
+    margin-bottom: 18px;
+  }
+  .thesis-item {
+    background: var(--card-2); border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .thesis-item-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .thesis-text {
+    font-size: 13px; color: var(--text); line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .thesis-foot {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .thesis-vote-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 14px; font-weight: 700;
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .thesis-vote-btn:hover:not(:disabled) {
+    background: var(--card); color: var(--text);
+    border-color: var(--border-strong);
+  }
+  .thesis-vote-btn.voted.up   { background: rgba(110,255,184,0.15); color: #6effb8; border-color: rgba(110,255,184,0.35); }
+  .thesis-vote-btn.voted.down { background: rgba(255,122,122,0.15); color: #ff7a7a; border-color: rgba(255,122,122,0.35); }
+  .thesis-net {
+    font-size: 13px; font-weight: 700;
+    min-width: 36px; text-align: center;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-dim);
+  }
+  .thesis-net.up   { color: #6effb8; }
+  .thesis-net.down { color: #ff7a7a; }
   .badge-chip .bc-tip-desc {
     font-size: 12px; font-weight: 400; color: #c8c4d0;
     line-height: 1.45;
@@ -10784,6 +10973,9 @@
         <!-- Phase 4 — prediction markets card. Painted by renderPredictionsCard(). -->
         <div id="lb-predictions-card"></div>
 
+        <!-- Phase 4 — weekly thesis contest card. Painted by renderThesisCard(). -->
+        <div id="lb-thesis-card"></div>
+
         <!-- Leaderboard will populate with real users once trading opens -->
 
         <div class="card">
@@ -13501,6 +13693,294 @@ async function openLeagueDetailModal(leagueId) {
     close();
     if (typeof showToast === 'function') showToast('Left the league');
   };
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// WEEKLY THESIS CONTEST — UGC + voting (migration 018)
+// ══════════════════════════════════════════════════════════════════════
+// Each user can post one thesis per week ("I think $X will go UP because…").
+// The community votes +1 or -1. Monday cron awards the 'thesis-winner'
+// badge to the highest net-voted thesis from the previous week.
+//
+// All writes route through RPCs (submit_thesis, vote_thesis, unvote_thesis).
+// Reads use RLS: approved rows are public; own rows always visible even
+// if hidden.
+// ══════════════════════════════════════════════════════════════════════
+let THESIS_FEED = null;
+let THESIS_MY_ENTRY = null;
+let _thesisFetchAt = 0;
+const THESIS_TTL_MS = 30_000;
+
+function _currentWeekStartISO() {
+  // ISO Monday of the current week in UTC. Mirrors date_trunc('week', current_date).
+  const now = new Date();
+  const day = now.getUTCDay();
+  const diff = (day === 0 ? 6 : day - 1);
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - diff));
+  return d.toISOString().slice(0, 10);
+}
+
+async function fetchThesisFeed(force) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return null;
+  if (!force && THESIS_FEED && (Date.now() - _thesisFetchAt) < THESIS_TTL_MS) {
+    return THESIS_FEED;
+  }
+  try {
+    const weekStart = _currentWeekStartISO();
+    const { data: rows, error } = await window.SUPABASE
+      .from('theses')
+      .select('id, user_id, week_start, ticker, direction, thesis_text, created_at, status')
+      .eq('week_start', weekStart)
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error) {
+      console.warn('[Muses] fetchThesisFeed failed:', error.message || error);
+      return null;
+    }
+    const theses = (rows || []).filter(r => r && (r.status === 'approved' || r.user_id === window.MUSE_USER.id));
+
+    if (theses.length === 0) {
+      THESIS_FEED = [];
+      THESIS_MY_ENTRY = null;
+      _thesisFetchAt = Date.now();
+      return THESIS_FEED;
+    }
+
+    const thesisIds = theses.map(t => t.id);
+    const { data: votes } = await window.SUPABASE
+      .from('thesis_votes')
+      .select('thesis_id, voter_id, vote')
+      .in('thesis_id', thesisIds);
+
+    const voteSums = new Map();
+    const myVotes  = new Map();
+    (votes || []).forEach(v => {
+      voteSums.set(v.thesis_id, (voteSums.get(v.thesis_id) || 0) + v.vote);
+      if (v.voter_id === window.MUSE_USER.id) myVotes.set(v.thesis_id, v.vote);
+    });
+
+    const userIds = Array.from(new Set(theses.map(t => t.user_id)));
+    const { data: lbRows } = await window.SUPABASE
+      .from('leaderboard')
+      .select('user_id, display_name')
+      .in('user_id', userIds);
+    const authorNames = new Map((lbRows || []).map(r => [r.user_id, r.display_name]));
+
+    THESIS_FEED = theses.map(t => ({
+      ...t,
+      net:         voteSums.get(t.id) || 0,
+      my_vote:     myVotes.get(t.id)  || 0,
+      author_name: (authorNames.get(t.user_id) || 'trader'),
+      is_mine:     t.user_id === window.MUSE_USER.id,
+    })).sort((a, b) => b.net - a.net || new Date(b.created_at) - new Date(a.created_at));
+
+    THESIS_MY_ENTRY = THESIS_FEED.find(t => t.is_mine) || null;
+    _thesisFetchAt = Date.now();
+    return THESIS_FEED;
+  } catch (e) {
+    console.warn('[Muses] fetchThesisFeed threw:', e.message || e);
+    return null;
+  }
+}
+
+async function submitThesisRPC(ticker, direction, text) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return { error: 'not_signed_in' };
+  try {
+    const { data, error } = await window.SUPABASE.rpc('submit_thesis', {
+      p_ticker: ticker, p_direction: direction, p_text: text,
+    });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e.message || String(e) }; }
+}
+
+async function voteThesisRPC(thesisId, vote) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return { error: 'not_signed_in' };
+  try {
+    const { data, error } = await window.SUPABASE.rpc(
+      vote === 0 ? 'unvote_thesis' : 'vote_thesis',
+      vote === 0 ? { p_thesis_id: thesisId } : { p_thesis_id: thesisId, p_vote: vote }
+    );
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e.message || String(e) }; }
+}
+
+function errorToHumanThesis(code) {
+  switch (code) {
+    case 'not_authenticated':            return 'Please sign in first.';
+    case 'invalid_ticker':                return 'Ticker must be 1–12 characters.';
+    case 'invalid_direction':             return 'Pick Up or Down.';
+    case 'invalid_length':                return 'Thesis must be 20–280 characters.';
+    case 'already_posted_this_week':      return 'You already posted a thesis this week. Come back next Monday.';
+    case 'invalid_vote':                  return 'Invalid vote.';
+    case 'thesis_not_found':              return 'That thesis no longer exists.';
+    case 'cannot_vote_on_own_thesis':     return "You can't vote on your own thesis.";
+    case 'thesis_unavailable':            return 'This thesis is hidden.';
+    default:                               return String(code || 'Something went wrong');
+  }
+}
+
+function renderThesisCard() {
+  const host = document.getElementById('lb-thesis-card');
+  if (!host) return;
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) { host.innerHTML = ''; return; }
+  const count = (THESIS_FEED || []).length;
+  const alreadyPosted = !!THESIS_MY_ENTRY;
+
+  host.innerHTML = `
+    <div class="thesis-card">
+      <div class="thesis-card-head">
+        <div class="thesis-card-label">Thesis of the Week ${count ? `<span class="thesis-count">${count}</span>` : ''}</div>
+        <button class="lg-btn lg-btn-primary" data-thesis-action="open">
+          ${alreadyPosted ? 'See the feed' : (count ? 'Read + post yours' : 'Post the first thesis')}
+        </button>
+      </div>
+      <div class="thesis-card-sub">
+        Share one call this week: "I think $X will go up/down because…" The most-upvoted thesis wins a badge when the week closes.
+      </div>
+    </div>
+  `;
+  host.querySelector('[data-thesis-action="open"]').onclick = () => openThesisModal();
+}
+
+async function openThesisModal() {
+  await fetchThesisFeed(true);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  const renderModalBody = () => {
+    const feed = THESIS_FEED || [];
+    const mine = THESIS_MY_ENTRY;
+    const submitBlock = mine ? `
+      <div class="thesis-my-entry">
+        <div class="thesis-my-label">Your thesis this week</div>
+        <div class="thesis-my-pill">
+          <span class="thesis-dir thesis-dir-${mine.direction}">${mine.direction === 'up' ? '▲ UP' : '▼ DOWN'}</span>
+          <span class="thesis-ticker">$${escapeHTML(mine.ticker)}</span>
+        </div>
+        <div class="thesis-my-text">${escapeHTML(mine.thesis_text)}</div>
+        <div class="thesis-my-meta">${mine.net > 0 ? '+' : ''}${mine.net} net · Monday close can earn the Thesis Winner badge</div>
+      </div>
+    ` : `
+      <div class="thesis-form">
+        <div class="thesis-form-row">
+          <input type="text" class="thesis-input-ticker" placeholder="TICKER" maxlength="12" />
+          <select class="thesis-select-dir">
+            <option value="up">▲ Up</option>
+            <option value="down">▼ Down</option>
+          </select>
+        </div>
+        <textarea class="thesis-input-text" placeholder="Why? 20–280 characters. Be specific." maxlength="280" rows="3"></textarea>
+        <div class="thesis-form-row">
+          <div class="thesis-char-count">0 / 280</div>
+          <button class="lg-btn lg-btn-primary" data-thesis-submit>Post thesis</button>
+        </div>
+        <div class="thesis-submit-err" hidden></div>
+      </div>
+    `;
+
+    const otherTheses = feed.filter(t => !t.is_mine);
+    const feedBlock = otherTheses.length === 0
+      ? `<div class="lg-empty">${mine ? 'No other theses yet this week.' : 'No theses yet. Be the first to call a move this week.'}</div>`
+      : otherTheses.map(t => `
+          <div class="thesis-item" data-thesis-id="${t.id}">
+            <div class="thesis-item-head">
+              <span class="thesis-dir thesis-dir-${t.direction}">${t.direction === 'up' ? '▲ UP' : '▼ DOWN'}</span>
+              <span class="thesis-ticker">$${escapeHTML(t.ticker)}</span>
+              <span class="thesis-author">${escapeHTML(t.author_name)}</span>
+            </div>
+            <div class="thesis-text">${escapeHTML(t.thesis_text)}</div>
+            <div class="thesis-foot">
+              <button class="thesis-vote-btn ${t.my_vote === 1 ? 'voted up' : ''}" data-vote="up">▲</button>
+              <div class="thesis-net ${t.net > 0 ? 'up' : t.net < 0 ? 'down' : ''}">${t.net > 0 ? '+' : ''}${t.net}</div>
+              <button class="thesis-vote-btn ${t.my_vote === -1 ? 'voted down' : ''}" data-vote="down">▼</button>
+            </div>
+          </div>
+        `).join('');
+
+    return `
+      <div class="lg-modal lg-modal-wide thesis-modal">
+        <div class="lg-modal-title">Thesis of the Week</div>
+        <div class="lg-modal-sub">Post your call. Vote on others'. Top score on Monday wins the Thesis Winner badge.</div>
+        ${submitBlock}
+        <h3 class="thesis-feed-label">This week's theses</h3>
+        <div class="thesis-feed">${feedBlock}</div>
+        <div class="lg-modal-row">
+          <button class="lg-btn lg-btn-primary" data-act="close">Done</button>
+        </div>
+      </div>
+    `;
+  };
+
+  wrap.innerHTML = renderModalBody();
+  document.body.appendChild(wrap);
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+
+  const rebind = () => {
+    wrap.querySelector('[data-act="close"]').onclick = close;
+
+    const ticker = wrap.querySelector('.thesis-input-ticker');
+    const dir    = wrap.querySelector('.thesis-select-dir');
+    const text   = wrap.querySelector('.thesis-input-text');
+    const charC  = wrap.querySelector('.thesis-char-count');
+    const errEl  = wrap.querySelector('.thesis-submit-err');
+    const submit = wrap.querySelector('[data-thesis-submit]');
+    if (text && charC) {
+      const upd = () => {
+        const n = (text.value || '').length;
+        charC.textContent = `${n} / 280`;
+        charC.className = 'thesis-char-count' + (n < 20 ? ' dim' : '');
+      };
+      text.oninput = upd; upd();
+    }
+    if (submit) {
+      submit.onclick = async () => {
+        const t = (ticker && ticker.value || '').trim();
+        const d = (dir && dir.value || 'up');
+        const x = (text && text.value || '').trim();
+        if (!t || !x) { errEl.textContent = 'Ticker and thesis are required.'; errEl.hidden = false; return; }
+        submit.disabled = true;
+        const res = await submitThesisRPC(t, d, x);
+        submit.disabled = false;
+        if (res.error) {
+          errEl.textContent = errorToHumanThesis(res.error);
+          errEl.hidden = false;
+          return;
+        }
+        await fetchThesisFeed(true);
+        renderThesisCard();
+        wrap.innerHTML = renderModalBody();
+        rebind();
+        if (typeof showToast === 'function') showToast('Thesis posted');
+      };
+    }
+
+    wrap.querySelectorAll('[data-thesis-id]').forEach(card => {
+      const id = parseInt(card.dataset.thesisId, 10);
+      card.querySelectorAll('[data-vote]').forEach(btn => {
+        btn.onclick = async () => {
+          const side = btn.dataset.vote;
+          const wanted = side === 'up' ? 1 : -1;
+          const current = (THESIS_FEED || []).find(t => t.id === id)?.my_vote || 0;
+          const toSend = (current === wanted) ? 0 : wanted;
+          btn.disabled = true;
+          const res = await voteThesisRPC(id, toSend);
+          btn.disabled = false;
+          if (res.error) {
+            if (typeof showToast === 'function') showToast(errorToHumanThesis(res.error), true);
+            return;
+          }
+          await fetchThesisFeed(true);
+          renderThesisCard();
+          wrap.innerHTML = renderModalBody();
+          rebind();
+        };
+      });
+    });
+  };
+  rebind();
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -20113,6 +20593,10 @@ function renderLeaderboard() {
   // a "Place a bet" button that opens the full modal.
   try { renderPredictionsCard(); } catch (_e) { /* non-fatal */ }
   fetchPredictionMarkets().then(() => { try { renderPredictionsCard(); } catch (_e) {} });
+
+  // Phase 4 — paint the thesis-of-the-week card.
+  try { renderThesisCard(); } catch (_e) { /* non-fatal */ }
+  fetchThesisFeed().then(() => { try { renderThesisCard(); } catch (_e) {} });
 
   // M14.1 — self-heal path. If the user is signed in but has never been
   // upserted (old account, trade happened while upsertLeaderboardRow
