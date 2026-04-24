@@ -4018,6 +4018,38 @@
     color: var(--text);
   }
 
+  /* Genre Cup tabs — horizontally scrollable on mobile, pill row on
+     desktop. Same active-purple treatment as .lb-sort so the visual
+     grammar stays consistent. */
+  .lb-cup-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 2px 0 10px;
+    margin: 0 0 2px;
+    scrollbar-width: none;
+  }
+  .lb-cup-tabs::-webkit-scrollbar { display: none; }
+  .lb-cup-tabs button {
+    flex-shrink: 0;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .15s;
+  }
+  .lb-cup-tabs button:hover { color: var(--text); border-color: var(--border-strong); }
+  .lb-cup-tabs button.active {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: var(--text);
+  }
+
   /* Podium */
   .lb-podium {
     display: grid;
@@ -12161,6 +12193,31 @@ function computeCurrentPortfolioValue() {
   return v;
 }
 
+// Compute per-genre return — weighted P&L % for each genre the user
+// currently holds. Used by Genre Cups (migration 012). Shape:
+//   { "Pop": 3.21, "Hip-Hop": -1.15, "Indie": 12.40 }
+// Genres with no holdings or zero cost basis are omitted.
+function computeGenreReturns() {
+  const byGenre = {};  // genre → { value, cost }
+  Object.keys(STATE.holdings || {}).forEach(t => {
+    const h = STATE.holdings[t];
+    const a = ARTISTS.find(x => x.ticker === t);
+    if (!a || !h || !h.shares) return;
+    const genre = (a.genre || '').trim() || 'Other';
+    const value = h.shares * a.price;
+    const cost  = h.shares * (h.avgCost || h.avg_cost || a.price);
+    if (!byGenre[genre]) byGenre[genre] = { value: 0, cost: 0 };
+    byGenre[genre].value += value;
+    byGenre[genre].cost  += cost;
+  });
+  const out = {};
+  Object.keys(byGenre).forEach(g => {
+    const { value, cost } = byGenre[g];
+    if (cost > 0) out[g] = +(((value - cost) / cost) * 100).toFixed(2);
+  });
+  return out;
+}
+
 async function ensureSeasonReady() {
   if (_seasonReadyPromise) return _seasonReadyPromise;
 
@@ -12636,6 +12693,10 @@ async function upsertLeaderboardRow() {
       // the season board until their baseline is recorded.
       season_return_pct: seasonReturnPct !== null ? +seasonReturnPct.toFixed(2) : null,
       current_season_id: ACTIVE_SEASON ? ACTIVE_SEASON.id : null,
+      // Phase 2 (genre cups — migration 012). Per-genre P&L % map,
+      // computed client-side from current holdings. Genre Cup filter
+      // reads this on the leaderboard view.
+      genre_returns: computeGenreReturns(),
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' });
   if (error) throw error;
@@ -12676,7 +12737,7 @@ async function fetchLeaderboard(force) {
       // M16.24 — pull opt-in lineup fields. Older clients that select
       // without these still work; the server simply returns them as null
       // for rows that haven't been re-upserted since migration 005 ran.
-      .select('user_id, display_name, portfolio_value, return_pct, updated_at, top_holdings, show_lineup')
+      .select('user_id, display_name, portfolio_value, return_pct, updated_at, top_holdings, show_lineup, genre_returns, season_return_pct')
       .order('portfolio_value', { ascending: false, nullsFirst: false })
       .limit(200);
     if (error) throw error;
@@ -18856,10 +18917,29 @@ function renderLeaderboard() {
       nameHtml: escapeHTML(name),  // M16.13 — XSS guard for HTML interpolation
       tag: '',                     // Reserved for phase-2 metadata (location, club, etc.)
       ret: Number(r.return_pct) || 0,
+      // Phase 2 (Genre Cups, migration 012) — per-genre P&L %. Shape:
+      //   { "Pop": 3.21, "Hip-Hop": -1.15 }. Genres the user doesn't
+      //   hold are simply absent.
+      genreRet: (r.genre_returns && typeof r.genre_returns === 'object') ? r.genre_returns : {},
       isYou,
       lineup,
     };
   });
+
+  // Phase 2 — Genre Cup filter. When lb.cup is set to a genre name,
+  // the leaderboard narrows to traders who actually hold that genre,
+  // and each row's .ret is swapped to their genre-specific return-%
+  // so existing sort + render paths work unchanged.
+  if (lb.cup) {
+    for (let i = all.length - 1; i >= 0; i--) {
+      const v = all[i].genreRet[lb.cup];
+      if (typeof v === 'number') {
+        all[i].ret = v;
+      } else {
+        all.splice(i, 1);
+      }
+    }
+  }
 
   // Compute stable absolute ranking
   const fullRanking = all.slice().sort((a, b) => b.ret - a.ret);
@@ -19022,6 +19102,25 @@ function renderLeaderboard() {
     <div class="lb-tabs">
       <button class="lb-jump" id="lb-jump-g">Jump to me · #${yourRank}</button>
     </div>` : ''}
+    ${(() => {
+      // Phase 2 — Genre Cup selector. Built from the set of genres that
+      // appear in any visible leaderboard row's genre_returns object,
+      // so cups auto-appear as soon as any trader holds that genre.
+      const cupSet = new Set();
+      (LEADERBOARD_ROWS || []).forEach(r => {
+        if (r && r.genre_returns && typeof r.genre_returns === 'object') {
+          Object.keys(r.genre_returns).forEach(g => cupSet.add(g));
+        }
+      });
+      const cups = Array.from(cupSet).sort();
+      if (cups.length === 0) return '';
+      return `
+        <div class="lb-cup-tabs">
+          <button data-lb-cup="" class="${!lb.cup?'active':''}">Overall</button>
+          ${cups.map(g => `<button data-lb-cup="${escapeHTML(g)}" class="${lb.cup===g?'active':''}">${escapeHTML(g)} Cup</button>`).join('')}
+        </div>
+      `;
+    })()}
     <div class="lb-controls">
       <div class="lb-search">
         <svg><use href="#i-search"/></svg>
@@ -19089,6 +19188,15 @@ function renderLeaderboard() {
   });
   host.querySelectorAll('[data-lb-sort]').forEach(btn => {
     btn.onclick = () => { lb.sort = btn.dataset.lbSort; renderLeaderboard(); };
+  });
+  // Phase 2 — Genre Cup tab clicks.
+  host.querySelectorAll('[data-lb-cup]').forEach(btn => {
+    btn.onclick = () => {
+      const g = btn.dataset.lbCup;
+      lb.cup = g || null;
+      lb.limit = 10; lb.expanded = null;
+      renderLeaderboard();
+    };
   });
   host.querySelectorAll('[data-lb-toggle]').forEach(btn => {
     btn.onclick = (e) => {
