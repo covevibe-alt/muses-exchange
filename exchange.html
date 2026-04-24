@@ -5513,6 +5513,80 @@
     padding: 1px 6px; border-radius: 999px;
     text-transform: uppercase; letter-spacing: 0.08em;
   }
+
+  /* IPO BANNER — artist detail listing-window hero */
+  .ipo-banner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px;
+    align-items: center;
+    padding: 18px 22px;
+    margin: 18px 0;
+    background: linear-gradient(135deg,
+                 rgba(251,191,36,0.14) 0%,
+                 rgba(139,92,246,0.10) 55%,
+                 rgba(139,92,246,0.02) 100%);
+    border: 1px solid rgba(251,191,36,0.35);
+    border-radius: 14px;
+    box-shadow: 0 0 40px -12px rgba(251,191,36,0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .ipo-banner::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(600px circle at 0% 0%,
+                rgba(251,191,36,0.18), transparent 50%);
+    pointer-events: none;
+  }
+  .ipo-banner > * { position: relative; z-index: 1; }
+  .ipo-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: rgba(251,191,36,0.18);
+    border: 1px solid rgba(251,191,36,0.45);
+    border-radius: 999px;
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    flex-shrink: 0;
+  }
+  .ipo-tag svg { width: 14px; height: 14px; fill: currentColor; }
+  .ipo-body { min-width: 0; }
+  .ipo-title {
+    font-size: 16px; font-weight: 700; color: #fff;
+    margin-bottom: 4px;
+    letter-spacing: -0.005em;
+  }
+  .ipo-sub {
+    font-size: 13px; color: var(--text-dim); line-height: 1.5;
+  }
+  .ipo-sub strong { color: #fbbf24; font-weight: 700; }
+  .ipo-countdown {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .ipo-count-label {
+    font-size: 10px; font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .ipo-count-value {
+    font-size: 18px; font-weight: 700;
+    color: #fbbf24;
+    font-variant-numeric: tabular-nums;
+    margin-top: 4px;
+  }
+  @media (max-width: 680px) {
+    .ipo-banner {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .ipo-countdown { text-align: left; }
+  }
   .badge-chip .bc-tip-desc {
     font-size: 12px; font-weight: 400; color: #c8c4d0;
     line-height: 1.45;
@@ -10430,6 +10504,10 @@
           </div>
         </div>
 
+        <!-- Phase 3 — IPO banner. Painted by renderIpoBanner() when
+             STATE.selected.ticker has an active artist_ipos row. -->
+        <div id="ad-ipo-banner"></div>
+
         <div class="stat-grid">
           <div class="stat-tile">
             <div class="l">Market Cap <span class="info-tip">?<span class="tip-text">Total valuation of this artist — calculated from shares outstanding × current price.</span></span></div>
@@ -13279,6 +13357,99 @@ async function openLeagueDetailModal(leagueId) {
     close();
     if (typeof showToast === 'function') showToast('Left the league');
   };
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// IPO EVENTS — new-artist 24h listing window (migration 016)
+// ══════════════════════════════════════════════════════════════════════
+// artist_ipos rows mark tickers that are within their launch window.
+// When the user opens an artist detail that matches an active IPO, a
+// gradient banner with a live countdown appears above the stat grid.
+// Any buy filled during the window mints an 'ipo-early-backer' badge
+// server-side (trigger in migration 016). The first-ever buyer of a
+// listing earns 'first-buyer-of-artist' (permanent scarcity, per-ticker
+// via badge metadata).
+// ══════════════════════════════════════════════════════════════════════
+let ACTIVE_IPOS = null;            // Map<ticker, { endsAt: Date, startsAt: Date }> or null
+let _iposFetchAt = 0;
+const IPOS_TTL_MS = 5 * 60 * 1000;  // 5 min — IPOs change on the hour-scale, not second-scale
+
+async function fetchActiveIpos(force) {
+  if (!window.SUPABASE) return null;
+  if (!force && ACTIVE_IPOS && (Date.now() - _iposFetchAt) < IPOS_TTL_MS) {
+    return ACTIVE_IPOS;
+  }
+  try {
+    const { data, error } = await window.SUPABASE
+      .from('artist_ipos')
+      .select('ticker, starts_at, ends_at, status')
+      .eq('status', 'active');
+    if (error) {
+      console.warn('[Muses] fetchActiveIpos failed:', error.message || error);
+      return null;
+    }
+    const map = new Map();
+    const now = Date.now();
+    (data || []).forEach(r => {
+      const ends = new Date(r.ends_at).getTime();
+      // Filter client-side to only unexpired — a stale row could still
+      // be status=active if the close cron hasn't run yet.
+      if (ends > now) {
+        map.set(r.ticker, {
+          startsAt: new Date(r.starts_at),
+          endsAt:   new Date(r.ends_at),
+        });
+      }
+    });
+    ACTIVE_IPOS = map;
+    _iposFetchAt = Date.now();
+    return ACTIVE_IPOS;
+  } catch (e) {
+    console.warn('[Muses] fetchActiveIpos threw:', e.message || e);
+    return null;
+  }
+}
+
+function _fmtIpoCountdown(msLeft) {
+  if (msLeft <= 0) return 'Closing now';
+  const hours = Math.floor(msLeft / (1000 * 60 * 60));
+  const mins  = Math.floor((msLeft % (1000 * 60 * 60)) / (1000 * 60));
+  if (hours >= 24) {
+    const days = Math.floor(hours / 24);
+    const rh   = hours % 24;
+    return `${days}d ${rh}h remaining`;
+  }
+  if (hours >= 1) return `${hours}h ${mins}m remaining`;
+  return `${mins}m remaining`;
+}
+
+function renderIpoBanner() {
+  const host = document.getElementById('ad-ipo-banner');
+  if (!host) return;
+  const a = STATE.selected;
+  if (!a || !ACTIVE_IPOS) { host.innerHTML = ''; return; }
+  const ipo = ACTIVE_IPOS.get(a.ticker);
+  if (!ipo) { host.innerHTML = ''; return; }
+
+  const msLeft = ipo.endsAt.getTime() - Date.now();
+  if (msLeft <= 0) { host.innerHTML = ''; return; }
+
+  host.innerHTML = `
+    <div class="ipo-banner">
+      <div class="ipo-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 L3 14 h9 L11 22 L21 10 h-9 z"/></svg>
+        <span>Live IPO</span>
+      </div>
+      <div class="ipo-body">
+        <div class="ipo-title">${escapeHTML(a.name)} just listed on Muses Exchange</div>
+        <div class="ipo-sub">Any buy during the IPO window earns the <strong>IPO Early Backer</strong> badge. The very first buyer earns <strong>First Buyer</strong> — permanent, one-of-one per artist.</div>
+      </div>
+      <div class="ipo-countdown">
+        <div class="ipo-count-label">IPO closes in</div>
+        <div class="ipo-count-value">${escapeHTML(_fmtIpoCountdown(msLeft))}</div>
+      </div>
+    </div>
+  `;
 }
 
 // Season-banner renderer — called from renderLeaderboard. Outputs a
@@ -16228,6 +16399,11 @@ function fmtBigNum(n) {
 function renderArtistDetail() {
   const a = STATE.selected;
   initDetailChart();
+  // Phase 3 — paint the IPO banner if this ticker has an active listing
+  // window. fetchActiveIpos is TTL-cached (5min); the repaint afterward
+  // handles the first visit where the map isn't warm yet.
+  try { renderIpoBanner(); } catch (_e) { /* non-fatal */ }
+  fetchActiveIpos().then(() => { try { renderIpoBanner(); } catch (_e) {} });
   // Header
   const adBubble = document.getElementById('ad-bubble');
   adBubble.style.background = a.color;
