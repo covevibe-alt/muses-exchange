@@ -5729,6 +5729,71 @@
     .pred-balance { text-align: left; min-width: 0; }
   }
 
+  /* Predictions card actions row + creator badge */
+  .pred-card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pred-market-creator {
+    display: inline-block;
+    padding: 1px 7px;
+    font-size: 10px; font-weight: 600;
+    background: rgba(96,165,250,0.12);
+    color: #60a5fa;
+    border-radius: 999px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .pred-market-creator-house {
+    background: rgba(185,143,255,0.12);
+    color: #b98fff;
+  }
+
+  /* Create-market modal form */
+  .cm-label {
+    display: block;
+    font-size: 11px; font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin: 14px 0 6px;
+  }
+  .cm-input {
+    width: 100%;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+  }
+  .cm-input:focus { border-color: var(--purple); }
+  .cm-input-question { resize: vertical; min-height: 70px; }
+  .cm-input-ticker {
+    font-family: 'SF Mono', Monaco, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .cm-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .cm-row .cm-field { min-width: 0; }
+  .cm-row .cm-label { margin-top: 14px; }
+  .cm-char-count {
+    font-size: 11px; color: var(--text);
+    margin-top: 8px;
+  }
+  .cm-char-count.dim { color: #ff7a7a; }
+  .cm-error {
+    margin-top: 8px;
+    font-size: 12px; color: #ff7a7a;
+  }
+  @media (max-width: 540px) {
+    .cm-row { grid-template-columns: 1fr; }
+  }
+
   /* THESIS CONTEST — leaderboard card + modal */
   .thesis-card {
     background: linear-gradient(135deg, rgba(251,191,36,0.07), rgba(251,191,36,0.01));
@@ -14060,7 +14125,7 @@ async function fetchPredictionMarkets(force) {
   try {
     const { data, error } = await window.SUPABASE
       .from('prediction_markets')
-      .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status')
+      .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status, created_by')
       .in('status', ['open', 'resolved'])
       .order('resolves_at', { ascending: true })
       .limit(50);
@@ -14068,7 +14133,29 @@ async function fetchPredictionMarkets(force) {
       console.warn('[Muses] fetchPredictionMarkets failed:', error.message || error);
       return null;
     }
-    PREDICTION_MARKETS = (data || []);
+    let markets = (data || []);
+
+    // Hydrate creator display names for user-created markets. House markets
+    // (created_by null) just render without a "by …" tag. Single batched
+    // leaderboard lookup keeps this cheap.
+    const creatorIds = Array.from(new Set(
+      markets.map(m => m.created_by).filter(Boolean)
+    ));
+    if (creatorIds.length > 0) {
+      try {
+        const { data: lbRows } = await window.SUPABASE
+          .from('leaderboard')
+          .select('user_id, display_name')
+          .in('user_id', creatorIds);
+        const byId = new Map((lbRows || []).map(r => [r.user_id, r.display_name]));
+        markets = markets.map(m => ({
+          ...m,
+          creator_name: m.created_by ? (byId.get(m.created_by) || 'trader') : null,
+        }));
+      } catch (_) { /* hydration failure is non-fatal — cards just won't show creator */ }
+    }
+
+    PREDICTION_MARKETS = markets;
     _predictionsFetchAt = Date.now();
     return PREDICTION_MARKETS;
   } catch (e) {
@@ -14124,16 +14211,20 @@ function renderPredictionsCard() {
     <div class="pred-card">
       <div class="pred-card-head">
         <div class="pred-card-label">Prediction Markets ${markets.length ? `<span class="pred-count">${markets.length}</span>` : ''}</div>
-        <button class="lg-btn lg-btn-primary" data-pred-action="open">
-          ${markets.length ? 'Place a bet' : 'See markets'}
-        </button>
+        <div class="pred-card-actions">
+          <button class="lg-btn lg-btn-ghost" data-pred-action="create">Create market</button>
+          <button class="lg-btn lg-btn-primary" data-pred-action="open">
+            ${markets.length ? 'Place a bet' : 'See markets'}
+          </button>
+        </div>
       </div>
       <div class="pred-card-sub">
-        Binary YES/NO markets paid in paper credits. Separate $10k bankroll — your stock cash is untouched.
+        Binary YES/NO markets paid in paper credits. Separate $10k bankroll — your stock cash is untouched. Anyone can create a market: max 1 per day, 5 active at a time.
       </div>
     </div>
   `;
   host.querySelector('[data-pred-action="open"]').onclick = () => openPredictionsModal();
+  host.querySelector('[data-pred-action="create"]').onclick = () => openCreateMarketModal();
 }
 
 async function openPredictionsModal() {
@@ -14242,8 +14333,126 @@ function errorToHumanPred(code) {
     case 'market_closed':         return 'This market is closed to new bets.';
     case 'market_expired':        return 'This market has already expired.';
     case 'insufficient_balance':  return 'Not enough balance for that bet.';
+    // Creation errors (migration 019)
+    case 'invalid_question':      return 'Question must be 12–200 characters.';
+    case 'invalid_ticker':        return 'Ticker must be 1–12 alphanumeric characters.';
+    case 'resolves_too_soon':     return 'Resolution date must be at least 6 hours from now.';
+    case 'resolves_too_far':      return 'Resolution date must be within the next 90 days.';
+    case 'rate_limited_24h':      return 'You’ve already created a market in the last 24 hours. Try again tomorrow.';
+    case 'too_many_active':       return 'You already have 5 open markets. Wait until some resolve before creating more.';
     default:                       return String(code || 'Something went wrong');
   }
+}
+
+// Wrap create_user_prediction_market RPC. Returns the raw RPC result so
+// the caller can dispatch on { ok / error / market_id }.
+async function createUserMarketRPC(question, ticker, resolvesAt) {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) {
+    return { error: 'not_signed_in' };
+  }
+  try {
+    const { data, error } = await window.SUPABASE.rpc('create_user_prediction_market', {
+      p_question: question,
+      p_artist_ticker: ticker || null,
+      p_resolves_at: resolvesAt || null,
+    });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e.message || String(e) }; }
+}
+
+// Modal: user creates a new prediction market. Question + optional ticker
+// + resolution date. Routes through the create_user_prediction_market RPC
+// (rate-limited + active-cap'd server-side).
+function openCreateMarketModal() {
+  // Default resolution date: 14 days from now, in datetime-local format.
+  const defaultResolves = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+  const localISO = (d) => {
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  wrap.innerHTML = `
+    <div class="lg-modal lg-modal-wide">
+      <div class="lg-modal-title">Create a prediction market</div>
+      <div class="lg-modal-sub">
+        Free-form open question. Anyone can bet YES/NO with paper credits.
+        Winners share the full pot pro-rata at resolution. Max 1 new market per day, 5 active at a time.
+      </div>
+      <label class="cm-label">Question</label>
+      <textarea class="cm-input cm-input-question" placeholder="Will $TAY drop a surprise album by Christmas?" maxlength="200" rows="3"></textarea>
+      <div class="cm-row">
+        <div class="cm-field">
+          <label class="cm-label">Ticker (optional)</label>
+          <input type="text" class="cm-input cm-input-ticker" placeholder="TAY" maxlength="12" />
+        </div>
+        <div class="cm-field">
+          <label class="cm-label">Resolves at</label>
+          <input type="datetime-local" class="cm-input cm-input-date" value="${localISO(defaultResolves)}" />
+        </div>
+      </div>
+      <div class="cm-char-count">0 / 200 · between 12 and 200 chars</div>
+      <div class="cm-error" hidden></div>
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-ghost" data-act="cancel">Cancel</button>
+        <button class="lg-btn lg-btn-primary" data-act="create">Create market</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  const qEl   = wrap.querySelector('.cm-input-question');
+  const tEl   = wrap.querySelector('.cm-input-ticker');
+  const dEl   = wrap.querySelector('.cm-input-date');
+  const cnt   = wrap.querySelector('.cm-char-count');
+  const errEl = wrap.querySelector('.cm-error');
+  const btn   = wrap.querySelector('[data-act="create"]');
+
+  setTimeout(() => { try { qEl.focus(); } catch (_) {} }, 40);
+  const updateCount = () => {
+    const n = (qEl.value || '').length;
+    cnt.textContent = `${n} / 200 · between 12 and 200 chars`;
+    cnt.className = 'cm-char-count' + (n < 12 || n > 200 ? ' dim' : '');
+  };
+  qEl.oninput = updateCount; updateCount();
+
+  wrap.querySelector('[data-act="cancel"]').onclick = close;
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+
+  btn.onclick = async () => {
+    const q = (qEl.value || '').trim();
+    const t = (tEl.value || '').trim().toUpperCase();
+    // Convert datetime-local back to ISO 8601 with timezone.
+    const dStr = dEl.value;
+    const resolvesAt = dStr ? new Date(dStr).toISOString() : null;
+
+    if (q.length < 12) { errEl.textContent = 'Question must be at least 12 characters.'; errEl.hidden = false; return; }
+    if (!resolvesAt) { errEl.textContent = 'Pick a resolution date.'; errEl.hidden = false; return; }
+
+    btn.disabled = true;
+    const res = await createUserMarketRPC(q, t || null, resolvesAt);
+    btn.disabled = false;
+
+    if (res.error) {
+      errEl.textContent = errorToHumanPred(res.error);
+      errEl.hidden = false;
+      return;
+    }
+
+    // Refresh markets list so the new one appears.
+    await fetchPredictionMarkets(true);
+    renderPredictionsCard();
+    close();
+    if (typeof showToast === 'function') {
+      showToast('Market created. Open it to see your YES/NO pool.', false, {
+        label: 'See markets',
+        handler: () => { try { openPredictionsModal(); } catch (_) {} },
+      });
+    }
+  };
 }
 
 function renderMarketCard(m, userBets) {
@@ -14278,10 +14487,16 @@ function renderMarketCard(m, userBets) {
     : '';
 
   const isClosed = m.status !== 'open' || endsIn <= 0;
+  // Creator badge: "by @creator" for user-created markets, "Muses" for
+  // house-curated ones (created_by null OR creator hydration failed).
+  const creatorBadge = m.creator_name
+    ? `<span class="pred-market-creator">by ${escapeHTML(m.creator_name)}</span>`
+    : `<span class="pred-market-creator pred-market-creator-house">Muses</span>`;
+
   return `
     <div class="pred-market" data-bet-market="${m.id}">
       <div class="pred-market-q">${escapeHTML(m.question)}</div>
-      <div class="pred-market-meta">${escapeHTML(endsLabel)} · pool $${totalPool.toFixed(0)}</div>
+      <div class="pred-market-meta">${escapeHTML(endsLabel)} · pool $${totalPool.toFixed(0)} · ${creatorBadge}</div>
       <div class="pred-odds">
         <div class="pred-odds-bar">
           <div class="pred-odds-yes" style="width: ${yesPct.toFixed(1)}%"><span>${Math.round(yesPct)}% YES</span></div>
