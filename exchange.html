@@ -10124,6 +10124,15 @@
     <symbol id="i-medal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="15" r="6"/><path d="M8.5 9L7 2h10l-1.5 7"/>
     </symbol>
+    <!-- "Leagues" icon — three figures (group) -->
+    <symbol id="i-leagues" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </symbol>
+    <!-- "Predictions" icon — target / crystal ball -->
+    <symbol id="i-predict" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+    </symbol>
     <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 004 0"/>
     </symbol>
@@ -10230,6 +10239,8 @@
     <button class="sb-item" data-nav="swap" data-label="Swap" aria-label="Swap"><svg><use href="#i-swap"/></svg></button>
     <button class="sb-item" data-nav="tournaments" data-label="Tournaments" aria-label="Tournaments"><svg><use href="#i-trophy"/></svg></button>
     <button class="sb-item sb-mobile-hide" data-nav="leaderboard" data-label="Leaderboard" aria-label="Leaderboard"><svg><use href="#i-medal"/></svg></button>
+    <button class="sb-item sb-mobile-hide" data-nav="leagues" data-label="Leagues" aria-label="Leagues"><svg><use href="#i-leagues"/></svg></button>
+    <button class="sb-item sb-mobile-hide" data-nav="predictions" data-label="Predictions" aria-label="Predictions"><svg><use href="#i-predict"/></svg></button>
     <div class="sb-spacer"></div>
     <button class="sb-item sb-menu-btn" id="mobile-menu-btn" data-label="Menu" aria-label="Open menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -10964,23 +10975,48 @@
         <!-- Phase 1 — head-to-head matchup card. Painted by renderMatchupCard(). -->
         <div id="lb-matchup-card"></div>
 
-        <!-- Phase 2 — badges strip. Painted by renderBadgesStrip(). -->
+        <!-- Phase 2 — badges strip. Painted by renderBadgesStrip().
+             Note: badges-strip moves to Portfolio → Achievements in Chunk C.
+             Leagues / Predictions / Thesis hosts moved to dedicated pages
+             (view-leagues, view-predictions) in Chunk A. -->
         <div id="lb-badges-strip"></div>
-
-        <!-- Phase 3 — private leagues card. Painted by renderLeaguesCard(). -->
-        <div id="lb-leagues-card"></div>
-
-        <!-- Phase 4 — prediction markets card. Painted by renderPredictionsCard(). -->
-        <div id="lb-predictions-card"></div>
-
-        <!-- Phase 4 — weekly thesis contest card. Painted by renderThesisCard(). -->
-        <div id="lb-thesis-card"></div>
 
         <!-- Leaderboard will populate with real users once trading opens -->
 
         <div class="card">
           <div id="lb-list"></div>
         </div>
+      </div>
+    </section>
+
+    <!-- ============== YOUR LEAGUES ============== -->
+    <section class="content full hidden" id="view-leagues">
+      <div class="col-main">
+        <div class="section-head">
+          <div>
+            <h1>Your Leagues</h1>
+            <div class="sub">Private invite-only leaderboards. Compete with friends, scope the rivalries.</div>
+          </div>
+        </div>
+        <!-- Painted by renderLeaguesCard() — same renderer that used to live on the leaderboard. -->
+        <div id="lb-leagues-card"></div>
+      </div>
+    </section>
+
+    <!-- ============== PREDICTION MARKETS + THESIS OF THE WEEK ============== -->
+    <section class="content full hidden" id="view-predictions">
+      <div class="col-main">
+        <div class="section-head">
+          <div>
+            <h1>Predictions</h1>
+            <div class="sub">Open markets, weekly theses, and a separate $10k paper-credit bankroll for betting. Your stock-trading cash is untouched.</div>
+          </div>
+        </div>
+        <!-- Painted by renderPredictionsCard() + renderThesisCard(). Both
+             live on the same surface; Chunk B will unify them into a single
+             "Open Questions" feed with user-created markets. -->
+        <div id="lb-predictions-card"></div>
+        <div id="lb-thesis-card"></div>
       </div>
     </section>
 
@@ -13465,6 +13501,26 @@ async function leaveLeagueRPC(leagueId) {
 // Render the "Your Leagues" card on the leaderboard. Shows up to 3
 // joined leagues + Create/Join buttons. Clicking a league opens a
 // detail modal with the member leaderboard and invite code.
+// Page-level renderers — invoked by setView() when the user navigates to
+// /leagues or /predictions. Each one fetches the data + paints the same
+// card-style hosts that used to live on the leaderboard. Chunk B+ will
+// expand these into proper full-page layouts; for now the card UI is
+// reused at the page level so nothing breaks while the structure
+// migrates.
+function renderLeaguesPage() {
+  try { renderLeaguesCard(); } catch (_e) { /* non-fatal */ }
+  fetchUserLeagues().then(() => { try { renderLeaguesCard(); } catch (_e) {} });
+}
+
+function renderPredictionsPage() {
+  // Predictions card + thesis card both live on this page in v1.
+  // Chunk B will merge them into a unified "open questions" feed.
+  try { renderPredictionsCard(); } catch (_e) { /* non-fatal */ }
+  fetchPredictionMarkets().then(() => { try { renderPredictionsCard(); } catch (_e) {} });
+  try { renderThesisCard(); } catch (_e) { /* non-fatal */ }
+  fetchThesisFeed().then(() => { try { renderThesisCard(); } catch (_e) {} });
+}
+
 function renderLeaguesCard() {
   const host = document.getElementById('lb-leagues-card');
   if (!host) return;
@@ -15214,8 +15270,8 @@ function smoothSeries(pts, steps) {
 }
 
 // ============ NAV ============
-const VIEWS = ['markets','artists','genres','portfolio','orders','swap','tournaments','leaderboard','profile','settings','help','artist','tournament','genre'];
-const VIEW_TITLES = { markets: 'Markets', artists: 'Artists', genres: 'Genres', portfolio: 'Portfolio', orders: 'Orders', swap: 'Swap', tournaments: 'Tournaments', leaderboard: 'Leaderboard', profile: 'Profile', settings: 'Settings', help: 'Help & Support', artist: 'Artist', tournament: 'Tournament', genre: 'Genre' };
+const VIEWS = ['markets','artists','genres','portfolio','orders','swap','tournaments','leaderboard','leagues','predictions','profile','settings','help','artist','tournament','genre'];
+const VIEW_TITLES = { markets: 'Markets', artists: 'Artists', genres: 'Genres', portfolio: 'Portfolio', orders: 'Orders', swap: 'Swap', tournaments: 'Tournaments', leaderboard: 'Leaderboard', leagues: 'Your Leagues', predictions: 'Predictions', profile: 'Profile', settings: 'Settings', help: 'Help & Support', artist: 'Artist', tournament: 'Tournament', genre: 'Genre' };
 
 // ============ PAPER / REAL MONEY BADGE HELPERS ============
 const PAPER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>';
@@ -15357,6 +15413,8 @@ function setView(name) {
   if (name === 'genre') renderGenrePage();
   if (name === 'genres') renderGenresDirectory();
   if (name === 'artists') renderAllArtists();
+  if (name === 'leagues') renderLeaguesPage();
+  if (name === 'predictions') renderPredictionsPage();
   if (name === 'profile') renderProfile();
   if (name === 'orders') renderOrdersView();
   if (name === 'swap') renderSwapPage();
@@ -15382,7 +15440,7 @@ window.setView = setView;
 // Netlify SPA rewrite (M8.3) serves exchange.html for all of these paths so the
 // router below can take over after boot.
 const ROUTE_RESERVED = new Set(['markets','artists','genres','genre','portfolio','orders','swap','tournaments','leaderboard','profile','settings','help']);
-const ROOT_SINGLE_ROUTES = new Set(['orders','portfolio','swap','tournaments','leaderboard','profile','settings','help']);
+const ROOT_SINGLE_ROUTES = new Set(['orders','portfolio','swap','tournaments','leaderboard','leagues','predictions','profile','settings','help']);
 let ARTIST_BY_SLUG = {};
 let ARTIST_BY_TICKER = {};
 let ARTIST_TO_SLUG = {};
@@ -20585,18 +20643,10 @@ function renderLeaderboard() {
   try { renderBadgesStrip(); } catch (_e) { /* non-fatal */ }
   fetchUserBadges().then(() => { try { renderBadgesStrip(); } catch (_e) {} });
 
-  // Phase 3 — paint the leagues card. Same cache-and-repaint pattern.
-  try { renderLeaguesCard(); } catch (_e) { /* non-fatal */ }
-  fetchUserLeagues().then(() => { try { renderLeaguesCard(); } catch (_e) {} });
-
-  // Phase 4 — paint the predictions card. Shows open market count and
-  // a "Place a bet" button that opens the full modal.
-  try { renderPredictionsCard(); } catch (_e) { /* non-fatal */ }
-  fetchPredictionMarkets().then(() => { try { renderPredictionsCard(); } catch (_e) {} });
-
-  // Phase 4 — paint the thesis-of-the-week card.
-  try { renderThesisCard(); } catch (_e) { /* non-fatal */ }
-  fetchThesisFeed().then(() => { try { renderThesisCard(); } catch (_e) {} });
+  // Phase 3 + 4 cards (leagues / predictions / thesis) moved to their own
+  // pages in Chunk A — see renderLeaguesPage() / renderPredictionsPage().
+  // The host divs no longer exist on the leaderboard view, so the renderers
+  // would no-op anyway; calls removed to avoid the wasted fetches.
 
   // M14.1 — self-heal path. If the user is signed in but has never been
   // upserted (old account, trade happened while upsertLeaderboardRow
