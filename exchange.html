@@ -10385,6 +10385,9 @@
   }
 
   .compete-slider-wrap { position: relative; }
+  /* Track wraps slider + arrows but NOT dots, so arrows sit at the
+     vertical center of the slide content. */
+  .cs-track { position: relative; }
   .compete-slider {
     display: grid;
     grid-auto-flow: column;
@@ -10609,31 +10612,23 @@
     margin-top: 5px;
   }
   /* Matchup VS */
+  /* Matchup VS — two SVG silhouettes */
   .cs-vs {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 14px;
   }
   .cs-vs-side {
     display: grid;
     place-items: center;
     gap: 6px;
   }
-  .cs-vs-bubble {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--purple-2), var(--purple));
-    display: grid;
-    place-items: center;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: #fff;
-    box-shadow: 0 8px 30px var(--purple-glow);
+  .cs-person {
+    width: 80px; height: 110px;
+    filter: drop-shadow(0 8px 22px rgba(124, 58, 237, 0.30));
   }
-  .cs-vs-side:nth-child(3) .cs-vs-bubble {
-    background: linear-gradient(135deg, #ff8a65, var(--down));
-    box-shadow: 0 8px 30px rgba(255,138,101,0.35);
+  .cs-vs-side:nth-child(3) .cs-person {
+    filter: drop-shadow(0 8px 22px rgba(255, 138, 101, 0.30));
   }
   .cs-vs-handle {
     font-family: 'JetBrains Mono', monospace;
@@ -10644,38 +10639,47 @@
   .cs-vs-mid {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-style: italic;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
     color: var(--text-faint);
     letter-spacing: -0.02em;
   }
-  /* Leagues stack */
-  .cs-leagues-stack {
+
+  /* Leagues — group of overlapping SVG silhouettes */
+  .cs-lg-group {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
+    justify-content: center;
   }
-  .cs-leagues-stack .cs-la {
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    border: 3px solid var(--card);
-    margin-left: -14px;
+  .cs-lg-person {
+    width: 60px; height: 84px;
+    margin-left: -22px;
+    filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.4));
+  }
+  .cs-lg-person:first-child { margin-left: 0; }
+  /* Slightly stagger heights for organic group feel */
+  .cs-lg-person:nth-child(1) { transform: translateY(6px); }
+  .cs-lg-person:nth-child(2) { transform: translateY(-2px); }
+  .cs-lg-person:nth-child(3) { transform: translateY(-8px); }
+  .cs-lg-person:nth-child(4) { transform: translateY(-3px); }
+  .cs-lg-person:nth-child(5) { transform: translateY(4px); }
+
+  /* Season ladder — 3-bar podium SVG */
+  .cs-season {
     display: grid;
     place-items: center;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #fff;
+    gap: 10px;
   }
-  .cs-leagues-stack .cs-la:first-child { margin-left: 0; }
-  .cs-leagues-pill {
-    margin-left: 14px;
-    padding: 7px 13px;
-    border-radius: 999px;
-    background: var(--up-soft);
-    border: 1px solid rgba(16, 216, 139, 0.3);
-    font-size: 12px;
+  .cs-season svg {
+    width: 200px; height: 160px;
+    filter: drop-shadow(0 8px 24px rgba(167, 139, 250, 0.30));
+  }
+  .cs-season-cap {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
     font-weight: 600;
-    color: var(--up);
+    color: var(--text);
+    letter-spacing: -0.01em;
   }
   /* Predictions question card */
   .cs-pred-card {
@@ -10806,6 +10810,112 @@
   }
   .cs-dot:hover { background: rgba(167, 139, 250, 0.6); }
 
+  /* IPO modal contents */
+  .ipos-modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 4px 2px 10px;
+  }
+  .ipos-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 14px 0 8px;
+  }
+  .ipos-section-title:first-child { margin-top: 4px; }
+  .ipos-empty,
+  .ipos-loading {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 32px 16px;
+    font-size: 13px;
+  }
+  .ipo-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    background: var(--card-2);
+  }
+  .ipo-row-info { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .ipo-row-tag {
+    align-self: flex-start;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    padding: 2px 7px;
+    border-radius: 999px;
+    margin-bottom: 4px;
+  }
+  .ipo-row-tag.live {
+    background: rgba(16,216,139,0.14);
+    color: var(--up);
+    border: 1px solid rgba(16,216,139,0.4);
+  }
+  .ipo-row-tag.upcoming {
+    background: rgba(255,138,101,0.14);
+    color: #ff8a65;
+    border: 1px solid rgba(255,138,101,0.4);
+  }
+  .ipo-row-name { font-weight: 700; color: var(--text); font-size: 14px; }
+  .ipo-row-tk   { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-faint); }
+  .ipo-row-cd {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 4px;
+    align-items: end;
+    text-align: right;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .ipo-row-cd-lab {
+    grid-column: 1 / -1;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: right;
+    margin-top: 2px;
+    font-weight: 600;
+  }
+  .ipo-row-cta { white-space: nowrap; }
+
+  /* Matchup explainer */
+  .matchup-explainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 8px 0 18px;
+  }
+  .me-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--text);
+  }
+  .me-num {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--purple-soft);
+    color: var(--purple-2);
+    font-weight: 700;
+    font-size: 11px;
+    display: grid;
+    place-items: center;
+    margin-top: 1px;
+  }
+
   /* Mobile */
   @media (max-width: 760px) {
     .cs-card {
@@ -10817,6 +10927,12 @@
     .cs-visual { min-height: 160px; order: 2; }
     .cs-arrow { display: none; }
     .cs-title { font-size: 22px; }
+    .ipo-row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .ipo-row-cd, .ipo-row-cta { justify-self: stretch; text-align: left; }
+    .ipo-row-cta { width: 100%; }
   }
 
 </style>
@@ -11290,6 +11406,21 @@
     <section class="content" id="view-markets">
       <div class="col-main">
 
+        <!-- COMPETE SLIDER — top of markets view. 6-panel auto-advancing
+             carousel: IPOs / Matchups / Leagues / Predictions / Season /
+             Tournaments. Painted by renderCompeteSlider() in renderMarkets(). -->
+        <div class="compete-block" id="compete-block">
+          <div class="compete-slider-wrap">
+            <div class="cs-track">
+              <button class="cs-arrow cs-arrow-prev" aria-label="Previous slide" type="button">‹</button>
+              <button class="cs-arrow cs-arrow-next" aria-label="Next slide" type="button">›</button>
+              <div class="compete-slider" id="competeSlider"
+                   role="region" aria-roledescription="carousel" aria-label="Compete features"></div>
+            </div>
+            <div class="cs-dots" id="competeSliderDots" role="tablist"></div>
+          </div>
+        </div>
+
         <div class="discover-hero">
           <div class="dh-bg"></div>
           <div class="dh-eyebrow"><span class="dot"></span>Artist Marketplace</div>
@@ -11320,24 +11451,6 @@
           <div class="ms-tile"><div class="l">Monthly Listeners Tracked <span class="info-tip">?<span class="tip-text">Real-time streaming data aggregated from Spotify and YouTube.</span></span></div><div class="v" id="ms-vol">—</div><div class="d">Spotify + YouTube · live</div></div>
           <div class="ms-tile"><div class="l">Listed Artists <span class="info-tip">?<span class="tip-text">Total number of artists currently available to trade on Muses.</span></span></div><div class="v" id="ms-count">—</div><div class="d">Active markets</div></div>
           <div class="ms-tile"><div class="l">Top Gainer <span class="info-tip">?<span class="tip-text">Artist with the highest price increase in the last 24 hours.</span></span></div><div class="v" id="ms-top">—</div><div class="d up" id="ms-top-d">—</div></div>
-        </div>
-
-        <!-- COMPETE SLIDER — Chunk D (in-app). 5-panel auto-advancing carousel
-             showing IPOs / Matchups / Leagues / Predictions / Tournaments with
-             live counts from get_public_compete_stats(). Painted by
-             renderCompeteSlider() called from renderMarkets(). -->
-        <div class="compete-block" id="compete-block">
-          <div class="compete-head">
-            <h2>More than just <em>a portfolio.</em></h2>
-            <div class="compete-sub">Trade against friends · predict the next breakout · climb the season ladder</div>
-          </div>
-          <div class="compete-slider-wrap">
-            <button class="cs-arrow cs-arrow-prev" aria-label="Previous slide" type="button">‹</button>
-            <button class="cs-arrow cs-arrow-next" aria-label="Next slide" type="button">›</button>
-            <div class="compete-slider" id="competeSlider"
-                 role="region" aria-roledescription="carousel" aria-label="Compete features"></div>
-            <div class="cs-dots" id="competeSliderDots" role="tablist"></div>
-          </div>
         </div>
 
         <div>
@@ -12892,13 +13005,18 @@ async function loadArtistImages() {
       }
     } catch (e) {}
   }));
-  // Re-render anything currently visible
+  // Re-render anything currently visible. Each helper guarded against null
+  // in case the view element isn't in the DOM (Sentry MUSES-EXCHANGE-5).
+  const _isVisible = (id) => {
+    const el = document.getElementById(id);
+    return el && !el.classList.contains('hidden');
+  };
   renderMarkets();
-  if (!document.getElementById('view-artist').classList.contains('hidden')) renderArtistDetail();
-  if (!document.getElementById('view-portfolio').classList.contains('hidden')) renderPortfolio();
-  if (!document.getElementById('view-genre').classList.contains('hidden')) renderGenrePage();
-  if (!document.getElementById('view-genres').classList.contains('hidden')) renderGenresDirectory();
-  if (!document.getElementById('view-artists').classList.contains('hidden')) renderAllArtists();
+  if (_isVisible('view-artist'))    renderArtistDetail();
+  if (_isVisible('view-portfolio')) renderPortfolio();
+  if (_isVisible('view-genre'))     renderGenrePage();
+  if (_isVisible('view-genres'))    renderGenresDirectory();
+  if (_isVisible('view-artists'))   renderAllArtists();
 }
 
 // Deterministic PRNG
@@ -18234,30 +18352,60 @@ function renderSectorStrip() {
 }
 
 function renderFeatured() {
-  // Top 3 by highest Muses price
-  const featured = [...ARTISTS]
-    .sort((a,b) => b.price - a.price)
-    .slice(0, 3);
-  // Tag derivation — each tag is earned from a real signal:
-  //   · HIGHEST PRICE → most expensive artist
-  //   · BIGGEST MOVER → highest 24h change of the featured set
-  //   · otherwise     → TOP ARTIST
+  // Featured This Week — deterministic weekly rotation. Same 3 artists for
+  // every visitor in any given ISO week, refreshed every Monday. Excludes
+  // artists with no price data so the grid never shows blanks.
+  // The tag set is derived from the live signal (price, 24h, listeners)
+  // so each card has a real reason to be there even when "featured" doesn't
+  // mean "top by price" anymore.
+  const pool = ARTISTS.filter(a => Number.isFinite(a.price) && a.price > 0);
+  const weekKey = (() => {
+    const now = new Date();
+    // ISO week number — coarse enough that all visitors see the same set
+    // for the entire week, fine enough that it actually rotates weekly.
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const dayNum = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const wk = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `${d.getUTCFullYear()}-W${wk}`;
+  })();
+  // Hash week key + ticker → stable shuffle per week.
+  const hash = (s) => {
+    let h = 2166136261 >>> 0;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h;
+  };
+  const featured = [...pool]
+    .map(a => ({ a, score: hash(weekKey + ':' + a.ticker) }))
+    .sort((x, y) => x.score - y.score)
+    .slice(0, 3)
+    .map(x => x.a);
+
+  // Tag derivation — each tag is earned from a real signal of THIS week's set:
+  //   · TOP STREAMS → highest current listeners in the featured 3
+  //   · BIGGEST MOVER → highest 24h change in the featured 3
+  //   · otherwise     → THIS WEEK'S PICK
+  const topListenersT = [...featured].sort((a,b) => (b.listeners||0) - (a.listeners||0))[0]?.ticker;
   const biggestMoverT = [...featured].sort((a,b) => b.change24h - a.change24h)[0]?.ticker;
-  const tagFor = (a, i) => {
-    if (i === 0) return 'HIGHEST PRICE';
+  const tagFor = (a) => {
+    if (a.ticker === topListenersT) return 'TOP STREAMS';
     if (a.ticker === biggestMoverT && a.change24h > 0) return 'BIGGEST MOVER';
-    return 'TOP ARTIST';
+    return "THIS WEEK'S PICK";
   };
   const grid = document.getElementById('featured-grid');
   // Guard against null (Sentry MUSES-EXCHANGE-3): renderMarkets() can be
   // called from loadArtistImages() before the markets DOM is ready, or
   // when the section was never rendered in this session.
   if (!grid) return;
-  grid.innerHTML = featured.map((a, i) => {
+  grid.innerHTML = featured.map((a) => {
     const up = a.change24h >= 0;
     return `
       <div class="featured-card" data-ticker="${a.ticker}">
-        <div class="fc-tag">${tagFor(a, i)}</div>
+        <div class="fc-tag">${tagFor(a)}</div>
         <div class="fc-head">
           ${bubbleHTML(a, 48)}
           <div>
@@ -18552,8 +18700,7 @@ function _competePanels(stats) {
       ],
       visual: _competeIPOVisual(ipo),
       _ipoTarget: ipo.next_starts_at ? new Date(ipo.next_starts_at) : null,
-      ctaPrimary: { label: 'See IPOs', view: 'tournaments' },
-      ctaSecondary: { label: 'Browse markets', view: 'markets' },
+      cta: { label: 'See IPOs', action: 'openIposModal' },
     },
     {
       id: 'matchup',
@@ -18566,8 +18713,7 @@ function _competePanels(stats) {
         { num: _competeFmtCount(mu.this_week_total), label: 'This week' },
       ],
       visual: _competeMatchupVisual(),
-      ctaPrimary: { label: 'See your matchup', view: 'leaderboard' },
-      ctaSecondary: { label: 'Leaderboard', view: 'leaderboard' },
+      cta: { label: 'See your matchup', action: 'openMatchupExplainerModal' },
     },
     {
       id: 'leagues',
@@ -18579,12 +18725,11 @@ function _competePanels(stats) {
         { num: _competeFmtCount(lg.total_members), label: 'Members' },
       ],
       visual: _competeLeaguesVisual(),
-      ctaPrimary: { label: 'Start a league', view: 'leagues' },
-      ctaSecondary: { label: 'Join one', view: 'leagues' },
+      cta: { label: 'Start a league', view: 'leagues' },
     },
     {
       id: 'predictions',
-      tag: pr.open_count > 0 ? 'Open markets' : 'Prediction markets',
+      tag: 'Prediction markets',
       tagPulse: pr.open_count > 0,
       title: 'Wager on <em>what happens next.</em>',
       lede: "Will $TYLA cross $100? Will any trader break +100% by season's end? Stake paper credits — the crowd sets the odds.",
@@ -18593,22 +18738,32 @@ function _competePanels(stats) {
         { num: _competeFmtMoney(pr.total_pool), label: 'In the pool' },
       ],
       visual: _competePredictionsVisual(pr),
-      ctaPrimary: { label: 'See open markets', view: 'predictions' },
-      ctaSecondary: { label: 'Create a market', view: 'predictions' },
+      cta: { label: 'See open markets', view: 'predictions' },
+    },
+    {
+      id: 'season',
+      tag: tn.season_name ? 'Season live' : 'Season ladder',
+      tagPulse: !!tn.season_name,
+      title: 'Climb the <em>season ladder.</em>',
+      lede: 'Every quarter, everyone resets to the same starting line. The all-time leaderboard tracks who outperforms when the slate is clean.',
+      stats: [
+        { num: _competeFmtCount(stats?.players), label: 'Active traders' },
+        { num: tn.season_name ? '90d' : '—',     label: 'Season length' },
+      ],
+      visual: _competeSeasonVisual(tn),
+      cta: { label: 'Open leaderboard', view: 'leaderboard' },
     },
     {
       id: 'tournaments',
-      tag: tn.season_name ? 'Season live' : 'Seasons & cups',
-      tagPulse: !!tn.season_name,
-      title: 'Climb the <em>season ladder.</em>',
-      lede: "Quarterly seasons reset everyone to the same starting line. Monthly genre cups crown the sharpest pop, hip-hop, and Latin traders.",
+      tag: 'Tournaments & cups',
+      title: 'Draft a lineup. <em>Win the cup.</em>',
+      lede: 'Time-boxed events where you draft an artist lineup, lock it in, and let it ride. Monthly genre cups crown the sharpest pop, hip-hop, and Latin traders.',
       stats: [
-        { num: _competeFmtCount(tn.cup_genres_running), label: 'Cups running' },
-        { num: _competeFmtCount(tn.cup_entrants_this_month), label: 'Entrants' },
+        { num: _competeFmtCount(tn.cup_genres_running),       label: 'Cups running' },
+        { num: _competeFmtCount(tn.cup_entrants_this_month),  label: 'Entrants' },
       ],
       visual: _competeTournamentsVisual(tn),
-      ctaPrimary: { label: 'Tournaments', view: 'tournaments' },
-      ctaSecondary: { label: 'Leaderboard', view: 'leaderboard' },
+      cta: { label: 'Open tournaments', view: 'tournaments' },
     },
   ];
 }
@@ -18628,32 +18783,98 @@ function _competeIPOVisual(ipo) {
       </div>
     </div>`;
 }
+// Two-person silhouette for the matchup VS — masculine left, feminine right.
+// Geometric only: no faces. Uses brand colors via CSS vars.
 function _competeMatchupVisual() {
+  // Person SVG: head + shoulders block. Different shoulder/torso shapes
+  // imply masculine vs feminine without being photoreal.
+  const personM = `
+    <svg class="cs-person" viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="cs-vs-grad-m" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#6d28d9"/>
+      </linearGradient></defs>
+      <circle cx="40" cy="28" r="18" fill="url(#cs-vs-grad-m)"/>
+      <path d="M10 110 Q10 60 40 60 Q70 60 70 110 Z" fill="url(#cs-vs-grad-m)"/>
+    </svg>`;
+  const personF = `
+    <svg class="cs-person" viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="cs-vs-grad-f" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ff8a65"/><stop offset="1" stop-color="#ff4d6d"/>
+      </linearGradient></defs>
+      <circle cx="40" cy="28" r="18" fill="url(#cs-vs-grad-f)"/>
+      <!-- Slightly narrower neckline, flared shoulders + torso. -->
+      <path d="M14 110 Q22 64 40 60 Q58 64 66 110 Z" fill="url(#cs-vs-grad-f)"/>
+      <!-- Hair detail: subtle longer outline behind the head. -->
+      <path d="M22 26 Q26 8 40 8 Q54 8 58 26 L58 36 Q50 30 40 30 Q30 30 22 36 Z" fill="url(#cs-vs-grad-f)" opacity="0.55"/>
+    </svg>`;
   return `
     <div class="cs-vs">
       <div class="cs-vs-side">
-        <div class="cs-vs-bubble">M</div>
+        ${personM}
         <div class="cs-vs-handle">@maya · +14.2%</div>
       </div>
       <div class="cs-vs-mid">vs</div>
       <div class="cs-vs-side">
-        <div class="cs-vs-bubble">J</div>
+        ${personF}
         <div class="cs-vs-handle">@jules · +9.6%</div>
       </div>
     </div>`;
 }
+
+// Group of 5 stylized people overlapping — your crew.
 function _competeLeaguesVisual() {
-  const grads = [
-    'linear-gradient(135deg,#ff8a65,#a78bfa)',
-    'linear-gradient(135deg,#8b5cf6,#6d28d9)',
-    'linear-gradient(135deg,#ffd166,#10d88b)',
-    'linear-gradient(135deg,#ff4d6d,#ff8a65)',
+  // 5 head+shoulders shapes in different brand-color gradients, overlapping
+  // left to right so it reads as a small group photo silhouette.
+  const palette = [
+    ['#ff8a65', '#ff4d6d'], // coral/pink
+    ['#a78bfa', '#7c3aed'], // light/dark purple
+    ['#10d88b', '#0e9c69'], // mint
+    ['#ffd166', '#ff8a65'], // gold/coral
+    ['#7c3aed', '#4c1d95'], // deep purple
   ];
-  const inits = ['L', 'K', 'M', 'S'];
+  const people = palette.map(([from, to], i) => {
+    const id = `cs-lg-grad-${i}`;
+    return `
+      <svg class="cs-lg-person" viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/>
+        </linearGradient></defs>
+        <circle cx="40" cy="28" r="18" fill="url(#${id})"/>
+        <path d="M10 110 Q10 60 40 60 Q70 60 70 110 Z" fill="url(#${id})"/>
+      </svg>`;
+  }).join('');
+  return `<div class="cs-lg-group">${people}</div>`;
+}
+
+// Season ladder visual — three ascending bars + a star on top, evoking a
+// leaderboard/podium without re-using the trophy iconography of tournaments.
+function _competeSeasonVisual(tn) {
   return `
-    <div class="cs-leagues-stack">
-      ${inits.map((i, idx) => `<div class="cs-la" style="background:${grads[idx]}">${i}</div>`).join('')}
-      <div class="cs-leagues-pill">+ Your crew</div>
+    <div class="cs-season">
+      <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="cs-season-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#6d28d9"/>
+          </linearGradient>
+          <linearGradient id="cs-season-grad-2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ff8a65"/><stop offset="1" stop-color="#ff4d6d"/>
+          </linearGradient>
+          <linearGradient id="cs-season-grad-3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#10d88b"/><stop offset="1" stop-color="#0e9c69"/>
+          </linearGradient>
+        </defs>
+        <!-- Three ascending bars (3rd, 1st, 2nd as in a real podium) -->
+        <rect x="20"  y="100" width="44" height="56"  rx="6" fill="url(#cs-season-grad-3)"/>
+        <rect x="78"  y="60"  width="44" height="96"  rx="6" fill="url(#cs-season-grad)"/>
+        <rect x="136" y="80"  width="44" height="76"  rx="6" fill="url(#cs-season-grad-2)"/>
+        <!-- Position numbers -->
+        <text x="42"  y="135" text-anchor="middle" fill="#fff" font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="22" opacity="0.9">3</text>
+        <text x="100" y="115" text-anchor="middle" fill="#fff" font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="26" opacity="0.95">1</text>
+        <text x="158" y="125" text-anchor="middle" fill="#fff" font-family="Plus Jakarta Sans, sans-serif" font-weight="700" font-size="22" opacity="0.9">2</text>
+        <!-- Crown on the #1 bar -->
+        <path d="M86 50 L94 30 L100 44 L106 30 L114 50 Z" fill="#FFD166" opacity="0.95"/>
+      </svg>
+      <div class="cs-season-cap">${_competeEscape(tn.season_name || 'This season')}</div>
     </div>`;
 }
 function _competePredictionsVisual(pr) {
@@ -18703,6 +18924,10 @@ function _competeSlideHTML(p) {
     </div>
   `).join('');
   const arrow = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>`;
+  // CTA can be a SPA route (data-cs-nav) or a custom handler (data-cs-action).
+  const ctaAttr = p.cta?.view
+    ? `data-cs-nav="${_competeEscape(p.cta.view)}"`
+    : (p.cta?.action ? `data-cs-action="${_competeEscape(p.cta.action)}"` : '');
   return `
     <div class="cs-slide">
       <div class="cs-card" data-panel="${p.id}">
@@ -18712,8 +18937,7 @@ function _competeSlideHTML(p) {
           <p class="cs-lede">${_competeEscape(p.lede)}</p>
           <div class="cs-stat-row">${stats}</div>
           <div class="cs-cta-row">
-            <button type="button" class="cs-cta" data-cs-nav="${p.ctaPrimary.view}">${_competeEscape(p.ctaPrimary.label)} ${arrow}</button>
-            <button type="button" class="cs-cta cs-cta-ghost" data-cs-nav="${p.ctaSecondary.view}">${_competeEscape(p.ctaSecondary.label)}</button>
+            <button type="button" class="cs-cta" ${ctaAttr}>${_competeEscape(p.cta?.label || 'Open')} ${arrow}</button>
           </div>
         </div>
         <div class="cs-visual">${p.visual}</div>
@@ -18798,13 +19022,26 @@ function _competeWireSlider(slider, dots, count) {
     if (e.key === 'ArrowLeft')  { state.prev(); state.paused = true; setTimeout(() => state.paused = false, COMPETE_AUTOPLAY_MS); }
   });
 
-  // CTA + nav buttons — route via SPA setView()
+  // CTA + nav buttons — route via SPA setView() OR dispatch a registered action.
   slider.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-cs-nav]');
-    if (!btn) return;
-    e.preventDefault();
-    const view = btn.dataset.csNav;
-    if (typeof setView === 'function') setView(view);
+    const navBtn = e.target.closest('[data-cs-nav]');
+    if (navBtn) {
+      e.preventDefault();
+      const view = navBtn.dataset.csNav;
+      if (typeof setView === 'function') setView(view);
+      return;
+    }
+    const actBtn = e.target.closest('[data-cs-action]');
+    if (actBtn) {
+      e.preventDefault();
+      const action = actBtn.dataset.csAction;
+      const fn = window[action];
+      if (typeof fn === 'function') {
+        try { fn(); } catch (err) { console.warn('[Muses] cs-action handler failed:', action, err); }
+      } else {
+        console.warn('[Muses] cs-action handler not found:', action);
+      }
+    }
   });
 
   startAuto();
@@ -18837,6 +19074,142 @@ function _competeRefreshCountdowns(panels) {
     }
   });
 }
+
+// ──────────────────────────────────────────────────────────────────────────
+// IPO modal — opened from the slider's IPO panel CTA. Lists active +
+// upcoming IPOs with countdowns and "Trade $X" deep-links into artist
+// detail. Pulls from the artist_ipos table (anon-readable… actually no,
+// `artist_ipos` is authenticated-only RLS; we hit the same SUPABASE
+// client the rest of the app uses, so signed-in users see live data and
+// signed-out users see a friendly empty state). Falls back gracefully.
+// ──────────────────────────────────────────────────────────────────────────
+async function _competeFetchAllIpos() {
+  if (!window.SUPABASE) return [];
+  try {
+    const { data, error } = await window.SUPABASE
+      .from('artist_ipos')
+      .select('ticker, status, starts_at, ends_at')
+      .in('status', ['live', 'pending'])
+      .order('starts_at', { ascending: true })
+      .limit(20);
+    if (error) throw error;
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.warn('[Muses] _competeFetchAllIpos failed:', e?.message || e);
+    return [];
+  }
+}
+
+function openIposModal() {
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  wrap.innerHTML = `
+    <div class="lg-modal lg-modal-wide">
+      <div class="lg-modal-title">IPOs</div>
+      <div class="lg-modal-sub">Every Friday a new artist hits the exchange. Live IPOs trade now; upcoming IPOs open soon.</div>
+      <div id="ipos-modal-body" class="ipos-modal-body">
+        <div class="ipos-loading">Loading IPOs…</div>
+      </div>
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-ghost" data-act="close">Close</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  wrap.querySelector('[data-act="close"]').onclick = close;
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+  document.addEventListener('keydown', function _onEsc(e) {
+    if (e.key === 'Escape') { close(); document.removeEventListener('keydown', _onEsc); }
+  });
+
+  const body = wrap.querySelector('#ipos-modal-body');
+  _competeFetchAllIpos().then(rows => {
+    if (!body.isConnected) return;
+    if (!rows.length) {
+      body.innerHTML = `<div class="ipos-empty">No IPOs scheduled right now. The next listing is announced every Thursday.</div>`;
+      return;
+    }
+    const now = Date.now();
+    const live = rows.filter(r => r.status === 'live' && now <= new Date(r.ends_at).getTime());
+    const upcoming = rows.filter(r => r.status === 'pending' && now < new Date(r.starts_at).getTime());
+
+    const renderRow = (r, kind) => {
+      const target = kind === 'live' ? new Date(r.ends_at) : new Date(r.starts_at);
+      const cd = _competeCountdownParts(target);
+      const artist = (typeof ARTISTS !== 'undefined' && ARTISTS.find(a => a.ticker === r.ticker)) || null;
+      const name = artist?.name || r.ticker;
+      return `
+        <div class="ipo-row" data-ticker="${_competeEscape(r.ticker)}">
+          <div class="ipo-row-info">
+            <div class="ipo-row-tag ${kind === 'live' ? 'live' : 'upcoming'}">${kind === 'live' ? 'LIVE' : 'UPCOMING'}</div>
+            <div class="ipo-row-name">${_competeEscape(name)}</div>
+            <div class="ipo-row-tk">$${_competeEscape(r.ticker)}</div>
+          </div>
+          <div class="ipo-row-cd">
+            <span>${cd.d}d</span><span>${cd.h}h</span><span>${cd.m}m</span>
+            <div class="ipo-row-cd-lab">${kind === 'live' ? 'left' : 'until launch'}</div>
+          </div>
+          <button class="lg-btn lg-btn-primary ipo-row-cta" data-trade="${_competeEscape(r.ticker)}">Trade $${_competeEscape(r.ticker)}</button>
+        </div>`;
+    };
+
+    let html = '';
+    if (live.length) {
+      html += `<div class="ipos-section-title">Live now (${live.length})</div>`;
+      html += live.map(r => renderRow(r, 'live')).join('');
+    }
+    if (upcoming.length) {
+      html += `<div class="ipos-section-title">Upcoming (${upcoming.length})</div>`;
+      html += upcoming.map(r => renderRow(r, 'upcoming')).join('');
+    }
+    body.innerHTML = html;
+
+    body.querySelectorAll('[data-trade]').forEach(btn => {
+      btn.onclick = () => {
+        const ticker = btn.dataset.trade;
+        close();
+        if (typeof navigateToArtist === 'function') navigateToArtist(ticker);
+      };
+    });
+  });
+}
+window.openIposModal = openIposModal;
+
+// ──────────────────────────────────────────────────────────────────────────
+// Matchup explainer modal — temporary stand-in until the weekly pairing
+// engine ships. Shown from the slider's Matchups CTA. Tells the user what
+// matchups are and how to qualify; doesn't claim to surface a real pairing.
+// ──────────────────────────────────────────────────────────────────────────
+function openMatchupExplainerModal() {
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  wrap.innerHTML = `
+    <div class="lg-modal">
+      <div class="lg-modal-title">Weekly matchups · coming next Monday</div>
+      <div class="lg-modal-sub" style="margin-bottom: 14px">
+        Every Monday at 00:00 UTC you'll be paired head-to-head with another active trader for the week.
+        Highest weekly portfolio return wins.
+      </div>
+      <div class="matchup-explainer">
+        <div class="me-step"><span class="me-num">1</span><span>Make at least one trade this week.</span></div>
+        <div class="me-step"><span class="me-num">2</span><span>Monday 00:00 UTC — you're paired with another active trader.</span></div>
+        <div class="me-step"><span class="me-num">3</span><span>Friday 23:59 UTC — highest weekly return wins. Three losses in a row drops you a tier.</span></div>
+      </div>
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-ghost" data-act="close">Got it</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  wrap.querySelector('[data-act="close"]').onclick = close;
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+  document.addEventListener('keydown', function _onEsc(e) {
+    if (e.key === 'Escape') { close(); document.removeEventListener('keydown', _onEsc); }
+  });
+}
+window.openMatchupExplainerModal = openMatchupExplainerModal;
 
 let _competeCountdownInterval = null;
 function renderCompeteSlider() {
