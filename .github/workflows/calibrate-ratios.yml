@@ -1,0 +1,67 @@
+name: Calibrate listener ratios
+
+# Replaces the manual browser-based scraper that ran on Sander's Mac.
+# Pulls monthly-listener data from kworb.net (free, no API key, daily
+# refresh on their side), recomputes per-artist monthlyListeners/followers
+# ratios, and commits an updated listener-ratios.json. The hourly
+# fetch-prices workflow then picks up the new ratios from main on its
+# next run.
+#
+# Schedule: four times a day (00:15, 06:15, 12:15, 18:15 UTC). The :15
+# minute deliberately avoids colliding with fetch-prices.yml at :00 and
+# :30. kworb itself only refreshes once daily (typically 03:00–05:00 UTC),
+# so the four runs converge on the same data — we run multiple times for
+# resilience against transient kworb downtime, not freshness.
+#
+# Required repo secrets:
+#   SPOTIFY_CLIENT_ID
+#   SPOTIFY_CLIENT_SECRET
+# (Same secrets used by fetch-prices.yml — followers come from the
+# standard Web API.)
+
+on:
+  schedule:
+    - cron: '15 0,6,12,18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  # Never run two calibrations in parallel — they'd race on the commit.
+  group: calibrate-ratios
+  cancel-in-progress: false
+
+jobs:
+  calibrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run calibrator
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+        run: python app/calibrate-ratios.py
+
+      - name: Commit updated ratios
+        run: |
+          git config user.name "Muse Calibration Bot"
+          git config user.email "bot@muses.exchange"
+          git add app/listener-ratios.json
+          if git diff --staged --quiet; then
+            echo "No ratio changes — skipping commit."
+          else
+            git commit -m "chore: calibrate listener ratios $(date -u +%Y-%m-%dT%H:%MZ)"
+            # Retry once on push failure (common if fetch-prices pushed first).
+            git push || (git pull --rebase -X theirs && git push)
+          fi
