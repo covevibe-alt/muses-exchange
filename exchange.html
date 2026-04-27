@@ -10819,10 +10819,8 @@
           </div>
         </div>
 
-        <!-- ACHIEVEMENTS — Chunk C. Painted by renderAchievementsSection().
-             Hosts the 6 most-recent (or featured) badges + a "View all" CTA
-             that opens the full-catalog modal. -->
-        <div id="pf-achievements-section"></div>
+        <!-- ACHIEVEMENTS — moved to the Profile page (Chunk C fixup).
+             Lives at #pf-achievements-section inside renderProfile(). -->
 
         <!-- FAVORITES -->
         <div class="card">
@@ -20721,11 +20719,8 @@ function updateCashDisplay() {
 function renderPortfolio() {
   initPortfolioChart();
 
-  // Achievements section (Chunk C) — paints into #pf-achievements-section.
-  // Uses cached USER_BADGES if present; force-refreshes async to surface
-  // any new badges earned mid-session.
-  try { renderAchievementsSection(); } catch (_e) { /* non-fatal */ }
-  fetchUserBadges().then(() => { try { renderAchievementsSection(); } catch (_e) {} });
+  // Achievements section moved to the Profile page (renderProfile()).
+  // Was briefly hosted here in Chunk C; relocated per user request.
 
   const tickers = Object.keys(STATE.holdings);
 
@@ -21255,8 +21250,8 @@ function renderLeaderboard() {
   // same TTL-cached pattern as the matchup card. Hides itself when the
   // user has zero badges (rare, since early-adopter + email-subscriber
   // are backfilled to everyone).
-  try { renderBadgesStrip(); } catch (_e) { /* non-fatal */ }
-  fetchUserBadges().then(() => { try { renderBadgesStrip(); } catch (_e) {} });
+  // Badges strip removed in Chunk C — Achievements now lives on the
+  // Profile page via renderAchievementsSection().
 
   // Phase 3 + 4 cards (leagues / predictions / thesis) moved to their own
   // pages in Chunk A — see renderLeaguesPage() / renderPredictionsPage().
@@ -21714,8 +21709,10 @@ function renderProfile() {
   const memberSince = STATE.firstBuyAt
     ? new Date(STATE.firstBuyAt).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
     : 'April 2026';
-  const badges = profileBadges(s);
-  const earnedCount = badges.filter(b => b.earned).length;
+  // profileBadges() is no longer rendered here — see Chunk C: the
+  // Achievements card on this page is now driven by the server-side badge
+  // catalog via renderAchievementsSection(). Function kept around for
+  // potential reuse (it's cheap, and other surfaces could opt in later).
   const profile = STATE.profile;
   const grad = AVATAR_GRADIENTS[profile.avatarGradient] || AVATAR_GRADIENTS.sunset;
   const initial = (profile.name || 'S').charAt(0).toUpperCase();
@@ -21827,22 +21824,12 @@ function renderProfile() {
 
       <!-- RIGHT COLUMN -->
       <div class="prof-col">
-        <!-- Achievements -->
-        <div class="card prof-card">
-          <div class="prof-card-head">
-            <div class="prof-card-title">Achievements</div>
-            <div class="prof-card-sub">${earnedCount} / ${badges.length}</div>
-          </div>
-          <div class="prof-badges">
-            ${badges.map(b => `
-              <div class="prof-badge ${b.earned ? 'earned' : 'locked'}" title="${b.desc}">
-                <div class="prof-badge-icon"><svg><use href="${b.icon}"/></svg></div>
-                <div class="prof-badge-name">${b.name}</div>
-                <div class="prof-badge-desc">${b.desc}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
+        <!-- ACHIEVEMENTS — Chunk C. Painted by renderAchievementsSection()
+             after host.innerHTML lands. Replaces the legacy 5-badge local
+             list (profileBadges()) with the full server-driven catalog
+             (52+ badges, rarity-tiered, view-all modal). The renderer
+             writes its own .card wrapper, so we just provide the host. -->
+        <div id="pf-achievements-section"></div>
 
         <!-- M4.12: Friends card removed pre-launch (was backed by fake
              hardcoded friends). Returns in phase 2 with real multiplayer. -->
@@ -21892,6 +21879,12 @@ function renderProfile() {
   // user-facing entry point is gone.
   // Sync topbar chip with current profile
   syncTopbarProfile();
+
+  // ACHIEVEMENTS — Chunk C lives on the profile page. Paint synchronously
+  // from the cache for instant render, then refresh from Supabase and
+  // repaint to surface badges earned mid-session.
+  try { renderAchievementsSection(); } catch (_e) { /* non-fatal */ }
+  fetchUserBadges().then(() => { try { renderAchievementsSection(); } catch (_e) {} });
 }
 
 // ====== EDIT PROFILE MODAL FLOW ======
