@@ -5979,6 +5979,230 @@
     .cm-row { grid-template-columns: 1fr; }
   }
 
+  /* Streak + multiplier banner (Chunk E) */
+  .pred-streak-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 18px;
+    margin: 0 0 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,209,102,0.25);
+    background: linear-gradient(135deg, rgba(255,209,102,0.10), rgba(139,92,246,0.05));
+    flex-wrap: wrap;
+  }
+  .psb-streak {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .psb-flame {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff8a65, #ffd166);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+  }
+  .psb-flame.cold {
+    background: linear-gradient(135deg, var(--card-2), var(--card-3));
+    filter: grayscale(0.6);
+  }
+  .psb-text { line-height: 1.3; }
+  .psb-num {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .psb-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .psb-mult {
+    text-align: right;
+  }
+  .psb-mult-num {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .psb-mult-lab {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+  }
+  .psb-thresholds {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .psb-th {
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .psb-th.hit {
+    background: var(--up-soft);
+    color: var(--up);
+    border-color: rgba(16, 216, 139, 0.4);
+  }
+
+  /* Top callers leaderboard (Chunk E) */
+  .callers-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px 8px;
+    margin: 18px 0 0;
+  }
+  .callers-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .callers-head h3 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .callers-head .callers-sub {
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .callers-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .callers-table th, .callers-table td {
+    padding: 8px 6px;
+    text-align: left;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .callers-table th {
+    font-weight: 600;
+    color: var(--text-faint);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .callers-table td.num { font-family: 'JetBrains Mono', monospace; text-align: right; }
+  .callers-table td.up { color: var(--up); }
+  .callers-table td.down { color: var(--down); }
+  .callers-table tr:last-child td { border-bottom: none; }
+  .callers-rank {
+    width: 24px;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+  .callers-handle {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .callers-streak-pill {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(255,138,101,0.15);
+    color: #ff8a65;
+    border: 1px solid rgba(255,138,101,0.35);
+  }
+  .callers-empty {
+    padding: 18px 6px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  /* Referral widget (Chunk E.4) */
+  .referral-widget {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(255, 138, 101, 0.04));
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+  }
+  .referral-widget h3 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .referral-widget .rw-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .rw-link-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .rw-link-input {
+    flex: 1;
+    padding: 9px 12px;
+    background: var(--card);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    user-select: all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .rw-copy-btn {
+    padding: 9px 14px;
+    background: var(--purple);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.18s;
+  }
+  .rw-copy-btn:hover { background: var(--purple-2); }
+  .rw-copy-btn.copied { background: var(--up); color: #051d12; }
+  .rw-stats {
+    display: flex;
+    gap: 18px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .rw-stat-num {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .rw-stat-lab {
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
   /* THESIS CONTEST — leaderboard card + modal */
   .thesis-card {
     background: linear-gradient(135deg, rgba(251,191,36,0.07), rgba(251,191,36,0.01));
@@ -10709,6 +10933,13 @@
         // old activity-based heuristic that fired on every login.
         tourPending: meta.tour_pending === true,
       };
+      // Chunk E.4 — if a ?ref= URL param was stashed in localStorage on a
+      // prior pageload (e.g. the marketing homepage), capture it now via
+      // the set_referrer RPC. Guarded by `_consumePendingReferralIfAny`
+      // itself: no-op if not authed or no pending ref.
+      if (user && typeof _consumePendingReferralIfAny === 'function') {
+        setTimeout(() => { try { _consumePendingReferralIfAny(); } catch (_) {} }, 0);
+      }
       // M16.41 — Tag the Sentry scope with the user's Supabase UUID so
       // captured exceptions are grouped per-user and we can search by
       // "users affected". ID only — no email — to keep PII out of Sentry.
@@ -11750,11 +11981,19 @@
             <div class="sub">Open markets, weekly theses, and a separate $10k paper-credit bankroll for betting. Your stock-trading cash is untouched.</div>
           </div>
         </div>
+        <!-- Streak + multiplier banner (Chunk E). Shows the signed-in user's
+             current win streak and what their NEXT winning bet pays. -->
+        <div id="pred-streak-banner"></div>
+
         <!-- Painted by renderPredictionsCard() + renderThesisCard(). Both
              live on the same surface; Chunk B will unify them into a single
              "Open Questions" feed with user-created markets. -->
         <div id="lb-predictions-card"></div>
         <div id="lb-thesis-card"></div>
+
+        <!-- Top Callers leaderboard (Chunk E). Net-P&L ranking from
+             get_prediction_leaderboard(). -->
+        <div id="lb-callers-card"></div>
       </div>
     </section>
 
@@ -14454,12 +14693,167 @@ function renderLeaguesPage() {
 }
 
 function renderPredictionsPage() {
+  // Streak banner (Chunk E) — shows current streak + next-bet multiplier.
+  try { renderStreakBanner(); } catch (_e) { /* non-fatal */ }
+  fetchPredictionStreak().then(() => { try { renderStreakBanner(); } catch (_e) {} });
+
   // Predictions card + thesis card both live on this page in v1.
   // Chunk B will merge them into a unified "open questions" feed.
   try { renderPredictionsCard(); } catch (_e) { /* non-fatal */ }
   fetchPredictionMarkets().then(() => { try { renderPredictionsCard(); } catch (_e) {} });
   try { renderThesisCard(); } catch (_e) { /* non-fatal */ }
   fetchThesisFeed().then(() => { try { renderThesisCard(); } catch (_e) {} });
+
+  // Top Callers leaderboard (Chunk E).
+  try { renderCallersCard(); } catch (_e) { /* non-fatal */ }
+  fetchCallersLeaderboard().then(() => { try { renderCallersCard(); } catch (_e) {} });
+}
+
+// ============================================================================
+// PREDICTION STREAKS + MULTIPLIER + LEADERBOARD (Chunk E)
+// ============================================================================
+let PRED_STREAK = null;       // { current_streak, longest_streak, total_wins, total_losses }
+let CALLERS = [];             // array of leaderboard rows
+let _streakLastFetched = 0;
+let _callersLastFetched = 0;
+
+async function fetchPredictionStreak(force) {
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) { PRED_STREAK = null; return null; }
+  if (!force && Date.now() - _streakLastFetched < 30000 && PRED_STREAK) return PRED_STREAK;
+  try {
+    const { data, error } = await window.SUPABASE
+      .from('prediction_streaks')
+      .select('current_streak,longest_streak,total_wins,total_losses')
+      .eq('user_id', window.MUSE_USER.id)
+      .maybeSingle();
+    if (error) throw error;
+    PRED_STREAK = data || { current_streak: 0, longest_streak: 0, total_wins: 0, total_losses: 0 };
+    _streakLastFetched = Date.now();
+  } catch (e) {
+    console.warn('[Muses] fetchPredictionStreak failed:', e?.message || e);
+    PRED_STREAK = { current_streak: 0, longest_streak: 0, total_wins: 0, total_losses: 0 };
+  }
+  return PRED_STREAK;
+}
+
+function _multiplierForStreak(streak) {
+  return Math.min(2.0, 1.0 + 0.1 * Math.max(0, streak | 0));
+}
+
+function renderStreakBanner() {
+  const host = document.getElementById('pred-streak-banner');
+  if (!host) return;
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) {
+    host.innerHTML = '';
+    return;
+  }
+  const s = PRED_STREAK || { current_streak: 0, longest_streak: 0 };
+  const streak = s.current_streak | 0;
+  const mult   = _multiplierForStreak(streak);
+  const nextMult = _multiplierForStreak(streak + 1);
+  const hot   = streak >= 3;
+
+  // Threshold pills: 3 / 5 / 10 — "hit" if streak >= threshold
+  const thresholds = [
+    { n: 3,  label: '3 → +$500',   reward: 500 },
+    { n: 5,  label: '5 → +$2k',    reward: 2000 },
+    { n: 10, label: '10 → +$10k', reward: 10000 },
+  ];
+  const pillsHTML = thresholds.map(t => `
+    <span class="psb-th${streak >= t.n ? ' hit' : ''}">${escapeHTML(t.label)}</span>
+  `).join('');
+
+  const flameClass = hot ? '' : ' cold';
+  const flameIcon  = hot ? '🔥' : '·';
+  const subText = streak === 0
+    ? 'No active streak. Win 3 in a row → +$500 bonus.'
+    : (streak >= 10
+        ? `Locked at 2× multiplier. Don't drop it.`
+        : `Next correct call pays ${nextMult.toFixed(1)}× — keep it going.`);
+
+  host.innerHTML = `
+    <div class="pred-streak-banner">
+      <div class="psb-streak">
+        <div class="psb-flame${flameClass}">${flameIcon}</div>
+        <div class="psb-text">
+          <div class="psb-num">${streak}-call streak</div>
+          <div class="psb-sub">${escapeHTML(subText)}</div>
+        </div>
+      </div>
+      <div class="psb-thresholds">${pillsHTML}</div>
+      <div class="psb-mult">
+        <div class="psb-mult-num">${mult.toFixed(1)}×</div>
+        <div class="psb-mult-lab">CURRENT MULT</div>
+      </div>
+    </div>
+  `;
+}
+
+async function fetchCallersLeaderboard(force) {
+  if (!force && Date.now() - _callersLastFetched < 60000 && CALLERS.length) return CALLERS;
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_prediction_leaderboard', { p_limit: 25 });
+    if (error) throw error;
+    CALLERS = Array.isArray(data) ? data : [];
+    _callersLastFetched = Date.now();
+  } catch (e) {
+    console.warn('[Muses] fetchCallersLeaderboard failed:', e?.message || e);
+    CALLERS = [];
+  }
+  return CALLERS;
+}
+
+function _fmtPnl(n) {
+  const v = Number(n || 0);
+  const s = (v >= 0 ? '+' : '−') + '$' + Math.abs(Math.round(v)).toLocaleString();
+  return s;
+}
+
+function renderCallersCard() {
+  const host = document.getElementById('lb-callers-card');
+  if (!host) return;
+  if (!CALLERS || CALLERS.length === 0) {
+    host.innerHTML = `
+      <div class="callers-card">
+        <div class="callers-head">
+          <h3>Top Callers</h3>
+          <div class="callers-sub">Net P&L · resolved markets</div>
+        </div>
+        <div class="callers-empty">No resolved markets yet — be the first to land a call.</div>
+      </div>
+    `;
+    return;
+  }
+  const rows = CALLERS.slice(0, 10).map((r, i) => {
+    const pnl = Number(r.net_pnl || 0);
+    const cls = pnl >= 0 ? 'up' : 'down';
+    const streak = (r.current_streak | 0) >= 3
+      ? `<span class="callers-streak-pill">🔥 ${r.current_streak}</span>` : '';
+    const handle = r.handle && r.handle !== 'trader' ? '@' + r.handle : (r.display_name || 'Trader');
+    return `
+      <tr>
+        <td class="callers-rank">${String(i + 1).padStart(2, '0')}</td>
+        <td><span class="callers-handle">${escapeHTML(handle)}</span>${streak}</td>
+        <td class="num">${r.wins}W / ${r.losses}L</td>
+        <td class="num">${Number(r.hit_rate || 0).toFixed(0)}%</td>
+        <td class="num ${cls}">${_fmtPnl(pnl)}</td>
+      </tr>
+    `;
+  }).join('');
+  host.innerHTML = `
+    <div class="callers-card">
+      <div class="callers-head">
+        <h3>Top Callers</h3>
+        <div class="callers-sub">Net P&L · resolved markets</div>
+      </div>
+      <table class="callers-table">
+        <thead>
+          <tr><th></th><th>Trader</th><th class="num">Record</th><th class="num">Hit rate</th><th class="num">P&L</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 function renderLeaguesCard() {
@@ -22685,6 +23079,9 @@ function renderProfile() {
 
       <!-- RIGHT COLUMN -->
       <div class="prof-col">
+        <!-- REFERRALS — Chunk E.4. Painted by renderReferralWidget(). -->
+        <div id="pf-referral-widget"></div>
+
         <!-- ACHIEVEMENTS — Chunk C. Painted by renderAchievementsSection()
              after host.innerHTML lands. Replaces the legacy 5-badge local
              list (profileBadges()) with the full server-driven catalog
@@ -22746,6 +23143,131 @@ function renderProfile() {
   // repaint to surface badges earned mid-session.
   try { renderAchievementsSection(); } catch (_e) { /* non-fatal */ }
   fetchUserBadges().then(() => { try { renderAchievementsSection(); } catch (_e) {} });
+
+  // REFERRAL widget (Chunk E.4) — signed-in users only.
+  try { renderReferralWidget(); } catch (_e) { /* non-fatal */ }
+  fetchReferralStats().then(() => { try { renderReferralWidget(); } catch (_e) {} });
+}
+
+// ============================================================================
+// REFERRAL WIDGET (Chunk E.4)
+// ============================================================================
+let REFERRAL_STATS = null;
+let _referralLastFetched = 0;
+
+async function fetchReferralStats(force) {
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) { REFERRAL_STATS = null; return null; }
+  if (!force && Date.now() - _referralLastFetched < 60000 && REFERRAL_STATS) return REFERRAL_STATS;
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_my_referral_stats');
+    if (error) throw error;
+    REFERRAL_STATS = data || null;
+    _referralLastFetched = Date.now();
+  } catch (e) {
+    console.warn('[Muses] fetchReferralStats failed:', e?.message || e);
+    REFERRAL_STATS = null;
+  }
+  return REFERRAL_STATS;
+}
+
+function _referralLink(handle) {
+  const base = (typeof location !== 'undefined' && location.origin)
+    ? location.origin
+    : 'https://muses.exchange';
+  return `${base}/?ref=${encodeURIComponent(handle || '')}`;
+}
+
+function renderReferralWidget() {
+  const host = document.getElementById('pf-referral-widget');
+  if (!host) return;
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) { host.innerHTML = ''; return; }
+
+  const stats   = REFERRAL_STATS || { handle: null, pending_count: 0, granted_count: 0, total_credits: 0 };
+  const handle  = stats.handle || (STATE && STATE.profile && STATE.profile.handle) || '';
+  if (!handle) { host.innerHTML = ''; return; }
+  const link    = _referralLink(handle);
+  const granted = stats.granted_count | 0;
+  const pending = stats.pending_count | 0;
+
+  host.innerHTML = `
+    <div class="referral-widget">
+      <h3>Refer a trader · earn $1k pred credits</h3>
+      <div class="rw-sub">When a friend signs up via your link and makes their first trade, you get $1,000 in prediction credits. They get a head start. Everybody wins.</div>
+      <div class="rw-link-row">
+        <input class="rw-link-input" id="rw-link-input" type="text" value="${escapeHTML(link)}" readonly>
+        <button class="rw-copy-btn" id="rw-copy-btn" type="button">Copy</button>
+      </div>
+      <div class="rw-stats">
+        <div>
+          <div class="rw-stat-num">${granted}</div>
+          <div class="rw-stat-lab">Granted</div>
+        </div>
+        <div>
+          <div class="rw-stat-num">${pending}</div>
+          <div class="rw-stat-lab">Pending first trade</div>
+        </div>
+        <div>
+          <div class="rw-stat-num">$${(stats.total_credits || 0).toLocaleString()}</div>
+          <div class="rw-stat-lab">Earned to date</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const btn = document.getElementById('rw-copy-btn');
+  const inp = document.getElementById('rw-link-input');
+  if (btn && inp) {
+    btn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(link);
+      } catch (_e) {
+        inp.select();
+        try { document.execCommand('copy'); } catch (_) {}
+      }
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1400);
+    };
+  }
+}
+
+// ============================================================================
+// REFERRAL CAPTURE (Chunk E.4)
+// ============================================================================
+// On any page load, if ?ref=USERNAME is in the URL, stash it in localStorage.
+// After signin/signup completes and we have an authed Supabase session, call
+// set_referrer() once. Idempotent: server-side checks prevent duplicates and
+// self-referrals.
+(function _captureRef() {
+  try {
+    const qs = new URLSearchParams(location.search);
+    const ref = qs.get('ref');
+    if (ref && /^[A-Za-z0-9_-]{2,32}$/.test(ref)) {
+      localStorage.setItem('muse_pending_ref', ref);
+    }
+  } catch (_e) { /* ignore */ }
+})();
+
+async function _consumePendingReferralIfAny() {
+  try {
+    const handle = localStorage.getItem('muse_pending_ref');
+    if (!handle) return;
+    if (!window.MUSE_USER || !window.MUSE_USER.authed) return;
+    const { data, error } = await window.SUPABASE.rpc('set_referrer', { p_referrer_handle: handle });
+    if (error) {
+      console.warn('[Muses] set_referrer RPC failed:', error.message);
+      return;
+    }
+    // Clear regardless of outcome — server is the source of truth and the
+    // 'already_set' / 'self_referral_not_allowed' branches make retries pointless.
+    localStorage.removeItem('muse_pending_ref');
+    if (data && data.ok) {
+      console.log('[Muses] referrer captured:', data);
+    }
+  } catch (e) {
+    console.warn('[Muses] _consumePendingReferralIfAny threw:', e?.message || e);
+  }
 }
 
 // ====== EDIT PROFILE MODAL FLOW ======

@@ -5,6 +5,19 @@
 (function () {
   const page = document.body.dataset.page || '';
 
+  /* Referral capture (Chunk E.4). If ?ref=USERNAME is in the URL, stash it
+     in localStorage so exchange.html can call set_referrer() once the user
+     authenticates. Any page (marketing, signup, signin) does the capture. */
+  (function captureRef() {
+    try {
+      const qs = new URLSearchParams(location.search);
+      const ref = qs.get('ref');
+      if (ref && /^[A-Za-z0-9_-]{2,32}$/.test(ref)) {
+        localStorage.setItem('muse_pending_ref', ref);
+      }
+    } catch (_e) { /* ignore */ }
+  })();
+
   /* Plausible analytics — privacy-friendly, no cookies, GDPR-compliant.
      Uses Plausible's per-account bootstrap (pa-l2ZPZ9CJzbwtv0SHjAGZE.js).
      Only loads on muses.exchange in production; skipped on localhost and
