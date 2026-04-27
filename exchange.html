@@ -10128,6 +10128,473 @@
     transition-duration: 0.06s;
   }
 
+  /* ============ COMPETE SLIDER (Chunk D — markets view) ============
+     5-panel auto-advancing carousel showing IPOs / Matchups / Leagues /
+     Predictions / Tournaments with live counts from get_public_compete_stats.
+     Sits in the markets view between market-stats and Featured This Week. */
+  .compete-block { margin: 0 0 28px; }
+  .compete-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .compete-head h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .compete-head h2 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--purple-2), #ff8a65);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .compete-head .compete-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .compete-slider-wrap { position: relative; }
+  .compete-slider {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    border-radius: var(--radius-xl);
+  }
+  .compete-slider::-webkit-scrollbar { display: none; }
+  .cs-slide { scroll-snap-align: center; padding: 0; }
+
+  .cs-card {
+    position: relative;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-strong);
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(139, 92, 246, 0.16), transparent 60%),
+      radial-gradient(140% 100% at 100% 100%, rgba(255, 138, 101, 0.08), transparent 65%),
+      linear-gradient(180deg, var(--card-2), var(--card));
+    padding: 32px 36px;
+    min-height: 260px;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 28px;
+    align-items: center;
+    overflow: hidden;
+  }
+  .cs-card[data-panel="ipo"] {
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(255, 138, 101, 0.18), transparent 60%),
+      radial-gradient(140% 100% at 100% 100%, rgba(255, 209, 102, 0.08), transparent 65%),
+      linear-gradient(180deg, var(--card-2), var(--card));
+  }
+  .cs-card[data-panel="matchup"] {
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(167, 139, 250, 0.20), transparent 60%),
+      radial-gradient(140% 100% at 100% 100%, rgba(16, 216, 139, 0.08), transparent 65%),
+      linear-gradient(180deg, var(--card-2), var(--card));
+  }
+  .cs-card[data-panel="leagues"] {
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(16, 216, 139, 0.16), transparent 60%),
+      radial-gradient(140% 100% at 100% 100%, rgba(139, 92, 246, 0.10), transparent 65%),
+      linear-gradient(180deg, var(--card-2), var(--card));
+  }
+  .cs-card[data-panel="predictions"] {
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(139, 92, 246, 0.20), transparent 60%),
+      radial-gradient(140% 100% at 100% 100%, rgba(255, 77, 109, 0.08), transparent 65%),
+      linear-gradient(180deg, var(--card-2), var(--card));
+  }
+  .cs-card[data-panel="tournaments"] {
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(255, 209, 102, 0.16), transparent 60%),
+      radial-gradient(140% 100% at 100% 100%, rgba(167, 139, 250, 0.12), transparent 65%),
+      linear-gradient(180deg, var(--card-2), var(--card));
+  }
+
+  .cs-content { min-width: 0; }
+  .cs-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--purple-2);
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(167, 139, 250, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.28);
+    margin-bottom: 14px;
+  }
+  .cs-tag .pulse {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--up);
+    box-shadow: 0 0 12px var(--up);
+    animation: cs-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes cs-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.85); }
+  }
+  .cs-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: clamp(22px, 2.6vw, 30px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .cs-title em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--purple-2), #ff8a65);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .cs-lede {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin-bottom: 16px;
+    max-width: 42ch;
+  }
+  .cs-stat-row {
+    display: flex;
+    gap: 22px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .cs-stat-num {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .cs-stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-top: 6px;
+  }
+  .cs-cta-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .cs-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: var(--purple);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.18s, background 0.18s, box-shadow 0.18s;
+  }
+  .cs-cta:hover { transform: translateY(-1px); background: var(--purple-2); box-shadow: 0 8px 26px var(--purple-glow); }
+  .cs-cta-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+  }
+  .cs-cta-ghost:hover {
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: none;
+    transform: translateY(-1px);
+  }
+  .cs-cta svg { width: 13px; height: 13px; }
+
+  /* Visual side */
+  .cs-visual {
+    display: grid;
+    place-items: center;
+    min-height: 200px;
+    position: relative;
+  }
+  /* IPO calendar */
+  .cs-ipo-card {
+    width: 220px;
+    background: linear-gradient(180deg, rgba(255,138,101,0.18), rgba(255,138,101,0.04));
+    border: 1px solid rgba(255,138,101,0.4);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    text-align: center;
+  }
+  .cs-ipo-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #ff8a65;
+    margin-bottom: 8px;
+  }
+  .cs-ipo-ticker {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .cs-ipo-countdown {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  .cs-cd-cell {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 6px;
+    min-width: 48px;
+  }
+  .cs-cd-num {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  .cs-cd-lab {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-top: 5px;
+  }
+  /* Matchup VS */
+  .cs-vs {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .cs-vs-side {
+    display: grid;
+    place-items: center;
+    gap: 6px;
+  }
+  .cs-vs-bubble {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple-2), var(--purple));
+    display: grid;
+    place-items: center;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 8px 30px var(--purple-glow);
+  }
+  .cs-vs-side:nth-child(3) .cs-vs-bubble {
+    background: linear-gradient(135deg, #ff8a65, var(--down));
+    box-shadow: 0 8px 30px rgba(255,138,101,0.35);
+  }
+  .cs-vs-handle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+  .cs-vs-mid {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-style: italic;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-faint);
+    letter-spacing: -0.02em;
+  }
+  /* Leagues stack */
+  .cs-leagues-stack {
+    display: flex;
+    align-items: center;
+  }
+  .cs-leagues-stack .cs-la {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 3px solid var(--card);
+    margin-left: -14px;
+    display: grid;
+    place-items: center;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .cs-leagues-stack .cs-la:first-child { margin-left: 0; }
+  .cs-leagues-pill {
+    margin-left: 14px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: var(--up-soft);
+    border: 1px solid rgba(16, 216, 139, 0.3);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--up);
+  }
+  /* Predictions question card */
+  .cs-pred-card {
+    width: 100%;
+    max-width: 290px;
+    background: linear-gradient(180deg, rgba(139, 92, 246, 0.10), rgba(139, 92, 246, 0.02));
+    border: 1px solid rgba(139, 92, 246, 0.32);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+  }
+  .cs-pred-q {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+  .cs-pred-bar {
+    display: flex;
+    height: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .cs-pred-yes {
+    background: linear-gradient(90deg, var(--up), #4ade80);
+    color: #051d12;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: flex-basis 0.4s;
+  }
+  .cs-pred-no {
+    background: linear-gradient(90deg, var(--down), #f43f5e);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: flex-basis 0.4s;
+  }
+  .cs-pred-pool {
+    margin-top: 10px;
+    font-size: 10.5px;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+  /* Tournament trophy */
+  .cs-trophy {
+    width: 170px; height: 170px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(255, 209, 102, 0.4), transparent 60%),
+      radial-gradient(circle at 50% 50%, rgba(167, 139, 250, 0.25), transparent 65%);
+    display: grid;
+    place-items: center;
+    position: relative;
+  }
+  .cs-trophy svg {
+    width: 80px; height: 80px;
+    color: var(--gold);
+    filter: drop-shadow(0 8px 22px rgba(255,209,102,0.45));
+  }
+  .cs-trophy-cap {
+    position: absolute;
+    bottom: -12px;
+    background: var(--card);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  /* Arrows + dots */
+  .cs-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 4;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(15, 15, 23, 0.85);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s, transform 0.2s;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+  }
+  .cs-arrow:hover { background: rgba(15, 15, 23, 1); transform: translateY(-50%) scale(1.05); }
+  .cs-arrow:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
+  .cs-arrow-prev { left: -19px; }
+  .cs-arrow-next { right: -19px; }
+
+  .cs-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .cs-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s, width 0.3s;
+  }
+  .cs-dot.active {
+    background: var(--purple);
+    width: 22px;
+    border-radius: 4px;
+  }
+  .cs-dot:hover { background: rgba(167, 139, 250, 0.6); }
+
+  /* Mobile */
+  @media (max-width: 760px) {
+    .cs-card {
+      grid-template-columns: 1fr;
+      gap: 22px;
+      padding: 26px 22px;
+      min-height: 0;
+    }
+    .cs-visual { min-height: 160px; order: 2; }
+    .cs-arrow { display: none; }
+    .cs-title { font-size: 22px; }
+  }
+
 </style>
 <!-- Supabase Auth — real auth for signed-in sessions.
      UMD build (not ESM) so the synchronous gate below can read
@@ -10622,6 +11089,24 @@
           <div class="ms-tile"><div class="l">Monthly Listeners Tracked <span class="info-tip">?<span class="tip-text">Real-time streaming data aggregated from Spotify and YouTube.</span></span></div><div class="v" id="ms-vol">—</div><div class="d">Spotify + YouTube · live</div></div>
           <div class="ms-tile"><div class="l">Listed Artists <span class="info-tip">?<span class="tip-text">Total number of artists currently available to trade on Muses.</span></span></div><div class="v" id="ms-count">—</div><div class="d">Active markets</div></div>
           <div class="ms-tile"><div class="l">Top Gainer <span class="info-tip">?<span class="tip-text">Artist with the highest price increase in the last 24 hours.</span></span></div><div class="v" id="ms-top">—</div><div class="d up" id="ms-top-d">—</div></div>
+        </div>
+
+        <!-- COMPETE SLIDER — Chunk D (in-app). 5-panel auto-advancing carousel
+             showing IPOs / Matchups / Leagues / Predictions / Tournaments with
+             live counts from get_public_compete_stats(). Painted by
+             renderCompeteSlider() called from renderMarkets(). -->
+        <div class="compete-block" id="compete-block">
+          <div class="compete-head">
+            <h2>More than just <em>a portfolio.</em></h2>
+            <div class="compete-sub">Trade against friends · predict the next breakout · climb the season ladder</div>
+          </div>
+          <div class="compete-slider-wrap">
+            <button class="cs-arrow cs-arrow-prev" aria-label="Previous slide" type="button">‹</button>
+            <button class="cs-arrow cs-arrow-next" aria-label="Next slide" type="button">›</button>
+            <div class="compete-slider" id="competeSlider"
+                 role="region" aria-roledescription="carousel" aria-label="Compete features"></div>
+            <div class="cs-dots" id="competeSliderDots" role="tablist"></div>
+          </div>
         </div>
 
         <div>
@@ -17600,6 +18085,380 @@ function renderMovers() {
   });
 }
 
+// ============================================================================
+// COMPETE SLIDER (Chunk D — markets view)
+// ============================================================================
+// 5-panel auto-advancing carousel showing IPOs / Matchups / Leagues /
+// Predictions / Tournaments with live counts pulled from
+// get_public_compete_stats(). Painted into #competeSlider in the markets view.
+//
+// Auto-advances every 7s, pauses on hover/focus, supports swipe (native
+// scroll-snap), arrow keys when in viewport, dot indicators with active-pill,
+// graceful fallback when the RPC fails.
+// ============================================================================
+
+const COMPETE_AUTOPLAY_MS = 7000;
+let _competeSliderState = null; // { idx, timer, paused, count } once initialized
+let _competeStatsCache = null;  // { stats, fetchedAt }
+
+function _competeFmtCount(n) {
+  return String(n ?? 0);
+}
+function _competeFmtMoney(n) {
+  return '$' + Math.round(n ?? 0).toLocaleString();
+}
+function _competeEscape(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function _competeCountdownParts(target) {
+  if (!target || isNaN(target.getTime())) return { d: '—', h: '—', m: '—' };
+  const ms = target.getTime() - Date.now();
+  if (ms <= 0) return { d: '0', h: '0', m: '0' };
+  const totalMin = Math.floor(ms / 60000);
+  const d = Math.floor(totalMin / (60 * 24));
+  const h = Math.floor((totalMin % (60 * 24)) / 60);
+  const m = totalMin % 60;
+  return { d: String(d), h: String(h), m: String(m) };
+}
+
+// In-app deep-link helpers — these route inside the SPA via setView().
+function _competeNav(view) {
+  return `data-cs-nav="${view}"`;
+}
+
+function _competePanels(stats) {
+  const ipo = stats?.ipo || {};
+  const mu = stats?.matchup || {};
+  const lg = stats?.leagues || {};
+  const pr = stats?.predictions || {};
+  const tn = stats?.tournaments || {};
+
+  return [
+    {
+      id: 'ipo',
+      tag: ipo.live_count > 0 ? 'Listing now' : (ipo.upcoming_count > 0 ? 'Listing soon' : 'IPOs'),
+      tagPulse: ipo.live_count > 0,
+      title: ipo.live_count > 0
+        ? 'Get in <em>before</em> the rest of the floor.'
+        : 'Be early. <em>Stay early.</em>',
+      lede: 'Every Friday a new artist hits the exchange. Hold for the launch and ride the spike — or fade it before sentiment turns.',
+      stats: [
+        { num: _competeFmtCount(ipo.live_count), label: 'Live now' },
+        { num: _competeFmtCount(ipo.upcoming_count), label: 'Upcoming' },
+      ],
+      visual: _competeIPOVisual(ipo),
+      _ipoTarget: ipo.next_starts_at ? new Date(ipo.next_starts_at) : null,
+      ctaPrimary: { label: 'See IPOs', view: 'tournaments' },
+      ctaSecondary: { label: 'Browse markets', view: 'markets' },
+    },
+    {
+      id: 'matchup',
+      tag: mu.live_count > 0 ? 'Live this week' : 'Weekly matchups',
+      tagPulse: mu.live_count > 0,
+      title: 'Pick a rival. <em>Settle it.</em>',
+      lede: "Every Monday you're paired head-to-head with another trader. Highest weekly return wins. Three losses in a row and you drop a tier.",
+      stats: [
+        { num: _competeFmtCount(mu.live_count), label: 'Live now' },
+        { num: _competeFmtCount(mu.this_week_total), label: 'This week' },
+      ],
+      visual: _competeMatchupVisual(),
+      ctaPrimary: { label: 'See your matchup', view: 'leaderboard' },
+      ctaSecondary: { label: 'Leaderboard', view: 'leaderboard' },
+    },
+    {
+      id: 'leagues',
+      tag: 'Private leagues',
+      title: 'Play with <em>your people.</em>',
+      lede: 'Spin up a private league for your group chat. Compete on monthly returns, settle weekly bragging rights, crown a season champion.',
+      stats: [
+        { num: _competeFmtCount(lg.active_count), label: 'Active leagues' },
+        { num: _competeFmtCount(lg.total_members), label: 'Members' },
+      ],
+      visual: _competeLeaguesVisual(),
+      ctaPrimary: { label: 'Start a league', view: 'leagues' },
+      ctaSecondary: { label: 'Join one', view: 'leagues' },
+    },
+    {
+      id: 'predictions',
+      tag: pr.open_count > 0 ? 'Open markets' : 'Prediction markets',
+      tagPulse: pr.open_count > 0,
+      title: 'Wager on <em>what happens next.</em>',
+      lede: "Will $TYLA cross $100? Will any trader break +100% by season's end? Stake paper credits — the crowd sets the odds.",
+      stats: [
+        { num: _competeFmtCount(pr.open_count), label: 'Open now' },
+        { num: _competeFmtMoney(pr.total_pool), label: 'In the pool' },
+      ],
+      visual: _competePredictionsVisual(pr),
+      ctaPrimary: { label: 'See open markets', view: 'predictions' },
+      ctaSecondary: { label: 'Create a market', view: 'predictions' },
+    },
+    {
+      id: 'tournaments',
+      tag: tn.season_name ? 'Season live' : 'Seasons & cups',
+      tagPulse: !!tn.season_name,
+      title: 'Climb the <em>season ladder.</em>',
+      lede: "Quarterly seasons reset everyone to the same starting line. Monthly genre cups crown the sharpest pop, hip-hop, and Latin traders.",
+      stats: [
+        { num: _competeFmtCount(tn.cup_genres_running), label: 'Cups running' },
+        { num: _competeFmtCount(tn.cup_entrants_this_month), label: 'Entrants' },
+      ],
+      visual: _competeTournamentsVisual(tn),
+      ctaPrimary: { label: 'Tournaments', view: 'tournaments' },
+      ctaSecondary: { label: 'Leaderboard', view: 'leaderboard' },
+    },
+  ];
+}
+
+function _competeIPOVisual(ipo) {
+  const ticker = (ipo.next_ticker || 'TBA').toUpperCase();
+  const target = ipo.next_starts_at ? new Date(ipo.next_starts_at) : null;
+  const cd = _competeCountdownParts(target);
+  return `
+    <div class="cs-ipo-card">
+      <div class="cs-ipo-eyebrow">Next listing</div>
+      <div class="cs-ipo-ticker">$${_competeEscape(ticker)}</div>
+      <div class="cs-ipo-countdown">
+        <div class="cs-cd-cell"><div class="cs-cd-num" data-cd="d">${cd.d}</div><div class="cs-cd-lab">days</div></div>
+        <div class="cs-cd-cell"><div class="cs-cd-num" data-cd="h">${cd.h}</div><div class="cs-cd-lab">hrs</div></div>
+        <div class="cs-cd-cell"><div class="cs-cd-num" data-cd="m">${cd.m}</div><div class="cs-cd-lab">min</div></div>
+      </div>
+    </div>`;
+}
+function _competeMatchupVisual() {
+  return `
+    <div class="cs-vs">
+      <div class="cs-vs-side">
+        <div class="cs-vs-bubble">M</div>
+        <div class="cs-vs-handle">@maya · +14.2%</div>
+      </div>
+      <div class="cs-vs-mid">vs</div>
+      <div class="cs-vs-side">
+        <div class="cs-vs-bubble">J</div>
+        <div class="cs-vs-handle">@jules · +9.6%</div>
+      </div>
+    </div>`;
+}
+function _competeLeaguesVisual() {
+  const grads = [
+    'linear-gradient(135deg,#ff8a65,#a78bfa)',
+    'linear-gradient(135deg,#8b5cf6,#6d28d9)',
+    'linear-gradient(135deg,#ffd166,#10d88b)',
+    'linear-gradient(135deg,#ff4d6d,#ff8a65)',
+  ];
+  const inits = ['L', 'K', 'M', 'S'];
+  return `
+    <div class="cs-leagues-stack">
+      ${inits.map((i, idx) => `<div class="cs-la" style="background:${grads[idx]}">${i}</div>`).join('')}
+      <div class="cs-leagues-pill">+ Your crew</div>
+    </div>`;
+}
+function _competePredictionsVisual(pr) {
+  const sample = (pr.sample && pr.sample[0]) || null;
+  let q = sample?.question || "Will any trader break +100% by season's end?";
+  if (q.length > 70) q = q.slice(0, 67) + '…';
+  const yes = Number(sample?.yes_pool || 0);
+  const no  = Number(sample?.no_pool  || 0);
+  const total = Math.max(yes + no, 1);
+  let yesPct = Math.round((yes / total) * 100);
+  let noPct  = 100 - yesPct;
+  if (yes === 0 && no === 0) { yesPct = 60; noPct = 40; }
+  const pool = (yes + no) > 0
+    ? '$' + Math.round(yes + no).toLocaleString() + ' staked'
+    : 'Be the first to bet';
+  return `
+    <div class="cs-pred-card">
+      <div class="cs-pred-q">${_competeEscape(q)}</div>
+      <div class="cs-pred-bar">
+        <div class="cs-pred-yes" style="flex: 0 0 ${yesPct}%">YES ${yesPct}%</div>
+        <div class="cs-pred-no"  style="flex: 0 0 ${noPct}%">NO ${noPct}%</div>
+      </div>
+      <div class="cs-pred-pool">${_competeEscape(pool)}</div>
+    </div>`;
+}
+function _competeTournamentsVisual(tn) {
+  const seasonName = tn.season_name || 'Season 1';
+  const ends = tn.season_ends_at ? new Date(tn.season_ends_at) : null;
+  const cd = ends ? _competeCountdownParts(ends) : null;
+  const cap = cd ? `${seasonName} · ends in ${cd.d}d ${cd.h}h` : seasonName;
+  return `
+    <div class="cs-trophy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 21h8M12 17v4M7 4h10v3a5 5 0 0 1-10 0V4z"/>
+        <path d="M17 5h2a2 2 0 0 1 2 2v0a4 4 0 0 1-4 4M7 5H5a2 2 0 0 0-2 2v0a4 4 0 0 0 4 4"/>
+      </svg>
+      <div class="cs-trophy-cap">${_competeEscape(cap)}</div>
+    </div>`;
+}
+
+function _competeSlideHTML(p) {
+  const tagInner = `${p.tagPulse ? '<span class="pulse"></span>' : ''}${_competeEscape(p.tag)}`;
+  const stats = (p.stats || []).map(s => `
+    <div>
+      <div class="cs-stat-num">${_competeEscape(s.num)}</div>
+      <div class="cs-stat-label">${_competeEscape(s.label)}</div>
+    </div>
+  `).join('');
+  const arrow = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>`;
+  return `
+    <div class="cs-slide">
+      <div class="cs-card" data-panel="${p.id}">
+        <div class="cs-content">
+          <div class="cs-tag">${tagInner}</div>
+          <div class="cs-title">${p.title}</div>
+          <p class="cs-lede">${_competeEscape(p.lede)}</p>
+          <div class="cs-stat-row">${stats}</div>
+          <div class="cs-cta-row">
+            <button type="button" class="cs-cta" data-cs-nav="${p.ctaPrimary.view}">${_competeEscape(p.ctaPrimary.label)} ${arrow}</button>
+            <button type="button" class="cs-cta cs-cta-ghost" data-cs-nav="${p.ctaSecondary.view}">${_competeEscape(p.ctaSecondary.label)}</button>
+          </div>
+        </div>
+        <div class="cs-visual">${p.visual}</div>
+      </div>
+    </div>`;
+}
+
+function _competeWireSlider(slider, dots, count) {
+  // Tear down any prior listeners by replacing internal state.
+  if (_competeSliderState && _competeSliderState.timer) {
+    clearInterval(_competeSliderState.timer);
+  }
+  const state = { idx: 0, timer: null, paused: false, count };
+  _competeSliderState = state;
+
+  function w() { return slider.clientWidth; }
+  function go(i, smooth = true) {
+    state.idx = ((i % count) + count) % count;
+    slider.scrollTo({ left: state.idx * w(), behavior: smooth ? 'smooth' : 'auto' });
+    Array.from(dots.children).forEach((el, j) => el.classList.toggle('active', j === state.idx));
+  }
+  state.go = go;
+  state.next = () => go(state.idx + 1);
+  state.prev = () => go(state.idx - 1);
+
+  function startAuto() {
+    if (state.timer) clearInterval(state.timer);
+    state.timer = setInterval(() => { if (!state.paused) state.next(); }, COMPETE_AUTOPLAY_MS);
+  }
+  state.startAuto = startAuto;
+
+  // Sync `idx` with manual scroll/swipe
+  let scrollDebounce;
+  slider.addEventListener('scroll', () => {
+    clearTimeout(scrollDebounce);
+    scrollDebounce = setTimeout(() => {
+      const ww = w(); if (ww === 0) return;
+      const i = Math.round(slider.scrollLeft / ww);
+      if (i !== state.idx) {
+        state.idx = i;
+        Array.from(dots.children).forEach((el, j) => el.classList.toggle('active', j === state.idx));
+      }
+    }, 80);
+  }, { passive: true });
+
+  // Arrows
+  document.querySelector('.cs-arrow-prev')?.addEventListener('click', state.prev);
+  document.querySelector('.cs-arrow-next')?.addEventListener('click', state.next);
+
+  // Dots — one delegated listener
+  dots.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-idx]');
+    if (!btn) return;
+    go(parseInt(btn.dataset.idx, 10));
+  });
+
+  // Pause-on-hover / focus-within
+  const wrap = slider.closest('.compete-slider-wrap');
+  wrap?.addEventListener('mouseenter', () => state.paused = true);
+  wrap?.addEventListener('mouseleave', () => state.paused = false);
+  wrap?.addEventListener('focusin',    () => state.paused = true);
+  wrap?.addEventListener('focusout',   () => state.paused = false);
+
+  // Pause when tab hidden
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    } else if (!state.timer) {
+      startAuto();
+    }
+  });
+
+  // Resize handler — re-snap to current panel
+  window.addEventListener('resize', () => go(state.idx, false));
+
+  // Keyboard nav when wrap is in viewport
+  document.addEventListener('keydown', (e) => {
+    if (!wrap) return;
+    const r = wrap.getBoundingClientRect();
+    if (r.top > window.innerHeight || r.bottom < 0) return;
+    if (e.key === 'ArrowRight') { state.next(); state.paused = true; setTimeout(() => state.paused = false, COMPETE_AUTOPLAY_MS); }
+    if (e.key === 'ArrowLeft')  { state.prev(); state.paused = true; setTimeout(() => state.paused = false, COMPETE_AUTOPLAY_MS); }
+  });
+
+  // CTA + nav buttons — route via SPA setView()
+  slider.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-cs-nav]');
+    if (!btn) return;
+    e.preventDefault();
+    const view = btn.dataset.csNav;
+    if (typeof setView === 'function') setView(view);
+  });
+
+  startAuto();
+}
+
+async function _competeFetchStats() {
+  // 5-minute TTL cache so re-renders don't hammer the RPC.
+  if (_competeStatsCache && Date.now() - _competeStatsCache.fetchedAt < 5 * 60 * 1000) {
+    return _competeStatsCache.stats;
+  }
+  if (!window.SUPABASE) return null;
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_public_compete_stats');
+    if (error) throw error;
+    _competeStatsCache = { stats: data, fetchedAt: Date.now() };
+    return data;
+  } catch (e) {
+    console.warn('[Muses] compete stats RPC failed:', e?.message || e);
+    return null;
+  }
+}
+
+function _competeRefreshCountdowns(panels) {
+  panels.forEach(p => {
+    if (p.id === 'ipo' && p._ipoTarget) {
+      const cd = _competeCountdownParts(p._ipoTarget);
+      ['d','h','m'].forEach(k => {
+        document.querySelectorAll(`[data-panel="ipo"] [data-cd="${k}"]`).forEach(el => el.textContent = cd[k]);
+      });
+    }
+  });
+}
+
+let _competeCountdownInterval = null;
+function renderCompeteSlider() {
+  const slider = document.getElementById('competeSlider');
+  const dots   = document.getElementById('competeSliderDots');
+  if (!slider || !dots) return;
+
+  // Paint immediately with whatever's cached (or empty fallback) so the
+  // slider doesn't flash blank, then refresh once the RPC returns.
+  function paint(stats) {
+    const panels = _competePanels(stats || {});
+    slider.innerHTML = panels.map(_competeSlideHTML).join('');
+    dots.innerHTML = panels.map((p, i) => `
+      <button class="cs-dot${i === 0 ? ' active' : ''}" role="tab"
+              aria-label="Show ${_competeEscape(p.id)} slide" data-idx="${i}" type="button"></button>
+    `).join('');
+    _competeWireSlider(slider, dots, panels.length);
+    if (_competeCountdownInterval) clearInterval(_competeCountdownInterval);
+    _competeCountdownInterval = setInterval(() => _competeRefreshCountdowns(panels), 60000);
+  }
+
+  paint(_competeStatsCache?.stats || null);
+  _competeFetchStats().then(stats => { if (stats) paint(stats); });
+}
+
 function renderMarkets() {
   renderMarketStats();
   renderFeatured();
@@ -17608,6 +18467,8 @@ function renderMarkets() {
   renderMarketFeed();
   syncQuickFilterUI('markets', MARKET_FILTERS);
   syncSortArrows('artist-table', MARKET_FILTERS);
+  // Compete slider — non-fatal if it errors, never blocks the markets view.
+  try { renderCompeteSlider(); } catch (e) { console.warn('[Muses] renderCompeteSlider failed:', e); }
 }
 
 // ============ ARTIST DETAIL ============
