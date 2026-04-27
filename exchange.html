@@ -19003,105 +19003,130 @@ function _competeSlideHTML(p) {
 }
 
 function _competeWireSlider(slider, dots, count) {
-  // Tear down any prior listeners by replacing internal state.
+  // CRITICAL: this function must be idempotent. renderCompeteSlider gets
+  // called multiple times (cached paint, post-RPC paint, every renderMarkets).
+  // The OLD implementation called addEventListener on every invocation,
+  // stacking N listeners on the slider — clicking "See your matchup" then
+  // opened N copies of the modal. Now we wire listeners exactly ONCE per
+  // slider DOM element and have them read CURRENT state from the module-
+  // level _competeSliderState.
+
+  // Always reset state — count or panel order may have changed.
   if (_competeSliderState && _competeSliderState.timer) {
     clearInterval(_competeSliderState.timer);
   }
-  const state = { idx: 0, timer: null, paused: false, count };
+  const state = { idx: 0, timer: null, paused: false, count, slider, dots };
   _competeSliderState = state;
 
-  function w() { return slider.clientWidth; }
-  function go(i, smooth = true) {
-    state.idx = ((i % count) + count) % count;
-    slider.scrollTo({ left: state.idx * w(), behavior: smooth ? 'smooth' : 'auto' });
-    Array.from(dots.children).forEach((el, j) => el.classList.toggle('active', j === state.idx));
-  }
-  state.go = go;
-  state.next = () => go(state.idx + 1);
-  state.prev = () => go(state.idx - 1);
+  state.go = function(i, smooth = true) {
+    const s = _competeSliderState;
+    if (!s) return;
+    s.idx = ((i % s.count) + s.count) % s.count;
+    s.slider.scrollTo({ left: s.idx * s.slider.clientWidth, behavior: smooth ? 'smooth' : 'auto' });
+    Array.from(s.dots.children).forEach((el, j) => el.classList.toggle('active', j === s.idx));
+  };
+  state.next = () => _competeSliderState && _competeSliderState.go(_competeSliderState.idx + 1);
+  state.prev = () => _competeSliderState && _competeSliderState.go(_competeSliderState.idx - 1);
+  state.startAuto = function() {
+    const s = _competeSliderState;
+    if (!s) return;
+    if (s.timer) clearInterval(s.timer);
+    s.timer = setInterval(() => {
+      const cs = _competeSliderState;
+      if (cs && !cs.paused) cs.next();
+    }, COMPETE_AUTOPLAY_MS);
+  };
 
-  function startAuto() {
-    if (state.timer) clearInterval(state.timer);
-    state.timer = setInterval(() => { if (!state.paused) state.next(); }, COMPETE_AUTOPLAY_MS);
-  }
-  state.startAuto = startAuto;
+  // Wire listeners exactly once per slider DOM element. Subsequent calls
+  // just re-point _competeSliderState above; the existing listeners
+  // already read from that module-level reference.
+  if (!slider._csWired) {
+    slider._csWired = true;
 
-  // Sync `idx` with manual scroll/swipe
-  let scrollDebounce;
-  slider.addEventListener('scroll', () => {
-    clearTimeout(scrollDebounce);
-    scrollDebounce = setTimeout(() => {
-      const ww = w(); if (ww === 0) return;
-      const i = Math.round(slider.scrollLeft / ww);
-      if (i !== state.idx) {
-        state.idx = i;
-        Array.from(dots.children).forEach((el, j) => el.classList.toggle('active', j === state.idx));
+    let scrollDebounce;
+    slider.addEventListener('scroll', () => {
+      clearTimeout(scrollDebounce);
+      scrollDebounce = setTimeout(() => {
+        const s = _competeSliderState;
+        if (!s) return;
+        const ww = s.slider.clientWidth;
+        if (ww === 0) return;
+        const i = Math.round(s.slider.scrollLeft / ww);
+        if (i !== s.idx) {
+          s.idx = i;
+          Array.from(s.dots.children).forEach((el, j) => el.classList.toggle('active', j === s.idx));
+        }
+      }, 80);
+    }, { passive: true });
+
+    document.querySelector('.cs-arrow-prev')?.addEventListener('click', () => _competeSliderState?.prev());
+    document.querySelector('.cs-arrow-next')?.addEventListener('click', () => _competeSliderState?.next());
+
+    dots.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-idx]');
+      if (!btn) return;
+      _competeSliderState?.go(parseInt(btn.dataset.idx, 10));
+    });
+
+    const wrap = slider.closest('.compete-slider-wrap');
+    wrap?.addEventListener('mouseenter', () => { if (_competeSliderState) _competeSliderState.paused = true; });
+    wrap?.addEventListener('mouseleave', () => { if (_competeSliderState) _competeSliderState.paused = false; });
+    wrap?.addEventListener('focusin',    () => { if (_competeSliderState) _competeSliderState.paused = true; });
+    wrap?.addEventListener('focusout',   () => { if (_competeSliderState) _competeSliderState.paused = false; });
+
+    document.addEventListener('visibilitychange', () => {
+      const s = _competeSliderState;
+      if (!s) return;
+      if (document.hidden) {
+        if (s.timer) { clearInterval(s.timer); s.timer = null; }
+      } else if (!s.timer) {
+        s.startAuto();
       }
-    }, 80);
-  }, { passive: true });
+    });
 
-  // Arrows
-  document.querySelector('.cs-arrow-prev')?.addEventListener('click', state.prev);
-  document.querySelector('.cs-arrow-next')?.addEventListener('click', state.next);
+    window.addEventListener('resize', () => _competeSliderState?.go(_competeSliderState.idx, false));
 
-  // Dots — one delegated listener
-  dots.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-idx]');
-    if (!btn) return;
-    go(parseInt(btn.dataset.idx, 10));
-  });
-
-  // Pause-on-hover / focus-within
-  const wrap = slider.closest('.compete-slider-wrap');
-  wrap?.addEventListener('mouseenter', () => state.paused = true);
-  wrap?.addEventListener('mouseleave', () => state.paused = false);
-  wrap?.addEventListener('focusin',    () => state.paused = true);
-  wrap?.addEventListener('focusout',   () => state.paused = false);
-
-  // Pause when tab hidden
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      if (state.timer) { clearInterval(state.timer); state.timer = null; }
-    } else if (!state.timer) {
-      startAuto();
-    }
-  });
-
-  // Resize handler — re-snap to current panel
-  window.addEventListener('resize', () => go(state.idx, false));
-
-  // Keyboard nav when wrap is in viewport
-  document.addEventListener('keydown', (e) => {
-    if (!wrap) return;
-    const r = wrap.getBoundingClientRect();
-    if (r.top > window.innerHeight || r.bottom < 0) return;
-    if (e.key === 'ArrowRight') { state.next(); state.paused = true; setTimeout(() => state.paused = false, COMPETE_AUTOPLAY_MS); }
-    if (e.key === 'ArrowLeft')  { state.prev(); state.paused = true; setTimeout(() => state.paused = false, COMPETE_AUTOPLAY_MS); }
-  });
-
-  // CTA + nav buttons — route via SPA setView() OR dispatch a registered action.
-  slider.addEventListener('click', (e) => {
-    const navBtn = e.target.closest('[data-cs-nav]');
-    if (navBtn) {
-      e.preventDefault();
-      const view = navBtn.dataset.csNav;
-      if (typeof setView === 'function') setView(view);
-      return;
-    }
-    const actBtn = e.target.closest('[data-cs-action]');
-    if (actBtn) {
-      e.preventDefault();
-      const action = actBtn.dataset.csAction;
-      const fn = window[action];
-      if (typeof fn === 'function') {
-        try { fn(); } catch (err) { console.warn('[Muses] cs-action handler failed:', action, err); }
-      } else {
-        console.warn('[Muses] cs-action handler not found:', action);
+    document.addEventListener('keydown', (e) => {
+      const s = _competeSliderState;
+      if (!s) return;
+      const wrapEl = s.slider.closest('.compete-slider-wrap');
+      if (!wrapEl) return;
+      const r = wrapEl.getBoundingClientRect();
+      if (r.top > window.innerHeight || r.bottom < 0) return;
+      if (e.key === 'ArrowRight') {
+        s.next(); s.paused = true;
+        setTimeout(() => { if (_competeSliderState) _competeSliderState.paused = false; }, COMPETE_AUTOPLAY_MS);
       }
-    }
-  });
+      if (e.key === 'ArrowLeft') {
+        s.prev(); s.paused = true;
+        setTimeout(() => { if (_competeSliderState) _competeSliderState.paused = false; }, COMPETE_AUTOPLAY_MS);
+      }
+    });
 
-  startAuto();
+    // CTA + nav buttons — route via SPA setView() OR dispatch a registered action.
+    slider.addEventListener('click', (e) => {
+      const navBtn = e.target.closest('[data-cs-nav]');
+      if (navBtn) {
+        e.preventDefault();
+        const view = navBtn.dataset.csNav;
+        if (typeof setView === 'function') setView(view);
+        return;
+      }
+      const actBtn = e.target.closest('[data-cs-action]');
+      if (actBtn) {
+        e.preventDefault();
+        const action = actBtn.dataset.csAction;
+        const fn = window[action];
+        if (typeof fn === 'function') {
+          try { fn(); } catch (err) { console.warn('[Muses] cs-action handler failed:', action, err); }
+        } else {
+          console.warn('[Muses] cs-action handler not found:', action);
+        }
+      }
+    });
+  }
+
+  state.startAuto();
 }
 
 async function _competeFetchStats() {
