@@ -104,10 +104,13 @@ def fetch_kworb_listeners():
     with urllib.request.urlopen(req, timeout=30) as resp:
         html = resp.read().decode("utf-8", errors="replace")
 
+    # kworb wraps the artist link in <div>: <td class="text"><div><a …>Name</a></div></td><td>{listeners}</td>
+    # The .*? (non-greedy, DOTALL) handles the optional </div> + any tweaks
+    # kworb may apply between </a> and the listener cell.
     pattern = re.compile(
         r'href="artist/([A-Za-z0-9]{22})_songs\.html"[^>]*>'
         r"[^<]*</a>"
-        r"[^<]*</td>\s*"
+        r".*?</td>\s*"
         r"<td[^>]*>([\d,]+)</td>",
         re.DOTALL,
     )
