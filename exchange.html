@@ -5602,8 +5602,9 @@
   /* League modals (create / join / detail) */
   .lg-modal-overlay {
     position: fixed; inset: 0;
-    background: rgba(4,3,7,0.75);
-    backdrop-filter: blur(4px);
+    background: rgba(4, 3, 7, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
     z-index: 10000;
@@ -10410,11 +10411,11 @@
       radial-gradient(120% 80% at 0% 0%, rgba(139, 92, 246, 0.16), transparent 60%),
       radial-gradient(140% 100% at 100% 100%, rgba(255, 138, 101, 0.08), transparent 65%),
       linear-gradient(180deg, var(--card-2), var(--card));
-    padding: 32px 36px;
-    min-height: 260px;
+    padding: 22px 32px;
+    min-height: 200px;
     display: grid;
     grid-template-columns: 1.1fr 1fr;
-    gap: 28px;
+    gap: 24px;
     align-items: center;
     overflow: hidden;
   }
@@ -10459,11 +10460,11 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--purple-2);
-    padding: 5px 11px;
+    padding: 4px 10px;
     border-radius: 999px;
     background: rgba(167, 139, 250, 0.12);
     border: 1px solid rgba(167, 139, 250, 0.28);
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
   .cs-tag .pulse {
     width: 7px; height: 7px; border-radius: 50%;
@@ -10477,11 +10478,11 @@
   }
   .cs-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: clamp(22px, 2.6vw, 30px);
+    font-size: clamp(20px, 2.3vw, 26px);
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.1;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     color: var(--text);
   }
   .cs-title em {
@@ -10492,21 +10493,21 @@
     color: transparent;
   }
   .cs-lede {
-    font-size: 13.5px;
+    font-size: 13px;
     color: var(--text-dim);
-    line-height: 1.55;
-    margin-bottom: 16px;
+    line-height: 1.5;
+    margin-bottom: 12px;
     max-width: 42ch;
   }
   .cs-stat-row {
     display: flex;
     gap: 22px;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
     flex-wrap: wrap;
   }
   .cs-stat-num {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     letter-spacing: -0.02em;
     color: var(--text);
@@ -10529,14 +10530,14 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 18px;
+    padding: 8px 16px;
     background: var(--purple);
     color: #fff;
     border: none;
     border-radius: 999px;
     font-family: inherit;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12.5px;
     cursor: pointer;
     text-decoration: none;
     transition: transform 0.18s, background 0.18s, box-shadow 0.18s;
@@ -10558,7 +10559,7 @@
   .cs-visual {
     display: grid;
     place-items: center;
-    min-height: 200px;
+    min-height: 150px;
     position: relative;
   }
   /* IPO calendar */
@@ -10787,6 +10788,17 @@
   .cs-arrow:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
   .cs-arrow-prev { left: -19px; }
   .cs-arrow-next { right: -19px; }
+  /* Light theme — flip arrow chrome from dark-on-dark to light-on-light. */
+  body[data-theme="light"] .cs-arrow {
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--text);
+    border-color: var(--border-strong);
+    box-shadow: 0 4px 18px rgba(15, 15, 23, 0.08);
+  }
+  body[data-theme="light"] .cs-arrow:hover {
+    background: #fff;
+    box-shadow: 0 6px 22px rgba(15, 15, 23, 0.12);
+  }
 
   .cs-dots {
     display: flex;
@@ -18738,7 +18750,7 @@ function _competePanels(stats) {
         { num: _competeFmtMoney(pr.total_pool), label: 'In the pool' },
       ],
       visual: _competePredictionsVisual(pr),
-      cta: { label: 'See open markets', view: 'predictions' },
+      cta: { label: 'Prediction markets', view: 'predictions' },
     },
     {
       id: 'season',
@@ -18783,29 +18795,59 @@ function _competeIPOVisual(ipo) {
       </div>
     </div>`;
 }
-// Two-person silhouette for the matchup VS — masculine left, feminine right.
-// Geometric only: no faces. Uses brand colors via CSS vars.
+// Two-person silhouette for the matchup VS. More articulated than the
+// previous head+shoulders blob: curved jaw, defined neck, distinct shoulder
+// silhouettes, and arms hugging the torso. Still geometric and faceless.
 function _competeMatchupVisual() {
-  // Person SVG: head + shoulders block. Different shoulder/torso shapes
-  // imply masculine vs feminine without being photoreal.
+  // Masculine: angular jaw, broader straight shoulders, short hair shape.
+  // Body fills 100×140 viewBox so we keep good silhouette resolution.
   const personM = `
-    <svg class="cs-person" viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs><linearGradient id="cs-vs-grad-m" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#6d28d9"/>
-      </linearGradient></defs>
-      <circle cx="40" cy="28" r="18" fill="url(#cs-vs-grad-m)"/>
-      <path d="M10 110 Q10 60 40 60 Q70 60 70 110 Z" fill="url(#cs-vs-grad-m)"/>
+    <svg class="cs-person" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="cs-vs-grad-m" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#7c3aed"/>
+        </linearGradient>
+      </defs>
+      <!-- Short hair cap (slightly above and behind head outline) -->
+      <path d="M28 30 Q30 12 50 12 Q70 12 72 30 Q70 22 50 22 Q30 22 28 30 Z"
+            fill="url(#cs-vs-grad-m)" opacity="0.55"/>
+      <!-- Head: subtle squared jaw line -->
+      <path d="M34 22 Q34 38 38 46 Q42 50 50 50 Q58 50 62 46 Q66 38 66 22
+               Q66 14 50 14 Q34 14 34 22 Z"
+            fill="url(#cs-vs-grad-m)"/>
+      <!-- Neck -->
+      <rect x="44" y="48" width="12" height="12" fill="url(#cs-vs-grad-m)"/>
+      <!-- Shoulders + torso: broad, straight cut, arms tucked at sides -->
+      <path d="M14 140 Q14 76 50 70 Q86 76 86 140 Z" fill="url(#cs-vs-grad-m)"/>
+      <!-- Subtle shoulder seam definition -->
+      <path d="M22 88 Q34 78 50 76 Q66 78 78 88" stroke="rgba(255,255,255,0.18)"
+            stroke-width="1.5" fill="none" stroke-linecap="round"/>
     </svg>`;
+  // Feminine: rounder cheekbones, longer hair flowing past shoulders,
+  // narrower waist with subtle curve.
   const personF = `
-    <svg class="cs-person" viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <defs><linearGradient id="cs-vs-grad-f" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#ff8a65"/><stop offset="1" stop-color="#ff4d6d"/>
-      </linearGradient></defs>
-      <circle cx="40" cy="28" r="18" fill="url(#cs-vs-grad-f)"/>
-      <!-- Slightly narrower neckline, flared shoulders + torso. -->
-      <path d="M14 110 Q22 64 40 60 Q58 64 66 110 Z" fill="url(#cs-vs-grad-f)"/>
-      <!-- Hair detail: subtle longer outline behind the head. -->
-      <path d="M22 26 Q26 8 40 8 Q54 8 58 26 L58 36 Q50 30 40 30 Q30 30 22 36 Z" fill="url(#cs-vs-grad-f)" opacity="0.55"/>
+    <svg class="cs-person" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="cs-vs-grad-f" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fda4af"/><stop offset="1" stop-color="#e11d48"/>
+        </linearGradient>
+      </defs>
+      <!-- Long hair: starts above head, flows down past shoulders -->
+      <path d="M22 32 Q24 8 50 8 Q76 8 78 32 L82 100 Q70 92 50 92 Q30 92 18 100 Z"
+            fill="url(#cs-vs-grad-f)" opacity="0.55"/>
+      <!-- Head: rounder, slightly narrower than masculine -->
+      <ellipse cx="50" cy="30" rx="15" ry="18" fill="url(#cs-vs-grad-f)"/>
+      <!-- Neck -->
+      <rect x="45" y="46" width="10" height="12" fill="url(#cs-vs-grad-f)"/>
+      <!-- Shoulders + curved torso: narrower at waist, fuller at hips -->
+      <path d="M18 140 Q22 110 32 84 Q40 76 50 74 Q60 76 68 84 Q78 110 82 140 Z"
+            fill="url(#cs-vs-grad-f)"/>
+      <!-- Hair top piece on top of head (covers crown) -->
+      <path d="M34 18 Q34 6 50 6 Q66 6 66 18 Q60 14 50 14 Q40 14 34 18 Z"
+            fill="url(#cs-vs-grad-f)"/>
+      <!-- Subtle waist contour line -->
+      <path d="M30 96 Q40 90 50 90 Q60 90 70 96" stroke="rgba(255,255,255,0.20)"
+            stroke-width="1.5" fill="none" stroke-linecap="round"/>
     </svg>`;
   return `
     <div class="cs-vs">
@@ -18821,27 +18863,42 @@ function _competeMatchupVisual() {
     </div>`;
 }
 
-// Group of 5 stylized people overlapping — your crew.
+// Group of 5 stylized people for the leagues panel. More variety than the
+// previous identical-shape stack: alternating masculine + feminine silhouettes,
+// staggered heights, different hair shapes, and color-tinted gradients so
+// each figure reads as a distinct person.
 function _competeLeaguesVisual() {
-  // 5 head+shoulders shapes in different brand-color gradients, overlapping
-  // left to right so it reads as a small group photo silhouette.
-  const palette = [
-    ['#ff8a65', '#ff4d6d'], // coral/pink
-    ['#a78bfa', '#7c3aed'], // light/dark purple
-    ['#10d88b', '#0e9c69'], // mint
-    ['#ffd166', '#ff8a65'], // gold/coral
-    ['#7c3aed', '#4c1d95'], // deep purple
+  // Each entry: [from, to, kind] where kind ∈ 'm' | 'f'.
+  const figures = [
+    ['#fda4af', '#e11d48', 'f'], // pink/rose
+    ['#c4b5fd', '#7c3aed', 'm'], // purple
+    ['#fef08a', '#f59e0b', 'f'], // gold
+    ['#86efac', '#0e9c69', 'm'], // mint
+    ['#fdba74', '#dc2626', 'f'], // coral/red
   ];
-  const people = palette.map(([from, to], i) => {
+  const people = figures.map(([from, to, kind], i) => {
     const id = `cs-lg-grad-${i}`;
-    return `
-      <svg class="cs-lg-person" viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/>
-        </linearGradient></defs>
-        <circle cx="40" cy="28" r="18" fill="url(#${id})"/>
-        <path d="M10 110 Q10 60 40 60 Q70 60 70 110 Z" fill="url(#${id})"/>
+    const grad = `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${from}"/><stop offset="1" stop-color="${to}"/>
+    </linearGradient></defs>`;
+    if (kind === 'm') {
+      // Same proportions as the matchup masculine figure, just smaller.
+      return `<svg class="cs-lg-person" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        ${grad}
+        <path d="M28 30 Q30 12 50 12 Q70 12 72 30 Q70 22 50 22 Q30 22 28 30 Z" fill="url(#${id})" opacity="0.55"/>
+        <path d="M34 22 Q34 38 38 46 Q42 50 50 50 Q58 50 62 46 Q66 38 66 22 Q66 14 50 14 Q34 14 34 22 Z" fill="url(#${id})"/>
+        <rect x="44" y="48" width="12" height="12" fill="url(#${id})"/>
+        <path d="M14 140 Q14 76 50 70 Q86 76 86 140 Z" fill="url(#${id})"/>
       </svg>`;
+    }
+    return `<svg class="cs-lg-person" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      ${grad}
+      <path d="M22 32 Q24 8 50 8 Q76 8 78 32 L82 100 Q70 92 50 92 Q30 92 18 100 Z" fill="url(#${id})" opacity="0.55"/>
+      <ellipse cx="50" cy="30" rx="15" ry="18" fill="url(#${id})"/>
+      <rect x="45" y="46" width="10" height="12" fill="url(#${id})"/>
+      <path d="M18 140 Q22 110 32 84 Q40 76 50 74 Q60 76 68 84 Q78 110 82 140 Z" fill="url(#${id})"/>
+      <path d="M34 18 Q34 6 50 6 Q66 6 66 18 Q60 14 50 14 Q40 14 34 18 Z" fill="url(#${id})"/>
+    </svg>`;
   }).join('');
   return `<div class="cs-lg-group">${people}</div>`;
 }
@@ -19117,8 +19174,14 @@ function openIposModal() {
   `;
   document.body.appendChild(wrap);
   const close = () => { try { wrap.remove(); } catch (_) {} };
-  wrap.querySelector('[data-act="close"]').onclick = close;
-  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+  // Delegated click handler — closes on backdrop click OR any descendant
+  // with [data-act="close"]. Robust against button content changes.
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap || e.target.closest('[data-act="close"]')) {
+      e.stopPropagation();
+      close();
+    }
+  });
   document.addEventListener('keydown', function _onEsc(e) {
     if (e.key === 'Escape') { close(); document.removeEventListener('keydown', _onEsc); }
   });
@@ -19203,8 +19266,12 @@ function openMatchupExplainerModal() {
   `;
   document.body.appendChild(wrap);
   const close = () => { try { wrap.remove(); } catch (_) {} };
-  wrap.querySelector('[data-act="close"]').onclick = close;
-  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap || e.target.closest('[data-act="close"]')) {
+      e.stopPropagation();
+      close();
+    }
+  });
   document.addEventListener('keydown', function _onEsc(e) {
     if (e.key === 'Escape') { close(); document.removeEventListener('keydown', _onEsc); }
   });
