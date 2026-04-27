@@ -18249,6 +18249,10 @@ function renderFeatured() {
     return 'TOP ARTIST';
   };
   const grid = document.getElementById('featured-grid');
+  // Guard against null (Sentry MUSES-EXCHANGE-3): renderMarkets() can be
+  // called from loadArtistImages() before the markets DOM is ready, or
+  // when the section was never rendered in this session.
+  if (!grid) return;
   grid.innerHTML = featured.map((a, i) => {
     const up = a.change24h >= 0;
     return `
@@ -18460,7 +18464,12 @@ function renderMovers() {
   // Top 4 movers by absolute 24h change — biggest moves regardless of direction
   const sorted = [...ARTISTS].sort((a,b) => Math.abs(b.change24h) - Math.abs(a.change24h));
   const movers = sorted.slice(0, 4);
-  document.getElementById('movers-list').innerHTML = movers.map((a) => {
+  const moversList = document.getElementById('movers-list');
+  // Same null guard pattern as the other markets-view renderers — the
+  // post-boot loadArtistImages chain can fire while the user is on a
+  // different route.
+  if (!moversList) return;
+  moversList.innerHTML = movers.map((a) => {
     return `
       <div class="mover-row" data-ticker="${a.ticker}" style="cursor:pointer">
         ${bubbleHTML(a, 32)}
