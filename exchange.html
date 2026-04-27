@@ -5189,6 +5189,191 @@
     .matchup-card .mc-vs-sep { text-align: center; padding: 4px 0; }
   }
 
+  /* ACHIEVEMENTS — Chunk C. Shield-with-wings badge cards on Portfolio.
+     Replaces the old chip-based badges-strip (which lived on the
+     leaderboard). Rarity drives the shield gradient + wing color. */
+  .achievements-card { padding-bottom: 16px; }
+  .bs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 14px;
+    padding: 6px 2px 14px;
+  }
+  .bs-grid-modal {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+    gap: 12px;
+  }
+  .bs-foot {
+    display: flex; justify-content: center;
+    padding-top: 4px;
+  }
+  .bs-empty {
+    grid-column: 1 / -1;
+    padding: 18px 6px;
+    color: var(--text-dim);
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* Individual shield card */
+  .badge-shield {
+    position: relative;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+    padding: 4px 4px 8px;
+    cursor: default;
+    outline: none;
+    transition: transform 0.18s ease;
+  }
+  .badge-shield:hover,
+  .badge-shield:focus-visible { transform: translateY(-2px); }
+  .badge-shield .bs-art { width: 100%; aspect-ratio: 1 / 1; }
+  .badge-shield .bs-svg { display: block; width: 100%; height: 100%; }
+
+  /* Rarity-driven CSS variables on the shield itself, consumed by SVG fills */
+  .badge-shield.badge-r-common {
+    --bs-grad-top: #4a4458;
+    --bs-grad-bot: #2c2738;
+    --bs-stroke:   rgba(255,255,255,0.18);
+    --bs-wings:    #5a5366;
+    --bs-motif:    #9c95a8;
+    --bs-glow:     transparent;
+    --bs-name:     #c8c4d0;
+  }
+  .badge-shield.badge-r-uncommon {
+    --bs-grad-top: #1f4a3a;
+    --bs-grad-bot: #0c2a1f;
+    --bs-stroke:   rgba(110,255,184,0.5);
+    --bs-wings:    #6effb8;
+    --bs-motif:    #6effb8;
+    --bs-glow:     rgba(110,255,184,0.25);
+    --bs-name:     #d6f5e6;
+  }
+  .badge-shield.badge-r-rare {
+    --bs-grad-top: #2a3b6e;
+    --bs-grad-bot: #131c3a;
+    --bs-stroke:   rgba(96,165,250,0.55);
+    --bs-wings:    #7bb6ff;
+    --bs-motif:    #c2dcff;
+    --bs-glow:     rgba(96,165,250,0.30);
+    --bs-name:     #d8e6ff;
+  }
+  .badge-shield.badge-r-legendary {
+    --bs-grad-top: #6a4a0c;
+    --bs-grad-bot: #2c1d05;
+    --bs-stroke:   rgba(251,191,36,0.7);
+    --bs-wings:    #fbbf24;
+    --bs-motif:    #fde68a;
+    --bs-glow:     rgba(251,191,36,0.45);
+    --bs-name:     #fef3c7;
+  }
+
+  /* Apply the variables */
+  .badge-shield .bs-grad-top { stop-color: var(--bs-grad-top); }
+  .badge-shield .bs-grad-bot { stop-color: var(--bs-grad-bot); }
+  .badge-shield .bs-shield-stroke { stroke: var(--bs-stroke); stroke-width: 2; }
+  .badge-shield .bs-wings path { fill: var(--bs-wings); opacity: 0.92; }
+  .badge-shield .bs-motif { color: var(--bs-motif); stroke: var(--bs-motif); fill: var(--bs-motif); }
+  .badge-shield .bs-art {
+    filter: drop-shadow(0 6px 18px var(--bs-glow));
+  }
+  .badge-shield.badge-r-legendary .bs-art {
+    filter: drop-shadow(0 6px 24px var(--bs-glow));
+  }
+
+  /* Locked state — desaturated, dim, dashed-border */
+  .badge-shield.badge-locked .bs-art { filter: grayscale(1) brightness(0.55) opacity(0.85); }
+  .badge-shield.badge-locked .bs-name { color: var(--text-faint); }
+  .badge-shield.badge-locked .bs-rarity { color: var(--text-faint); }
+  .badge-shield.badge-locked { opacity: 0.85; }
+
+  .badge-shield .bs-meta { text-align: center; max-width: 100%; }
+  .badge-shield .bs-name {
+    font-size: 12px; font-weight: 700;
+    color: var(--bs-name);
+    line-height: 1.25;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .badge-shield .bs-rarity {
+    font-size: 10px; font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+
+  /* Hover tooltip on shield */
+  .badge-shield .bs-tip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    min-width: 180px; max-width: 240px;
+    padding: 10px 12px;
+    background: #0d0a14;
+    border: 1px solid rgba(139,92,246,0.4);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 100;
+    text-align: left;
+  }
+  .badge-shield .bs-tip::after {
+    content: "";
+    position: absolute;
+    top: 100%; left: 50%; margin-left: -6px;
+    border: 6px solid transparent;
+    border-top-color: rgba(139,92,246,0.4);
+  }
+  .badge-shield:hover .bs-tip,
+  .badge-shield:focus-visible .bs-tip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .badge-shield .bs-tip-title { font-size: 12px; font-weight: 700; color: #fff; }
+  .badge-shield .bs-tip-rarity {
+    display: inline-block; margin-top: 4px;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 1px 6px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+    border-radius: 999px;
+  }
+  .badge-shield.badge-r-uncommon  .bs-tip-rarity { background: rgba(110,255,184,0.14); color: #6effb8; }
+  .badge-shield.badge-r-rare      .bs-tip-rarity { background: rgba(96,165,250,0.16);  color: #7bb6ff; }
+  .badge-shield.badge-r-legendary .bs-tip-rarity { background: rgba(251,191,36,0.16);  color: #fbbf24; }
+  .badge-shield .bs-tip-desc {
+    margin-top: 6px;
+    font-size: 12px; color: #c8c4d0; line-height: 1.45;
+  }
+
+  /* Achievements modal */
+  .bs-modal { max-width: 720px; }
+  .bs-modal-body {
+    max-height: 480px;
+    overflow-y: auto;
+    margin: 14px 0 8px;
+  }
+  .bs-section { margin-bottom: 22px; }
+  .bs-section-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px;
+    padding-right: 4px;
+  }
+  .bs-section-title {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-dim);
+  }
+  .bs-section-count {
+    font-size: 11px; font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
   /* BADGES STRIP — earned-collectibles row below matchup card */
   .badges-strip {
     margin: 0 0 18px;
@@ -10634,6 +10819,11 @@
           </div>
         </div>
 
+        <!-- ACHIEVEMENTS — Chunk C. Painted by renderAchievementsSection().
+             Hosts the 6 most-recent (or featured) badges + a "View all" CTA
+             that opens the full-catalog modal. -->
+        <div id="pf-achievements-section"></div>
+
         <!-- FAVORITES -->
         <div class="card">
           <div class="card-title">
@@ -11040,11 +11230,11 @@
         <!-- Phase 1 — head-to-head matchup card. Painted by renderMatchupCard(). -->
         <div id="lb-matchup-card"></div>
 
-        <!-- Phase 2 — badges strip. Painted by renderBadgesStrip().
-             Note: badges-strip moves to Portfolio → Achievements in Chunk C.
-             Leagues / Predictions / Thesis hosts moved to dedicated pages
-             (view-leagues, view-predictions) in Chunk A. -->
-        <div id="lb-badges-strip"></div>
+        <!-- Phase 2 badges-strip moved to Portfolio → Achievements in Chunk C.
+             Leagues / Predictions / Thesis hosts live on their own pages
+             (view-leagues, view-predictions) since Chunk A. The leaderboard
+             view is now lean — season banner + matchup card + the actual
+             ranking list. -->
 
         <!-- Leaderboard will populate with real users once trading opens -->
 
@@ -13222,6 +13412,7 @@ async function fetchUserBadges(force) {
         name:        r.badges.name,
         description: r.badges.description,
         rarity:      r.badges.rarity || 'common',
+        icon:        r.badges.icon || null,        // "cat:trade" etc — drives shield motif
         awarded_at:  r.awarded_at,
       }));
 
@@ -13401,39 +13592,241 @@ if (!window.__badgeTooltipBound) {
   });
 }
 
-function renderBadgesStrip() {
-  const host = document.getElementById('lb-badges-strip');
-  if (!host) return;
-  if (!USER_BADGES || USER_BADGES.length === 0) { host.innerHTML = ''; return; }
+// ══════════════════════════════════════════════════════════════════════
+// ACHIEVEMENTS — Chunk C
+// ══════════════════════════════════════════════════════════════════════
+// Replaces the old badges-strip. Lives on the Portfolio view as a
+// dedicated section. Shows 6 badges by default (most recently earned,
+// rarity-prioritized for ties) plus a "View all" CTA that opens a modal
+// with the full catalog — earned in color, locked in greyscale.
+//
+// Visual: shield-with-wings card per badge. Rarity drives the frame +
+// accent color. The center icon is determined by the badge's category
+// (stored in badges.icon as "cat:trade" / "cat:profit" / etc.).
+// ══════════════════════════════════════════════════════════════════════
 
-  // Rarity determines chip accent color. Sort rarity-desc so the flashy
-  // ones render first (legendary → rare → uncommon → common).
+// Full catalog cache — fetched on demand (modal open). We don't fetch
+// it eagerly because the section only needs USER_BADGES to render the
+// 6 default items.
+let ALL_BADGES = null;
+let _allBadgesFetchAt = 0;
+const ALL_BADGES_TTL_MS = 5 * 60 * 1000;
+
+async function fetchAllBadges(force) {
+  if (!window.SUPABASE) return null;
+  if (!force && ALL_BADGES && (Date.now() - _allBadgesFetchAt) < ALL_BADGES_TTL_MS) {
+    return ALL_BADGES;
+  }
+  try {
+    const { data, error } = await window.SUPABASE
+      .from('badges')
+      .select('slug, name, description, rarity, icon')
+      .order('rarity', { ascending: false });
+    if (error) {
+      console.warn('[Muses] fetchAllBadges failed:', error.message || error);
+      return null;
+    }
+    ALL_BADGES = data || [];
+    _allBadgesFetchAt = Date.now();
+    return ALL_BADGES;
+  } catch (e) {
+    console.warn('[Muses] fetchAllBadges threw:', e.message || e);
+    return null;
+  }
+}
+
+// Sort by recency (most recent first), with rarity as secondary.
+function _sortBadgesForDisplay(arr) {
   const rarityRank = { legendary: 4, rare: 3, uncommon: 2, common: 1 };
-  const sorted = [...USER_BADGES].sort((a, b) =>
-    (rarityRank[b.rarity] || 0) - (rarityRank[a.rarity] || 0)
-  );
+  return [...arr].sort((a, b) => {
+    const tA = a.awarded_at ? new Date(a.awarded_at).getTime() : 0;
+    const tB = b.awarded_at ? new Date(b.awarded_at).getTime() : 0;
+    if (tB !== tA) return tB - tA;
+    return (rarityRank[b.rarity] || 0) - (rarityRank[a.rarity] || 0);
+  });
+}
 
-  const chips = sorted.map(b => {
-    // Custom CSS hover tooltip instead of a native `title` attribute —
-    // native tooltips don't show on mobile, have a 500ms+ browser delay,
-    // and can't be styled. The .bc-tip child renders on hover/focus.
-    const rarityLabel = b.rarity.charAt(0).toUpperCase() + b.rarity.slice(1);
-    return `<div class="badge-chip badge-${b.rarity}" tabindex="0">
-      <div class="bc-dot"></div>
-      <div class="bc-name">${escapeHTML(b.name)}</div>
-      <div class="bc-tip">
-        <div class="bc-tip-title">${escapeHTML(b.name)} <span class="bc-tip-rarity">${escapeHTML(rarityLabel)}</span></div>
-        <div class="bc-tip-desc">${escapeHTML(b.description)}</div>
+// Map "cat:foo" stored on badges.icon → emoji-free SVG sprite ID. Each
+// category gets a distinct shape on the shield.
+function _badgeCategoryId(b) {
+  const raw = (b && b.icon) || '';
+  const m = raw.match(/^cat:(\w+)/);
+  return m ? m[1] : 'general';
+}
+
+// SVG shield-with-wings template. Rarity drives the gradient + glow.
+// The category determines the small icon at the center.
+function badgeShieldHTML(b, opts) {
+  opts = opts || {};
+  const locked = !!opts.locked;
+  const rarity = (b.rarity || 'common').toLowerCase();
+  const cat = _badgeCategoryId(b);
+
+  // Per-category center motif. Kept as small 24x24-ish SVG paths inline
+  // so we don't depend on the global sprite (which might not have these).
+  const motifs = {
+    trade:       '<path d="M3 12l4-4 4 4 4-4 4 4 2-2" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="3" cy="12" r="1.5"/>',
+    profit:      '<path d="M6 18l4-6 4 4 6-10" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="20" cy="6" r="1.6"/>',
+    loss:        '<path d="M5 7h14M5 12h14M5 17h8" stroke-width="2" stroke-linecap="round" fill="none"/>',
+    discovery:   '<circle cx="12" cy="11" r="6" fill="none" stroke-width="2"/><line x1="16" y1="15" x2="20" y2="19" stroke-width="2.4" stroke-linecap="round"/>',
+    loyalty:     '<path d="M12 4l8 6v6c0 4-4 6-8 6s-8-2-8-6V10z" fill="none" stroke-width="2" stroke-linejoin="round"/>',
+    predict:     '<circle cx="12" cy="12" r="8" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="1.4"/>',
+    social:      '<path d="M16 19v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" fill="none" stroke-width="2"/><circle cx="9" cy="7" r="3.4" fill="none" stroke-width="2"/>',
+    anniversary: '<path d="M12 3l2.4 5 5.6.4-4.2 3.6 1.4 5.4L12 14.6 6.8 17.4l1.4-5.4L4 8.4l5.6-.4z" fill="currentColor"/>',
+    season:      '<path d="M5 12l4 4 10-10" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+    matchup:     '<path d="M6 8a4 4 0 0 1 8 0v4M14 8h6v4M3 14l4 4 14-14" stroke-width="2" stroke-linecap="round" fill="none"/>',
+    cup:         '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z" fill="none" stroke-width="2" stroke-linejoin="round"/>',
+    ipo:         '<path d="M13 2L3 14h7l-1 8 10-12h-7z" fill="currentColor"/>',
+    thesis:      '<path d="M4 4h12l4 4v12H4z" fill="none" stroke-width="2"/><path d="M16 4v4h4" fill="none" stroke-width="2"/><path d="M8 12h8M8 16h6" stroke-width="2" stroke-linecap="round"/>',
+    general:     '<circle cx="12" cy="12" r="8" fill="none" stroke-width="2"/>',
+  };
+  const motif = motifs[cat] || motifs.general;
+  const rarityLabel = rarity.charAt(0).toUpperCase() + rarity.slice(1);
+
+  // Gradient ID needs to be unique per render to avoid collisions when
+  // multiple badges render in one DOM. Suffix with rarity + a random tag.
+  const gid = 'bsg-' + rarity + '-' + Math.random().toString(36).slice(2, 7);
+
+  return `
+    <div class="badge-shield ${locked ? 'badge-locked' : ''} badge-r-${rarity}" tabindex="0">
+      <div class="bs-art">
+        <svg viewBox="0 0 120 120" class="bs-svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" class="bs-grad-top"/>
+              <stop offset="100%" class="bs-grad-bot"/>
+            </linearGradient>
+          </defs>
+          <!-- Wings (left + mirrored right) -->
+          <g class="bs-wings">
+            <path d="M30 50 Q 14 56 8 70 Q 18 66 28 70 Q 18 78 14 90 Q 26 80 36 84 Q 32 70 40 60 Z"/>
+            <path d="M90 50 Q 106 56 112 70 Q 102 66 92 70 Q 102 78 106 90 Q 94 80 84 84 Q 88 70 80 60 Z"/>
+          </g>
+          <!-- Shield body -->
+          <path class="bs-shield" d="M60 18 L92 28 V60 Q92 86 60 100 Q28 86 28 60 V28 Z" fill="url(#${gid})"/>
+          <path class="bs-shield-stroke" d="M60 18 L92 28 V60 Q92 86 60 100 Q28 86 28 60 V28 Z" fill="none"/>
+          <!-- Center motif -->
+          <g class="bs-motif" transform="translate(48 48)" stroke="currentColor" stroke-linecap="round" fill="currentColor" fill-rule="evenodd">
+            ${motif}
+          </g>
+        </svg>
       </div>
-    </div>`;
-  }).join('');
-
-  host.innerHTML = `
-    <div class="badges-strip">
-      <div class="bs-label">Your badges <span class="bs-count">${USER_BADGES.length}</span></div>
-      <div class="bs-chips">${chips}</div>
+      <div class="bs-meta">
+        <div class="bs-name">${escapeHTML(b.name)}</div>
+        <div class="bs-rarity">${escapeHTML(rarityLabel)}${locked ? ' · Locked' : ''}</div>
+      </div>
+      <div class="bs-tip">
+        <div class="bs-tip-title">${escapeHTML(b.name)}</div>
+        <div class="bs-tip-rarity">${escapeHTML(rarityLabel)}</div>
+        <div class="bs-tip-desc">${escapeHTML(b.description)}</div>
+      </div>
     </div>
   `;
+}
+
+function renderAchievementsSection() {
+  const host = document.getElementById('pf-achievements-section');
+  if (!host) return;
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) { host.innerHTML = ''; return; }
+  const earned = USER_BADGES || [];
+
+  // Default 6: most recent (rarity-tiebreaker).
+  const featured = _sortBadgesForDisplay(earned).slice(0, 6);
+
+  // Render the 6 cards. If none earned yet, show a "next achievement" hint.
+  let cards;
+  if (featured.length > 0) {
+    cards = featured.map(b => badgeShieldHTML(b)).join('');
+  } else {
+    cards = `<div class="bs-empty">No achievements earned yet. Place a trade, join a league, or stake a prediction to start collecting.</div>`;
+  }
+
+  host.innerHTML = `
+    <div class="card achievements-card">
+      <div class="card-title">
+        Achievements
+        <span class="link" id="pf-ach-count">${earned.length} earned</span>
+      </div>
+      <div class="bs-grid">${cards}</div>
+      <div class="bs-foot">
+        <button class="lg-btn lg-btn-ghost" data-ach-action="view-all">View all badges</button>
+      </div>
+    </div>
+  `;
+  const viewBtn = host.querySelector('[data-ach-action="view-all"]');
+  if (viewBtn) viewBtn.onclick = () => openAchievementsModal();
+}
+
+async function openAchievementsModal() {
+  // Make sure we have both fetches; force-refresh user badges so the modal
+  // reflects live state (including any badge earned mid-session).
+  await Promise.all([fetchUserBadges(true), fetchAllBadges(true)]);
+  const earned = USER_BADGES || [];
+  const all = ALL_BADGES || [];
+  const earnedSlugs = new Set(earned.map(b => b.slug));
+
+  // Group catalog by category for the grid.
+  const categoryNames = {
+    trade: 'Trading',
+    profit: 'Profit',
+    loss: 'Survival',
+    discovery: 'Discovery',
+    loyalty: 'Loyalty',
+    predict: 'Predictions',
+    social: 'Social',
+    anniversary: 'Anniversary',
+    season: 'Seasons',
+    matchup: 'Matchups',
+    cup: 'Genre Cups',
+    ipo: 'IPOs',
+    thesis: 'Theses',
+    general: 'Other',
+  };
+  const groups = {};
+  for (const b of all) {
+    const cat = _badgeCategoryId(b);
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(b);
+  }
+  // Stable category display order.
+  const order = ['trade','profit','predict','matchup','cup','season','ipo','thesis','social','loyalty','discovery','loss','anniversary','general'];
+  const sections = order
+    .filter(k => groups[k] && groups[k].length > 0)
+    .map(k => {
+      const arr = groups[k];
+      const cards = arr.map(b => {
+        const earnedRow = earned.find(e => e.slug === b.slug);
+        const data = earnedRow ? earnedRow : b;
+        return badgeShieldHTML(data, { locked: !earnedSlugs.has(b.slug) });
+      }).join('');
+      const earnedInCat = arr.filter(b => earnedSlugs.has(b.slug)).length;
+      return `
+        <div class="bs-section">
+          <div class="bs-section-head">
+            <span class="bs-section-title">${escapeHTML(categoryNames[k] || k)}</span>
+            <span class="bs-section-count">${earnedInCat} / ${arr.length}</span>
+          </div>
+          <div class="bs-grid bs-grid-modal">${cards}</div>
+        </div>
+      `;
+    }).join('');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  wrap.innerHTML = `
+    <div class="lg-modal lg-modal-wide bs-modal">
+      <div class="lg-modal-title">Achievements</div>
+      <div class="lg-modal-sub">${earned.length} earned · ${all.length} total. Locked badges show how to earn them on hover.</div>
+      <div class="bs-modal-body">${sections}</div>
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-primary" data-act="close">Done</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  wrap.querySelector('[data-act="close"]').onclick = close;
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -20327,6 +20720,13 @@ function updateCashDisplay() {
 // ============ PORTFOLIO ============
 function renderPortfolio() {
   initPortfolioChart();
+
+  // Achievements section (Chunk C) — paints into #pf-achievements-section.
+  // Uses cached USER_BADGES if present; force-refreshes async to surface
+  // any new badges earned mid-session.
+  try { renderAchievementsSection(); } catch (_e) { /* non-fatal */ }
+  fetchUserBadges().then(() => { try { renderAchievementsSection(); } catch (_e) {} });
+
   const tickers = Object.keys(STATE.holdings);
 
   // ---- Aggregates ----
