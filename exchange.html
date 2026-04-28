@@ -24494,7 +24494,55 @@ function renderLeaderboard() {
 
   // STATS STRIP
   if (!fullRanking.length) {
-    // Zero-user empty state — no emoji, just plain copy.
+    // When a cup filter is selected the empty leaderboard is just an
+    // "empty cup" — render the cup-tabs + the per-cup empty-state CTA
+    // so the user can switch tabs or buy in to enter the cup.
+    if (lb.cup) {
+      const allCups = ['Pop','Hip-hop','R&B','Latin','Afropop','Indie','Alt','K-Pop','Electronic'];
+      host.innerHTML = `
+        <div class="lb-cup-info">
+          <div class="lb-cup-info-head">
+            <span class="lb-cup-info-tag">Monthly Cups</span>
+            <span class="lb-cup-info-tip">Hold any artist in a genre → you're entered. Top 10 win prizes when the month closes.</span>
+          </div>
+          <div class="lb-cup-tiers">
+            <span class="lb-cup-tier"><b>#1</b> $10k credits + champion badge</span>
+            <span class="lb-cup-tier-sep">·</span>
+            <span class="lb-cup-tier"><b>#2–3</b> $3k credits + podium badge</span>
+            <span class="lb-cup-tier-sep">·</span>
+            <span class="lb-cup-tier"><b>#4–10</b> $1k credits + finalist badge</span>
+          </div>
+        </div>
+        <div class="lb-cup-tabs">
+          <button data-lb-cup="" class="${!lb.cup?'active':''}">Overall</button>
+          ${allCups.map(g => `<button data-lb-cup="${escapeHTML(g)}" class="${lb.cup===g?'active':''}">${escapeHTML(g)} Cup</button>`).join('')}
+        </div>
+        <div class="lb-empty lb-empty-cup">
+          <div class="lb-empty-cup-icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 21h8v1.5H8z"/><rect x="11" y="17" width="2" height="4"/><path d="M7 4h10v6c0 3-2 5-5 5s-5-2-5-5z"/></svg></div>
+          <div class="lb-empty-cup-title">No traders in the ${escapeHTML(lb.cup)} Cup yet</div>
+          <div class="lb-empty-cup-sub">Buy any ${escapeHTML(lb.cup)} artist and you're entered. The cup closes at the end of the month — top 10 win prizes.</div>
+          <button class="lb-empty-cup-cta" data-lb-cup-browse="${escapeHTML(lb.cup)}">Browse ${escapeHTML(lb.cup)} artists →</button>
+        </div>
+      `;
+      // Wire tabs + browse CTA on this minimal render path.
+      host.querySelectorAll('[data-lb-cup]').forEach(btn => {
+        btn.onclick = () => {
+          const g = btn.dataset.lbCup;
+          lb.cup = g || null;
+          lb.limit = 10; lb.expanded = null;
+          renderLeaderboard();
+        };
+      });
+      host.querySelectorAll('[data-lb-cup-browse]').forEach(btn => {
+        btn.onclick = () => {
+          const g = btn.dataset.lbCupBrowse;
+          STATE.selectedGenre = g;
+          try { setView('genre'); } catch (_) {}
+        };
+      });
+      return;
+    }
+    // No-cup zero-user state — keep the original copy.
     host.innerHTML = `
       <div style="text-align:center;padding:48px 16px;color:var(--text-dim);font-size:13px;line-height:1.6">
         <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:15px">Nobody here yet</div>
