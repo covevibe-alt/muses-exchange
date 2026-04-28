@@ -23284,6 +23284,18 @@ function _currentSwapBalance(ccy) {
 }
 
 function openSwapModal(opts) {
+  // Defensive: if PREDICTION_BALANCE never got fetched on this page (e.g.
+  // user opened the global Swap button without first triggering the
+  // predictions render path), pull it in the background so the summary
+  // line and limit checks reflect reality.
+  if (PREDICTION_BALANCE == null && typeof fetchPredictionBalance === 'function') {
+    fetchPredictionBalance().then(() => {
+      try { _refreshPortfolioTabBalances(); } catch (_) {}
+      // If the modal is still open, refresh its summary line.
+      const summary = document.getElementById('swap-summary');
+      if (summary) summary.dispatchEvent(new Event('update', { bubbles: true }));
+    }).catch(() => {});
+  }
   const wrap = document.createElement('div');
   wrap.className = 'lg-modal-overlay';
   const initialFrom = opts?.from || 'paper';
@@ -23444,7 +23456,17 @@ function renderPortfolio() {
   // Three-tab pool layout — wire tabs + render whichever is active.
   try { _wirePortfolioTabs(); } catch (_) {}
   try { _refreshPortfolioTabBalances(); } catch (_) {}
-  // Lazy-fetch the per-tab data behind the scenes so tab switches feel instant.
+  // Lazy-fetch the per-tab data behind the scenes so tab switches feel
+  // instant. fetchPredictionBalance() is critical: PREDICTION_BALANCE is
+  // null until something fetches it, and the Predictions tab + swap modal
+  // both read from it. Without this call the Portfolio page would never
+  // know the user's prediction credit balance.
+  if (typeof fetchPredictionBalance === 'function') {
+    fetchPredictionBalance().then(() => {
+      try { _refreshPortfolioTabBalances(); } catch (_) {}
+      try { _renderPredictionsTab(); } catch (_) {}
+    }).catch(() => {});
+  }
   fetchPredictionStreak().then(() => _renderPredictionsTab()).catch(() => {});
   _fetchPredictionsTabData().then(() => _renderPredictionsTab()).catch(() => {});
   _fetchTournamentsTabData().then(() => _renderTournamentsTab()).catch(() => {});
