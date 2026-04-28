@@ -7728,7 +7728,11 @@
     font-size: 13px;
   }
 
-  /* Swap modal */
+  /* Swap modal — vertical stack on every viewport so the FROM/TO/AMOUNT
+     fields are full-width and the flip arrow centers under the dropdown
+     naturally. (The previous label-on-the-left grid layout meant the
+     dropdowns sat in a right-side 1fr column offset from modal center,
+     and no flip-arrow alignment looked right.) */
   .swap-modal-body {
     display: flex;
     flex-direction: column;
@@ -7736,10 +7740,9 @@
     padding: 6px 0 4px;
   }
   .swap-row {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    align-items: center;
-    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
   .swap-row label {
     font-size: 11px;
@@ -7812,8 +7815,8 @@
       margin-top: 4px;
       padding: 10px;
     }
-    .swap-row { grid-template-columns: 1fr; gap: 6px; }
-    .swap-row label { margin-bottom: 0; }
+    /* swap-row is already vertical-stack on every viewport; nothing extra
+       needed here. */
     /* Mobile: bet rows + entry rows stack vertically so question text
        gets the full width and the side/amount sit on a second line. */
     .pp-bet-row,
