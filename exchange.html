@@ -24691,29 +24691,9 @@ function renderProfile() {
       </div>
     </div>
 
-    <!-- KPI STRIP -->
-    <div class="prof-kpis">
-      <div class="prof-kpi">
-        <div class="prof-kpi-label">Portfolio value ${tip('Total current market value of all your paper trading holdings.')} ${paperBadge('Paper')}</div>
-        <div class="prof-kpi-val">${fmt(s.totalValue)}</div>
-        <div class="prof-kpi-sub ${isPos ? 'up' : 'down'}">${_fmtPctRaw(s.totalReturnPct)} all-time</div>
-      </div>
-      <div class="prof-kpi">
-        <div class="prof-kpi-label">Paper Cash ${tip('Cash available for paper trading — not real money.')} ${paperBadge('Paper')}</div>
-        <div class="prof-kpi-val">${fmt(s.cash)}</div>
-        <div class="prof-kpi-sub">${fmt(s.holdingsVal)} in holdings</div>
-      </div>
-      <div class="prof-kpi">
-        <div class="prof-kpi-label">Tournament Credits ${tip('Virtual credits used for tournament entries and prize payouts. No real money involved.')} ${realBadge('Credits')}</div>
-        <div class="prof-kpi-val">${fmtPrice(STATE.tournamentCredits)}</div>
-        <div class="prof-kpi-sub">Earned from tournaments</div>
-      </div>
-      <div class="prof-kpi">
-        <div class="prof-kpi-label">Tournaments ${tip('Total tournaments entered. Prizes are paid out in virtual tournament credits.')} ${realBadge('Credits')}</div>
-        <div class="prof-kpi-val">${s.tournamentsPlayed}</div>
-        <div class="prof-kpi-sub">${s.wins} won · best #${s.bestRank ?? '—'}</div>
-      </div>
-    </div>
+    <!-- KPI strip removed — these numbers all live on /exchange/portfolio
+         (Trading hero + Tournaments tab + Predictions tab). The profile
+         page is identity + social proof, not a duplicate dashboard. -->
 
     <div class="prof-grid">
       <!-- LEFT COLUMN -->
