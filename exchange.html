@@ -5318,50 +5318,56 @@
   }
 
   /* Hover tooltip on shield */
-  .badge-shield .bs-tip {
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%) translateY(6px);
-    min-width: 180px; max-width: 240px;
+  /* Per-shield .bs-tip is hidden — a single shared tooltip (#bs-floating-tip)
+     gets positioned via JS on hover. Keeps tooltips from being clipped by
+     parent overflow (achievements modal scroll area, card edges) and lets
+     us run viewport-edge clamping on the X axis. */
+  .badge-shield .bs-tip { display: none; }
+  #bs-floating-tip {
+    position: fixed;
+    pointer-events: none;
+    min-width: 180px;
+    max-width: 260px;
     padding: 10px 12px;
     background: #0d0a14;
-    border: 1px solid rgba(139,92,246,0.4);
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease, transform 0.15s ease;
-    z-index: 100;
+    transform: translateY(4px);
+    transition: opacity 0.14s ease, transform 0.14s ease;
+    z-index: 11000;
     text-align: left;
   }
-  .badge-shield .bs-tip::after {
+  #bs-floating-tip.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #bs-floating-tip::after {
     content: "";
     position: absolute;
-    top: 100%; left: 50%; margin-left: -6px;
+    top: 100%;
+    left: var(--tip-arrow-x, 50%);
+    margin-left: -6px;
     border: 6px solid transparent;
-    border-top-color: rgba(139,92,246,0.4);
+    border-top-color: rgba(139, 92, 246, 0.4);
   }
-  .badge-shield:hover .bs-tip,
-  .badge-shield:focus-visible .bs-tip {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  .badge-shield .bs-tip-title { font-size: 12px; font-weight: 700; color: #fff; }
-  .badge-shield .bs-tip-rarity {
-    display: inline-block; margin-top: 4px;
-    font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    padding: 1px 6px;
+  /* Tooltip content styling — targets the single floating tip. */
+  #bs-floating-tip .bs-tip-title { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; }
+  #bs-floating-tip .bs-tip-rarity {
+    display: inline-block; margin-top: 5px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 2px 7px;
     background: rgba(255,255,255,0.06);
     color: var(--text-dim);
     border-radius: 999px;
   }
-  .badge-shield.badge-r-uncommon  .bs-tip-rarity { background: rgba(110,255,184,0.14); color: #6effb8; }
-  .badge-shield.badge-r-rare      .bs-tip-rarity { background: rgba(96,165,250,0.16);  color: #7bb6ff; }
-  .badge-shield.badge-r-legendary .bs-tip-rarity { background: rgba(251,191,36,0.16);  color: #fbbf24; }
-  .badge-shield .bs-tip-desc {
-    margin-top: 6px;
+  #bs-floating-tip.r-uncommon  .bs-tip-rarity { background: rgba(110,255,184,0.14); color: #6effb8; }
+  #bs-floating-tip.r-rare      .bs-tip-rarity { background: rgba(96,165,250,0.16);  color: #7bb6ff; }
+  #bs-floating-tip.r-legendary .bs-tip-rarity { background: rgba(251,191,36,0.16);  color: #fbbf24; }
+  #bs-floating-tip .bs-tip-desc {
+    margin-top: 7px;
     font-size: 12px; color: #c8c4d0; line-height: 1.45;
   }
 
@@ -14974,23 +14980,92 @@ function badgeShieldHTML(b, opts) {
   const rarity = (b.rarity || 'common').toLowerCase();
   const cat = _badgeCategoryId(b);
 
-  // Per-category center motif. Kept as small 24x24-ish SVG paths inline
-  // so we don't depend on the global sprite (which might not have these).
+  // Per-category motif. Each is a 24×24 viewBox icon, visually centered
+  // at (12, 12). Mix of filled + stroked elements gives them visual weight
+  // — pure-stroke icons looked thin and lost in the shield. The motif
+  // group is rendered at scale 1.4 (see SVG below) so icons read clearly
+  // without dominating the wings/shield silhouette.
   const motifs = {
-    trade:       '<path d="M3 12l4-4 4 4 4-4 4 4 2-2" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="3" cy="12" r="1.5"/>',
-    profit:      '<path d="M6 18l4-6 4 4 6-10" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="20" cy="6" r="1.6"/>',
-    loss:        '<path d="M5 7h14M5 12h14M5 17h8" stroke-width="2" stroke-linecap="round" fill="none"/>',
-    discovery:   '<circle cx="12" cy="11" r="6" fill="none" stroke-width="2"/><line x1="16" y1="15" x2="20" y2="19" stroke-width="2.4" stroke-linecap="round"/>',
-    loyalty:     '<path d="M12 4l8 6v6c0 4-4 6-8 6s-8-2-8-6V10z" fill="none" stroke-width="2" stroke-linejoin="round"/>',
-    predict:     '<circle cx="12" cy="12" r="8" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke-width="2"/><circle cx="12" cy="12" r="1.4"/>',
-    social:      '<path d="M16 19v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" fill="none" stroke-width="2"/><circle cx="9" cy="7" r="3.4" fill="none" stroke-width="2"/>',
-    anniversary: '<path d="M12 3l2.4 5 5.6.4-4.2 3.6 1.4 5.4L12 14.6 6.8 17.4l1.4-5.4L4 8.4l5.6-.4z" fill="currentColor"/>',
-    season:      '<path d="M5 12l4 4 10-10" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
-    matchup:     '<path d="M6 8a4 4 0 0 1 8 0v4M14 8h6v4M3 14l4 4 14-14" stroke-width="2" stroke-linecap="round" fill="none"/>',
-    cup:         '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z" fill="none" stroke-width="2" stroke-linejoin="round"/>',
-    ipo:         '<path d="M13 2L3 14h7l-1 8 10-12h-7z" fill="currentColor"/>',
-    thesis:      '<path d="M4 4h12l4 4v12H4z" fill="none" stroke-width="2"/><path d="M16 4v4h4" fill="none" stroke-width="2"/><path d="M8 12h8M8 16h6" stroke-width="2" stroke-linecap="round"/>',
-    general:     '<circle cx="12" cy="12" r="8" fill="none" stroke-width="2"/>',
+    // Coin stack — three stacked discs with a subtle highlight
+    trade: `<ellipse cx="12" cy="6" rx="7" ry="2.4" fill="currentColor" opacity="0.95"/>
+            <path d="M5 6v3.5c0 1.3 3.1 2.4 7 2.4s7-1.1 7-2.4V6" fill="currentColor" opacity="0.7"/>
+            <path d="M5 11v3.5c0 1.3 3.1 2.4 7 2.4s7-1.1 7-2.4V11" fill="currentColor" opacity="0.5"/>
+            <path d="M5 16v3.5c0 1.3 3.1 2.4 7 2.4s7-1.1 7-2.4V16" fill="currentColor" opacity="0.35"/>`,
+    // Bull-chart with bold rising line + spark dot at the peak
+    profit: `<path d="M3 19h18" stroke="currentColor" stroke-width="1.4" opacity="0.4" fill="none"/>
+             <path d="M5 17l4-5 3 2 5-7 3 4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+             <path d="M5 17l4-5 3 2 5-7 3 4 V21 H5 Z" fill="currentColor" opacity="0.18"/>
+             <circle cx="20" cy="9" r="1.8" fill="currentColor"/>`,
+    // Phoenix wave — V-recovery curve, evokes "bounced back"
+    loss: `<path d="M3 8l4 5 5-3 5 6 4-4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+           <path d="M3 8l4 5 5-3 5 6 4-4 V21 H3 Z" fill="currentColor" opacity="0.16"/>
+           <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
+           <circle cx="21" cy="8" r="1.5" fill="currentColor"/>`,
+    // Compass with N/S accent
+    discovery: `<circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.85"/>
+                <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
+                <path d="M12 5l3 7-3 1-3-1z" fill="#fff" opacity="0.9"/>
+                <path d="M12 19l-3-7 3-1 3 1z" fill="#fff" opacity="0.45"/>
+                <circle cx="12" cy="12" r="0.9" fill="#fff"/>`,
+    // Flame for loyalty (a streak of activity)
+    loyalty: `<path d="M12 22c4.4 0 7-3 7-6.5 0-2.6-1.7-3.6-2.5-5.5-0.6-1.4-0.4-2.6 0-3.5-2 0.4-3 1.4-3.5 2.5-0.7-1.5-0.6-3.4 0.5-5C9.5 5 7 7.6 7 11c0 1.4 0.5 2 1 3-1.5 0-3 1.4-3 3.4 0 3 2.7 4.6 7 4.6z" fill="currentColor"/>
+              <path d="M12 18c1.8 0 3-1.2 3-2.6 0-1-0.5-1.5-1.1-2.3-0.4 0.5-0.8 0.7-1.4 0.7 0.3-0.7 0.2-1.4-0.2-2.1C11 12.2 10 13.4 10 15c0 1.7 0.8 3 2 3z" fill="#fff" opacity="0.5"/>`,
+    // Bullseye with crosshair
+    predict: `<circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.85"/>
+              <circle cx="12" cy="12" r="6" fill="none" stroke="#fff" stroke-width="1.2" opacity="0.55"/>
+              <circle cx="12" cy="12" r="3" fill="none" stroke="#fff" stroke-width="1.2" opacity="0.85"/>
+              <circle cx="12" cy="12" r="1" fill="#fff"/>
+              <line x1="12" y1="0" x2="12" y2="3" stroke="currentColor" stroke-width="1.5"/>
+              <line x1="12" y1="21" x2="12" y2="24" stroke="currentColor" stroke-width="1.5"/>
+              <line x1="0" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="1.5"/>
+              <line x1="21" y1="12" x2="24" y2="12" stroke="currentColor" stroke-width="1.5"/>`,
+    // Group of 3 people (more dynamic than 2)
+    social: `<circle cx="6" cy="9" r="2.6" fill="currentColor" opacity="0.85"/>
+             <circle cx="12" cy="7.5" r="3.2" fill="currentColor"/>
+             <circle cx="18" cy="9" r="2.6" fill="currentColor" opacity="0.85"/>
+             <path d="M2 19v-2.5C2 14.5 4 13 6 13s4 1.5 4 3.5V19z" fill="currentColor" opacity="0.85"/>
+             <path d="M7 20v-3c0-2.4 2.2-4 5-4s5 1.6 5 4v3z" fill="currentColor"/>
+             <path d="M14 19v-2.5c0-2 2-3.5 4-3.5s4 1.5 4 3.5V19z" fill="currentColor" opacity="0.85"/>`,
+    // Sparkle starburst — four-pointed
+    anniversary: `<path d="M12 1l2.5 7.5L22 11l-7.5 2.5L12 21l-2.5-7.5L2 11l7.5-2.5z" fill="currentColor"/>
+                  <path d="M12 5l1.4 4.4 4.6 1.6-4.6 1.6L12 17l-1.4-4.4L6 11l4.6-1.6z" fill="#fff" opacity="0.6"/>
+                  <circle cx="20" cy="4" r="1.2" fill="currentColor"/>
+                  <circle cx="4" cy="20" r="1" fill="currentColor" opacity="0.7"/>
+                  <circle cx="21" cy="19" r="0.8" fill="currentColor" opacity="0.7"/>`,
+    // Laurel wreath — season ladder honor
+    season: `<path d="M5 7c0 6 3 12 7 14 4-2 7-8 7-14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+             <path d="M5 7q-1 1.5 0 3.5q1.5 1 3 0 q1-1.5 0-3.5z M5 11q-1 1.5 0 3.5q1.5 1 3 0 q1-1.5 0-3.5z M6 15q-1 1.5 0 3.5q1.5 1 3 0 q1-1.5 0-3.5z" fill="currentColor"/>
+             <path d="M19 7q1 1.5 0 3.5q-1.5 1 -3 0 q-1-1.5 0-3.5z M19 11q1 1.5 0 3.5q-1.5 1 -3 0 q-1-1.5 0-3.5z M18 15q1 1.5 0 3.5q-1.5 1 -3 0 q-1-1.5 0-3.5z" fill="currentColor"/>
+             <path d="M9 21h6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+             <circle cx="12" cy="13" r="2" fill="#fff" opacity="0.6"/>`,
+    // Boxing/duel — crossed gloves
+    matchup: `<path d="M5 7h5l1 5h-5z M5 12h6l1 6h-7z" fill="currentColor"/>
+              <path d="M19 7h-5l-1 5h5z M19 12h-6l-1 6h7z" fill="currentColor" opacity="0.85"/>
+              <circle cx="7.5" cy="6" r="1.4" fill="currentColor"/>
+              <circle cx="16.5" cy="6" r="1.4" fill="currentColor" opacity="0.85"/>
+              <text x="12" y="14.5" fill="#fff" font-size="4.5" font-weight="700" text-anchor="middle" font-family="sans-serif">VS</text>`,
+    // Trophy — handles + cup, more refined than the original
+    cup: `<path d="M8 21h8v1.5H8z" fill="currentColor"/>
+          <rect x="11" y="17" width="2" height="4" fill="currentColor"/>
+          <path d="M7 4h10v6c0 3-2 5-5 5s-5-2-5-5z" fill="currentColor"/>
+          <path d="M9 6h6v3.5c0 1.6-1.3 2.5-3 2.5s-3-0.9-3-2.5z" fill="#fff" opacity="0.35"/>
+          <path d="M7 6c-1.5 0-2.5 1-2.5 2.5S5.5 11 7 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M17 6c1.5 0 2.5 1 2.5 2.5S18.5 11 17 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>`,
+    // Rocket for IPO launch
+    ipo: `<path d="M12 2c-2 1.5-4 4.5-4 8.5v6.5l4 2 4-2v-6.5c0-4-2-7-4-8.5z" fill="currentColor"/>
+          <circle cx="12" cy="9" r="1.6" fill="#fff" opacity="0.85"/>
+          <path d="M8 17l-2 4 2-1 1.5 1L8 17zM16 17l2 4-2-1-1.5 1L16 17z" fill="currentColor" opacity="0.85"/>
+          <path d="M10 21l1 1.5h2l1-1.5z" fill="#fff" opacity="0.4"/>`,
+    // Document with quill — prediction thesis
+    thesis: `<path d="M5 3h10l4 4v14H5z" fill="currentColor"/>
+             <path d="M15 3v4h4" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.45"/>
+             <line x1="8" y1="11" x2="14" y2="11" stroke="#fff" stroke-width="1.4" opacity="0.6" stroke-linecap="round"/>
+             <line x1="8" y1="14" x2="16" y2="14" stroke="#fff" stroke-width="1.4" opacity="0.6" stroke-linecap="round"/>
+             <line x1="8" y1="17" x2="12" y2="17" stroke="#fff" stroke-width="1.4" opacity="0.6" stroke-linecap="round"/>`,
+    // General fallback — diamond gem
+    general: `<path d="M12 2l9 8-9 12L3 10z" fill="currentColor"/>
+              <path d="M12 2l4 8-4 12-4-12z" fill="#fff" opacity="0.25"/>
+              <path d="M3 10h18" stroke="#fff" stroke-width="0.8" opacity="0.5"/>`,
   };
   const motif = motifs[cat] || motifs.general;
   const rarityLabel = rarity.charAt(0).toUpperCase() + rarity.slice(1);
@@ -15036,6 +15111,100 @@ function badgeShieldHTML(b, opts) {
   `;
 }
 
+// Floating badge tooltip — shared across all .badge-shield instances.
+// Position-fixed so it's never clipped by a parent's overflow:hidden /
+// scroll-y. Repositioned on hover; horizontally clamped to viewport
+// edges so badges near the edge of the grid still show their tooltip.
+function _ensureBadgeFloatingTip() {
+  let tip = document.getElementById('bs-floating-tip');
+  if (tip) return tip;
+  tip = document.createElement('div');
+  tip.id = 'bs-floating-tip';
+  tip.setAttribute('role', 'tooltip');
+  tip.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(tip);
+  return tip;
+}
+
+function _wireBadgeFloatingTip() {
+  if (window._bsTipWired) return;
+  window._bsTipWired = true;
+  const tip = _ensureBadgeFloatingTip();
+  let hideTimer = null;
+
+  function showFor(shield) {
+    if (!shield) return;
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+    const data = shield.querySelector('.bs-tip');
+    if (!data) return;
+    tip.innerHTML = data.innerHTML;
+    // Carry rarity class through so the rarity pill colors right.
+    tip.className = '';
+    ['common', 'uncommon', 'rare', 'legendary'].forEach(r => {
+      if (shield.classList.contains('badge-r-' + r)) tip.classList.add('r-' + r);
+    });
+    // Position above the shield, clamped to the viewport.
+    const r = shield.getBoundingClientRect();
+    // Force a measurement after content is set.
+    tip.style.left = '0px'; tip.style.top = '0px';
+    tip.classList.add('show');
+    const tipR = tip.getBoundingClientRect();
+    const tipW = tipR.width;
+    const tipH = tipR.height;
+    const margin = 8;
+    const idealX = r.left + r.width / 2 - tipW / 2;
+    const minX = margin;
+    const maxX = window.innerWidth - tipW - margin;
+    const clampedX = Math.max(minX, Math.min(maxX, idealX));
+    let y = r.top - tipH - 10;
+    let arrowDown = true;
+    // If we'd overflow the top of the viewport, flip below.
+    if (y < margin) {
+      y = r.bottom + 10;
+      arrowDown = false;
+    }
+    tip.style.left = clampedX + 'px';
+    tip.style.top = y + 'px';
+    // Arrow x: relative to the tooltip's own left edge, pointing at the
+    // shield's center. Default 50%, clamped 12px away from edges.
+    const shieldCenterX = r.left + r.width / 2;
+    const arrowOffset = Math.max(12, Math.min(tipW - 12, shieldCenterX - clampedX));
+    tip.style.setProperty('--tip-arrow-x', arrowOffset + 'px');
+    // Flip the arrow position for tooltip-below state.
+    if (arrowDown) {
+      tip.style.setProperty('--tip-arrow-bottom', 'auto');
+      tip.classList.remove('flip');
+    } else {
+      tip.classList.add('flip');
+    }
+  }
+  function hide() {
+    if (hideTimer) clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => tip.classList.remove('show'), 60);
+  }
+
+  document.addEventListener('mouseover', (e) => {
+    const shield = e.target.closest('.badge-shield');
+    if (shield) showFor(shield);
+  });
+  document.addEventListener('mouseout', (e) => {
+    const shield = e.target.closest('.badge-shield');
+    const next = e.relatedTarget?.closest?.('.badge-shield');
+    if (shield && shield !== next) hide();
+  });
+  document.addEventListener('focusin', (e) => {
+    const shield = e.target.closest('.badge-shield');
+    if (shield) showFor(shield);
+  });
+  document.addEventListener('focusout', (e) => {
+    const shield = e.target.closest('.badge-shield');
+    if (shield) hide();
+  });
+  // Hide on scroll/resize since the position calc would be stale.
+  window.addEventListener('scroll', () => tip.classList.remove('show'), { passive: true, capture: true });
+  window.addEventListener('resize', () => tip.classList.remove('show'));
+}
+
 function renderAchievementsSection() {
   const host = document.getElementById('pf-achievements-section');
   if (!host) return;
@@ -15067,6 +15236,8 @@ function renderAchievementsSection() {
   `;
   const viewBtn = host.querySelector('[data-ach-action="view-all"]');
   if (viewBtn) viewBtn.onclick = () => openAchievementsModal();
+  // Wire the shared floating tooltip — once. Subsequent renders are no-ops.
+  try { _wireBadgeFloatingTip(); } catch (_) {}
 }
 
 async function openAchievementsModal() {
