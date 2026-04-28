@@ -7568,6 +7568,23 @@
      Lives at the very top of #view-portfolio, swaps which .pf-tab-pane is
      visible. The "Swap credits" button on the right is global access to
      the same modal each tab's contextual "Top up" button uses. */
+
+  /* Override .content's default 2-col grid for the tabbed portfolio so
+     .pf-tabs and .pf-tab-pane stack vertically. The two-col split (main
+     vs side aside) is reapplied INSIDE the Trading tab pane so the
+     existing layout still works. */
+  #view-portfolio.content {
+    display: block;
+  }
+  #view-portfolio .pf-tab-pane[data-pf-tab="trading"] {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 28px;
+  }
+  #view-portfolio .pf-tab-pane[data-pf-tab="trading"].hidden {
+    display: none;
+  }
+
   .pf-tabs {
     display: flex;
     align-items: center;
@@ -9696,6 +9713,12 @@
       gap: 22px;
       padding: 26px 26px;
     }
+    /* Mirror the tablet grid into the Trading tab pane (the rest of the
+       portfolio is single-column and unaffected). */
+    #view-portfolio .pf-tab-pane[data-pf-tab="trading"] {
+      grid-template-columns: 1fr 300px;
+      gap: 22px;
+    }
     .topbar { padding: 18px 26px; gap: 18px; }
     .featured-grid { grid-template-columns: repeat(2, 1fr); }
     .market-stats { grid-template-columns: repeat(2, 1fr); }
@@ -9705,6 +9728,11 @@
   /* --- NARROW TABLET (≤900px): stack side panel below main --- */
   @media (max-width: 900px) {
     .content {
+      grid-template-columns: 1fr;
+      gap: 26px;
+    }
+    /* Single column for the Trading tab pane on narrow tablet + mobile. */
+    #view-portfolio .pf-tab-pane[data-pf-tab="trading"] {
       grid-template-columns: 1fr;
       gap: 26px;
     }
