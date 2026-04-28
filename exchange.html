@@ -10937,23 +10937,13 @@
       padding: 26px 22px;
       min-height: 0;
     }
-    .cs-visual { min-height: 140px; order: 2; }
+    /* Hide the per-panel illustration on mobile — the text + stats + CTA
+       carry the panel on a small screen, and the visual was eating
+       vertical space without earning its keep. Desktop keeps it. */
+    .cs-visual { display: none; }
     .cs-arrow { display: none; }
     .cs-title { font-size: 20px; }
     .cs-stat-num { font-size: 20px; }
-    /* Slightly smaller silhouettes on mobile so the visual area doesn't
-       dominate. SVGs scale via viewBox so reducing the box dimensions is
-       enough — no path edits needed. */
-    .cs-person { width: 64px; height: 88px; }
-    .cs-vs { gap: 10px; }
-    .cs-vs-mid { font-size: 22px; }
-    .cs-lg-person { width: 48px; height: 68px; margin-left: -16px; }
-    .cs-trophy { width: 140px; height: 140px; }
-    .cs-trophy svg { width: 64px; height: 64px; }
-    .cs-season svg { width: 170px; height: 130px; }
-    .cs-ipo-card { width: 200px; padding: 14px; }
-    .cs-ipo-ticker { font-size: 26px; }
-    .cs-pred-card { max-width: 100%; }
     .ipo-row {
       grid-template-columns: 1fr;
       gap: 8px;
