@@ -13851,7 +13851,7 @@ async function fetchPortfolioFromSupabase() {
   try {
     const { data, error } = await window.SUPABASE
       .from('portfolios')
-      .select('cash, realized, snapshot, updated_at')
+      .select('cash, realized, tournament_credits, snapshot, updated_at')
       .eq('user_id', window.MUSE_USER.id)
       .maybeSingle();
     if (error) throw error;
@@ -13859,10 +13859,17 @@ async function fetchPortfolioFromSupabase() {
 
     const snap = data.snapshot;
     if (snap && typeof snap === 'object') {
-      // Full snapshot present — use it as authoritative
+      // Full snapshot present — use it as authoritative for most fields.
       if (typeof snap.cash === 'number') STATE.cash = snap.cash;
       if (typeof snap.realized === 'number') STATE.realized = snap.realized;
       if (typeof snap.tournamentCredits === 'number') STATE.tournamentCredits = snap.tournamentCredits;
+      // …but the flat tournament_credits column is the source of truth
+      // for any change made through the swap_credits RPC. If the column
+      // and the snapshot disagree, prefer the column — it reflects the
+      // most recent server-side mutation.
+      if (typeof data.tournament_credits === 'number') {
+        STATE.tournamentCredits = +data.tournament_credits;
+      }
       if (snap.holdings && typeof snap.holdings === 'object') STATE.holdings = snap.holdings;
       if (Array.isArray(snap.transactions)) STATE.transactions = snap.transactions;
       if (Array.isArray(snap.openOrders)) STATE.openOrders = snap.openOrders;
@@ -14135,6 +14142,11 @@ async function pushPortfolioToSupabase() {
         .update({
           cash: STATE.cash,
           realized: STATE.realized || 0,
+          // Mirror tournament credits into the flat column too. The
+          // swap_credits RPC reads/writes this column directly; if we only
+          // wrote the JSONB snapshot, a swap could overwrite a client-side
+          // change that hadn't yet propagated to the flat column.
+          tournament_credits: +STATE.tournamentCredits || 0,
           snapshot: snapshot,
           updated_at: new Date().toISOString(),
         })
@@ -22954,7 +22966,10 @@ function _refreshPortfolioTabBalances() {
   const trading = document.getElementById('pf-tab-bal-trading');
   if (trading) trading.textContent = '$' + Math.round(total).toLocaleString();
   const pred = document.getElementById('pf-tab-bal-predictions');
-  if (pred) pred.textContent = '$' + Math.round((PREDICTION_BALANCE && PREDICTION_BALANCE.balance) || 0).toLocaleString();
+  // PREDICTION_BALANCE is stored as a NUMBER in the existing app (set by
+  // fetchPredictionBalance + place_prediction_bet's response handler), not
+  // an object. Treat it as such here.
+  if (pred) pred.textContent = '$' + Math.round(+PREDICTION_BALANCE || 0).toLocaleString();
   const tourn = document.getElementById('pf-tab-bal-tournaments');
   if (tourn) tourn.textContent = '$' + Math.round(STATE.tournamentCredits || 0).toLocaleString();
 }
@@ -23011,8 +23026,8 @@ async function _fetchPredictionsTabData() {
 }
 
 function _renderPredictionsTab() {
-  // Hero numbers
-  const bal = (PREDICTION_BALANCE && PREDICTION_BALANCE.balance) || 0;
+  // Hero numbers — PREDICTION_BALANCE is a number primitive, not an object.
+  const bal = +PREDICTION_BALANCE || 0;
   const intEl   = document.getElementById('pp-int');
   const centsEl = document.getElementById('pp-cents');
   if (intEl)   intEl.textContent   = Math.floor(bal).toLocaleString();
@@ -23261,9 +23276,10 @@ const _SWAP_CCY_LABEL = {
 };
 
 function _currentSwapBalance(ccy) {
-  if (ccy === 'paper')      return STATE.cash || 0;
-  if (ccy === 'prediction') return (PREDICTION_BALANCE && PREDICTION_BALANCE.balance) || 0;
-  if (ccy === 'tournament') return STATE.tournamentCredits || 0;
+  if (ccy === 'paper')      return +STATE.cash || 0;
+  // PREDICTION_BALANCE is a number primitive — see fetchPredictionBalance().
+  if (ccy === 'prediction') return +PREDICTION_BALANCE || 0;
+  if (ccy === 'tournament') return +STATE.tournamentCredits || 0;
   return 0;
 }
 
@@ -23380,16 +23396,20 @@ function openSwapModal(opts) {
         confirm.disabled = false;
         return;
       }
-      // Apply new balances to client STATE.
+      // Apply new balances to client STATE. PREDICTION_BALANCE is a number
+      // primitive (NOT an object) — see fetchPredictionBalance().
       if (typeof data?.paper === 'number')      STATE.cash = +data.paper;
       if (typeof data?.tournament === 'number') STATE.tournamentCredits = +data.tournament;
-      if (typeof data?.prediction === 'number') {
-        if (PREDICTION_BALANCE) PREDICTION_BALANCE.balance = +data.prediction;
-        else PREDICTION_BALANCE = { balance: +data.prediction };
-      }
+      if (typeof data?.prediction === 'number') PREDICTION_BALANCE = +data.prediction;
       try { saveMusePriceState(); } catch (_) {}
+      // Force-refetch the canonical prediction balance + cup/season data
+      // so any other surface (Predictions page, achievements, etc.) sees
+      // the new value without waiting for its TTL cache to expire.
+      try { if (typeof fetchPredictionBalance === 'function') fetchPredictionBalance(); } catch (_) {}
+      try { _fetchPredictionsTabData().then(() => _renderPredictionsTab()); } catch (_) {}
       try { renderPortfolio(); } catch (_) {}
       try { _refreshPortfolioTabBalances(); } catch (_) {}
+      try { if (typeof renderPredictionsCard === 'function') renderPredictionsCard(); } catch (_) {}
       close();
     } catch (e) {
       errEl.textContent = e.message || 'Swap failed. Please try again.';
