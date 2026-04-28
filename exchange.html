@@ -4033,6 +4033,100 @@
     color: var(--text);
   }
 
+  /* Cup info banner — explains how cups work + the prize tier table. */
+  .lb-cup-info {
+    background: linear-gradient(135deg, rgba(255,209,102,0.08), rgba(167,139,250,0.06));
+    border: 1px solid rgba(255,209,102,0.22);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    margin: 0 0 12px;
+  }
+  .lb-cup-info-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .lb-cup-info-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(255,209,102,0.14);
+    border: 1px solid rgba(255,209,102,0.32);
+  }
+  .lb-cup-info-tip {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .lb-cup-tiers {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .lb-cup-tier { white-space: nowrap; }
+  .lb-cup-tier b { color: var(--gold); margin-right: 4px; }
+  .lb-cup-tier-sep { color: var(--text-faint); }
+
+  /* Empty-cup card — shown when a cup tab has no current participants. */
+  .lb-empty-cup {
+    text-align: center;
+    padding: 30px 20px;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--card-2);
+  }
+  .lb-empty-cup-icon {
+    width: 48px; height: 48px;
+    margin: 0 auto 10px;
+    color: var(--gold);
+    opacity: 0.85;
+  }
+  .lb-empty-cup-icon svg { width: 100%; height: 100%; }
+  .lb-empty-cup-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .lb-empty-cup-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    max-width: 42ch;
+    margin: 0 auto 16px;
+  }
+  .lb-empty-cup-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: var(--purple);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.18s;
+  }
+  .lb-empty-cup-cta:hover { background: var(--purple-2); transform: translateY(-1px); }
+
+  @media (max-width: 760px) {
+    .lb-cup-tiers { font-size: 11.5px; gap: 4px; }
+    .lb-cup-tier-sep { display: none; }
+    .lb-cup-tier { flex: 1 0 100%; }
+  }
+
   /* Genre Cup tabs — horizontally scrollable on mobile, pill row on
      desktop. Same active-purple treatment as .lb-sort so the visual
      grammar stays consistent. */
@@ -24440,18 +24534,26 @@ function renderLeaderboard() {
       <button class="lb-jump" id="lb-jump-g">Jump to me · #${yourRank}</button>
     </div>` : ''}
     ${(() => {
-      // Phase 2 — Genre Cup selector. Built from the set of genres that
-      // appear in any visible leaderboard row's genre_returns object,
-      // so cups auto-appear as soon as any trader holds that genre.
-      const cupSet = new Set();
-      (LEADERBOARD_ROWS || []).forEach(r => {
-        if (r && r.genre_returns && typeof r.genre_returns === 'object') {
-          Object.keys(r.genre_returns).forEach(g => cupSet.add(g));
-        }
-      });
-      const cups = Array.from(cupSet).sort();
-      if (cups.length === 0) return '';
+      // Always show all 9 canonical genre cup tabs (plus Overall) so empty
+      // cups still feel "open for entry" rather than absent. The dynamic
+      // derivation that used to hide a cup until someone held that genre
+      // gave a chicken-and-egg problem: nobody could see a cup existed
+      // until someone joined it.
+      const cups = ['Pop','Hip-hop','R&B','Latin','Afropop','Indie','Alt','K-Pop','Electronic'];
       return `
+        <div class="lb-cup-info">
+          <div class="lb-cup-info-head">
+            <span class="lb-cup-info-tag">Monthly Cups</span>
+            <span class="lb-cup-info-tip">Hold any artist in a genre → you're entered. Top 10 win prizes when the month closes.</span>
+          </div>
+          <div class="lb-cup-tiers">
+            <span class="lb-cup-tier"><b>#1</b> $10k credits + champion badge</span>
+            <span class="lb-cup-tier-sep">·</span>
+            <span class="lb-cup-tier"><b>#2–3</b> $3k credits + podium badge</span>
+            <span class="lb-cup-tier-sep">·</span>
+            <span class="lb-cup-tier"><b>#4–10</b> $1k credits + finalist badge</span>
+          </div>
+        </div>
         <div class="lb-cup-tabs">
           <button data-lb-cup="" class="${!lb.cup?'active':''}">Overall</button>
           ${cups.map(g => `<button data-lb-cup="${escapeHTML(g)}" class="${lb.cup===g?'active':''}">${escapeHTML(g)} Cup</button>`).join('')}
@@ -24492,7 +24594,19 @@ function renderLeaderboard() {
   }
 
   if (rows.length === 0) {
-    html += '<div class="lb-empty">No players match your filters.</div>';
+    if (lb.cup && !q) {
+      // Empty cup — give the user a clear path to enter (just buy any
+      // artist in that genre).
+      html += `
+        <div class="lb-empty lb-empty-cup">
+          <div class="lb-empty-cup-icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 21h8v1.5H8z"/><rect x="11" y="17" width="2" height="4"/><path d="M7 4h10v6c0 3-2 5-5 5s-5-2-5-5z"/></svg></div>
+          <div class="lb-empty-cup-title">No traders in the ${escapeHTML(lb.cup)} Cup yet</div>
+          <div class="lb-empty-cup-sub">Buy any ${escapeHTML(lb.cup)} artist and you're entered. The cup closes at the end of the month — top 10 win prizes.</div>
+          <button class="lb-empty-cup-cta" data-lb-cup-browse="${escapeHTML(lb.cup)}">Browse ${escapeHTML(lb.cup)} artists →</button>
+        </div>`;
+    } else {
+      html += '<div class="lb-empty">No players match your filters.</div>';
+    }
   } else {
     html += '<div class="lb-list">' + visible.map(renderRow).join('') + '</div>';
     if (hasMore) {
@@ -24533,6 +24647,15 @@ function renderLeaderboard() {
       lb.cup = g || null;
       lb.limit = 10; lb.expanded = null;
       renderLeaderboard();
+    };
+  });
+  // Empty-cup CTA → jump into the genre directory for that genre so the
+  // user can buy in and enter the cup.
+  host.querySelectorAll('[data-lb-cup-browse]').forEach(btn => {
+    btn.onclick = () => {
+      const g = btn.dataset.lbCupBrowse;
+      STATE.selectedGenre = g;
+      try { setView('genre'); } catch (_) {}
     };
   });
   host.querySelectorAll('[data-lb-toggle]').forEach(btn => {
