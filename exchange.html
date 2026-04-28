@@ -401,7 +401,7 @@
   /* SHELL */
   .shell {
     display: grid;
-    grid-template-columns: 76px 1fr;
+    grid-template-columns: 64px 1fr;
     min-height: 100vh;
   }
 
@@ -412,15 +412,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 22px 0 18px;
-    gap: 6px;
+    padding: 18px 0 14px;
+    gap: 4px;
     position: sticky;
     top: 0;
     height: 100vh;
     z-index: 500;
   }
   .sb-logo {
-    width: 44px; height: 44px;
+    width: 40px; height: 40px;
     border-radius: 12px;
     background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
     display: grid; place-items: center;
@@ -432,10 +432,10 @@
     transition: transform .15s ease, box-shadow .15s ease;
   }
   .sb-logo:hover { transform: translateY(-1px); box-shadow: 0 0 36px var(--purple-glow); }
-  .sb-logo svg { width: 22px; height: 22px; }
+  .sb-logo svg { width: 20px; height: 20px; }
   .sb-item {
-    width: 44px; height: 44px;
-    border-radius: 12px;
+    width: 38px; height: 38px;
+    border-radius: 10px;
     display: grid; place-items: center;
     color: var(--text-faint);
     transition: all .15s ease;
@@ -449,16 +449,30 @@
   .sb-item.active::before {
     content: '';
     position: absolute;
-    left: -22px;
-    top: 12px; bottom: 12px;
+    left: -19px;
+    top: 9px; bottom: 9px;
     width: 3px;
     background: var(--purple);
     border-radius: 0 3px 3px 0;
     box-shadow: 0 0 12px var(--purple-glow);
   }
-  .sb-item svg { width: 20px; height: 20px; }
+  .sb-item svg { width: 18px; height: 18px; }
   .sb-item .soon-dot { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--purple); opacity: 0.7; }
-  .sb-spacer { flex: 1; }
+  .sb-spacer { flex: 1; min-height: 14px; }
+  /* Visual separator between core nav and Help/Settings at the bottom. */
+  .sb-desktop-only:first-of-type {
+    margin-top: 8px;
+    position: relative;
+  }
+  .sb-desktop-only:first-of-type::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 8px;
+    right: 8px;
+    height: 1px;
+    background: var(--border);
+  }
 
   /* Sidebar hover tooltips — show section name to the right of each icon */
   .sidebar { overflow: visible; }
@@ -707,20 +721,21 @@
 
   .tabs {
     display: flex;
-    gap: 4px;
+    gap: 2px;
     background: var(--card);
     border: 1px solid var(--border);
-    padding: 4px;
+    padding: 3px;
     border-radius: 12px;
   }
   .tab {
-    padding: 11px 16px;
-    min-height: 44px;
+    padding: 8px 12px;
+    min-height: 38px;
     border-radius: 8px;
     color: var(--text-dim);
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 500;
     transition: all .15s ease;
+    white-space: nowrap;
   }
   .tab:hover { color: var(--text); }
   .tab.active {
@@ -9525,12 +9540,12 @@
     .sb-item {
       flex: 1;
       max-width: 72px;
-      height: 52px;
+      height: 48px;
       width: auto;
       flex-shrink: 1;
-      border-radius: 12px;
+      border-radius: 10px;
     }
-    .sb-item svg { width: 22px; height: 22px; }
+    .sb-item svg { width: 20px; height: 20px; }
     .sb-item.active::before {
       /* move active indicator from left side to top */
       left: 14px;
@@ -11319,11 +11334,11 @@
     <button class="sb-item sb-mobile-hide" data-nav="genres" data-label="Genres" aria-label="Genres"><svg><use href="#i-grid"/></svg></button>
     <button class="sb-item" data-nav="portfolio" data-label="Portfolio" aria-label="Portfolio"><svg><use href="#i-portfolio"/></svg></button>
     <button class="sb-item sb-mobile-hide" data-nav="orders" data-label="Orders" aria-label="Orders"><svg><use href="#i-list"/></svg></button>
-    <button class="sb-item" data-nav="swap" data-label="Swap" aria-label="Swap"><svg><use href="#i-swap"/></svg></button>
-    <button class="sb-item" data-nav="tournaments" data-label="Tournaments" aria-label="Tournaments"><svg><use href="#i-trophy"/></svg></button>
-    <button class="sb-item sb-mobile-hide" data-nav="leaderboard" data-label="Leaderboard" aria-label="Leaderboard"><svg><use href="#i-medal"/></svg></button>
-    <button class="sb-item sb-mobile-hide" data-nav="leagues" data-label="Leagues" aria-label="Leagues"><svg><use href="#i-leagues"/></svg></button>
-    <button class="sb-item sb-mobile-hide" data-nav="predictions" data-label="Predictions" aria-label="Predictions"><svg><use href="#i-predict"/></svg></button>
+    <button class="sb-item sb-mobile-hide" data-nav="swap" data-label="Swap" aria-label="Swap"><svg><use href="#i-swap"/></svg></button>
+    <button class="sb-item" data-nav="predictions" data-label="Predictions" aria-label="Predictions"><svg><use href="#i-predict"/></svg></button>
+    <button class="sb-item" data-nav="leagues" data-label="Leagues" aria-label="Leagues"><svg><use href="#i-leagues"/></svg></button>
+    <button class="sb-item" data-nav="leaderboard" data-label="Leaderboard" aria-label="Leaderboard"><svg><use href="#i-medal"/></svg></button>
+    <button class="sb-item sb-mobile-hide" data-nav="tournaments" data-label="Tournaments" aria-label="Tournaments"><svg><use href="#i-trophy"/></svg></button>
     <div class="sb-spacer"></div>
     <button class="sb-item sb-menu-btn" id="mobile-menu-btn" data-label="Menu" aria-label="Open menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -11355,7 +11370,8 @@
       <div class="tabs">
         <button class="tab active" data-nav="markets">Markets</button>
         <button class="tab" data-nav="artists">Artists</button>
-        <button class="tab" data-nav="genres">Genres</button>
+        <button class="tab" data-nav="predictions">Predictions</button>
+        <button class="tab" data-nav="leagues">Leagues</button>
         <button class="tab" data-nav="tournaments">Tournaments</button>
         <button class="tab" data-nav="leaderboard">Leaderboard</button>
       </div>
