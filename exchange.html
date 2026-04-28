@@ -23278,8 +23278,7 @@ function openSwapModal(opts) {
       <div class="lg-modal-sub">1:1 between paper trading, prediction credits, and tournament credits. No fee.</div>
       <div class="swap-modal-body">
         <div class="swap-row">
-          <label>From</label>
-          <select class="swap-select" id="swap-from">
+          <select class="swap-select" id="swap-from" aria-label="Swap from">
             <option value="paper">Paper trading cash</option>
             <option value="prediction">Prediction credits</option>
             <option value="tournament">Tournament credits</option>
@@ -23291,16 +23290,14 @@ function openSwapModal(opts) {
           </button>
         </div>
         <div class="swap-row">
-          <label>To</label>
-          <select class="swap-select" id="swap-to">
+          <select class="swap-select" id="swap-to" aria-label="Swap to">
             <option value="paper">Paper trading cash</option>
             <option value="prediction">Prediction credits</option>
             <option value="tournament">Tournament credits</option>
           </select>
         </div>
         <div class="swap-row">
-          <label>Amount</label>
-          <input class="swap-amount" id="swap-amount" type="number" min="1" step="1" placeholder="0">
+          <input class="swap-amount" id="swap-amount" type="number" min="1" step="1" placeholder="Amount" aria-label="Amount">
         </div>
         <div class="swap-summary" id="swap-summary"></div>
         <div class="swap-error" id="swap-error" hidden></div>
