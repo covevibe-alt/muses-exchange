@@ -7564,6 +7564,226 @@
   .back-btn:hover { color: var(--text); border-color: var(--border-strong); }
   .back-btn svg { width: 14px; height: 14px; }
 
+  /* PORTFOLIO TABS — three pools (Trading / Predictions / Tournaments).
+     Lives at the very top of #view-portfolio, swaps which .pf-tab-pane is
+     visible. The "Swap credits" button on the right is global access to
+     the same modal each tab's contextual "Top up" button uses. */
+  .pf-tabs {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 6px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .pf-tab {
+    flex: 1;
+    min-width: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    color: var(--text-dim);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+  }
+  .pf-tab:hover { color: var(--text); background: var(--card-2); }
+  .pf-tab.active {
+    background: var(--purple-soft);
+    color: var(--text);
+  }
+  .pf-tab-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: inherit;
+  }
+  .pf-tab.active .pf-tab-label { color: var(--purple-2); }
+  .pf-tab-bal {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .pf-swap-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: var(--purple);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.18s;
+    margin-left: auto;
+  }
+  .pf-swap-btn:hover { background: var(--purple-2); transform: translateY(-1px); }
+  .pf-swap-btn svg { width: 16px; height: 16px; }
+
+  .pf-tab-pane.hidden { display: none; }
+  .pf-hero-cta-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .pf-hero-cta-row .btn { display: inline-flex; align-items: center; gap: 6px; }
+  .pf-hero-cta-row .btn svg { width: 14px; height: 14px; }
+
+  /* Open / resolved bet rows on Predictions tab + entry rows on Tournaments tab */
+  .pp-bet-row,
+  .pt-entry-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .pp-bet-row:last-child,
+  .pt-entry-row:last-child { border-bottom: none; }
+  .pp-bet-q,
+  .pt-entry-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 13px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pp-bet-meta,
+  .pt-entry-meta {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .pp-bet-side {
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .pp-bet-side.yes { background: var(--up-soft); color: var(--up); border: 1px solid rgba(16,216,139,0.3); }
+  .pp-bet-side.no  { background: var(--down-soft); color: var(--down); border: 1px solid rgba(255,77,109,0.3); }
+  .pp-bet-amt,
+  .pt-entry-rank {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    color: var(--text);
+    text-align: right;
+    font-size: 13px;
+  }
+  .pp-bet-amt.up   { color: var(--up); }
+  .pp-bet-amt.down { color: var(--down); }
+  .pp-empty,
+  .pt-empty {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 28px 12px;
+    font-size: 13px;
+  }
+
+  /* Swap modal */
+  .swap-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 6px 0 4px;
+  }
+  .swap-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: center;
+    gap: 12px;
+  }
+  .swap-row label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .swap-select,
+  .swap-amount {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--card-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .swap-select:focus,
+  .swap-amount:focus { border-color: var(--purple); outline: none; }
+  .swap-flip-row {
+    display: flex;
+    justify-content: center;
+    margin: -4px 0;
+  }
+  .swap-flip {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--card-2);
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: color 0.18s, transform 0.3s;
+  }
+  .swap-flip:hover { color: var(--text); transform: rotate(180deg); }
+  .swap-flip svg { width: 14px; height: 14px; }
+  .swap-summary {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .swap-summary strong { color: var(--text); }
+  .swap-error {
+    color: var(--down);
+    font-size: 12px;
+    background: var(--down-soft);
+    border: 1px solid rgba(255,77,109,0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+
+  @media (max-width: 760px) {
+    .pf-tabs { padding: 4px; gap: 4px; }
+    .pf-tab { min-width: 0; padding: 8px 10px; }
+    .pf-tab-label { font-size: 10px; }
+    .pf-tab-bal { font-size: 14px; }
+    .pf-swap-btn {
+      flex: 1 0 100%;
+      justify-content: center;
+      margin-left: 0;
+      margin-top: 4px;
+      padding: 10px;
+    }
+    .swap-row { grid-template-columns: 1fr; gap: 6px; }
+    .swap-row label { margin-bottom: 0; }
+  }
+
   /* PORTFOLIO — COMPACT HERO */
   .pf-hero-card {
     background: linear-gradient(135deg, rgba(139,92,246,0.10) 0%, rgba(139,92,246,0.02) 60%, transparent 100%);
@@ -11589,6 +11809,33 @@
 
     <!-- ============== PORTFOLIO VIEW ============== -->
     <section class="content hidden" id="view-portfolio">
+
+      <!-- PORTFOLIO TABS — Trading | Predictions | Tournaments. Each tab
+           swaps the page body. Three distinct money pools: paper trading
+           (cash + holdings), prediction credits, tournament credits.
+           Switch from the global "Swap credits" button or each tab's
+           "Top up" CTA. -->
+      <div class="pf-tabs">
+        <button class="pf-tab active" data-pf-tab-btn="trading">
+          <span class="pf-tab-label">Trading</span>
+          <span class="pf-tab-bal" id="pf-tab-bal-trading">—</span>
+        </button>
+        <button class="pf-tab" data-pf-tab-btn="predictions">
+          <span class="pf-tab-label">Predictions</span>
+          <span class="pf-tab-bal" id="pf-tab-bal-predictions">—</span>
+        </button>
+        <button class="pf-tab" data-pf-tab-btn="tournaments">
+          <span class="pf-tab-label">Tournaments</span>
+          <span class="pf-tab-bal" id="pf-tab-bal-tournaments">—</span>
+        </button>
+        <button class="pf-swap-btn" id="pf-swap-btn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4M7 4 L3 8M7 4 L11 8M17 8v12M17 20 L13 16M17 20 L21 16"/></svg>
+          Swap credits
+        </button>
+      </div>
+
+      <!-- ────────── TRADING TAB ────────── -->
+      <div class="pf-tab-pane" data-pf-tab="trading">
       <div class="col-main">
 
         <!-- COMPACT HERO -->
@@ -11746,6 +11993,124 @@
           <div id="alloc-list"></div>
         </div>
       </aside>
+      </div>
+      <!-- /trading tab -->
+
+      <!-- ────────── PREDICTIONS TAB ────────── -->
+      <div class="pf-tab-pane hidden" data-pf-tab="predictions">
+        <div class="col-main">
+          <!-- Hero -->
+          <div class="pf-hero-card">
+            <div class="hero-label">
+              <span class="dot"></span>Prediction Credits
+              <span class="money-badge real" style="background:rgba(167,139,250,0.12);color:var(--purple-2);border-color:rgba(167,139,250,0.3)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                Predictions
+              </span>
+            </div>
+            <div class="pf-hero-row">
+              <div class="pf-hero-value">$<span id="pp-int">0</span><span class="cents">.<span id="pp-cents">00</span></span></div>
+              <div class="pf-chips">
+                <div class="pf-chip">
+                  <div class="pf-chip-l">Open stake</div>
+                  <div class="pf-chip-v" id="pp-chip-stake">—</div>
+                  <div class="pf-chip-sub">In active markets</div>
+                </div>
+                <div class="pf-chip">
+                  <div class="pf-chip-l">Lifetime P&amp;L</div>
+                  <div class="pf-chip-v" id="pp-chip-pnl">—</div>
+                  <div class="pf-chip-sub" id="pp-chip-pnl-sub">Across resolved</div>
+                </div>
+                <div class="pf-chip">
+                  <div class="pf-chip-l">Hit rate</div>
+                  <div class="pf-chip-v" id="pp-chip-rate">—</div>
+                  <div class="pf-chip-sub" id="pp-chip-rate-sub">Resolved bets</div>
+                </div>
+              </div>
+            </div>
+            <div class="pf-hero-cta-row">
+              <button class="btn btn-primary" data-swap-target="prediction" data-swap-source="paper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                Top up credits
+              </button>
+              <button class="btn btn-secondary" data-nav="predictions">See open markets →</button>
+            </div>
+          </div>
+
+          <!-- Streak banner — reuses the existing renderStreakBanner output. -->
+          <div id="pp-streak-banner-host"></div>
+
+          <!-- Open bets -->
+          <div class="card">
+            <div class="card-title">Open bets <span class="link" id="pp-open-count">0 markets</span></div>
+            <div id="pp-open-bets"></div>
+          </div>
+
+          <!-- Resolved history -->
+          <div class="card">
+            <div class="card-title">Recent resolved <span class="dim" style="font-size:11px">last 20</span></div>
+            <div id="pp-resolved-bets"></div>
+          </div>
+        </div>
+      </div>
+      <!-- /predictions tab -->
+
+      <!-- ────────── TOURNAMENTS TAB ────────── -->
+      <div class="pf-tab-pane hidden" data-pf-tab="tournaments">
+        <div class="col-main">
+          <!-- Hero -->
+          <div class="pf-hero-card">
+            <div class="hero-label">
+              <span class="dot"></span>Tournament Credits
+              <span class="money-badge real" style="background:rgba(255,209,102,0.12);color:#FFD166;border-color:rgba(255,209,102,0.32)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v3a5 5 0 0 1-10 0V4z"/></svg>
+                Tournament
+              </span>
+            </div>
+            <div class="pf-hero-row">
+              <div class="pf-hero-value">$<span id="pt-int">0</span><span class="cents">.<span id="pt-cents">00</span></span></div>
+              <div class="pf-chips">
+                <div class="pf-chip">
+                  <div class="pf-chip-l">Active</div>
+                  <div class="pf-chip-v" id="pt-chip-active">0</div>
+                  <div class="pf-chip-sub">Currently entered</div>
+                </div>
+                <div class="pf-chip">
+                  <div class="pf-chip-l">Won</div>
+                  <div class="pf-chip-v" id="pt-chip-won">0</div>
+                  <div class="pf-chip-sub" id="pt-chip-won-sub">Lifetime</div>
+                </div>
+                <div class="pf-chip">
+                  <div class="pf-chip-l">Best finish</div>
+                  <div class="pf-chip-v" id="pt-chip-best">—</div>
+                  <div class="pf-chip-sub">All-time</div>
+                </div>
+              </div>
+            </div>
+            <div class="pf-hero-cta-row">
+              <button class="btn btn-primary" data-swap-target="tournament" data-swap-source="paper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                Top up credits
+              </button>
+              <button class="btn btn-secondary" data-nav="tournaments">See tournaments →</button>
+            </div>
+          </div>
+
+          <!-- Active season + cup entries -->
+          <div class="card">
+            <div class="card-title">Active entries <span class="link" id="pt-active-count">0</span></div>
+            <div id="pt-active-list"></div>
+          </div>
+
+          <!-- Recent finishes -->
+          <div class="card">
+            <div class="card-title">Recent finishes <span class="dim" style="font-size:11px">last 10</span></div>
+            <div id="pt-finishes-list"></div>
+          </div>
+        </div>
+      </div>
+      <!-- /tournaments tab -->
+
     </section>
 
     <!-- ============== TOURNAMENTS VIEW ============== -->
@@ -17010,7 +17375,10 @@ function setView(name) {
   // (e.g. the mobile sticky-trade CTA that should only appear on artist detail).
   document.body.setAttribute('data-view', name);
   VIEWS.forEach(v => {
-    document.getElementById('view-' + v).classList.toggle('hidden', v !== name);
+    // Guard: a stale-cache user can hit this with a VIEWS entry whose
+    // <section> wasn't present in their cached HTML (Sentry MUSES-EXCHANGE-6).
+    const el = document.getElementById('view-' + v);
+    if (el) el.classList.toggle('hidden', v !== name);
   });
   // Update artist back button label/target based on origin
   if (name === 'artist') {
@@ -22468,11 +22836,529 @@ function updateCashDisplay() {
 }
 
 // ============ PORTFOLIO ============
+// ============================================================================
+// PORTFOLIO TABS — Trading | Predictions | Tournaments
+// ============================================================================
+let _pfActiveTab = 'trading';
+let _pfTabsWired = false;
+let _pfPredictionsData = null; // { open: [...], resolved: [...], stats: {...} }
+let _pfTournamentsData = null; // { active: [...], finishes: [...], won: n, best: n }
+
+function _wirePortfolioTabs() {
+  if (_pfTabsWired) return;
+  _pfTabsWired = true;
+  document.querySelectorAll('[data-pf-tab-btn]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.pfTabBtn;
+      _setPortfolioTab(tab);
+    });
+  });
+  const swapBtn = document.getElementById('pf-swap-btn');
+  if (swapBtn) swapBtn.addEventListener('click', () => openSwapModal({}));
+  // Top-up CTAs inside each tab
+  document.querySelectorAll('[data-swap-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openSwapModal({
+        from: btn.dataset.swapSource || 'paper',
+        to:   btn.dataset.swapTarget,
+      });
+    });
+  });
+}
+
+function _setPortfolioTab(tab) {
+  _pfActiveTab = tab;
+  document.querySelectorAll('[data-pf-tab-btn]').forEach(b => {
+    b.classList.toggle('active', b.dataset.pfTabBtn === tab);
+  });
+  document.querySelectorAll('[data-pf-tab]').forEach(p => {
+    p.classList.toggle('hidden', p.dataset.pfTab !== tab);
+  });
+  // Re-paint per-tab content so freshly-fetched data shows up.
+  if (tab === 'predictions') _renderPredictionsTab();
+  else if (tab === 'tournaments') _renderTournamentsTab();
+}
+
+function _refreshPortfolioTabBalances() {
+  // Trading = portfolio total (cash + holdings value).
+  const total = (function() {
+    const tickers = Object.keys(STATE.holdings || {});
+    let v = STATE.cash || 0;
+    tickers.forEach(t => {
+      const h = STATE.holdings[t];
+      const a = ARTISTS.find(x => x.ticker === t);
+      if (h && a && h.shares) v += h.shares * a.price;
+    });
+    return v;
+  })();
+  const trading = document.getElementById('pf-tab-bal-trading');
+  if (trading) trading.textContent = '$' + Math.round(total).toLocaleString();
+  const pred = document.getElementById('pf-tab-bal-predictions');
+  if (pred) pred.textContent = '$' + Math.round((PREDICTION_BALANCE && PREDICTION_BALANCE.balance) || 0).toLocaleString();
+  const tourn = document.getElementById('pf-tab-bal-tournaments');
+  if (tourn) tourn.textContent = '$' + Math.round(STATE.tournamentCredits || 0).toLocaleString();
+}
+
+async function _fetchPredictionsTabData() {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) {
+    _pfPredictionsData = { open: [], resolved: [], stats: { wins: 0, losses: 0, pnl: 0 } };
+    return _pfPredictionsData;
+  }
+  try {
+    // Pull the user's bets + the markets they belong to.
+    const { data: bets, error } = await window.SUPABASE
+      .from('prediction_bets')
+      .select('id, market_id, side, amount, payout, placed_at')
+      .eq('user_id', window.MUSE_USER.id)
+      .order('placed_at', { ascending: false })
+      .limit(60);
+    if (error) throw error;
+    const marketIds = Array.from(new Set((bets || []).map(b => b.market_id)));
+    let markets = {};
+    if (marketIds.length) {
+      const { data: ms } = await window.SUPABASE
+        .from('prediction_markets')
+        .select('id, slug, question, status, resolution, resolves_at, yes_pool, no_pool')
+        .in('id', marketIds);
+      (ms || []).forEach(m => { markets[m.id] = m; });
+    }
+    const open = [];
+    const resolved = [];
+    let wins = 0, losses = 0, totalPaid = 0, totalStake = 0;
+    (bets || []).forEach(b => {
+      const m = markets[b.market_id];
+      if (!m) return;
+      const enriched = { ...b, market: m };
+      if (m.status === 'resolved') {
+        resolved.push(enriched);
+        totalStake += +b.amount || 0;
+        totalPaid += +b.payout || 0;
+        if (+b.payout > 0) wins += 1; else losses += 1;
+      } else if (m.status === 'open') {
+        open.push(enriched);
+      }
+    });
+    _pfPredictionsData = {
+      open,
+      resolved: resolved.slice(0, 20),
+      stats: { wins, losses, pnl: totalPaid - totalStake, totalStake, totalPaid },
+    };
+  } catch (e) {
+    console.warn('[Muses] _fetchPredictionsTabData failed:', e?.message || e);
+    _pfPredictionsData = { open: [], resolved: [], stats: { wins: 0, losses: 0, pnl: 0 } };
+  }
+  return _pfPredictionsData;
+}
+
+function _renderPredictionsTab() {
+  // Hero numbers
+  const bal = (PREDICTION_BALANCE && PREDICTION_BALANCE.balance) || 0;
+  const intEl   = document.getElementById('pp-int');
+  const centsEl = document.getElementById('pp-cents');
+  if (intEl)   intEl.textContent   = Math.floor(bal).toLocaleString();
+  if (centsEl) centsEl.textContent = (Math.round((bal % 1) * 100)).toString().padStart(2, '0');
+
+  const data = _pfPredictionsData;
+  const stakeEl = document.getElementById('pp-chip-stake');
+  const pnlEl   = document.getElementById('pp-chip-pnl');
+  const pnlSub  = document.getElementById('pp-chip-pnl-sub');
+  const rateEl  = document.getElementById('pp-chip-rate');
+  const rateSub = document.getElementById('pp-chip-rate-sub');
+  if (data) {
+    const stake = (data.open || []).reduce((s, b) => s + (+b.amount || 0), 0);
+    if (stakeEl) stakeEl.textContent = '$' + Math.round(stake).toLocaleString();
+    const pnl = data.stats.pnl;
+    if (pnlEl) {
+      pnlEl.textContent = (pnl >= 0 ? '+$' : '−$') + Math.abs(Math.round(pnl)).toLocaleString();
+      pnlEl.classList.toggle('up', pnl >= 0);
+      pnlEl.classList.toggle('down', pnl < 0);
+    }
+    if (pnlSub) pnlSub.textContent = `${data.stats.wins}W / ${data.stats.losses}L`;
+    const totalResolved = data.stats.wins + data.stats.losses;
+    if (rateEl) {
+      rateEl.textContent = totalResolved > 0
+        ? Math.round(data.stats.wins / totalResolved * 100) + '%' : '—';
+    }
+    if (rateSub) rateSub.textContent = totalResolved > 0
+      ? `${totalResolved} resolved` : 'No resolved bets yet';
+  }
+
+  // Mirror the streak banner from the predictions page into the portfolio tab.
+  const bannerHost = document.getElementById('pp-streak-banner-host');
+  if (bannerHost) {
+    const tempStreakHost = document.getElementById('pred-streak-banner');
+    if (tempStreakHost) {
+      bannerHost.innerHTML = tempStreakHost.innerHTML;
+    } else {
+      // Render a fresh streak banner directly into the portfolio host.
+      const s = PRED_STREAK || { current_streak: 0 };
+      const streak = s.current_streak | 0;
+      const mult = _multiplierForStreak ? _multiplierForStreak(streak) : Math.min(2, 1 + 0.1 * streak);
+      bannerHost.innerHTML = `
+        <div class="pred-streak-banner" style="margin-bottom:14px">
+          <div class="psb-streak">
+            <div class="psb-flame${streak >= 3 ? '' : ' cold'}">${streak >= 3 ? '🔥' : '·'}</div>
+            <div class="psb-text">
+              <div class="psb-num">${streak}-call streak</div>
+              <div class="psb-sub">${streak === 0 ? 'No active streak. Win 3 in a row → +$500 bonus.' : `Next correct call pays ${mult.toFixed(1)}× — keep it going.`}</div>
+            </div>
+          </div>
+          <div class="psb-mult">
+            <div class="psb-mult-num">${mult.toFixed(1)}×</div>
+            <div class="psb-mult-lab">CURRENT MULT</div>
+          </div>
+        </div>`;
+    }
+  }
+
+  // Open bets list
+  const openHost = document.getElementById('pp-open-bets');
+  const openCount = document.getElementById('pp-open-count');
+  if (openHost && data) {
+    if (!data.open.length) {
+      openHost.innerHTML = `<div class="pp-empty">No open bets. <span class="link" data-nav="predictions">Browse markets →</span></div>`;
+    } else {
+      openHost.innerHTML = data.open.map(b => {
+        const m = b.market;
+        const pool = (+m.yes_pool || 0) + (+m.no_pool || 0);
+        const myShare = pool > 0 ? Math.round((+b.amount / pool) * 100) : 0;
+        return `
+          <div class="pp-bet-row" data-market="${m.id}">
+            <div>
+              <div class="pp-bet-q">${escapeHTML(m.question)}</div>
+              <div class="pp-bet-meta">${myShare}% of pool · resolves ${_fmtDate(m.resolves_at)}</div>
+            </div>
+            <span class="pp-bet-side ${b.side}">${b.side.toUpperCase()}</span>
+            <div class="pp-bet-amt">$${(+b.amount).toFixed(0)}</div>
+          </div>`;
+      }).join('');
+    }
+    if (openCount) openCount.textContent = data.open.length + (data.open.length === 1 ? ' market' : ' markets');
+  }
+
+  // Resolved history
+  const resolvedHost = document.getElementById('pp-resolved-bets');
+  if (resolvedHost && data) {
+    if (!data.resolved.length) {
+      resolvedHost.innerHTML = `<div class="pp-empty">No resolved bets yet.</div>`;
+    } else {
+      resolvedHost.innerHTML = data.resolved.map(b => {
+        const m = b.market;
+        const won = +b.payout > 0;
+        const net = (+b.payout || 0) - (+b.amount || 0);
+        return `
+          <div class="pp-bet-row">
+            <div>
+              <div class="pp-bet-q">${escapeHTML(m.question)}</div>
+              <div class="pp-bet-meta">${won ? 'WON' : 'LOST'} · resolved ${m.resolution?.toUpperCase() || '—'} · ${_fmtDate(m.resolves_at)}</div>
+            </div>
+            <span class="pp-bet-side ${b.side}">${b.side.toUpperCase()}</span>
+            <div class="pp-bet-amt ${net >= 0 ? 'up' : 'down'}">${net >= 0 ? '+$' : '−$'}${Math.abs(Math.round(net))}</div>
+          </div>`;
+      }).join('');
+    }
+  }
+}
+
+async function _fetchTournamentsTabData() {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) {
+    _pfTournamentsData = { active: [], finishes: [], won: 0, best: null };
+    return _pfTournamentsData;
+  }
+  try {
+    // Active season + cup entries.
+    const { data: seasonEntries } = await window.SUPABASE
+      .from('season_participations')
+      .select('season_id, current_rank, return_pct, joined_at, seasons:seasons(name, status, ends_at)')
+      .eq('user_id', window.MUSE_USER.id)
+      .order('joined_at', { ascending: false })
+      .limit(20);
+    const { data: cupEntries } = await window.SUPABASE
+      .from('genre_cup_participations')
+      .select('genre, month_start, final_rank, month_delta_pct, closed_at')
+      .eq('user_id', window.MUSE_USER.id)
+      .order('month_start', { ascending: false })
+      .limit(20);
+
+    const active = [];
+    const finishes = [];
+    let won = 0;
+    let best = null;
+
+    (seasonEntries || []).forEach(s => {
+      const item = {
+        kind: 'season',
+        name: s.seasons?.name || 'Season',
+        status: s.seasons?.status,
+        ends_at: s.seasons?.ends_at,
+        rank: s.current_rank,
+        return_pct: s.return_pct,
+      };
+      if (item.status === 'active') active.push(item);
+      else finishes.push(item);
+    });
+    (cupEntries || []).forEach(c => {
+      const item = {
+        kind: 'cup',
+        name: `${c.genre} Cup`,
+        ends_at: c.month_start,
+        rank: c.final_rank,
+        return_pct: c.month_delta_pct,
+        closed: !!c.closed_at,
+      };
+      if (!c.closed_at) active.push(item);
+      else {
+        finishes.push(item);
+        if (c.final_rank === 1) won += 1;
+      }
+      if (c.final_rank != null && (best === null || c.final_rank < best)) best = c.final_rank;
+    });
+
+    _pfTournamentsData = { active, finishes: finishes.slice(0, 10), won, best };
+  } catch (e) {
+    console.warn('[Muses] _fetchTournamentsTabData failed:', e?.message || e);
+    _pfTournamentsData = { active: [], finishes: [], won: 0, best: null };
+  }
+  return _pfTournamentsData;
+}
+
+function _renderTournamentsTab() {
+  const credits = STATE.tournamentCredits || 0;
+  const intEl = document.getElementById('pt-int');
+  const centsEl = document.getElementById('pt-cents');
+  if (intEl) intEl.textContent = Math.floor(credits).toLocaleString();
+  if (centsEl) centsEl.textContent = (Math.round((credits % 1) * 100)).toString().padStart(2, '0');
+
+  const data = _pfTournamentsData || { active: [], finishes: [], won: 0, best: null };
+  const activeEl = document.getElementById('pt-chip-active');
+  const wonEl    = document.getElementById('pt-chip-won');
+  const bestEl   = document.getElementById('pt-chip-best');
+  if (activeEl) activeEl.textContent = String(data.active.length);
+  if (wonEl)    wonEl.textContent    = String(data.won);
+  if (bestEl)   bestEl.textContent   = data.best != null ? '#' + data.best : '—';
+
+  const activeHost = document.getElementById('pt-active-list');
+  const activeCount = document.getElementById('pt-active-count');
+  if (activeHost) {
+    if (!data.active.length) {
+      activeHost.innerHTML = `<div class="pt-empty">No active entries. <span class="link" data-nav="tournaments">Browse tournaments →</span></div>`;
+    } else {
+      activeHost.innerHTML = data.active.map(e => `
+        <div class="pt-entry-row">
+          <div>
+            <div class="pt-entry-name">${escapeHTML(e.name)}</div>
+            <div class="pt-entry-meta">${e.kind === 'cup' ? 'Cup' : 'Season'}${e.return_pct != null ? ` · ${e.return_pct >= 0 ? '+' : ''}${(+e.return_pct).toFixed(2)}%` : ''}</div>
+          </div>
+          <div class="pt-entry-rank">${e.rank != null ? '#' + e.rank : '—'}</div>
+        </div>`).join('');
+    }
+    if (activeCount) activeCount.textContent = String(data.active.length);
+  }
+
+  const finishesHost = document.getElementById('pt-finishes-list');
+  if (finishesHost) {
+    if (!data.finishes.length) {
+      finishesHost.innerHTML = `<div class="pt-empty">No finished tournaments yet.</div>`;
+    } else {
+      finishesHost.innerHTML = data.finishes.map(e => `
+        <div class="pt-entry-row">
+          <div>
+            <div class="pt-entry-name">${escapeHTML(e.name)}</div>
+            <div class="pt-entry-meta">${e.kind === 'cup' ? 'Cup' : 'Season'}${e.return_pct != null ? ` · ${e.return_pct >= 0 ? '+' : ''}${(+e.return_pct).toFixed(2)}%` : ''}</div>
+          </div>
+          <div class="pt-entry-rank">${e.rank != null ? '#' + e.rank : '—'}</div>
+        </div>`).join('');
+    }
+  }
+}
+
+function _fmtDate(iso) {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  } catch (_) { return '—'; }
+}
+
+// ============================================================================
+// SWAP CREDITS modal
+// ============================================================================
+const _SWAP_CCY_LABEL = {
+  paper:      'Paper trading cash',
+  prediction: 'Prediction credits',
+  tournament: 'Tournament credits',
+};
+
+function _currentSwapBalance(ccy) {
+  if (ccy === 'paper')      return STATE.cash || 0;
+  if (ccy === 'prediction') return (PREDICTION_BALANCE && PREDICTION_BALANCE.balance) || 0;
+  if (ccy === 'tournament') return STATE.tournamentCredits || 0;
+  return 0;
+}
+
+function openSwapModal(opts) {
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  const initialFrom = opts?.from || 'paper';
+  const initialTo   = opts?.to   || (initialFrom === 'paper' ? 'prediction' : 'paper');
+  wrap.innerHTML = `
+    <div class="lg-modal">
+      <div class="lg-modal-title">Swap credits</div>
+      <div class="lg-modal-sub">1:1 between paper trading, prediction credits, and tournament credits. No fee.</div>
+      <div class="swap-modal-body">
+        <div class="swap-row">
+          <label>From</label>
+          <select class="swap-select" id="swap-from">
+            <option value="paper">Paper trading cash</option>
+            <option value="prediction">Prediction credits</option>
+            <option value="tournament">Tournament credits</option>
+          </select>
+        </div>
+        <div class="swap-flip-row">
+          <button class="swap-flip" id="swap-flip" type="button" aria-label="Flip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4M7 4 L3 8M7 4 L11 8M17 8v12M17 20 L13 16M17 20 L21 16"/></svg>
+          </button>
+        </div>
+        <div class="swap-row">
+          <label>To</label>
+          <select class="swap-select" id="swap-to">
+            <option value="paper">Paper trading cash</option>
+            <option value="prediction">Prediction credits</option>
+            <option value="tournament">Tournament credits</option>
+          </select>
+        </div>
+        <div class="swap-row">
+          <label>Amount</label>
+          <input class="swap-amount" id="swap-amount" type="number" min="1" step="1" placeholder="0">
+        </div>
+        <div class="swap-summary" id="swap-summary"></div>
+        <div class="swap-error" id="swap-error" hidden></div>
+      </div>
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-ghost" data-act="close">Cancel</button>
+        <button class="lg-btn lg-btn-primary" id="swap-confirm">Swap</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+
+  const fromSel  = wrap.querySelector('#swap-from');
+  const toSel    = wrap.querySelector('#swap-to');
+  const amtInput = wrap.querySelector('#swap-amount');
+  const summary  = wrap.querySelector('#swap-summary');
+  const errEl    = wrap.querySelector('#swap-error');
+  const flipBtn  = wrap.querySelector('#swap-flip');
+  const confirm  = wrap.querySelector('#swap-confirm');
+
+  fromSel.value = initialFrom;
+  toSel.value   = initialTo;
+
+  function refreshSummary() {
+    const from = fromSel.value;
+    const to   = toSel.value;
+    const fromBal = _currentSwapBalance(from);
+    const toBal   = _currentSwapBalance(to);
+    const amt = +amtInput.value || 0;
+    if (from === to) {
+      summary.innerHTML = `<strong>Pick a different destination.</strong>`;
+    } else if (amt > 0 && amt > fromBal) {
+      summary.innerHTML = `Insufficient ${_SWAP_CCY_LABEL[from]}. You have <strong>$${Math.round(fromBal).toLocaleString()}</strong>.`;
+    } else if (amt > 0) {
+      summary.innerHTML = `Swap <strong>$${amt.toLocaleString()}</strong> from <strong>${_SWAP_CCY_LABEL[from]}</strong> ($${Math.round(fromBal).toLocaleString()}) to <strong>${_SWAP_CCY_LABEL[to]}</strong> ($${Math.round(toBal).toLocaleString()}).`;
+    } else {
+      summary.innerHTML = `<strong>${_SWAP_CCY_LABEL[from]}:</strong> $${Math.round(fromBal).toLocaleString()} · <strong>${_SWAP_CCY_LABEL[to]}:</strong> $${Math.round(toBal).toLocaleString()}`;
+    }
+  }
+  refreshSummary();
+
+  fromSel.addEventListener('change', refreshSummary);
+  toSel.addEventListener('change', refreshSummary);
+  amtInput.addEventListener('input', refreshSummary);
+  flipBtn.addEventListener('click', () => {
+    const f = fromSel.value;
+    fromSel.value = toSel.value;
+    toSel.value = f;
+    refreshSummary();
+  });
+
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap || e.target.closest('[data-act="close"]')) {
+      e.stopPropagation();
+      close();
+    }
+  });
+  document.addEventListener('keydown', function _onEsc(e) {
+    if (e.key === 'Escape') { close(); document.removeEventListener('keydown', _onEsc); }
+  });
+
+  confirm.addEventListener('click', async () => {
+    errEl.hidden = true;
+    const from = fromSel.value;
+    const to = toSel.value;
+    const amt = +amtInput.value || 0;
+    if (from === to)   { errEl.textContent = 'Pick a different destination.'; errEl.hidden = false; return; }
+    if (!(amt > 0))    { errEl.textContent = 'Enter an amount above 0.'; errEl.hidden = false; return; }
+    if (amt > _currentSwapBalance(from)) { errEl.textContent = `Not enough ${_SWAP_CCY_LABEL[from]}.`; errEl.hidden = false; return; }
+    confirm.disabled = true;
+    try {
+      const { data, error } = await window.SUPABASE.rpc('swap_credits', {
+        p_from: from, p_to: to, p_amount: amt
+      });
+      if (error) throw error;
+      if (data && data.error) {
+        errEl.textContent = _swapErrorToHuman(data.error);
+        errEl.hidden = false;
+        confirm.disabled = false;
+        return;
+      }
+      // Apply new balances to client STATE.
+      if (typeof data?.paper === 'number')      STATE.cash = +data.paper;
+      if (typeof data?.tournament === 'number') STATE.tournamentCredits = +data.tournament;
+      if (typeof data?.prediction === 'number') {
+        if (PREDICTION_BALANCE) PREDICTION_BALANCE.balance = +data.prediction;
+        else PREDICTION_BALANCE = { balance: +data.prediction };
+      }
+      try { saveMusePriceState(); } catch (_) {}
+      try { renderPortfolio(); } catch (_) {}
+      try { _refreshPortfolioTabBalances(); } catch (_) {}
+      close();
+    } catch (e) {
+      errEl.textContent = e.message || 'Swap failed. Please try again.';
+      errEl.hidden = false;
+      confirm.disabled = false;
+    }
+  });
+
+  setTimeout(() => { try { amtInput.focus(); } catch (_) {} }, 30);
+}
+window.openSwapModal = openSwapModal;
+
+function _swapErrorToHuman(code) {
+  switch (code) {
+    case 'not_authenticated':       return 'Please sign in first.';
+    case 'same_currency':           return 'Pick a different destination.';
+    case 'invalid_currency':        return 'Pick a valid currency.';
+    case 'invalid_amount':          return 'Enter an amount above 0.';
+    case 'insufficient_paper':      return 'Not enough paper trading cash.';
+    case 'insufficient_prediction': return 'Not enough prediction credits.';
+    case 'insufficient_tournament': return 'Not enough tournament credits.';
+    default:                         return 'Swap failed: ' + (code || 'unknown error');
+  }
+}
+
 function renderPortfolio() {
   initPortfolioChart();
 
   // Achievements section moved to the Profile page (renderProfile()).
   // Was briefly hosted here in Chunk C; relocated per user request.
+
+  // Three-tab pool layout — wire tabs + render whichever is active.
+  try { _wirePortfolioTabs(); } catch (_) {}
+  try { _refreshPortfolioTabBalances(); } catch (_) {}
+  // Lazy-fetch the per-tab data behind the scenes so tab switches feel instant.
+  fetchPredictionStreak().then(() => _renderPredictionsTab()).catch(() => {});
+  _fetchPredictionsTabData().then(() => _renderPredictionsTab()).catch(() => {});
+  _fetchTournamentsTabData().then(() => _renderTournamentsTab()).catch(() => {});
 
   const tickers = Object.keys(STATE.holdings);
 
