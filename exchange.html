@@ -17642,15 +17642,20 @@ function setView(name) {
   });
   if (name === 'artist') {
     const a = STATE.selected;
-    document.getElementById('crumb-here').innerHTML = '<span class="dim" style="cursor:pointer" onclick="setView(\'markets\')">Markets</span> <span class="sep" style="margin:0 8px;color:var(--text-faint)">/</span> ' + a.name;
+    // crumb-here may be missing on stale-cache users (Sentry MUSES-EXCHANGE-7).
+    const crumbA = document.getElementById('crumb-here');
+    if (crumbA) crumbA.innerHTML = '<span class="dim" style="cursor:pointer" onclick="setView(\'markets\')">Markets</span> <span class="sep" style="margin:0 8px;color:var(--text-faint)">/</span> ' + a.name;
   } else if (name === 'tournament') {
     const t = TOURNAMENTS[STATE.selectedTournament];
-    document.getElementById('crumb-here').innerHTML = '<span class="dim" style="cursor:pointer" onclick="setView(\'tournaments\')">Tournaments</span> <span class="sep" style="margin:0 8px;color:var(--text-faint)">/</span> ' + (t ? t.name : '');
+    const crumbT = document.getElementById('crumb-here');
+    if (crumbT) crumbT.innerHTML = '<span class="dim" style="cursor:pointer" onclick="setView(\'tournaments\')">Tournaments</span> <span class="sep" style="margin:0 8px;color:var(--text-faint)">/</span> ' + (t ? t.name : '');
   } else if (name === 'genre') {
     const g = STATE.selectedGenre || 'Pop';
-    document.getElementById('crumb-here').innerHTML = '<span class="dim" style="cursor:pointer" onclick="setView(\'genres\')">Genres</span> <span class="sep" style="margin:0 8px;color:var(--text-faint)">/</span> ' + g;
+    const crumbG = document.getElementById('crumb-here');
+    if (crumbG) crumbG.innerHTML = '<span class="dim" style="cursor:pointer" onclick="setView(\'genres\')">Genres</span> <span class="sep" style="margin:0 8px;color:var(--text-faint)">/</span> ' + g;
   } else {
-    document.getElementById('crumb-here').textContent = VIEW_TITLES[name];
+    const crumbDefault = document.getElementById('crumb-here');
+    if (crumbDefault) crumbDefault.textContent = VIEW_TITLES[name];
   }
   // Logo in crumb is now fixed (M-chart mark), no icon swapping needed.
   if (name === 'markets') renderMarkets();
