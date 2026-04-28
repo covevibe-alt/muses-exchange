@@ -7764,12 +7764,13 @@
   }
   .swap-select:focus,
   .swap-amount:focus { border-color: var(--purple); outline: none; }
-  /* Center the flip button inside the modal, regardless of whether the
-     swap-rows above/below are 80px+1fr (desktop) or 1fr (mobile). */
+  /* Flip button — horizontally centered + equal gap above/below.
+     Previously had margin: -4px 0 that pulled the arrow closer to the
+     FROM dropdown than to the TO label. Removed; the parent's gap: 14px
+     now handles spacing symmetrically. */
   .swap-flip-row {
     display: flex;
     justify-content: center;
-    margin: -4px 0;
   }
   .swap-flip {
     width: 32px; height: 32px;
