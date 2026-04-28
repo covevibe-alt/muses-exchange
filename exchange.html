@@ -7761,16 +7761,13 @@
   }
   .swap-select:focus,
   .swap-amount:focus { border-color: var(--purple); outline: none; }
-  /* Align the flip button with the select column (offset right by the
-     80px label column + 12px grid gap). */
+  /* Center the flip button inside the modal, regardless of whether the
+     swap-rows above/below are 80px+1fr (desktop) or 1fr (mobile). */
   .swap-flip-row {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 12px;
+    display: flex;
+    justify-content: center;
     margin: -4px 0;
   }
-  .swap-flip-row::before { content: ''; }
-  .swap-flip-row .swap-flip { justify-self: center; }
   .swap-flip {
     width: 32px; height: 32px;
     border-radius: 50%;
@@ -7817,8 +7814,6 @@
     }
     .swap-row { grid-template-columns: 1fr; gap: 6px; }
     .swap-row label { margin-bottom: 0; }
-    .swap-flip-row { grid-template-columns: 1fr; }
-    .swap-flip-row::before { display: none; }
     /* Mobile: bet rows + entry rows stack vertically so question text
        gets the full width and the side/amount sit on a second line. */
     .pp-bet-row,
