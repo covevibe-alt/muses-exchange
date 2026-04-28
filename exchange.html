@@ -7654,7 +7654,20 @@
     margin-top: 14px;
     flex-wrap: wrap;
   }
-  .pf-hero-cta-row .btn { display: inline-flex; align-items: center; gap: 6px; }
+  /* Right-size the hero CTAs — without these the global .btn rules give
+     them aggressive full-width padding which made the "Top up credits"
+     button take the entire hero width. */
+  .pf-hero-cta-row .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    padding: 9px 16px;
+    font-size: 13px;
+    min-height: 0;
+    width: auto;
+    height: auto;
+  }
   .pf-hero-cta-row .btn svg { width: 14px; height: 14px; }
 
   /* Open / resolved bet rows on Predictions tab + entry rows on Tournaments tab */
@@ -7748,11 +7761,16 @@
   }
   .swap-select:focus,
   .swap-amount:focus { border-color: var(--purple); outline: none; }
+  /* Align the flip button with the select column (offset right by the
+     80px label column + 12px grid gap). */
   .swap-flip-row {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
     margin: -4px 0;
   }
+  .swap-flip-row::before { content: ''; }
+  .swap-flip-row .swap-flip { justify-self: center; }
   .swap-flip {
     width: 32px; height: 32px;
     border-radius: 50%;
@@ -7799,6 +7817,30 @@
     }
     .swap-row { grid-template-columns: 1fr; gap: 6px; }
     .swap-row label { margin-bottom: 0; }
+    .swap-flip-row { grid-template-columns: 1fr; }
+    .swap-flip-row::before { display: none; }
+    /* Mobile: bet rows + entry rows stack vertically so question text
+       gets the full width and the side/amount sit on a second line. */
+    .pp-bet-row,
+    .pt-entry-row {
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        "info  amt"
+        "side  amt";
+      column-gap: 10px;
+      row-gap: 4px;
+      padding: 12px 14px;
+    }
+    .pp-bet-row > div:first-child,
+    .pt-entry-row > div:first-child { grid-area: info; }
+    .pp-bet-side { grid-area: side; justify-self: start; }
+    .pp-bet-amt,
+    .pt-entry-rank { grid-area: amt; align-self: center; }
+    .pp-bet-q,
+    .pt-entry-name { white-space: normal; }
+    /* Right-size hero CTAs on mobile — full-width feels honest at small
+       viewports where there's only one column anyway. */
+    .pf-hero-cta-row .btn { flex: 1 1 auto; justify-content: center; }
   }
 
   /* PORTFOLIO — COMPACT HERO */
@@ -11978,21 +12020,12 @@
       </div>
 
       <aside class="col-side">
-        <!-- TOURNAMENT CREDITS BALANCE -->
-        <div class="card" style="background:linear-gradient(135deg, rgba(52,211,153,0.06), rgba(16,185,129,0.06));border-color:rgba(52,211,153,0.2)">
-          <div class="card-title"><span>Tournament Credits <span class="info-tip">?<span class="tip-text">Virtual credits used for tournament entries and prize payouts. Everything in Muses is paper — no real money is involved.</span></span></span> <span class="money-badge real"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Credits</span></div>
-          <div class="hero-value" style="font-size:28px">$<span id="pf-real-bal">0.00</span></div>
-          <div style="font-size:11px;color:var(--text-faint);margin-top:2px;margin-bottom:10px">Tournament fees &amp; prize winnings</div>
-          <!-- M16.17 — Restored a deposit button alongside Withdraw, but semantics
-               are fully paper: Add credits transfers from Paper Balance → Tournament
-               Credits, Withdraw transfers the other way. No real money, no "iDEAL"
-               method-picker theater — just two virtual wallets the user can move
-               balance between. -->
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-secondary" style="flex:1;padding:8px" data-action="deposit">Add credits</button>
-            <button class="btn btn-secondary" style="flex:1;padding:8px" data-action="withdraw">Withdraw</button>
-          </div>
-        </div>
+        <!-- TOURNAMENT CREDITS card moved to its own dedicated tab. The
+             dollar amount, top-up flow, and history all live there now —
+             this side panel stays focused on paper trading. The hidden
+             span below preserves DOM hooks (#pf-real-bal) that other code
+             reads, so removing the visible card doesn't break STATE sync. -->
+        <span id="pf-real-bal" style="display:none">0.00</span>
 
         <!-- PAPER BALANCE -->
         <div class="card">
@@ -23171,14 +23204,26 @@ function _renderTournamentsTab() {
     if (!data.active.length) {
       activeHost.innerHTML = `<div class="pt-empty">No active entries. <span class="link" data-nav="tournaments">Browse tournaments →</span></div>`;
     } else {
-      activeHost.innerHTML = data.active.map(e => `
-        <div class="pt-entry-row">
-          <div>
-            <div class="pt-entry-name">${escapeHTML(e.name)}</div>
-            <div class="pt-entry-meta">${e.kind === 'cup' ? 'Cup' : 'Season'}${e.return_pct != null ? ` · ${e.return_pct >= 0 ? '+' : ''}${(+e.return_pct).toFixed(2)}%` : ''}</div>
-          </div>
-          <div class="pt-entry-rank">${e.rank != null ? '#' + e.rank : '—'}</div>
-        </div>`).join('');
+      activeHost.innerHTML = data.active.map(e => {
+        // Active cups/seasons don't have a final_rank yet — they're closed
+        // out at month/quarter end. Show "Live" instead of an empty "—" so
+        // the user understands the entry is still in progress, not missing.
+        const rankCell = e.rank != null
+          ? `<span style="color:var(--text)">#${e.rank}</span>`
+          : `<span style="color:var(--up);font-size:11px;font-weight:700;letter-spacing:0.08em">LIVE</span>`;
+        const kindLabel = e.kind === 'cup' ? 'Cup' : 'Season';
+        const returnLabel = e.return_pct != null
+          ? ` · ${e.return_pct >= 0 ? '+' : ''}${(+e.return_pct).toFixed(2)}%`
+          : ' · resolves at month-end';
+        return `
+          <div class="pt-entry-row">
+            <div>
+              <div class="pt-entry-name">${escapeHTML(e.name)}</div>
+              <div class="pt-entry-meta">${kindLabel}${returnLabel}</div>
+            </div>
+            <div class="pt-entry-rank">${rankCell}</div>
+          </div>`;
+      }).join('');
     }
     if (activeCount) activeCount.textContent = String(data.active.length);
   }
