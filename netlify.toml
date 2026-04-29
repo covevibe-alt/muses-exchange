@@ -84,6 +84,21 @@
   status = 200
 
 [[redirects]]
+  from = "/leagues"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/leagues/*"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
+  from = "/predictions"
+  to = "/exchange.html"
+  status = 200
+
+[[redirects]]
   from = "/profile"
   to = "/exchange.html"
   status = 200
