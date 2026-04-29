@@ -7077,6 +7077,586 @@
     font-size: 13px;
   }
 
+  /* ════════════════════════════════════════════════════════════════════════
+     PREDICTION MARKETS V2 — Polymarket-style homepage + detail + leaderboard
+     Selectors are pm-* (page), pmd-* (detail), pcp-* (callers page) so they
+     don't collide with the v1 .pred-* / .callers-* blocks above.
+     ════════════════════════════════════════════════════════════════════════ */
+
+  .pm-page { display: flex; flex-direction: column; gap: 18px; }
+
+  /* Header bar */
+  .pm-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 18px; flex-wrap: wrap;
+    padding-bottom: 4px;
+  }
+  .pm-head-l { flex: 1; min-width: 280px; }
+  .pm-head-r {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .pm-title {
+    font-size: 28px; font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--text);
+    margin: 0 0 6px;
+  }
+  .pm-sub {
+    font-size: 13.5px; color: var(--text-dim); line-height: 1.5;
+    max-width: 580px;
+  }
+
+  /* Header buttons */
+  .pm-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 14px;
+    font-size: 13px; font-weight: 600;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    cursor: pointer;
+    transition: transform .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .pm-btn:hover { transform: translateY(-1px); border-color: var(--border-strong); }
+  .pm-btn-primary { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .pm-btn-primary:hover { background: var(--purple-2); border-color: var(--purple-2); }
+  .pm-btn-ghost { background: transparent; }
+
+  /* Streak chip — replaces the v1 banner */
+  .pm-streak {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-dim);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .pm-streak:hover { background: rgba(255, 255, 255, 0.06); border-color: var(--border-strong); }
+  .pm-streak.hot {
+    background: rgba(255, 138, 101, 0.10);
+    border-color: rgba(255, 138, 101, 0.30);
+    color: #ff8a65;
+  }
+  .pm-streak-icon { font-size: 14px; line-height: 1; }
+  .pm-streak-num { color: var(--text); font-weight: 800; font-size: 14px; }
+  .pm-streak.hot .pm-streak-num { color: #ff8a65; }
+  .pm-streak-sep { color: var(--text-faint); }
+  .pm-streak-mult {
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    color: var(--text);
+  }
+  .pm-streak.hot .pm-streak-mult { color: #ff8a65; }
+
+  /* Search + tabs */
+  .pm-controls {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .pm-search-wrap {
+    position: relative;
+    max-width: 520px;
+  }
+  .pm-search-icon {
+    position: absolute;
+    left: 12px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px;
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+  .pm-search {
+    width: 100%;
+    padding: 11px 14px 11px 38px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit; font-size: 14px;
+    outline: none;
+    transition: border-color .15s ease;
+  }
+  .pm-search:focus { border-color: rgba(167, 139, 250, 0.55); }
+  .pm-search::placeholder { color: var(--text-faint); }
+
+  .pm-tabs {
+    display: flex; gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .pm-tab {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 10px 14px;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .pm-tab:hover { color: var(--text); }
+  .pm-tab.active {
+    color: #b98fff;
+    border-bottom-color: #b98fff;
+  }
+  .pm-tab.empty .pm-tab-count { opacity: 0.45; }
+  .pm-tab-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 17px; padding: 0 5px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+    font-size: 10.5px; font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+  .pm-tab.active .pm-tab-count {
+    background: rgba(167, 139, 250, 0.15);
+    color: #b98fff;
+  }
+
+  /* Market grid */
+  .pm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+  }
+
+  .pm-card {
+    position: relative;
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 14px 16px 12px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+    min-height: 160px;
+  }
+  .pm-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(167, 139, 250, 0.45);
+    box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(167, 139, 250, 0.20) inset;
+  }
+  .pm-card-closed { opacity: 0.78; }
+  .pm-card-closed:hover { transform: none; }
+
+  .pm-card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+  }
+  .pm-card-ticker {
+    display: inline-flex; align-items: center;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px;
+    background: rgba(167, 139, 250, 0.12);
+    border: 1px solid rgba(167, 139, 250, 0.28);
+    color: #b98fff;
+    letter-spacing: 0.04em;
+  }
+  .pm-card-ticker-house {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--border);
+    color: var(--text-dim);
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10.5px;
+  }
+  .pm-card-vol {
+    font-size: 11.5px; font-weight: 600;
+    color: var(--text-faint);
+  }
+  .pm-card-q {
+    font-size: 15px; font-weight: 700;
+    line-height: 1.35;
+    color: var(--text);
+    letter-spacing: -0.005em;
+    /* Allow up to 3 lines, ellipsis after */
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 60px;
+  }
+
+  /* Two-segment percentage bar */
+  .pm-card-bar {
+    display: flex;
+    height: 28px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+  }
+  .pm-bar-yes, .pm-bar-no {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    color: #fff;
+    overflow: hidden; white-space: nowrap;
+    transition: width .25s ease;
+  }
+  .pm-bar-yes {
+    background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%);
+  }
+  .pm-bar-no {
+    background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+  }
+  .pm-bar-yes span, .pm-bar-no span {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+  .pm-bar-yes:empty, .pm-bar-no:empty {
+    /* Hide the gradient when width=0 */
+    display: none;
+  }
+
+  .pm-card-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    font-size: 11.5px; color: var(--text-faint);
+  }
+  .pm-card-by {
+    color: var(--text-dim);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pm-card-yes { box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.30) inset; }
+  .pm-card-no  { box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.30) inset; }
+
+  /* Skeleton placeholders */
+  .pm-card-skel { cursor: default; }
+  .pm-card-skel:hover { transform: none; box-shadow: none; }
+  .pm-skel-q, .pm-skel-bar, .pm-skel-meta {
+    background: linear-gradient(90deg, var(--card-2) 0%, rgba(255,255,255,0.04) 50%, var(--card-2) 100%);
+    background-size: 200% 100%;
+    animation: pm-shimmer 1.4s linear infinite;
+    border-radius: 6px;
+  }
+  .pm-skel-q { height: 18px; width: 75%; }
+  .pm-skel-bar { height: 28px; }
+  .pm-skel-meta { height: 12px; width: 50%; }
+  @keyframes pm-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .pm-empty {
+    grid-column: 1 / -1;
+    padding: 40px 24px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+  .pm-empty-title {
+    font-size: 16px; font-weight: 700; color: var(--text);
+    margin-bottom: 8px;
+  }
+  .pm-empty-sub {
+    font-size: 13px; color: var(--text-dim);
+    max-width: 440px; margin: 0 auto;
+  }
+
+  /* ─── Single-market detail page (pmd-) ─────────────────────────────── */
+  .pmd-page { display: flex; flex-direction: column; gap: 18px; }
+  .pmd-hero {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 24px 20px;
+  }
+  .pmd-hero-closed { opacity: 0.85; }
+  .pmd-hero-top {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .pmd-share {
+    margin-left: auto;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    transition: color .12s ease, border-color .12s ease;
+  }
+  .pmd-share:hover { color: var(--text); border-color: var(--border-strong); }
+  .pmd-q {
+    font-size: 24px; font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 0 0 16px;
+  }
+  .pmd-resolved {
+    display: inline-flex; align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11.5px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .pmd-resolved-yes { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.35); }
+  .pmd-resolved-no  { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.35); }
+  .pmd-resolved-cancelled { background: rgba(255, 255, 255, 0.05); color: var(--text-dim); border: 1px solid var(--border); }
+
+  .pmd-bar-big {
+    display: flex; height: 40px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .pmd-bar-yes, .pmd-bar-no {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+    color: #fff;
+    overflow: hidden; white-space: nowrap;
+    transition: width .3s ease;
+  }
+  .pmd-bar-yes { background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%); }
+  .pmd-bar-no  { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); }
+
+  .pmd-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .pmd-stat {
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .pmd-stat-l {
+    font-size: 10.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint);
+    margin-bottom: 4px;
+  }
+  .pmd-stat-v {
+    font-size: 14px; font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .pmd-bal {
+    margin-top: 14px;
+    font-size: 12.5px; color: var(--text-dim);
+  }
+  .pmd-bal b {
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  }
+
+  /* Buy form */
+  .pmd-buy {
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.06), rgba(167, 139, 250, 0.02));
+    border: 1px solid rgba(167, 139, 250, 0.22);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .pmd-buy-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .pmd-amt {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 16px; font-weight: 700;
+    padding: 10px 14px;
+    outline: none;
+  }
+  .pmd-amt:focus { border-color: rgba(167, 139, 250, 0.55); }
+  .pmd-buy-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 110px;
+    padding: 8px 18px;
+    border: 0;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    transition: transform .12s ease, filter .12s ease;
+  }
+  .pmd-buy-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+  .pmd-buy-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .pmd-buy-yes { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); }
+  .pmd-buy-no  { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
+  .pmd-buy-side {
+    font-size: 13px; font-weight: 800; letter-spacing: 0.06em;
+    line-height: 1;
+  }
+  .pmd-buy-pct {
+    font-size: 11px; font-weight: 700; opacity: 0.85;
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  }
+  .pmd-buy-hint {
+    margin-top: 10px;
+    font-size: 11.5px; color: var(--text-faint); line-height: 1.4;
+  }
+  .pmd-buy-error {
+    margin-top: 8px;
+    font-size: 12px; color: #ff7a7a;
+  }
+
+  /* Two-column layout for bets feed + rules */
+  .pmd-cols {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 16px;
+  }
+  .pmd-col {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .pmd-section-title {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+  }
+  .pmd-feed-empty {
+    padding: 16px 4px;
+    color: var(--text-faint); font-size: 12.5px;
+  }
+  .pmd-feed { display: flex; flex-direction: column; gap: 4px; }
+  .pmd-feed-row {
+    display: grid;
+    grid-template-columns: 60px 70px auto 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 4px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12.5px;
+  }
+  .pmd-feed-row:last-child { border-bottom: 0; }
+  .pmd-feed-side {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 2px 0;
+    border-radius: 5px;
+    font-size: 10.5px; font-weight: 800;
+    letter-spacing: 0.06em;
+  }
+  .pmd-feed-side.up   { background: rgba(34, 197, 94, 0.14); color: #22c55e; }
+  .pmd-feed-side.down { background: rgba(239, 68, 68, 0.14); color: #ef4444; }
+  .pmd-feed-amt { font-family: 'JetBrains Mono', 'SF Mono', monospace; color: var(--text); font-weight: 700; }
+  .pmd-feed-payout { font-family: 'JetBrains Mono', 'SF Mono', monospace; font-size: 11.5px; font-weight: 700; }
+  .pmd-feed-payout.up { color: #6effb8; }
+  .pmd-feed-payout.down { color: #ff7a7a; }
+  .pmd-feed-when { color: var(--text-faint); font-size: 11px; text-align: right; }
+
+  .pmd-rules { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+  .pmd-rules p { margin: 0 0 10px; }
+  .pmd-rules p:last-child { margin-bottom: 0; }
+  .pmd-rules b { color: var(--text); }
+
+  /* Loading + error */
+  .pmd-loading { display: flex; flex-direction: column; gap: 14px; padding-top: 8px; }
+  .pmd-skel-q, .pmd-skel-bar, .pmd-skel-row {
+    background: linear-gradient(90deg, var(--card-2) 0%, rgba(255,255,255,0.04) 50%, var(--card-2) 100%);
+    background-size: 200% 100%;
+    animation: pm-shimmer 1.4s linear infinite;
+    border-radius: 8px;
+  }
+  .pmd-skel-q { height: 32px; width: 70%; }
+  .pmd-skel-bar { height: 40px; }
+  .pmd-skel-row { height: 18px; width: 50%; }
+  .pmd-error {
+    text-align: center;
+    padding: 48px 24px;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+  .pmd-error-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .pmd-error-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; }
+
+  /* ─── Top Callers leaderboard subpage (pcp-) ──────────────────────── */
+  .pcp-head { margin-bottom: 14px; }
+  .pcp-head h1 {
+    font-size: 24px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+  }
+  .pcp-sub { font-size: 13px; color: var(--text-dim); }
+  .pcp-loading { padding: 32px 0; text-align: center; color: var(--text-faint); font-size: 13px; }
+  .pcp-table-wrap {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .pcp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .pcp-table th, .pcp-table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .pcp-table th {
+    font-size: 10.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint);
+    background: rgba(255, 255, 255, 0.015);
+  }
+  .pcp-table tr:last-child td { border-bottom: none; }
+  .pcp-table tr.pcp-row-you td { background: rgba(167, 139, 250, 0.08); }
+  .pcp-table .pcp-th-rank { width: 70px; font-weight: 700; }
+  .pcp-table .pcp-num {
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .pcp-table .up { color: #22c55e; }
+  .pcp-table .down { color: #ef4444; }
+  .pcp-trader {
+    color: var(--text); font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; max-width: 240px;
+  }
+  .pcp-streak {
+    display: inline-flex; align-items: center;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: rgba(255, 138, 101, 0.14);
+    color: #ff8a65;
+    font-size: 11px; font-weight: 700;
+  }
+
+  /* Mobile */
+  @media (max-width: 720px) {
+    .pm-title { font-size: 22px; }
+    .pm-header { gap: 12px; }
+    .pm-head-r { width: 100%; justify-content: flex-start; }
+    .pm-grid { grid-template-columns: 1fr; }
+    .pmd-q { font-size: 20px; }
+    .pmd-cols { grid-template-columns: 1fr; }
+    .pmd-buy-row {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "amt amt" "yes no";
+    }
+    .pmd-amt { grid-area: amt; }
+    .pmd-buy-yes { grid-area: yes; }
+    .pmd-buy-no  { grid-area: no; }
+    .pmd-stats { grid-template-columns: 1fr 1fr; }
+    .pcp-table th:nth-child(3), .pcp-table td:nth-child(3),
+    .pcp-table th:nth-child(5), .pcp-table td:nth-child(5) {
+      display: none; /* hide Record + Streak cols on mobile to keep PNL visible */
+    }
+  }
+
   /* Referral widget (Chunk E.4) */
   .referral-widget {
     background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(255, 138, 101, 0.04));
@@ -13486,28 +14066,36 @@
       </div>
     </section>
 
-    <!-- ============== PREDICTION MARKETS + THESIS OF THE WEEK ============== -->
+    <!-- ============== PREDICTION MARKETS (Polymarket-style) ============== -->
+    <!-- Painted entirely by renderPredictionsPage() — header w/ streak chip
+         + search + category tabs + market card grid. The thesis-of-the-week
+         feed was retired in this redesign; the leaderboard moved to its own
+         subpage at /predictions/leaderboard. -->
     <section class="content full hidden" id="view-predictions">
       <div class="col-main">
-        <div class="section-head">
-          <div>
-            <h1>Predictions</h1>
-            <div class="sub">Open markets, weekly theses, and a separate $10k paper-credit bankroll for betting. Your stock-trading cash is untouched.</div>
-          </div>
-        </div>
-        <!-- Streak + multiplier banner (Chunk E). Shows the signed-in user's
-             current win streak and what their NEXT winning bet pays. -->
-        <div id="pred-streak-banner"></div>
+        <div id="pred-host"></div>
+      </div>
+    </section>
 
-        <!-- Painted by renderPredictionsCard() + renderThesisCard(). Both
-             live on the same surface; Chunk B will unify them into a single
-             "Open Questions" feed with user-created markets. -->
-        <div id="lb-predictions-card"></div>
-        <div id="lb-thesis-card"></div>
+    <!-- ============== SINGLE PREDICTION MARKET DETAIL ============== -->
+    <!-- SPA route /predictions/<slug>. Painted by renderPredictionMarketDetail(). -->
+    <section class="content full hidden" id="view-prediction">
+      <div class="col-main">
+        <button class="back-btn" data-nav="predictions">
+          <svg><use href="#i-back"/></svg>Back to Predictions
+        </button>
+        <div id="pred-detail-host"></div>
+      </div>
+    </section>
 
-        <!-- Top Callers leaderboard (Chunk E). Net-P&L ranking from
-             get_prediction_leaderboard(). -->
-        <div id="lb-callers-card"></div>
+    <!-- ============== TOP CALLERS LEADERBOARD ============== -->
+    <!-- SPA route /predictions/leaderboard. Painted by renderPredCallersPage(). -->
+    <section class="content full hidden" id="view-pred-leaderboard">
+      <div class="col-main">
+        <button class="back-btn" data-nav="predictions">
+          <svg><use href="#i-back"/></svg>Back to Predictions
+        </button>
+        <div id="pred-callers-page-host"></div>
       </div>
     </section>
 
@@ -16392,21 +16980,682 @@ function renderLeaguesPage() {
   fetchUserLeagues().then(() => { try { renderLeaguesCard(); } catch (_e) {} });
 }
 
+// ════════════════════════════════════════════════════════════════════════
+// PREDICTIONS HOMEPAGE (Polymarket-style redesign)
+// ════════════════════════════════════════════════════════════════════════
+// Replaces the v1 layout (Predictions card + Thesis card + Top Callers
+// stacked) with: header bar (title + compact streak chip + Top Callers
+// shortcut + Create market) → search input → category tabs → market grid.
+//
+// Categories are auto-derived from market data (no schema change). Each
+// market card click navigates to /predictions/<slug> for the full detail
+// page. Top Callers leaderboard moved to /predictions/leaderboard.
+//
+// The Thesis-of-the-week feed was retired here — backend tables + RPCs
+// stay in place so it can come back later if needed.
+// ════════════════════════════════════════════════════════════════════════
+
 function renderPredictionsPage() {
-  // Streak banner (Chunk E) — shows current streak + next-bet multiplier.
-  try { renderStreakBanner(); } catch (_e) { /* non-fatal */ }
-  fetchPredictionStreak().then(() => { try { renderStreakBanner(); } catch (_e) {} });
+  const host = document.getElementById('pred-host');
+  if (!host) return;
 
-  // Predictions card + thesis card both live on this page in v1.
-  // Chunk B will merge them into a unified "open questions" feed.
-  try { renderPredictionsCard(); } catch (_e) { /* non-fatal */ }
-  fetchPredictionMarkets().then(() => { try { renderPredictionsCard(); } catch (_e) {} });
-  try { renderThesisCard(); } catch (_e) { /* non-fatal */ }
-  fetchThesisFeed().then(() => { try { renderThesisCard(); } catch (_e) {} });
+  // First-paint: shell + skeleton loaders so the page never looks blank
+  // while fetches are in flight.
+  host.innerHTML = _predictionsShellHTML();
+  _wirePredictionsShell(host);
+  _paintPredictionsGrid(host); // paints whatever is currently in PREDICTION_MARKETS
 
-  // Top Callers leaderboard (Chunk E).
-  try { renderCallersCard(); } catch (_e) { /* non-fatal */ }
-  fetchCallersLeaderboard().then(() => { try { renderCallersCard(); } catch (_e) {} });
+  // Kick off fresh fetches in parallel; repaint when each lands.
+  fetchPredictionStreak().then(() => { _paintPredictionsHeader(host); });
+  fetchPredictionMarkets().then(() => { _paintPredictionsGrid(host); });
+}
+
+function _predictionsShellHTML() {
+  return `
+    <div class="pm-page">
+      <div class="pm-header" id="pm-header">${_predictionsHeaderHTML()}</div>
+      <div class="pm-controls">
+        <div class="pm-search-wrap">
+          <svg class="pm-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input class="pm-search" id="pm-search" type="text" placeholder="Search markets, artists, tickers…" autocomplete="off" />
+        </div>
+        <div class="pm-tabs" id="pm-tabs"></div>
+      </div>
+      <div class="pm-grid" id="pm-grid">
+        ${_predictionsGridSkeleton()}
+      </div>
+    </div>
+  `;
+}
+
+function _predictionsHeaderHTML() {
+  const authed = !!(window.MUSE_USER && window.MUSE_USER.authed);
+  const s = PRED_STREAK || { current_streak: 0 };
+  const streak = s.current_streak | 0;
+  const mult = _multiplierForStreak(streak);
+  const nextMult = _multiplierForStreak(streak + 1);
+  const hot = streak >= 3;
+  const streakChip = authed ? `
+    <button class="pm-streak${hot ? ' hot' : ''}" data-pm-act="streak" title="${streak === 0 ? 'Win 3 in a row → +$500 bonus' : `Next correct call pays ${nextMult.toFixed(1)}× — keep it going`}">
+      <span class="pm-streak-icon">${hot ? '🔥' : '·'}</span>
+      <span class="pm-streak-num">${streak}</span>
+      <span class="pm-streak-sep">·</span>
+      <span class="pm-streak-mult">${mult.toFixed(1)}×</span>
+    </button>
+  ` : '';
+  return `
+    <div class="pm-head-l">
+      <h1 class="pm-title">Predictions</h1>
+      <div class="pm-sub">Will-they-won't-they markets, paid in paper credits. Separate $10k bankroll — your stock cash is untouched.</div>
+    </div>
+    <div class="pm-head-r">
+      ${streakChip}
+      <button class="pm-btn pm-btn-ghost" data-pm-act="leaderboard" title="Top Callers leaderboard">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M5 4h14v6a7 7 0 0 1-14 0z"/></svg>
+        Top Callers
+      </button>
+      ${authed ? `<button class="pm-btn pm-btn-primary" data-pm-act="create">+ Create market</button>` : ''}
+    </div>
+  `;
+}
+
+function _paintPredictionsHeader(host) {
+  const head = host.querySelector('#pm-header');
+  if (!head) return;
+  head.innerHTML = _predictionsHeaderHTML();
+  _wirePredictionsHeaderActions(host);
+}
+
+function _wirePredictionsHeaderActions(host) {
+  host.querySelectorAll('[data-pm-act]').forEach(btn => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    const act = btn.dataset.pmAct;
+    btn.onclick = () => {
+      if (act === 'create') openCreateMarketModal();
+      else if (act === 'leaderboard') {
+        if (typeof setView === 'function') setView('pred-leaderboard');
+      } else if (act === 'streak') {
+        // Tooltip-only chip — no nav. Could route to /profile in the future.
+      }
+    };
+  });
+}
+
+function _wirePredictionsShell(host) {
+  _wirePredictionsHeaderActions(host);
+  const search = host.querySelector('#pm-search');
+  if (search) {
+    search.value = STATE.predSearch || '';
+    search.addEventListener('input', () => {
+      STATE.predSearch = search.value || '';
+      _paintPredictionsGrid(host);
+    });
+  }
+  const tabs = host.querySelector('#pm-tabs');
+  if (tabs) tabs.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-pm-cat]');
+    if (!t) return;
+    STATE.predCategory = t.dataset.pmCat;
+    tabs.querySelectorAll('[data-pm-cat]').forEach(b => b.classList.toggle('active', b === t));
+    _paintPredictionsGrid(host);
+  });
+}
+
+// Build the category tabs given counts. Tabs always render even when empty
+// so the chrome stays stable; counts grey out when 0.
+const PRED_CATEGORIES = [
+  { id: 'trending', label: 'Trending'    },
+  { id: 'ending',   label: 'Ending soon' },
+  { id: 'new',      label: 'New'         },
+  { id: 'artist',   label: 'Per-artist'  },
+  { id: 'house',    label: 'Curated'     },
+  { id: 'resolved', label: 'Resolved'    },
+  { id: 'all',      label: 'All'         },
+];
+
+// Categorize a market for the tab filter. A market can match multiple
+// categories; the tab logic below uses _marketMatchesCategory().
+function _marketMatchesCategory(m, cat) {
+  const now = Date.now();
+  const ends = new Date(m.resolves_at).getTime();
+  if (cat === 'all') return m.status !== 'canceled';
+  if (cat === 'resolved') return m.status === 'resolved';
+  // All remaining categories are open-only.
+  if (m.status !== 'open') return false;
+  if (cat === 'trending')  return true; // sorted later by volume
+  if (cat === 'ending')    return ends > now && ends - now < 7 * 86400000;
+  if (cat === 'new')       {
+    const created = m.created_at ? new Date(m.created_at).getTime() : 0;
+    return created && (now - created) < 3 * 86400000;
+  }
+  if (cat === 'artist')    return !!m.artist_ticker;
+  if (cat === 'house')     return m.created_by == null;
+  return true;
+}
+
+function _filterMarketsForGrid(markets) {
+  const q = (STATE.predSearch || '').trim().toLowerCase();
+  const cat = STATE.predCategory || 'trending';
+  let list = (markets || []).filter(m => _marketMatchesCategory(m, cat));
+  if (q) {
+    list = list.filter(m => {
+      const blob = (m.question + ' ' + (m.artist_ticker || '') + ' ' + (m.creator_name || '')).toLowerCase();
+      return blob.includes(q);
+    });
+  }
+  // Sort: Trending = highest volume first, Ending = soonest first,
+  // New = newest first, Resolved = most-recently-resolved first,
+  // others = ending-soon by default.
+  if (cat === 'trending') {
+    list.sort((a, b) => ((+b.yes_pool || 0) + (+b.no_pool || 0)) - ((+a.yes_pool || 0) + (+a.no_pool || 0)));
+  } else if (cat === 'new') {
+    list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  } else if (cat === 'resolved') {
+    list.sort((a, b) => new Date(b.resolved_at || 0) - new Date(a.resolved_at || 0));
+  } else {
+    list.sort((a, b) => new Date(a.resolves_at) - new Date(b.resolves_at));
+  }
+  return list;
+}
+
+function _paintPredictionsGrid(host) {
+  const grid = host.querySelector('#pm-grid');
+  const tabs = host.querySelector('#pm-tabs');
+  if (!grid) return;
+  const all = PREDICTION_MARKETS || [];
+  // Counts per category — for the tab badges.
+  const counts = {};
+  PRED_CATEGORIES.forEach(c => { counts[c.id] = all.filter(m => _marketMatchesCategory(m, c.id)).length; });
+
+  if (tabs) {
+    const cur = STATE.predCategory || 'trending';
+    tabs.innerHTML = PRED_CATEGORIES.map(c => `
+      <button class="pm-tab${c.id === cur ? ' active' : ''}${counts[c.id] === 0 ? ' empty' : ''}" data-pm-cat="${c.id}">
+        ${c.label}<span class="pm-tab-count">${counts[c.id]}</span>
+      </button>
+    `).join('');
+  }
+
+  const list = _filterMarketsForGrid(all);
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div class="pm-empty">
+        <div class="pm-empty-title">No markets here yet.</div>
+        <div class="pm-empty-sub">${
+          STATE.predSearch
+            ? `Nothing matches "${escapeHTML(STATE.predSearch)}". Try clearing the search.`
+            : (STATE.predCategory === 'resolved'
+                ? 'No markets have resolved yet — be the first to land a call.'
+                : 'Be the first to ask a question — anyone can create a market.')
+        }</div>
+      </div>
+    `;
+    return;
+  }
+  grid.innerHTML = list.map(_predMarketCardHTML).join('');
+  // Card click → market detail page
+  grid.querySelectorAll('[data-pm-card]').forEach(el => {
+    el.onclick = (e) => {
+      // Let inline buy buttons handle their own clicks (none in v1, but defensive).
+      if (e.target.closest('button,input')) return;
+      const slug = el.dataset.pmCard;
+      const id   = parseInt(el.dataset.pmId, 10);
+      _navigateToMarket(id, slug);
+    };
+  });
+}
+
+function _predictionsGridSkeleton() {
+  // 6 placeholder cards for the loading state — preserves grid height.
+  return Array.from({ length: 6 }).map(() => `
+    <div class="pm-card pm-card-skel">
+      <div class="pm-skel-q"></div>
+      <div class="pm-skel-bar"></div>
+      <div class="pm-skel-meta"></div>
+    </div>
+  `).join('');
+}
+
+// Single Polymarket-style card. Click anywhere navigates to the market
+// detail page; quick buy buttons live there, not here.
+function _predMarketCardHTML(m) {
+  const yesPool = +m.yes_pool || 0;
+  const noPool  = +m.no_pool  || 0;
+  const total = yesPool + noPool;
+  const yesPct = total > 0 ? (yesPool / total) * 100 : 50;
+  const noPct  = 100 - yesPct;
+  const ends = new Date(m.resolves_at).getTime();
+  const now = Date.now();
+  const closed = m.status !== 'open' || ends <= now;
+  let endsLabel;
+  if (m.status === 'resolved') {
+    endsLabel = 'Resolved ' + String(m.resolution || '').toUpperCase();
+  } else if (ends <= now) {
+    endsLabel = 'Awaiting resolution';
+  } else {
+    const ms = ends - now;
+    const d = Math.floor(ms / 86400000);
+    const h = Math.floor((ms % 86400000) / 3600000);
+    if (d >= 7)      endsLabel = `Ends ${new Date(m.resolves_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    else if (d >= 1) endsLabel = `Ends in ${d}d ${h}h`;
+    else if (h >= 1) endsLabel = `Ends in ${h}h`;
+    else             endsLabel = 'Ends < 1h';
+  }
+  const tickerPill = m.artist_ticker
+    ? `<span class="pm-card-ticker">$${escapeHTML(m.artist_ticker)}</span>`
+    : `<span class="pm-card-ticker pm-card-ticker-house">House</span>`;
+  const resolvedTone = m.status === 'resolved'
+    ? (m.resolution === 'yes' ? 'pm-card-yes' : (m.resolution === 'no' ? 'pm-card-no' : ''))
+    : '';
+  return `
+    <div class="pm-card ${closed ? 'pm-card-closed' : ''} ${resolvedTone}" data-pm-card="${escapeHTML(m.slug || '')}" data-pm-id="${m.id}">
+      <div class="pm-card-top">
+        ${tickerPill}
+        <span class="pm-card-vol">$${Math.round(total).toLocaleString()} pool</span>
+      </div>
+      <div class="pm-card-q">${escapeHTML(m.question)}</div>
+      <div class="pm-card-bar">
+        <div class="pm-bar-yes" style="width:${yesPct.toFixed(1)}%">
+          <span>${Math.round(yesPct)}% YES</span>
+        </div>
+        <div class="pm-bar-no"  style="width:${noPct.toFixed(1)}%">
+          <span>${Math.round(noPct)}% NO</span>
+        </div>
+      </div>
+      <div class="pm-card-foot">
+        <span class="pm-card-ends">${escapeHTML(endsLabel)}</span>
+        ${m.creator_name ? `<span class="pm-card-by">by ${escapeHTML(m.creator_name)}</span>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function _navigateToMarket(id, slug) {
+  STATE.selectedMarketId = id || null;
+  STATE.selectedMarketSlug = slug || null;
+  if (typeof setView === 'function') setView('prediction');
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// SINGLE-MARKET DETAIL PAGE — /predictions/<slug>
+// ════════════════════════════════════════════════════════════════════════
+// Polymarket-lite: question hero + live YES/NO probabilities + buy form +
+// recent bets feed + market stats + share link. No price chart yet — needs
+// daily snapshots we don't currently capture.
+// ════════════════════════════════════════════════════════════════════════
+
+let _PRED_DETAIL_CACHE = { id: null, market: null, recentBets: null };
+
+// Resolve the active market from STATE — first try in-memory list,
+// then fall back to a direct fetch by slug.
+async function _resolveMarketForDetail() {
+  const wantId = STATE.selectedMarketId;
+  const wantSlug = STATE.selectedMarketSlug;
+  // Prefer cached if it matches.
+  if (_PRED_DETAIL_CACHE.market) {
+    const m = _PRED_DETAIL_CACHE.market;
+    if ((wantId && m.id === wantId) || (wantSlug && m.slug === wantSlug)) return m;
+  }
+  // In-memory list?
+  if (Array.isArray(PREDICTION_MARKETS)) {
+    const hit = PREDICTION_MARKETS.find(m =>
+      (wantId && m.id === wantId) ||
+      (wantSlug && m.slug === wantSlug)
+    );
+    if (hit) {
+      STATE.selectedMarketId = hit.id;
+      STATE.selectedMarketSlug = hit.slug;
+      _PRED_DETAIL_CACHE = { id: hit.id, market: hit, recentBets: null };
+      return hit;
+    }
+  }
+  // Direct fetch — supports deep-link load before PREDICTION_MARKETS hydrates.
+  if (wantSlug) {
+    try {
+      const { data, error } = await window.SUPABASE
+        .from('prediction_markets')
+        .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status, created_by, created_at')
+        .eq('slug', wantSlug)
+        .maybeSingle();
+      if (error) return { error: error.message };
+      if (!data) return { error: 'market_not_found' };
+      // Hydrate creator name (best-effort).
+      if (data.created_by) {
+        try {
+          const { data: lb } = await window.SUPABASE
+            .from('leaderboard')
+            .select('display_name')
+            .eq('user_id', data.created_by)
+            .maybeSingle();
+          data.creator_name = lb && lb.display_name || 'trader';
+        } catch (_) {}
+      }
+      STATE.selectedMarketId = data.id;
+      STATE.selectedMarketSlug = data.slug;
+      _PRED_DETAIL_CACHE = { id: data.id, market: data, recentBets: null };
+      return data;
+    } catch (e) { return { error: e.message || String(e) }; }
+  }
+  return { error: 'no_market_selected' };
+}
+
+// Pull recent bets across ALL users for a market — small public feed.
+async function _fetchMarketRecentBets(marketId) {
+  if (!window.SUPABASE) return [];
+  try {
+    // RLS scopes prediction_bets to "own bets only", so this returns just
+    // the current user's bets for now. The "Recent activity" feed shows
+    // them as "you placed $X on YES". Public feed needs an RPC; defer.
+    const { data, error } = await window.SUPABASE
+      .from('prediction_bets')
+      .select('id, side, amount, placed_at, payout, user_id')
+      .eq('market_id', marketId)
+      .order('placed_at', { ascending: false })
+      .limit(15);
+    if (error || !Array.isArray(data)) return [];
+    return data;
+  } catch (_) { return []; }
+}
+
+async function renderPredictionMarketDetail() {
+  const host = document.getElementById('pred-detail-host');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="pmd-loading">
+      <div class="pmd-skel-q"></div>
+      <div class="pmd-skel-bar"></div>
+      <div class="pmd-skel-row"></div>
+    </div>
+  `;
+  const resolved = await _resolveMarketForDetail();
+  if (resolved && resolved.error) {
+    host.innerHTML = `
+      <div class="pmd-error">
+        <div class="pmd-error-title">Couldn't open this market</div>
+        <div class="pmd-error-sub">${escapeHTML(errorToHumanPred(resolved.error))}</div>
+        <div class="pmd-error-row">
+          <button class="pm-btn pm-btn-primary" id="pmd-back">Back to Predictions</button>
+        </div>
+      </div>`;
+    const back = host.querySelector('#pmd-back');
+    if (back) back.onclick = () => setView('predictions');
+    return;
+  }
+  // Pull balance + bets in parallel — non-blocking for first paint.
+  fetchPredictionBalance().then(() => _paintPredMarketDetailHeader(host, resolved));
+  _fetchMarketRecentBets(resolved.id).then(bets => {
+    _PRED_DETAIL_CACHE.recentBets = bets;
+    _paintPredMarketDetailBody(host, resolved, bets);
+  });
+  // Synchronous initial paint with whatever we already have.
+  _paintPredMarketDetail(host, resolved, _PRED_DETAIL_CACHE.recentBets || []);
+}
+
+function _paintPredMarketDetail(host, m, bets) {
+  host.innerHTML = _predMarketDetailHTML(m, bets);
+  _wirePredMarketDetail(host, m);
+}
+
+function _paintPredMarketDetailHeader(host, m) {
+  // Re-paints just the balance line in case it arrived late.
+  const balEl = host.querySelector('[data-pmd-bal]');
+  if (balEl && PREDICTION_BALANCE != null) {
+    balEl.textContent = '$' + (+PREDICTION_BALANCE).toLocaleString('en-US', { maximumFractionDigits: 2 });
+  }
+}
+
+function _paintPredMarketDetailBody(host, m, bets) {
+  const feed = host.querySelector('#pmd-feed');
+  if (feed) feed.innerHTML = _predMarketBetsFeedHTML(bets, m);
+}
+
+function _predMarketDetailHTML(m, bets) {
+  const yesPool = +m.yes_pool || 0;
+  const noPool  = +m.no_pool  || 0;
+  const total = yesPool + noPool;
+  const yesPct = total > 0 ? (yesPool / total) * 100 : 50;
+  const noPct  = 100 - yesPct;
+  const ends = new Date(m.resolves_at).getTime();
+  const now = Date.now();
+  const closed = m.status !== 'open' || ends <= now;
+
+  let endsLabel;
+  if (m.status === 'resolved') {
+    endsLabel = 'Resolved as ' + String(m.resolution || '').toUpperCase() + ' on ' + new Date(m.resolved_at).toLocaleString();
+  } else if (ends <= now) {
+    endsLabel = 'Awaiting resolution (closed ' + new Date(m.resolves_at).toLocaleString() + ')';
+  } else {
+    endsLabel = 'Resolves ' + new Date(m.resolves_at).toLocaleString();
+  }
+  const balLine = (window.MUSE_USER && window.MUSE_USER.authed)
+    ? `<div class="pmd-bal">Bankroll: <b data-pmd-bal>${PREDICTION_BALANCE != null ? '$' + (+PREDICTION_BALANCE).toLocaleString('en-US', { maximumFractionDigits: 2 }) : '—'}</b></div>`
+    : '';
+  const tickerPill = m.artist_ticker
+    ? `<span class="pm-card-ticker">$${escapeHTML(m.artist_ticker)}</span>`
+    : `<span class="pm-card-ticker pm-card-ticker-house">House</span>`;
+  const resolvedBanner = m.status === 'resolved'
+    ? `<div class="pmd-resolved pmd-resolved-${m.resolution || 'cancelled'}">Resolved: ${String(m.resolution || 'cancelled').toUpperCase()}</div>`
+    : '';
+  const buyForm = closed ? '' : `
+    <div class="pmd-buy">
+      <div class="pmd-buy-row">
+        <input type="number" id="pmd-amt" class="pmd-amt" placeholder="Amount" min="1" step="1" />
+        <button class="pmd-buy-btn pmd-buy-yes" data-pmd-side="yes">
+          <span class="pmd-buy-side">YES</span>
+          <span class="pmd-buy-pct">${Math.round(yesPct)}%</span>
+        </button>
+        <button class="pmd-buy-btn pmd-buy-no"  data-pmd-side="no">
+          <span class="pmd-buy-side">NO</span>
+          <span class="pmd-buy-pct">${Math.round(noPct)}%</span>
+        </button>
+      </div>
+      <div class="pmd-buy-hint">Parimutuel: winning side splits the full pot pro-rata to their stake.</div>
+      <div class="pmd-buy-error" id="pmd-buy-error" hidden></div>
+    </div>
+  `;
+
+  return `
+    <div class="pmd-page">
+      <div class="pmd-hero ${closed ? 'pmd-hero-closed' : ''}">
+        <div class="pmd-hero-top">
+          ${tickerPill}
+          ${m.creator_name ? `<span class="pm-card-by">by ${escapeHTML(m.creator_name)}</span>` : ''}
+          <button class="pmd-share" data-pmd-act="share" title="Copy link">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></svg>
+            Share
+          </button>
+        </div>
+        <h1 class="pmd-q">${escapeHTML(m.question)}</h1>
+        ${resolvedBanner}
+        <div class="pmd-bar-big">
+          <div class="pmd-bar-yes" style="width:${yesPct.toFixed(1)}%"><span>${Math.round(yesPct)}% YES</span></div>
+          <div class="pmd-bar-no"  style="width:${noPct.toFixed(1)}%"><span>${Math.round(noPct)}% NO</span></div>
+        </div>
+        <div class="pmd-stats">
+          <div class="pmd-stat">
+            <div class="pmd-stat-l">Pool</div>
+            <div class="pmd-stat-v">$${Math.round(total).toLocaleString()}</div>
+          </div>
+          <div class="pmd-stat">
+            <div class="pmd-stat-l">YES pool</div>
+            <div class="pmd-stat-v">$${Math.round(yesPool).toLocaleString()}</div>
+          </div>
+          <div class="pmd-stat">
+            <div class="pmd-stat-l">NO pool</div>
+            <div class="pmd-stat-v">$${Math.round(noPool).toLocaleString()}</div>
+          </div>
+          <div class="pmd-stat">
+            <div class="pmd-stat-l">Status</div>
+            <div class="pmd-stat-v">${escapeHTML(endsLabel)}</div>
+          </div>
+        </div>
+        ${balLine}
+      </div>
+
+      ${buyForm}
+
+      <div class="pmd-cols">
+        <div class="pmd-col">
+          <div class="pmd-section-title">Your bets on this market</div>
+          <div id="pmd-feed">${_predMarketBetsFeedHTML(bets, m)}</div>
+        </div>
+        <div class="pmd-col">
+          <div class="pmd-section-title">How this works</div>
+          <div class="pmd-rules">
+            <p>This is a parimutuel market: every dollar bet on the winning side gets a pro-rata share of the full pot at resolution.</p>
+            <p>The percentages above reflect <b>where the money is right now</b> — not the true probability. They move as people bet.</p>
+            <p><b>Stakes are paid in paper credits</b> from your $10k Predictions bankroll. No real money is at risk.</p>
+            ${m.market_type === 'price_target' && m.target_value != null
+              ? `<p><b>Auto-resolution:</b> resolves YES if the artist's price is ${m.target_direction === 'above' ? 'above' : 'below'} $${(+m.target_value).toFixed(2)} at ${new Date(m.resolves_at).toLocaleString()}.</p>`
+              : `<p><b>Manual resolution:</b> a Muses curator settles this at the resolution date based on public information.</p>`}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function _predMarketBetsFeedHTML(bets, m) {
+  if (!bets || bets.length === 0) {
+    return `<div class="pmd-feed-empty">No bets from you yet${m.status === 'open' ? ' — place one above.' : '.'}</div>`;
+  }
+  return `<div class="pmd-feed">${bets.map(b => {
+    const when = new Date(b.placed_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const sideCls = b.side === 'yes' ? 'up' : 'down';
+    let payoutStr = '';
+    if (b.payout != null) {
+      const isWin = +b.payout > 0;
+      payoutStr = isWin
+        ? `<span class="pmd-feed-payout up">+$${(+b.payout).toFixed(0)}</span>`
+        : `<span class="pmd-feed-payout down">lost</span>`;
+    }
+    return `
+      <div class="pmd-feed-row">
+        <span class="pmd-feed-side ${sideCls}">${b.side.toUpperCase()}</span>
+        <span class="pmd-feed-amt">$${(+b.amount).toFixed(0)}</span>
+        ${payoutStr}
+        <span class="pmd-feed-when">${escapeHTML(when)}</span>
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+function _wirePredMarketDetail(host, m) {
+  // Share button
+  const share = host.querySelector('[data-pmd-act="share"]');
+  if (share) share.onclick = async () => {
+    try {
+      const url = location.origin + '/predictions/' + encodeURIComponent(m.slug || '');
+      await navigator.clipboard.writeText(url);
+      if (typeof showToast === 'function') showToast('Market link copied');
+    } catch (_) {}
+  };
+  // Buy buttons
+  host.querySelectorAll('[data-pmd-side]').forEach(btn => {
+    btn.onclick = async () => {
+      const side = btn.dataset.pmdSide;
+      const amtEl = host.querySelector('#pmd-amt');
+      const errEl = host.querySelector('#pmd-buy-error');
+      const amt = parseFloat(amtEl && amtEl.value);
+      if (!amt || amt <= 0) {
+        if (errEl) { errEl.textContent = 'Enter a bet amount.'; errEl.hidden = false; }
+        return;
+      }
+      btn.disabled = true;
+      const res = await placePredictionBet(m.id, side, amt);
+      btn.disabled = false;
+      if (res.error) {
+        if (errEl) { errEl.textContent = errorToHumanPred(res.error); errEl.hidden = false; }
+        return;
+      }
+      if (errEl) errEl.hidden = true;
+      // Update local state and re-render.
+      PREDICTION_BALANCE = typeof res.balance === 'number' ? res.balance : PREDICTION_BALANCE;
+      m.yes_pool = res.yes_pool ?? m.yes_pool;
+      m.no_pool  = res.no_pool  ?? m.no_pool;
+      // Mirror back into the global cache so the homepage list is fresh too.
+      if (Array.isArray(PREDICTION_MARKETS)) {
+        const idx = PREDICTION_MARKETS.findIndex(x => x.id === m.id);
+        if (idx >= 0) {
+          PREDICTION_MARKETS[idx].yes_pool = m.yes_pool;
+          PREDICTION_MARKETS[idx].no_pool  = m.no_pool;
+        }
+      }
+      // Refresh streak so the chip can update if this completed a resolution
+      // (rare — usually only on resolved-by-cron events).
+      try { fetchPredictionStreak(true); } catch (_) {}
+      const freshBets = await _fetchMarketRecentBets(m.id);
+      _PRED_DETAIL_CACHE.recentBets = freshBets;
+      _paintPredMarketDetail(host, m, freshBets);
+      if (typeof showToast === 'function') showToast(`Placed $${amt.toFixed(0)} on ${side.toUpperCase()}`);
+    };
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// TOP CALLERS LEADERBOARD — /predictions/leaderboard
+// ════════════════════════════════════════════════════════════════════════
+
+async function renderPredCallersPage() {
+  const host = document.getElementById('pred-callers-page-host');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="pcp-head">
+      <h1>Top Callers</h1>
+      <div class="pcp-sub">Net P&L across all resolved prediction markets. Updated every minute.</div>
+    </div>
+    <div class="pcp-loading">Loading callers…</div>
+  `;
+  await fetchCallersLeaderboard(true);
+  const list = CALLERS || [];
+  const body = list.length === 0
+    ? `<div class="pm-empty"><div class="pm-empty-title">No resolved markets yet.</div><div class="pm-empty-sub">Be the first to land a call when something resolves.</div></div>`
+    : `
+      <div class="pcp-table-wrap">
+        <table class="pcp-table">
+          <thead>
+            <tr>
+              <th class="pcp-th-rank">Rank</th>
+              <th>Trader</th>
+              <th class="pcp-num">Record</th>
+              <th class="pcp-num">Hit rate</th>
+              <th class="pcp-num">Streak</th>
+              <th class="pcp-num">Net P&L</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map((r, i) => {
+              const pnl = Number(r.net_pnl || 0);
+              const cls = pnl >= 0 ? 'up' : 'down';
+              const streak = (r.current_streak | 0);
+              const handle = r.handle && r.handle !== 'trader' ? '@' + r.handle : (r.display_name || 'Trader');
+              const isYou = window.MUSE_USER && r.user_id === window.MUSE_USER.id;
+              const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${String(i+1).padStart(2,'0')}`;
+              return `
+                <tr class="${isYou ? 'pcp-row-you' : ''}">
+                  <td class="pcp-th-rank">${medal}</td>
+                  <td class="pcp-trader">
+                    ${escapeHTML(handle)}
+                    ${isYou ? ' <span class="lg-you-tag">you</span>' : ''}
+                  </td>
+                  <td class="pcp-num">${r.wins}W / ${r.losses}L</td>
+                  <td class="pcp-num">${Number(r.hit_rate || 0).toFixed(0)}%</td>
+                  <td class="pcp-num">${streak >= 3 ? `<span class="pcp-streak">🔥 ${streak}</span>` : (streak > 0 ? `${streak}` : '—')}</td>
+                  <td class="pcp-num ${cls}">${_fmtPnl(pnl)}</td>
+                </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  host.innerHTML = `
+    <div class="pcp-head">
+      <h1>Top Callers</h1>
+      <div class="pcp-sub">Net P&L across all resolved prediction markets. Updated every minute.</div>
+    </div>
+    ${body}
+  `;
 }
 
 // ============================================================================
@@ -18151,7 +19400,7 @@ async function fetchPredictionMarkets(force) {
   try {
     const { data, error } = await window.SUPABASE
       .from('prediction_markets')
-      .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status, created_by')
+      .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status, created_by, created_at')
       .in('status', ['open', 'resolved'])
       .order('resolves_at', { ascending: true })
       .limit(50);
@@ -18468,14 +19717,21 @@ function openCreateMarketModal() {
       return;
     }
 
-    // Refresh markets list so the new one appears.
+    // Refresh markets list so the new one appears, then repaint the
+    // Predictions homepage if the user is currently looking at it.
     await fetchPredictionMarkets(true);
-    renderPredictionsCard();
+    if (CURRENT_VIEW === 'predictions') {
+      try { renderPredictionsPage(); } catch (_) {}
+    }
     close();
     if (typeof showToast === 'function') {
-      showToast('Market created. Open it to see your YES/NO pool.', false, {
-        label: 'See markets',
-        handler: () => { try { openPredictionsModal(); } catch (_) {} },
+      const newSlug = res.slug || null;
+      showToast('Market created. Tap Open to start the YES/NO pool.', false, {
+        label: 'Open market',
+        handler: () => {
+          if (newSlug) _navigateToMarket(res.market_id, newSlug);
+          else if (typeof setView === 'function') setView('predictions');
+        },
       });
     }
   };
@@ -19306,6 +20562,10 @@ const STATE = {
   selectedLeagueId: null,    // numeric league id when on /leagues/<slug>
   selectedLeagueSlug: null,  // url slug for the active league detail page
   selectedLeagueTab: 'standings', // 'standings' | 'members' | 'activity' | 'awards' | 'settings'
+  selectedMarketId: null,    // numeric market id when on /predictions/<slug>
+  selectedMarketSlug: null,  // url slug for the active market detail page
+  predCategory: 'trending',  // 'trending' | 'ending' | 'new' | 'artist' | 'house' | 'resolved' | 'all'
+  predSearch: '',            // search filter on the predictions homepage
   tradeSide: 'buy',
   tradeOrderType: 'market',  // 'market' | 'limit' | 'stop'
   tradeLimitPrice: null,
@@ -19514,8 +20774,8 @@ function smoothSeries(pts, steps) {
 }
 
 // ============ NAV ============
-const VIEWS = ['markets','artists','genres','portfolio','orders','swap','tournaments','leaderboard','leagues','league','predictions','profile','settings','help','artist','tournament','genre'];
-const VIEW_TITLES = { markets: 'Markets', artists: 'Artists', genres: 'Genres', portfolio: 'Portfolio', orders: 'Orders', swap: 'Swap', tournaments: 'Tournaments', leaderboard: 'Leaderboard', leagues: 'Your Leagues', league: 'League', predictions: 'Predictions', profile: 'Profile', settings: 'Settings', help: 'Help & Support', artist: 'Artist', tournament: 'Tournament', genre: 'Genre' };
+const VIEWS = ['markets','artists','genres','portfolio','orders','swap','tournaments','leaderboard','leagues','league','predictions','prediction','pred-leaderboard','profile','settings','help','artist','tournament','genre'];
+const VIEW_TITLES = { markets: 'Markets', artists: 'Artists', genres: 'Genres', portfolio: 'Portfolio', orders: 'Orders', swap: 'Swap', tournaments: 'Tournaments', leaderboard: 'Leaderboard', leagues: 'Your Leagues', league: 'League', predictions: 'Predictions', prediction: 'Market', 'pred-leaderboard': 'Top Callers', profile: 'Profile', settings: 'Settings', help: 'Help & Support', artist: 'Artist', tournament: 'Tournament', genre: 'Genre' };
 
 // ============ PAPER / REAL MONEY BADGE HELPERS ============
 const PAPER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>';
@@ -19588,7 +20848,7 @@ const VIEW_ICONS = { markets: '#i-markets', artists: '#i-users', genres: '#i-gri
 
 // Track previous view so detail back-buttons can return to the right page
 let CURRENT_VIEW = 'markets';
-const DETAIL_VIEWS = new Set(['artist', 'tournament', 'genre', 'league']);
+const DETAIL_VIEWS = new Set(['artist', 'tournament', 'genre', 'league', 'prediction', 'pred-leaderboard']);
 function setView(name) {
   // Push current view to history stack
   if (name !== CURRENT_VIEW) {
@@ -19636,6 +20896,7 @@ function setView(name) {
   if (name === 'tournament') navHighlight = 'tournaments';
   if (name === 'genre') navHighlight = 'genres';
   if (name === 'league') navHighlight = 'leagues';
+  if (name === 'prediction' || name === 'pred-leaderboard') navHighlight = 'predictions';
   document.querySelectorAll('[data-nav]').forEach(el => {
     el.classList.toggle('active', el.dataset.nav === navHighlight);
   });
@@ -19669,6 +20930,8 @@ function setView(name) {
   if (name === 'leagues') renderLeaguesPage();
   if (name === 'league' && typeof renderLeagueDetail === 'function') renderLeagueDetail();
   if (name === 'predictions') renderPredictionsPage();
+  if (name === 'prediction' && typeof renderPredictionMarketDetail === 'function') renderPredictionMarketDetail();
+  if (name === 'pred-leaderboard' && typeof renderPredCallersPage === 'function') renderPredCallersPage();
   if (name === 'profile') renderProfile();
   if (name === 'orders') renderOrdersView();
   if (name === 'swap') renderSwapPage();
@@ -19759,6 +21022,11 @@ function routeForState(name) {
     const slug = STATE.selectedLeagueSlug || '';
     return slug ? ('/leagues/' + encodeURIComponent(slug)) : '/leagues';
   }
+  if (name === 'prediction') {
+    const slug = STATE.selectedMarketSlug || '';
+    return slug ? ('/predictions/' + encodeURIComponent(slug)) : '/predictions';
+  }
+  if (name === 'pred-leaderboard') return '/predictions/leaderboard';
   if (ROOT_SINGLE_ROUTES.has(name)) return '/' + name;
   return '/exchange/markets';
 }
@@ -19811,6 +21079,13 @@ function parsePathToRoute(path) {
     if (slug) return { view: 'league', leagueSlug: slug };
     return { view: 'leagues' };
   }
+  // /predictions/leaderboard | /predictions/<slug>
+  if (root.startsWith('predictions/')) {
+    const seg = decodeURIComponent(root.slice('predictions/'.length).split('/')[0]);
+    if (!seg) return { view: 'predictions' };
+    if (seg === 'leaderboard') return { view: 'pred-leaderboard' };
+    return { view: 'prediction', marketSlug: seg };
+  }
   // /exchange[/...]
   if (path === '/exchange' || path === '/exchange/' || path === '/exchange/markets') {
     return { view: 'markets' };
@@ -19840,6 +21115,10 @@ function applyRoute(route, opts) {
   if (route.leagueSlug) {
     STATE.selectedLeagueSlug = route.leagueSlug;
     STATE.selectedLeagueId = null; // resolved by renderLeagueDetail via fetch_league_by_slug
+  }
+  if (route.marketSlug) {
+    STATE.selectedMarketSlug = route.marketSlug;
+    STATE.selectedMarketId = null; // resolved by renderPredictionMarketDetail
   }
   if (route.genreSlug) {
     // Match slug back to a display-name genre if we know them; else pass through capitalised.
