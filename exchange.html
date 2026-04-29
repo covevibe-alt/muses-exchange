@@ -6398,7 +6398,7 @@
     margin-top: 2px;
   }
 
-  /* Awards preview tiles */
+  /* Awards preview tiles (legacy — kept in case openLeagueDetailModal still renders) */
   .lg-awards-preview {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -6419,6 +6419,134 @@
   }
   .lg-award-tile:hover { opacity: 0.85; }
   .lg-award-tile span { font-size: 28px; line-height: 1; }
+
+  /* Trophy case grid (Awards tab) */
+  .lg-trophy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .lg-trophy-card {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 10px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .lg-trophy-card:not(.lg-trophy-empty):hover {
+    border-color: var(--lg-stroke);
+    transform: translateY(-1px);
+  }
+  .lg-trophy-card.lg-trophy-empty {
+    opacity: 0.55;
+  }
+  .lg-trophy-head {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .lg-trophy-emoji {
+    font-size: 28px; line-height: 1;
+  }
+  .lg-trophy-titles { flex: 1; min-width: 0; }
+  .lg-trophy-label {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.005em;
+  }
+  .lg-trophy-sub {
+    font-size: 11px; color: var(--text-faint);
+    margin-top: 1px;
+  }
+  .lg-trophy-count {
+    flex-shrink: 0;
+    background: var(--lg-soft);
+    border: 1px solid var(--lg-stroke);
+    color: var(--lg-accent);
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 999px;
+  }
+  .lg-trophy-empty-msg {
+    font-size: 12px; color: var(--text-faint);
+    padding: 4px 0 2px;
+  }
+  .lg-trophy-list {
+    display: flex; flex-direction: column;
+    gap: 4px;
+  }
+  .lg-trophy-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 6px;
+    font-size: 12.5px;
+    transition: background .15s ease;
+  }
+  .lg-trophy-row.lg-trophy-you {
+    background: var(--lg-soft);
+  }
+  .lg-trophy-name {
+    color: var(--text); font-weight: 500;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .lg-trophy-when {
+    color: var(--text-faint); font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  /* Activity feed */
+  .lg-act-list {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .lg-act-row {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s ease;
+  }
+  .lg-act-row:last-child { border-bottom: 0; }
+  .lg-act-row:hover { background: rgba(255,255,255,0.02); }
+  .lg-act-icon {
+    font-size: 22px; line-height: 1;
+    text-align: center;
+  }
+  .lg-act-body { min-width: 0; }
+  .lg-act-title {
+    font-size: 13px; color: var(--text); line-height: 1.4;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .lg-act-title b { font-weight: 700; }
+  .lg-act-detail {
+    font-size: 11.5px; color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .lg-act-when {
+    font-size: 11px; color: var(--text-faint);
+    flex-shrink: 0;
+  }
+
+  /* Standings inline award chip */
+  .lg-stand-chip {
+    display: inline-flex; align-items: center;
+    margin-left: 6px;
+    font-size: 9.5px; font-weight: 700;
+    padding: 2px 6px; border-radius: 999px;
+    background: rgba(251, 191, 36, 0.10);
+    border: 1px solid rgba(251, 191, 36, 0.28);
+    color: #fbbf24;
+    letter-spacing: 0.04em;
+    vertical-align: middle;
+  }
+  .lg-stand-chip.lg-stand-chip-season {
+    background: rgba(167, 139, 250, 0.12);
+    border-color: rgba(167, 139, 250, 0.32);
+    color: #b98fff;
+  }
 
   /* Settings form */
   .lg-settings-form {
@@ -16915,8 +17043,20 @@ const LEAGUE_TABS = [
   { id: 'settings',  label: 'Settings', ownerOnly: true },
 ];
 
+// Display metadata for each award_type. Order matters for the trophy
+// case grid (champion-first). Keep in sync with migration 033's CHECK
+// constraint on league_awards.award_type.
+const LEAGUE_AWARD_META = {
+  'champion':       { emoji: '🏆', label: 'Champion',     short: 'Champion',  rank: 1, kind: 'season' },
+  'runner-up':      { emoji: '🥈', label: 'Runner-up',    short: 'Runner-up', rank: 2, kind: 'season' },
+  'bronze':         { emoji: '🥉', label: 'Bronze',       short: 'Bronze',    rank: 3, kind: 'season' },
+  'mvp-week':       { emoji: '👑', label: 'Weekly MVP',   short: 'MVP',       rank: 4, kind: 'weekly' },
+  'big-mover-week': { emoji: '⚡', label: 'Big Mover',    short: 'Big Mover', rank: 5, kind: 'weekly' },
+};
+function _awardMeta(t) { return LEAGUE_AWARD_META[t] || { emoji: '🏅', label: t, short: t, rank: 99, kind: 'other' }; }
+
 // Slim cache so flipping between tabs doesn't refetch.
-let _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null };
+let _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null, awards: null };
 
 async function fetchLeagueBySlugRPC(slug) {
   if (!window.SUPABASE) return { error: 'no_supabase' };
@@ -16925,6 +17065,43 @@ async function fetchLeagueBySlugRPC(slug) {
     if (error) return { error: error.message || String(error) };
     return data || {};
   } catch (e) { return { error: e?.message || String(e) }; }
+}
+
+// Pull all award rows for a league from `league_awards`. RLS gates this
+// to members + public-league readers. Sorted newest-first by awarded_at.
+async function fetchLeagueAwards(leagueId) {
+  if (!window.SUPABASE) return [];
+  try {
+    const { data, error } = await window.SUPABASE
+      .from('league_awards')
+      .select('id, league_id, user_id, award_type, period_start, period_end, metadata, awarded_at')
+      .eq('league_id', leagueId)
+      .order('awarded_at', { ascending: false })
+      .limit(200);
+    if (error || !Array.isArray(data)) return [];
+    // Hydrate display_name from leaderboard the same way fetchLeagueMembers does.
+    const userIds = Array.from(new Set(data.map(r => r.user_id)));
+    if (userIds.length === 0) return [];
+    const { data: lbRows } = await window.SUPABASE
+      .from('leaderboard')
+      .select('user_id, display_name')
+      .in('user_id', userIds);
+    const nameById = new Map((lbRows || []).map(r => [r.user_id, r.display_name || 'trader']));
+    return data.map(r => ({
+      id:          r.id,
+      leagueId:    r.league_id,
+      userId:      r.user_id,
+      userName:    nameById.get(r.user_id) || 'trader',
+      awardType:   r.award_type,
+      periodStart: r.period_start,
+      periodEnd:   r.period_end,
+      metadata:    r.metadata || {},
+      awardedAt:   r.awarded_at,
+    }));
+  } catch (e) {
+    console.warn('[Muses] fetchLeagueAwards threw:', e?.message || e);
+    return [];
+  }
 }
 
 async function updateLeagueRPC(leagueId, opts) {
@@ -17126,7 +17303,7 @@ async function renderLeagueDetail() {
         if (typeof showToast === 'function') showToast(errorToHuman(res.error), true);
         return;
       }
-      _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null };
+      _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null, awards: null };
       await fetchUserLeagues(true);
       if (typeof showToast === 'function') showToast('Left the league');
       setView('leagues');
@@ -17156,7 +17333,19 @@ async function _renderLeagueTabBody(league) {
       members = await fetchLeagueMembers(league.id);
       _LEAGUE_DETAIL_CACHE.members = members;
     }
-    body.innerHTML = _leagueStandingsHTML(league, members);
+    // Awards are needed for the MVP/Big Mover chips next to player names.
+    // Fetched lazily so first-paint of Standings is fast even if awards
+    // RPC is slow — we re-render once they arrive.
+    const cachedAwards = _LEAGUE_DETAIL_CACHE.awards;
+    body.innerHTML = _leagueStandingsHTML(league, members, cachedAwards);
+    if (!cachedAwards) {
+      fetchLeagueAwards(league.id).then(awards => {
+        _LEAGUE_DETAIL_CACHE.awards = awards;
+        if (STATE.selectedLeagueTab === 'standings' && document.getElementById('lg-tab-body')) {
+          document.getElementById('lg-tab-body').innerHTML = _leagueStandingsHTML(league, members, awards);
+        }
+      });
+    }
     return;
   }
   if (tab === 'members') {
@@ -17170,11 +17359,23 @@ async function _renderLeagueTabBody(league) {
     return;
   }
   if (tab === 'activity') {
-    body.innerHTML = _leagueActivityHTML(league);
+    body.innerHTML = `<div class="lg-tab-loading">Loading activity…</div>`;
+    let awards = _LEAGUE_DETAIL_CACHE.awards;
+    if (!awards) {
+      awards = await fetchLeagueAwards(league.id);
+      _LEAGUE_DETAIL_CACHE.awards = awards;
+    }
+    body.innerHTML = _leagueActivityHTML(league, awards);
     return;
   }
   if (tab === 'awards') {
-    body.innerHTML = _leagueAwardsHTML(league);
+    body.innerHTML = `<div class="lg-tab-loading">Loading awards…</div>`;
+    let awards = _LEAGUE_DETAIL_CACHE.awards;
+    if (!awards) {
+      awards = await fetchLeagueAwards(league.id);
+      _LEAGUE_DETAIL_CACHE.awards = awards;
+    }
+    body.innerHTML = _leagueAwardsHTML(league, awards);
     return;
   }
   if (tab === 'settings') {
@@ -17185,7 +17386,7 @@ async function _renderLeagueTabBody(league) {
 }
 
 // ─── Standings ────────────────────────────────────────────────────────
-function _leagueStandingsHTML(league, members) {
+function _leagueStandingsHTML(league, members, awards) {
   if (!members || members.length === 0) {
     return `<div class="lg-tab-empty">No members yet. Share the invite code to grow the league.</div>`;
   }
@@ -17198,6 +17399,39 @@ function _leagueStandingsHTML(league, members) {
     if (br == null) return -1;
     return br - ar;
   });
+
+  // Build a map of userId → array of recent award chips. We use the
+  // single most recent week's awards for the inline chip — older awards
+  // live in the trophy case (Awards tab).
+  const chipsByUser = new Map();
+  if (Array.isArray(awards) && awards.length > 0) {
+    // Find the latest period_end for weekly awards.
+    const weeklyAwards = awards.filter(a => {
+      const k = (LEAGUE_AWARD_META[a.awardType] || {}).kind;
+      return k === 'weekly';
+    });
+    if (weeklyAwards.length > 0) {
+      const latest = weeklyAwards.reduce((acc, a) => {
+        return (!acc || (a.periodEnd && a.periodEnd > acc)) ? a.periodEnd : acc;
+      }, null);
+      weeklyAwards
+        .filter(a => a.periodEnd === latest)
+        .forEach(a => {
+          const meta = _awardMeta(a.awardType);
+          const arr = chipsByUser.get(a.userId) || [];
+          arr.push(`<span class="lg-stand-chip" title="${escapeHTML(meta.label)} — week of ${escapeHTML(a.periodEnd)}">${meta.emoji} ${escapeHTML(meta.short)}</span>`);
+          chipsByUser.set(a.userId, arr);
+        });
+    }
+    // Always-on chip for season winners (any time).
+    awards.forEach(a => {
+      const meta = _awardMeta(a.awardType);
+      if (meta.kind !== 'season') return;
+      const arr = chipsByUser.get(a.userId) || [];
+      arr.unshift(`<span class="lg-stand-chip lg-stand-chip-season" title="${escapeHTML(meta.label)} — ${escapeHTML(a.periodEnd || '')}">${meta.emoji} ${escapeHTML(meta.short)}</span>`);
+      chipsByUser.set(a.userId, arr);
+    });
+  }
 
   const focusNote = league.focusGenre
     ? `<div class="lg-tab-note">Standings rank by overall return; the <b>${escapeHTML(league.focusGenre)} Cup</b> awards (Phase C) will use ${escapeHTML(league.focusGenre)}-specific returns.</div>`
@@ -17214,6 +17448,7 @@ function _leagueStandingsHTML(league, members) {
     const pvStr  = (m.pv != null)
       ? '$' + Number(m.pv).toLocaleString('en-US', { maximumFractionDigits: 0 })
       : '<span class="lg-dim">—</span>';
+    const chips = (chipsByUser.get(m.userId) || []).join('');
     return `
       <div class="lg-stand-row${isYou ? ' lg-stand-you' : ''}">
         <div class="lg-stand-rank">${medal || `#${rank}`}</div>
@@ -17221,6 +17456,7 @@ function _leagueStandingsHTML(league, members) {
           ${escapeHTML(m.name)}
           ${isYou ? ' <span class="lg-you-tag">you</span>' : ''}
           ${m.role === 'owner' ? ' <span class="lg-owner-tag">owner</span>' : ''}
+          ${chips}
         </div>
         <div class="lg-stand-pv">${pvStr}</div>
         <div class="lg-stand-ret">${retStr}</div>
@@ -17270,36 +17506,103 @@ function _leagueMembersHTML(league, members) {
   `;
 }
 
-// ─── Activity (placeholder until Phase C) ────────────────────────────
-function _leagueActivityHTML(league) {
-  return `
-    <div class="lg-tab-empty">
-      <div class="lg-tab-empty-title">Activity is coming with Phase C.</div>
-      <div class="lg-tab-empty-sub">
-        Weekly digests, big trades, biggest movers, and league chatter — all in one feed. For now, head to the Standings tab to see how everyone's stacking up.
+// ─── Activity — chronological feed of awards (chatter lands later) ─────
+function _leagueActivityHTML(league, awards) {
+  if (!awards || awards.length === 0) {
+    return `
+      <div class="lg-tab-empty">
+        <div class="lg-tab-empty-title">No activity yet.</div>
+        <div class="lg-tab-empty-sub">
+          The Friday Market Close cron awards a weekly MVP and Big Mover every Friday at 18:00 UTC. Once a few weeks have closed, this feed lights up with weekly winners and (later) trade highlights.
+        </div>
       </div>
-    </div>
-  `;
+    `;
+  }
+  const items = awards.map(a => {
+    const meta = _awardMeta(a.awardType);
+    const when = a.awardedAt
+      ? new Date(a.awardedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : '';
+    let detail = '';
+    if (a.awardType === 'mvp-week' && a.metadata && a.metadata.return_pct != null) {
+      const r = Number(a.metadata.return_pct);
+      detail = `+${r.toFixed(2)}% on the week`;
+    } else if (a.awardType === 'big-mover-week' && a.metadata && a.metadata.gain_dollars != null) {
+      const g = Number(a.metadata.gain_dollars);
+      detail = '+$' + g.toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' on the week';
+    } else if (meta.kind === 'season' && a.metadata && a.metadata.return_pct != null) {
+      const r = Number(a.metadata.return_pct);
+      const credit = a.metadata.credits ? ` · +$${Number(a.metadata.credits).toLocaleString()} tournament credits` : '';
+      detail = `+${r.toFixed(2)}% season return${credit}`;
+    }
+    return `
+      <div class="lg-act-row">
+        <div class="lg-act-icon">${meta.emoji}</div>
+        <div class="lg-act-body">
+          <div class="lg-act-title">
+            <b>${escapeHTML(a.userName)}</b> earned <b>${escapeHTML(meta.label)}</b>
+          </div>
+          ${detail ? `<div class="lg-act-detail">${escapeHTML(detail)}</div>` : ''}
+        </div>
+        <div class="lg-act-when">${escapeHTML(when)}</div>
+      </div>
+    `;
+  }).join('');
+  return `<div class="lg-act-list">${items}</div>`;
 }
 
-// ─── Awards (placeholder until Phase C) ──────────────────────────────
-function _leagueAwardsHTML(league) {
-  return `
-    <div class="lg-tab-empty">
-      <div class="lg-tab-empty-title">Trophy case opens with Phase C.</div>
-      <div class="lg-tab-empty-sub">
-        Weekly MVPs, biggest movers, season-end champions, and runner-up medals will all be displayed here once the awards cron is live.
+// ─── Awards — trophy case grouped by award type ────────────────────────
+function _leagueAwardsHTML(league, awards) {
+  // Always render a structured grid even when empty so the page has shape.
+  const order = ['champion','runner-up','bronze','mvp-week','big-mover-week'];
+  const byType = new Map(order.map(t => [t, []]));
+  (awards || []).forEach(a => {
+    if (!byType.has(a.awardType)) byType.set(a.awardType, []);
+    byType.get(a.awardType).push(a);
+  });
+
+  const blocks = order.map(t => {
+    const list = byType.get(t) || [];
+    const meta = _awardMeta(t);
+    const isEmpty = list.length === 0;
+    const recipients = list.slice(0, 6).map(a => {
+      const isYou = window.MUSE_USER && a.userId === window.MUSE_USER.id;
+      const periodLabel = a.periodEnd
+        ? new Date(a.periodEnd).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        : '';
+      return `
+        <div class="lg-trophy-row${isYou ? ' lg-trophy-you' : ''}">
+          <span class="lg-trophy-name">${escapeHTML(a.userName)}${isYou ? ' <span class="lg-you-tag">you</span>' : ''}</span>
+          <span class="lg-trophy-when">${escapeHTML(periodLabel)}</span>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="lg-trophy-card${isEmpty ? ' lg-trophy-empty' : ''}">
+        <div class="lg-trophy-head">
+          <span class="lg-trophy-emoji">${meta.emoji}</span>
+          <div class="lg-trophy-titles">
+            <div class="lg-trophy-label">${escapeHTML(meta.label)}</div>
+            <div class="lg-trophy-sub">${
+              meta.kind === 'season'
+                ? 'Awarded at season end'
+                : 'Awarded every Friday'
+            }</div>
+          </div>
+          ${isEmpty ? '' : `<div class="lg-trophy-count">${list.length}</div>`}
+        </div>
+        ${isEmpty
+          ? `<div class="lg-trophy-empty-msg">No winner yet.</div>`
+          : `<div class="lg-trophy-list">${recipients}</div>`}
       </div>
-      <div class="lg-awards-preview">
-        <div class="lg-award-tile"><span>🏆</span><div>Champion</div></div>
-        <div class="lg-award-tile"><span>🥈</span><div>Runner-up</div></div>
-        <div class="lg-award-tile"><span>🥉</span><div>Bronze</div></div>
-        <div class="lg-award-tile"><span>⚡</span><div>Big Mover</div></div>
-        <div class="lg-award-tile"><span>🎯</span><div>Most Consistent</div></div>
-        <div class="lg-award-tile"><span>👑</span><div>Weekly MVP</div></div>
-      </div>
-    </div>
-  `;
+    `;
+  }).join('');
+
+  const note = `
+    <div class="lg-tab-note">
+      Weekly awards run on the <b>Friday Market Close</b> cron (18:00 UTC). Season awards (Champion / Runner-up / Bronze) drop when the global season ends, with <b>$5k / $2k / $1k</b> in tournament credits.
+    </div>`;
+  return `${note}<div class="lg-trophy-grid">${blocks}</div>`;
 }
 
 // ─── Settings (owner-only) ───────────────────────────────────────────
@@ -17423,7 +17726,7 @@ function _wireLeagueSettings(league, body) {
       return;
     }
     // Refresh USER_LEAGUES + cache + redraw
-    _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null };
+    _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null, awards: null };
     await fetchUserLeagues(true);
     if (typeof showToast === 'function') showToast('League updated');
     renderLeagueDetail();
