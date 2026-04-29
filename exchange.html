@@ -16573,18 +16573,22 @@ function renderCallersCard() {
 // reuploads or removes a photo), users still see a gradient + label —
 // not a broken or wrong-looking image. Fix the URL when noticed.
 const LEAGUE_COVERS = {
+  // Photo-backed (verified to load + visually match label):
   'concert':     { label: 'Concert',       url: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#7c3aed 0%,#3b1366 60%,#1a0a2e 100%)' },
-  'vinyl':       { label: 'Vinyl',         url: 'https://images.unsplash.com/photo-1539375665275-f9de415ef9ac?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#1f2937 0%,#0f172a 60%,#020617 100%)' },
   'headphones':  { label: 'Headphones',    url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#ff6b8a 0%,#a855f7 60%,#4c1d95 100%)' },
   'equalizer':   { label: 'Equalizer',     url: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#10d88b 0%,#0e9c69 60%,#064e3b 100%)' },
-  'neon-city':   { label: 'Neon City',     url: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#ec4899 0%,#7c3aed 60%,#1e1b4b 100%)' },
   'festival':    { label: 'Festival',      url: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#fbbf24 0%,#f97316 60%,#7c2d12 100%)' },
   'microphone':  { label: 'Microphone',    url: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#dc2626 0%,#7f1d1d 60%,#1f0606 100%)' },
-  'stadium':     { label: 'Stadium',       url: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#0ea5e9 0%,#0c4a6e 60%,#082f49 100%)' },
-  'turntable':   { label: 'Turntable',     url: 'https://images.unsplash.com/photo-1571840800180-c7e6a1a7dffe?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#a855f7 0%,#581c87 60%,#1e1b4b 100%)' },
-  'soundwave':   { label: 'Soundwave',     url: 'https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#06b6d4 0%,#0e7490 60%,#083344 100%)' },
   'guitar':      { label: 'Guitar',        url: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#f59e0b 0%,#92400e 60%,#451a03 100%)' },
   'piano':       { label: 'Piano',         url: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#e2e8f0 0%,#475569 60%,#0f172a 100%)' },
+  // Pure-gradient covers (Unsplash IDs for these labels were unreliable;
+  // the gradient + bottom label gives a clean themed tile that won't rot.
+  // Anyone can swap in a verified photo URL later — must match the label.):
+  'vinyl':       { label: 'Vinyl',         url: '', grad: 'linear-gradient(135deg,#1f2937 0%,#0f172a 60%,#020617 100%)' },
+  'neon-city':   { label: 'Neon City',     url: '', grad: 'linear-gradient(135deg,#ec4899 0%,#7c3aed 60%,#1e1b4b 100%)' },
+  'stadium':     { label: 'Stadium',       url: '', grad: 'linear-gradient(135deg,#0ea5e9 0%,#0c4a6e 60%,#082f49 100%)' },
+  'turntable':   { label: 'Turntable',     url: '', grad: 'linear-gradient(135deg,#a855f7 0%,#581c87 60%,#1e1b4b 100%)' },
+  'soundwave':   { label: 'Soundwave',     url: '', grad: 'linear-gradient(135deg,#06b6d4 0%,#0e7490 60%,#083344 100%)' },
 };
 
 const LEAGUE_THEMES = {
@@ -16601,12 +16605,13 @@ const LEAGUE_THEMES = {
 function _leagueCoverHTML(coverId, themeColor) {
   const cover = LEAGUE_COVERS[coverId] || LEAGUE_COVERS['concert'];
   const theme = LEAGUE_THEMES[themeColor] || LEAGUE_THEMES['purple'];
-  // Image-on-top of gradient: if the image 404s, the gradient shows through.
+  // Image on top of gradient: if the image 404s, the gradient shows through
+  // (onerror handler hides the broken-img icon). Empty url → skip <img>
+  // entirely so the user gets the pure-gradient cover for those entries.
   // The accent overlay tints the image with the league's theme color.
   return `
     <div class="lg-cover" style="background:${cover.grad}">
-      <img src="${cover.url}" alt="" loading="lazy"
-           onerror="this.style.display='none'" />
+      ${cover.url ? `<img src="${cover.url}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}
       <div class="lg-cover-tint" style="background:linear-gradient(180deg, transparent 40%, ${theme.soft} 100%)"></div>
     </div>`;
 }
@@ -16920,7 +16925,7 @@ function openCreateLeagueModal() {
   const coverGrid = wrap.querySelector('#lg-cover-grid');
   coverGrid.innerHTML = Object.entries(LEAGUE_COVERS).map(([id, c]) => `
     <button type="button" class="lg-cover-thumb${id === state.coverId ? ' active' : ''}" data-cover="${id}" title="${c.label}" aria-label="${c.label}" style="background:${c.grad}">
-      <img src="${c.url}" alt="" loading="lazy" onerror="this.style.display='none'">
+      ${c.url ? `<img src="${c.url}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
       <span class="lg-cover-thumb-label">${escapeHTML(c.label)}</span>
     </button>
   `).join('');
@@ -17643,7 +17648,8 @@ function _leagueAwardsHTML(league, awards) {
 function _leagueSettingsHTML(league) {
   const coverThumbs = Object.entries(LEAGUE_COVERS).map(([id, c]) => `
     <button type="button" class="lg-cover-thumb${id === league.coverId ? ' active' : ''}" data-cover="${id}" title="${c.label}" aria-label="${c.label}" style="background:${c.grad}">
-      <img src="${c.url}" alt="" loading="lazy" onerror="this.style.display='none'">
+      ${c.url ? `<img src="${c.url}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+      <span class="lg-cover-thumb-label">${escapeHTML(c.label)}</span>
     </button>
   `).join('');
   const themeSwatches = Object.entries(LEAGUE_THEMES).map(([id, t]) => `
