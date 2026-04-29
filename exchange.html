@@ -5815,6 +5815,373 @@
     text-transform: uppercase; letter-spacing: 0.08em;
   }
 
+  /* ════════════════════════════════════════════════════════════════════════
+     YOUR LEAGUES — v2 card grid + empty hero + create wizard
+     Cards have per-league theme colors driven by --lg-accent / --lg-soft /
+     --lg-stroke set on the .lg-card root in JS (renderLeaguesCard).
+     ════════════════════════════════════════════════════════════════════════ */
+
+  /* Header row above the grid */
+  .leagues-card .lg-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .leagues-card .lg-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .leagues-card .lg-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 18px; padding: 0 6px;
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.28);
+    border-radius: 999px;
+    font-size: 11px; color: #b98fff;
+    letter-spacing: normal; text-transform: none;
+  }
+  .leagues-card .lg-actions {
+    display: inline-flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  /* Card grid */
+  .lg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .lg-card {
+    --lg-accent: #a78bfa;
+    --lg-soft:   rgba(167,139,250,0.12);
+    --lg-stroke: rgba(167,139,250,0.30);
+    position: relative;
+    display: flex; flex-direction: column;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .lg-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--lg-stroke);
+    box-shadow: 0 14px 32px -18px rgba(0,0,0,0.55), 0 0 0 1px var(--lg-stroke) inset;
+  }
+
+  /* Cover image — gradient is the fallback if the image 404s */
+  .lg-cover {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+  }
+  .lg-cover img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .lg-cover-tint {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+
+  /* Card body */
+  .lg-card-body {
+    padding: 12px 14px 14px;
+    display: flex; flex-direction: column; gap: 6px;
+    min-height: 96px;
+  }
+  .lg-card-row {
+    display: flex; align-items: center; gap: 8px;
+    min-width: 0;
+  }
+  .lg-card-name {
+    font-size: 15px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.005em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; min-width: 0;
+  }
+  .lg-card-owner {
+    flex-shrink: 0;
+    font-size: 10px; font-weight: 700;
+    background: rgba(251,191,36,0.12); color: #fbbf24;
+    padding: 2px 7px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .lg-card-desc {
+    font-size: 12.5px; color: var(--text-dim); line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .lg-card-desc-placeholder {
+    color: var(--text-faint); font-style: italic;
+  }
+  .lg-card-meta {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-top: auto; padding-top: 4px;
+  }
+  .lg-card-focus {
+    display: inline-flex; align-items: center;
+    font-size: 10.5px; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px;
+    border: 1px solid var(--lg-stroke);
+    background: var(--lg-soft);
+    color: var(--lg-accent);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .lg-card-code {
+    display: inline-flex; align-items: center;
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 11px; letter-spacing: 0.08em;
+    padding: 3px 8px; border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  /* Big buttons used in empty state + modal footer */
+  .lg-btn-big {
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  /* Empty state hero */
+  .lg-empty-hero {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+    padding: 36px 24px 32px;
+    background: radial-gradient(circle at 50% 0%, rgba(167,139,250,0.10), transparent 70%);
+    border: 1px dashed rgba(167,139,250,0.22);
+    border-radius: 16px;
+  }
+  .lg-empty-hero-art {
+    width: 64px; height: 64px;
+    color: #b98fff;
+    margin-bottom: 14px;
+    filter: drop-shadow(0 6px 16px rgba(167,139,250,0.30));
+  }
+  .lg-empty-hero-art svg { width: 100%; height: 100%; }
+  .lg-empty-hero-title {
+    font-size: 20px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+  .lg-empty-hero-sub {
+    font-size: 13.5px; color: var(--text-dim); line-height: 1.55;
+    max-width: 440px;
+    margin-bottom: 22px;
+  }
+  .lg-empty-hero-row {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  }
+
+  /* ─── Create-league wizard ───────────────────────────────────────────── */
+  .lg-modal-create {
+    max-width: 760px;
+    padding: 22px 24px 20px;
+  }
+  .lg-create-body {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 22px;
+    margin-top: 14px;
+  }
+  .lg-create-form {
+    display: flex; flex-direction: column; gap: 12px;
+    min-width: 0;
+  }
+  .lg-create-preview {
+    display: flex; flex-direction: column; gap: 8px;
+    min-width: 0;
+  }
+  .lg-preview-label {
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .lg-create-preview .lg-card {
+    cursor: default;
+  }
+  .lg-create-preview .lg-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Form fields */
+  .lg-field {
+    display: flex; flex-direction: column; gap: 6px;
+    min-width: 0;
+  }
+  .lg-field > label {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .lg-field-hint {
+    font-weight: 500; color: var(--text-faint);
+    font-size: 10.5px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .lg-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .lg-field-check {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 12.5px; color: var(--text-dim); line-height: 1.45;
+    cursor: pointer;
+    padding: 8px 4px 0;
+  }
+  .lg-field-check input { margin-top: 2px; flex-shrink: 0; cursor: pointer; }
+  .lg-field-check b { color: var(--text); font-weight: 600; }
+  .lg-modal-textarea {
+    resize: vertical;
+    min-height: 60px;
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  /* Customize toggle */
+  .lg-customize-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(167,139,250,0.06);
+    border: 1px solid rgba(167,139,250,0.20);
+    border-radius: 10px;
+    color: #b98fff;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .lg-customize-toggle:hover {
+    background: rgba(167,139,250,0.10);
+    border-color: rgba(167,139,250,0.32);
+  }
+  .lg-customize-pill {
+    display: inline-block; margin-left: 6px;
+    font-size: 9.5px; font-weight: 700;
+    background: rgba(167,139,250,0.18); color: #d6c4ff;
+    padding: 2px 7px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .lg-customize-chev {
+    transition: transform .18s ease;
+  }
+  .lg-customize-toggle.open .lg-customize-chev {
+    transform: rotate(180deg);
+  }
+  .lg-customize-panel {
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.015);
+    animation: lg-fade-in .15s ease;
+  }
+
+  /* Cover thumbnail picker */
+  .lg-cover-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .lg-cover-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+  }
+  .lg-cover-thumb img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .lg-cover-thumb:hover {
+    transform: translateY(-1px);
+    border-color: rgba(167,139,250,0.40);
+  }
+  .lg-cover-thumb.active {
+    border-color: #b98fff;
+    box-shadow: 0 0 0 2px rgba(167,139,250,0.18), 0 4px 14px -4px rgba(167,139,250,0.45);
+  }
+
+  /* Theme color swatches */
+  .lg-theme-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .lg-theme-swatch {
+    --swatch: #a78bfa;
+    width: 30px; height: 30px;
+    border-radius: 999px;
+    background: var(--swatch);
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: transform .12s ease, box-shadow .12s ease;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06) inset;
+  }
+  .lg-theme-swatch:hover {
+    transform: scale(1.08);
+  }
+  .lg-theme-swatch.active {
+    border-color: #fff;
+    box-shadow: 0 0 0 2px var(--swatch);
+    transform: scale(1.05);
+  }
+
+  /* Mobile — stack columns */
+  @media (max-width: 720px) {
+    .lg-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .lg-modal-create {
+      max-width: 100%;
+      padding: 18px 16px 16px;
+    }
+    .lg-create-body {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .lg-create-preview {
+      order: -1; /* show preview on top on mobile so it stays visible */
+    }
+    .lg-cover-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .lg-empty-hero {
+      padding: 28px 16px 24px;
+    }
+    .lg-empty-hero-row {
+      flex-direction: column; width: 100%;
+    }
+    .lg-empty-hero-row .lg-btn-big {
+      width: 100%;
+    }
+    .lg-field-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
   /* IPO BANNER — artist detail listing-window hero */
   .ipo-banner {
     display: grid;
@@ -15429,7 +15796,7 @@ async function fetchUserLeagues(force) {
     // leagues the user belongs to.
     const { data, error } = await window.SUPABASE
       .from('league_members')
-      .select('role, joined_at, leagues(id, slug, name, description, invite_code, owner_id, max_members, status)')
+      .select('role, joined_at, leagues(id, slug, name, description, invite_code, owner_id, max_members, status, cover_id, theme_color, focus_genre, is_public)')
       .eq('user_id', window.MUSE_USER.id);
     if (error) {
       console.warn('[Muses] fetchUserLeagues failed:', error.message || error);
@@ -15447,6 +15814,10 @@ async function fetchUserLeagues(force) {
         maxMembers:  r.leagues.max_members,
         role:        r.role,
         joinedAt:    r.joined_at,
+        coverId:     r.leagues.cover_id || 'concert',
+        themeColor:  r.leagues.theme_color || 'purple',
+        focusGenre:  r.leagues.focus_genre || null,
+        isPublic:    !!r.leagues.is_public,
       }));
     _userLeaguesFetchAt = Date.now();
     return USER_LEAGUES;
@@ -15711,39 +16082,126 @@ function renderCallersCard() {
   `;
 }
 
+// ============================================================================
+// LEAGUE COVER + THEME PRESETS
+// ============================================================================
+// 12 curated Unsplash photo IDs (stable URLs). Each cover ALSO has a
+// gradient fallback that's used if the image fails to load — so the page
+// never shows a broken card. Photos are pulled at 800x450 / q=75 for fast
+// loads + acceptable quality on retina cards.
+const LEAGUE_COVERS = {
+  'concert':     { label: 'Concert',       url: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#7c3aed 0%,#3b1366 60%,#1a0a2e 100%)' },
+  'vinyl':       { label: 'Vinyl',         url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#1f2937 0%,#0f172a 60%,#020617 100%)' },
+  'headphones':  { label: 'Headphones',    url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#ff6b8a 0%,#a855f7 60%,#4c1d95 100%)' },
+  'equalizer':   { label: 'Equalizer',     url: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#10d88b 0%,#0e9c69 60%,#064e3b 100%)' },
+  'neon-city':   { label: 'Neon City',     url: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#ec4899 0%,#7c3aed 60%,#1e1b4b 100%)' },
+  'festival':    { label: 'Festival',      url: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#fbbf24 0%,#f97316 60%,#7c2d12 100%)' },
+  'microphone':  { label: 'Microphone',    url: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#dc2626 0%,#7f1d1d 60%,#1f0606 100%)' },
+  'stadium':     { label: 'Stadium',       url: 'https://images.unsplash.com/photo-1574874269872-f1f63eed64bf?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#0ea5e9 0%,#0c4a6e 60%,#082f49 100%)' },
+  'turntable':   { label: 'Turntable',     url: 'https://images.unsplash.com/photo-1485579149621-3123dd979885?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#a855f7 0%,#581c87 60%,#1e1b4b 100%)' },
+  'soundwave':   { label: 'Soundwave',     url: 'https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#06b6d4 0%,#0e7490 60%,#083344 100%)' },
+  'guitar':      { label: 'Guitar',        url: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#f59e0b 0%,#92400e 60%,#451a03 100%)' },
+  'piano':       { label: 'Piano',         url: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#e2e8f0 0%,#475569 60%,#0f172a 100%)' },
+};
+
+const LEAGUE_THEMES = {
+  'purple': { label: 'Purple', accent: '#a78bfa', soft: 'rgba(167, 139, 250, 0.12)', stroke: 'rgba(167, 139, 250, 0.30)' },
+  'gold':   { label: 'Gold',   accent: '#fbbf24', soft: 'rgba(251, 191, 36, 0.12)',  stroke: 'rgba(251, 191, 36, 0.30)' },
+  'mint':   { label: 'Mint',   accent: '#10d88b', soft: 'rgba(16, 216, 139, 0.12)',  stroke: 'rgba(16, 216, 139, 0.30)' },
+  'coral':  { label: 'Coral',  accent: '#ff8a65', soft: 'rgba(255, 138, 101, 0.12)', stroke: 'rgba(255, 138, 101, 0.32)' },
+  'pink':   { label: 'Pink',   accent: '#ec4899', soft: 'rgba(236, 72, 153, 0.12)',  stroke: 'rgba(236, 72, 153, 0.32)' },
+  'sky':    { label: 'Sky',    accent: '#0ea5e9', soft: 'rgba(14, 165, 233, 0.12)',  stroke: 'rgba(14, 165, 233, 0.32)' },
+  'lime':   { label: 'Lime',   accent: '#a3e635', soft: 'rgba(163, 230, 53, 0.12)',  stroke: 'rgba(163, 230, 53, 0.32)' },
+  'indigo': { label: 'Indigo', accent: '#818cf8', soft: 'rgba(129, 140, 248, 0.12)', stroke: 'rgba(129, 140, 248, 0.32)' },
+};
+
+function _leagueCoverHTML(coverId, themeColor) {
+  const cover = LEAGUE_COVERS[coverId] || LEAGUE_COVERS['concert'];
+  const theme = LEAGUE_THEMES[themeColor] || LEAGUE_THEMES['purple'];
+  // Image-on-top of gradient: if the image 404s, the gradient shows through.
+  // The accent overlay tints the image with the league's theme color.
+  return `
+    <div class="lg-cover" style="background:${cover.grad}">
+      <img src="${cover.url}" alt="" loading="lazy"
+           onerror="this.style.display='none'" />
+      <div class="lg-cover-tint" style="background:linear-gradient(180deg, transparent 40%, ${theme.soft} 100%)"></div>
+    </div>`;
+}
+
 function renderLeaguesCard() {
   const host = document.getElementById('lb-leagues-card');
   if (!host) return;
   if (!window.MUSE_USER || !window.MUSE_USER.authed) { host.innerHTML = ''; return; }
 
   const leagues = USER_LEAGUES || [];
-  const items = leagues.slice(0, 3).map(l => `
-    <div class="lg-item" data-league-id="${l.id}">
-      <div class="lg-item-main">
-        <div class="lg-item-name">${escapeHTML(l.name)}</div>
-        <div class="lg-item-meta">${l.role === 'owner' ? 'Owner · ' : ''}Code ${escapeHTML(l.inviteCode)}</div>
+
+  // Empty state — big welcoming hero with a single primary CTA.
+  if (leagues.length === 0) {
+    host.innerHTML = `
+      <div class="lg-empty-hero">
+        <div class="lg-empty-hero-art">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M16 56h32M32 48v8M14 8h36v18a18 18 0 0 1-36 0z"/>
+            <path d="M50 12h6a4 4 0 0 1 4 4v0a8 8 0 0 1-8 8M14 12H8a4 4 0 0 0-4 4v0a8 8 0 0 0 8 8"/>
+          </svg>
+        </div>
+        <div class="lg-empty-hero-title">Start a league with your people</div>
+        <div class="lg-empty-hero-sub">A private board for you and your friends. Compete on monthly returns, settle weekly bragging rights, crown a season champion. Up to 50 members.</div>
+        <div class="lg-empty-hero-row">
+          <button class="lg-btn lg-btn-primary lg-btn-big" data-lg-action="create">+ Create a league</button>
+          <button class="lg-btn lg-btn-ghost lg-btn-big" data-lg-action="join">Join with code</button>
+        </div>
       </div>
-      <div class="lg-item-open">View →</div>
-    </div>
-  `).join('');
+    `;
+    host.querySelectorAll('[data-lg-action]').forEach(btn => {
+      btn.onclick = () => {
+        const action = btn.dataset.lgAction;
+        if (action === 'create') openCreateLeagueModal();
+        else if (action === 'join') openJoinLeagueModal();
+      };
+    });
+    return;
+  }
+
+  // Card grid for users with at least one league.
+  const cards = leagues.map(l => {
+    const theme = LEAGUE_THEMES[l.themeColor] || LEAGUE_THEMES['purple'];
+    const isOwner = l.role === 'owner';
+    const focusBadge = l.focusGenre
+      ? `<span class="lg-card-focus" style="color:${theme.accent};border-color:${theme.stroke};background:${theme.soft}">${escapeHTML(l.focusGenre)} Cup</span>`
+      : '';
+    const ownerBadge = isOwner ? `<span class="lg-card-owner">Owner</span>` : '';
+    return `
+      <div class="lg-card" data-league-id="${l.id}" style="--lg-accent:${theme.accent}; --lg-soft:${theme.soft}; --lg-stroke:${theme.stroke}">
+        ${_leagueCoverHTML(l.coverId, l.themeColor)}
+        <div class="lg-card-body">
+          <div class="lg-card-row">
+            <div class="lg-card-name">${escapeHTML(l.name)}</div>
+            ${ownerBadge}
+          </div>
+          ${l.description ? `<div class="lg-card-desc">${escapeHTML(l.description)}</div>` : ''}
+          <div class="lg-card-meta">
+            ${focusBadge}
+            ${isOwner ? `<span class="lg-card-code" title="Invite code — share to grow your league">Code ${escapeHTML(l.inviteCode)}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 
   host.innerHTML = `
     <div class="leagues-card">
       <div class="lg-head">
-        <div class="lg-label">Your Leagues${leagues.length > 3 ? ` <span class="lg-count">${leagues.length}</span>` : ''}</div>
+        <div class="lg-label">Your Leagues <span class="lg-count">${leagues.length}</span></div>
         <div class="lg-actions">
           <button class="lg-btn lg-btn-ghost" data-lg-action="join">Join with code</button>
-          <button class="lg-btn lg-btn-primary" data-lg-action="create">Create league</button>
+          <button class="lg-btn lg-btn-primary" data-lg-action="create">+ New league</button>
         </div>
       </div>
-      ${leagues.length === 0
-        ? `<div class="lg-empty">Create a league or paste an invite code from a friend. Only members see each other's board.</div>`
-        : `<div class="lg-list">${items}</div>`
-      }
+      <div class="lg-grid">${cards}</div>
     </div>
   `;
 
-  // Click wiring.
   host.querySelectorAll('[data-lg-action]').forEach(btn => {
     btn.onclick = () => {
       const action = btn.dataset.lgAction;
@@ -15824,25 +16282,241 @@ function errorToHuman(code) {
   }
 }
 
+// Rich create-league wizard with quick-mode + customize panel + live preview.
+async function createLeagueV2RPC(name, opts) {
+  if (!window.SUPABASE) return { error: 'no_supabase' };
+  try {
+    const { data, error } = await window.SUPABASE.rpc('create_league_v2', {
+      p_name:         name,
+      p_description:  opts?.description || null,
+      p_max_members:  opts?.maxMembers || 50,
+      p_cover_id:     opts?.coverId || 'concert',
+      p_theme_color:  opts?.themeColor || 'purple',
+      p_focus_genre:  opts?.focusGenre || null,
+      p_is_public:    !!opts?.isPublic,
+    });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e?.message || String(e) }; }
+}
+
 function openCreateLeagueModal() {
-  showPromptModal({
-    title: 'Create a league',
-    subtitle: 'Give it a name your friends will recognize. You\'ll get an invite code to share.',
-    placeholder: 'Office League',
-    confirmLabel: 'Create',
-    onConfirm: async (name) => {
-      const res = await createLeagueRPC(name, null);
-      if (res.error) return errorToHuman(res.error);
-      await fetchUserLeagues(true);
-      renderLeaguesCard();
-      if (typeof showToast === 'function') {
-        showToast(`League "${res.name || name}" created — code: ${res.invite_code}`, false, {
-          label: 'Open league',
-          handler: () => openLeagueDetailModal(res.league_id),
-        });
-      }
-      return null;
-    },
+  // Opts state managed locally — refreshed into the live preview on every change.
+  const state = {
+    name: '',
+    description: '',
+    coverId: 'concert',
+    themeColor: 'purple',
+    focusGenre: '',
+    maxMembers: 50,
+    isPublic: false,
+    customizeOpen: false,
+  };
+
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  wrap.innerHTML = `
+    <div class="lg-modal lg-modal-create">
+      <div class="lg-modal-title">Create a league</div>
+      <div class="lg-modal-sub">Quick-create with one click, or customize the cover, theme, and focus.</div>
+
+      <div class="lg-create-body">
+        <!-- Form column -->
+        <div class="lg-create-form">
+          <div class="lg-field">
+            <label>League name</label>
+            <input type="text" class="lg-modal-input" id="lg-name" maxlength="50" placeholder="The Saturday Crew" autocomplete="off">
+            <div class="lg-modal-error" id="lg-error" hidden></div>
+          </div>
+
+          <button type="button" class="lg-customize-toggle" id="lg-customize-toggle">
+            <span>Customize <span class="lg-customize-pill">Optional</span></span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="lg-customize-chev"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+
+          <div class="lg-customize-panel" id="lg-customize-panel" hidden>
+            <div class="lg-field">
+              <label>Cover</label>
+              <div class="lg-cover-grid" id="lg-cover-grid"></div>
+            </div>
+
+            <div class="lg-field">
+              <label>Theme color</label>
+              <div class="lg-theme-row" id="lg-theme-row"></div>
+            </div>
+
+            <div class="lg-field">
+              <label>Description <span class="lg-field-hint">optional · 160 chars</span></label>
+              <textarea class="lg-modal-input lg-modal-textarea" id="lg-description" maxlength="160" rows="2" placeholder="What's the vibe?"></textarea>
+            </div>
+
+            <div class="lg-field-row">
+              <div class="lg-field">
+                <label>Focus genre <span class="lg-field-hint">filters standings</span></label>
+                <select class="lg-modal-input" id="lg-focus">
+                  <option value="">All genres (overall)</option>
+                  <option value="Pop">Pop</option>
+                  <option value="Hip-hop">Hip-hop</option>
+                  <option value="R&B">R&amp;B</option>
+                  <option value="Latin">Latin</option>
+                  <option value="Afropop">Afropop</option>
+                  <option value="Indie">Indie</option>
+                  <option value="Alt">Alt</option>
+                  <option value="K-Pop">K-Pop</option>
+                  <option value="Electronic">Electronic</option>
+                </select>
+              </div>
+              <div class="lg-field">
+                <label>Max members</label>
+                <select class="lg-modal-input" id="lg-max">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50" selected>50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div>
+
+            <label class="lg-field-check">
+              <input type="checkbox" id="lg-public">
+              <span><b>Discoverable</b> — listed in a public directory so anyone can join</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Live preview column -->
+        <div class="lg-create-preview">
+          <div class="lg-preview-label">Preview</div>
+          <div class="lg-card" id="lg-preview-card"></div>
+        </div>
+      </div>
+
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-ghost" data-act="close">Cancel</button>
+        <button class="lg-btn lg-btn-primary" id="lg-create-btn">Create league</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap || e.target.closest('[data-act="close"]')) {
+      e.stopPropagation(); close();
+    }
+  });
+  document.addEventListener('keydown', function _onEsc(e) {
+    if (e.key === 'Escape') { close(); document.removeEventListener('keydown', _onEsc); }
+  });
+
+  // Build the cover grid + theme row.
+  const coverGrid = wrap.querySelector('#lg-cover-grid');
+  coverGrid.innerHTML = Object.entries(LEAGUE_COVERS).map(([id, c]) => `
+    <button type="button" class="lg-cover-thumb${id === state.coverId ? ' active' : ''}" data-cover="${id}" title="${c.label}" aria-label="${c.label}" style="background:${c.grad}">
+      <img src="${c.url}" alt="" loading="lazy" onerror="this.style.display='none'">
+    </button>
+  `).join('');
+
+  const themeRow = wrap.querySelector('#lg-theme-row');
+  themeRow.innerHTML = Object.entries(LEAGUE_THEMES).map(([id, t]) => `
+    <button type="button" class="lg-theme-swatch${id === state.themeColor ? ' active' : ''}" data-theme="${id}" title="${t.label}" aria-label="${t.label}" style="--swatch:${t.accent}"></button>
+  `).join('');
+
+  // Inputs
+  const nameInput = wrap.querySelector('#lg-name');
+  const descInput = wrap.querySelector('#lg-description');
+  const focusSel  = wrap.querySelector('#lg-focus');
+  const maxSel    = wrap.querySelector('#lg-max');
+  const pubCheck  = wrap.querySelector('#lg-public');
+  const errEl     = wrap.querySelector('#lg-error');
+  const previewCard = wrap.querySelector('#lg-preview-card');
+  const createBtn   = wrap.querySelector('#lg-create-btn');
+  const customizeToggle = wrap.querySelector('#lg-customize-toggle');
+  const customizePanel  = wrap.querySelector('#lg-customize-panel');
+
+  // Focus the name input.
+  setTimeout(() => { try { nameInput.focus(); } catch (_) {} }, 50);
+
+  function refreshPreview() {
+    const theme = LEAGUE_THEMES[state.themeColor];
+    const focusBadge = state.focusGenre
+      ? `<span class="lg-card-focus" style="color:${theme.accent};border-color:${theme.stroke};background:${theme.soft}">${escapeHTML(state.focusGenre)} Cup</span>`
+      : '';
+    previewCard.style.cssText = `--lg-accent:${theme.accent}; --lg-soft:${theme.soft}; --lg-stroke:${theme.stroke};`;
+    previewCard.innerHTML = `
+      ${_leagueCoverHTML(state.coverId, state.themeColor)}
+      <div class="lg-card-body">
+        <div class="lg-card-row">
+          <div class="lg-card-name">${escapeHTML(state.name || 'Your league name')}</div>
+          <span class="lg-card-owner">Owner</span>
+        </div>
+        ${state.description ? `<div class="lg-card-desc">${escapeHTML(state.description)}</div>` : '<div class="lg-card-desc lg-card-desc-placeholder">Add a description to set the vibe.</div>'}
+        <div class="lg-card-meta">
+          ${focusBadge}
+          <span class="lg-card-code">Code XXXX1234</span>
+        </div>
+      </div>`;
+  }
+  refreshPreview();
+
+  // Wire interactions.
+  nameInput.addEventListener('input', () => { state.name = nameInput.value; refreshPreview(); });
+  descInput.addEventListener('input', () => { state.description = descInput.value; refreshPreview(); });
+  focusSel.addEventListener('change', () => { state.focusGenre = focusSel.value; refreshPreview(); });
+  maxSel.addEventListener('change', () => { state.maxMembers = +maxSel.value; });
+  pubCheck.addEventListener('change', () => { state.isPublic = pubCheck.checked; });
+
+  customizeToggle.addEventListener('click', () => {
+    state.customizeOpen = !state.customizeOpen;
+    customizePanel.hidden = !state.customizeOpen;
+    customizeToggle.classList.toggle('open', state.customizeOpen);
+  });
+
+  coverGrid.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cover]'); if (!b) return;
+    state.coverId = b.dataset.cover;
+    coverGrid.querySelectorAll('[data-cover]').forEach(x => x.classList.toggle('active', x === b));
+    refreshPreview();
+  });
+  themeRow.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-theme]'); if (!b) return;
+    state.themeColor = b.dataset.theme;
+    themeRow.querySelectorAll('[data-theme]').forEach(x => x.classList.toggle('active', x === b));
+    refreshPreview();
+  });
+
+  createBtn.addEventListener('click', async () => {
+    errEl.hidden = true;
+    const name = (nameInput.value || '').trim();
+    if (name.length < 2 || name.length > 50) {
+      errEl.textContent = 'Name must be 2–50 characters.';
+      errEl.hidden = false;
+      return;
+    }
+    createBtn.disabled = true;
+    const res = await createLeagueV2RPC(name, {
+      description: state.description,
+      coverId: state.coverId,
+      themeColor: state.themeColor,
+      focusGenre: state.focusGenre,
+      maxMembers: state.maxMembers,
+      isPublic: state.isPublic,
+    });
+    if (res.error) {
+      errEl.textContent = errorToHuman(res.error) || 'Could not create league.';
+      errEl.hidden = false;
+      createBtn.disabled = false;
+      return;
+    }
+    await fetchUserLeagues(true);
+    renderLeaguesCard();
+    close();
+    if (typeof showToast === 'function') {
+      showToast(`League "${res.name || name}" created — code: ${res.invite_code}`, false, {
+        label: 'Open league',
+        handler: () => openLeagueDetailModal(res.league_id),
+      });
+    }
   });
 }
 
