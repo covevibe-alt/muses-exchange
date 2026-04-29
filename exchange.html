@@ -6182,6 +6182,316 @@
     }
   }
 
+  /* ════════════════════════════════════════════════════════════════════════
+     LEAGUE DETAIL PAGE (Phase B)
+     SPA route at /leagues/<slug> — hero + 5 tabs.
+     ════════════════════════════════════════════════════════════════════════ */
+  .lg-detail {
+    --lg-accent: #a78bfa;
+    --lg-soft:   rgba(167,139,250,0.12);
+    --lg-stroke: rgba(167,139,250,0.30);
+  }
+
+  /* Hero — cover photo on top, body below with theme-tinted gradient */
+  .lg-detail-hero {
+    position: relative;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .lg-detail-hero .lg-cover {
+    aspect-ratio: 6 / 1;
+    min-height: 160px;
+    max-height: 220px;
+  }
+  .lg-detail-hero-body {
+    padding: 18px 22px 22px;
+    background: linear-gradient(180deg, transparent 0%, var(--lg-soft) 100%);
+    border-top: 1px solid var(--lg-stroke);
+  }
+  .lg-detail-hero-meta {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .lg-detail-name {
+    font-size: 28px; font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.015em;
+    margin: 0 0 6px;
+  }
+  .lg-detail-desc {
+    font-size: 14px; color: var(--text-dim); line-height: 1.55;
+    max-width: 680px;
+  }
+  .lg-detail-actions {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .lg-detail-share {
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .lg-detail-share b {
+    font-family: 'SF Mono', Monaco, monospace;
+    color: var(--lg-accent);
+    letter-spacing: 0.08em;
+    margin-left: 2px;
+  }
+
+  /* Public/private pills */
+  .lg-pill-public, .lg-pill-private {
+    display: inline-flex; align-items: center;
+    font-size: 10.5px; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .lg-pill-public {
+    background: rgba(110, 255, 184, 0.10);
+    color: #6effb8;
+    border: 1px solid rgba(110, 255, 184, 0.25);
+  }
+  .lg-pill-private {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  /* Tab strip */
+  .lg-tabs {
+    display: flex; gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .lg-tab {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 10px 16px;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .lg-tab:hover { color: var(--text); }
+  .lg-tab.active {
+    color: var(--lg-accent);
+    border-bottom-color: var(--lg-accent);
+  }
+
+  /* Tab body shared bits */
+  .lg-tab-body {
+    min-height: 220px;
+  }
+  .lg-tab-loading {
+    padding: 32px 0;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+  .lg-tab-empty {
+    padding: 32px 24px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13.5px;
+    line-height: 1.55;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.015);
+  }
+  .lg-tab-empty-title {
+    color: var(--text);
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .lg-tab-empty-sub {
+    max-width: 460px;
+    margin: 0 auto;
+  }
+  .lg-tab-note {
+    font-size: 12px; color: var(--text-dim); line-height: 1.5;
+    padding: 10px 14px;
+    background: var(--lg-soft);
+    border: 1px solid var(--lg-stroke);
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .lg-tab-note b { color: var(--lg-accent); }
+
+  /* Standings table */
+  .lg-stand-head, .lg-stand-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 110px 90px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 14px;
+  }
+  .lg-stand-head {
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-faint);
+    border-bottom: 1px solid var(--border);
+  }
+  .lg-stand-list {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .lg-stand-row {
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    transition: background .15s ease;
+  }
+  .lg-stand-row:last-child { border-bottom: 0; }
+  .lg-stand-row:hover { background: rgba(255,255,255,0.02); }
+  .lg-stand-row.lg-stand-you { background: var(--lg-soft); }
+  .lg-stand-rank { color: var(--text-dim); font-weight: 700; font-size: 14px; }
+  .lg-stand-name {
+    color: var(--text); font-weight: 500;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .lg-stand-pv { color: var(--text-dim); font-variant-numeric: tabular-nums; }
+  .lg-stand-ret { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+  .lg-stand-ret .up { color: #6effb8; }
+  .lg-stand-ret .down { color: #ff7a7a; }
+  .lg-stand-ret .lg-dim { color: var(--text-faint); }
+
+  /* Members grid */
+  .lg-members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .lg-member-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-width: 0;
+  }
+  .lg-member-card.lg-member-you {
+    border-color: var(--lg-stroke);
+    background: var(--lg-soft);
+  }
+  .lg-member-avatar {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--lg-accent), var(--lg-soft));
+    color: #0a0612;
+    font-size: 13px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lg-member-body { min-width: 0; }
+  .lg-member-name {
+    font-size: 13px; font-weight: 600; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .lg-member-meta {
+    font-size: 11px; color: var(--text-faint);
+    margin-top: 2px;
+  }
+
+  /* Awards preview tiles */
+  .lg-awards-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 18px;
+    max-width: 600px;
+    margin-left: auto; margin-right: auto;
+  }
+  .lg-award-tile {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 14px 12px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 11px; color: var(--text-dim);
+    opacity: 0.55;
+    transition: opacity .15s ease;
+  }
+  .lg-award-tile:hover { opacity: 0.85; }
+  .lg-award-tile span { font-size: 28px; line-height: 1; }
+
+  /* Settings form */
+  .lg-settings-form {
+    display: flex; flex-direction: column; gap: 14px;
+    max-width: 640px;
+  }
+  .lg-settings-actions {
+    display: flex; justify-content: flex-end;
+    margin-top: 6px;
+  }
+
+  /* Loading skeleton + error state */
+  .lg-detail-loading {
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 8px 0;
+  }
+  .lg-detail-loading-cover {
+    height: 180px;
+    background: linear-gradient(90deg, var(--card-2) 0%, rgba(255,255,255,0.04) 50%, var(--card-2) 100%);
+    background-size: 200% 100%;
+    animation: lg-shimmer 1.4s linear infinite;
+    border-radius: 16px;
+  }
+  .lg-detail-loading-row {
+    height: 18px; width: 70%;
+    background: linear-gradient(90deg, var(--card-2) 0%, rgba(255,255,255,0.04) 50%, var(--card-2) 100%);
+    background-size: 200% 100%;
+    animation: lg-shimmer 1.4s linear infinite;
+    border-radius: 6px;
+  }
+  .lg-detail-loading-row.short { width: 40%; }
+  @keyframes lg-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .lg-detail-error {
+    text-align: center;
+    padding: 48px 24px;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+  }
+  .lg-detail-error-title {
+    font-size: 18px; font-weight: 700; color: var(--text);
+    margin-bottom: 8px;
+  }
+  .lg-detail-error-sub {
+    font-size: 13px; color: var(--text-dim);
+    margin-bottom: 18px;
+  }
+  .lg-detail-error-row {
+    display: flex; justify-content: center;
+  }
+
+  /* Mobile detail page */
+  @media (max-width: 720px) {
+    .lg-detail-hero .lg-cover {
+      aspect-ratio: 16 / 7;
+      min-height: 130px;
+    }
+    .lg-detail-hero-body {
+      padding: 14px 16px 16px;
+    }
+    .lg-detail-name {
+      font-size: 22px;
+    }
+    .lg-stand-head, .lg-stand-row {
+      grid-template-columns: 44px 1fr 80px;
+      gap: 8px;
+      padding: 10px 12px;
+    }
+    .lg-stand-pv { display: none; }
+  }
+
   /* IPO BANNER — artist detail listing-window hero */
   .ipo-banner {
     display: grid;
@@ -13012,6 +13322,18 @@
       </div>
     </section>
 
+    <!-- ============== LEAGUE DETAIL (single league) ============== -->
+    <!-- Painted by renderLeagueDetail() in response to setView('league').
+         STATE.selectedLeagueId / .selectedLeagueSlug drive what gets rendered. -->
+    <section class="content full hidden" id="view-league">
+      <div class="col-main">
+        <button class="back-btn" data-nav="leagues">
+          <svg><use href="#i-back"/></svg>Back to Your Leagues
+        </button>
+        <div id="lg-detail-host"></div>
+      </div>
+    </section>
+
     <!-- ============== PREDICTION MARKETS + THESIS OF THE WEEK ============== -->
     <section class="content full hidden" id="view-predictions">
       <div class="col-main">
@@ -16212,9 +16534,26 @@ function renderLeaguesCard() {
   host.querySelectorAll('[data-league-id]').forEach(row => {
     row.onclick = () => {
       const id = parseInt(row.dataset.leagueId, 10);
-      if (id) openLeagueDetailModal(id);
+      if (id) navigateToLeague(id);
     };
   });
+}
+
+// Navigate to the league detail page. Looks the league up in USER_LEAGUES
+// by id, sets STATE, and routes via setView('league'). Falls back to the
+// legacy modal if the SPA route isn't wired (defensive — view-league
+// section + renderLeagueDetail must exist).
+function navigateToLeague(leagueId, opts) {
+  opts = opts || {};
+  const league = (USER_LEAGUES || []).find(l => l.id === leagueId);
+  STATE.selectedLeagueId   = leagueId;
+  STATE.selectedLeagueSlug = (league && league.slug) || (opts && opts.slug) || null;
+  STATE.selectedLeagueTab  = 'standings';
+  if (typeof setView === 'function' && document.getElementById('view-league')) {
+    setView('league');
+  } else if (typeof openLeagueDetailModal === 'function') {
+    openLeagueDetailModal(leagueId);
+  }
 }
 
 // Minimal in-app modal helper used by the league flows. Reuses the
@@ -16274,8 +16613,15 @@ function errorToHuman(code) {
     case 'not_authenticated':              return 'Please sign in first.';
     case 'invalid_name':                    return 'Name must be 2–50 characters.';
     case 'invalid_code':                    return 'That invite code is not valid.';
+    case 'invalid_cover':                   return 'That cover photo is no longer available.';
+    case 'invalid_theme':                   return 'That theme color is no longer available.';
+    case 'invalid_focus_genre':             return 'That genre is not on the focus list.';
+    case 'invalid_max_members':             return 'Max members must be between 2 and 500.';
     case 'league_full':                     return 'This league is at capacity.';
+    case 'league_not_found':                return 'This league no longer exists.';
     case 'not_a_member':                    return 'You are not a member of this league.';
+    case 'not_owner':                       return 'Only the owner can change these settings.';
+    case 'not_found_or_private':            return 'This league is private — you need an invite code to join.';
     case 'owner_cannot_leave_while_members':return 'Owners must transfer ownership before leaving. (Coming soon — for now, remove other members first.)';
     case 'code_generation_failed':          return 'Could not generate an invite code — try again.';
     default:                                 return String(code || 'Something went wrong');
@@ -16514,7 +16860,7 @@ function openCreateLeagueModal() {
     if (typeof showToast === 'function') {
       showToast(`League "${res.name || name}" created — code: ${res.invite_code}`, false, {
         label: 'Open league',
-        handler: () => openLeagueDetailModal(res.league_id),
+        handler: () => navigateToLeague(res.league_id, { slug: res.slug }),
       });
     }
   });
@@ -16538,11 +16884,549 @@ function openJoinLeagueModal() {
           : `Joined "${res.name}".`;
         showToast(msg, false, {
           label: 'Open league',
-          handler: () => openLeagueDetailModal(res.league_id),
+          handler: () => navigateToLeague(res.league_id, { slug: res.slug }),
         });
       }
       return null;
     },
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// LEAGUE DETAIL PAGE (Phase B) — full SPA route at /leagues/<slug>
+// ══════════════════════════════════════════════════════════════════════
+// Replaces the old openLeagueDetailModal for the in-app navigation flow.
+// The modal version is kept as a fallback (defensive — old toast handlers
+// or stale-cache users could still call it).
+//
+// State on STATE:
+//   selectedLeagueId   — numeric id (resolved either from USER_LEAGUES or
+//                         fetch_league_by_slug RPC)
+//   selectedLeagueSlug — url slug (drives the URL)
+//   selectedLeagueTab  — current tab; one of:
+//                         'standings' | 'members' | 'activity' | 'awards' | 'settings'
+// ══════════════════════════════════════════════════════════════════════
+
+const LEAGUE_TABS = [
+  { id: 'standings', label: 'Standings' },
+  { id: 'members',   label: 'Members'   },
+  { id: 'activity',  label: 'Activity'  },
+  { id: 'awards',    label: 'Awards'    },
+  { id: 'settings',  label: 'Settings', ownerOnly: true },
+];
+
+// Slim cache so flipping between tabs doesn't refetch.
+let _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null };
+
+async function fetchLeagueBySlugRPC(slug) {
+  if (!window.SUPABASE) return { error: 'no_supabase' };
+  try {
+    const { data, error } = await window.SUPABASE.rpc('fetch_league_by_slug', { p_slug: slug });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e?.message || String(e) }; }
+}
+
+async function updateLeagueRPC(leagueId, opts) {
+  if (!window.SUPABASE) return { error: 'no_supabase' };
+  try {
+    const { data, error } = await window.SUPABASE.rpc('update_league', {
+      p_league_id:    leagueId,
+      p_name:         opts.name        ?? null,
+      p_description:  opts.description ?? null,
+      p_cover_id:     opts.coverId     ?? null,
+      p_theme_color:  opts.themeColor  ?? null,
+      p_focus_genre:  opts.focusGenre  ?? null,
+      p_max_members:  opts.maxMembers  ?? null,
+      p_is_public:    opts.isPublic    ?? null,
+    });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e?.message || String(e) }; }
+}
+
+// Pull a fresh, normalised league record. Tries USER_LEAGUES first
+// (already in-memory), then falls back to fetch_league_by_slug for
+// public leagues / fresh-load URLs.
+async function _resolveLeagueForDetail() {
+  const id   = STATE.selectedLeagueId;
+  const slug = STATE.selectedLeagueSlug;
+  // Cache hit
+  if (_LEAGUE_DETAIL_CACHE.league
+      && (_LEAGUE_DETAIL_CACHE.league.id === id
+          || _LEAGUE_DETAIL_CACHE.league.slug === slug)) {
+    return _LEAGUE_DETAIL_CACHE.league;
+  }
+  // First try: in-memory USER_LEAGUES (member of)
+  if (Array.isArray(USER_LEAGUES)) {
+    const hit = USER_LEAGUES.find(l =>
+      (id   && l.id === id) ||
+      (slug && l.slug === slug)
+    );
+    if (hit) {
+      const league = {
+        id:          hit.id,
+        slug:        hit.slug,
+        name:        hit.name,
+        description: hit.description,
+        coverId:     hit.coverId,
+        themeColor:  hit.themeColor,
+        focusGenre:  hit.focusGenre,
+        maxMembers:  hit.maxMembers,
+        isPublic:    hit.isPublic,
+        inviteCode:  hit.inviteCode,
+        ownerId:     hit.ownerId,
+        isMember:    true,
+        isOwner:     hit.role === 'owner',
+        memberCount: null,
+      };
+      STATE.selectedLeagueId = league.id;
+      STATE.selectedLeagueSlug = league.slug;
+      _LEAGUE_DETAIL_CACHE = { id: league.id, league, members: null };
+      return league;
+    }
+  }
+  // Second try: RPC by slug (handles public-discovery + fresh deep-link load)
+  if (slug) {
+    const res = await fetchLeagueBySlugRPC(slug);
+    if (res && res.ok) {
+      const league = {
+        id:          res.id,
+        slug:        res.slug,
+        name:        res.name,
+        description: res.description,
+        coverId:     res.cover_id    || 'concert',
+        themeColor:  res.theme_color || 'purple',
+        focusGenre:  res.focus_genre || null,
+        maxMembers:  res.max_members,
+        isPublic:    !!res.is_public,
+        inviteCode:  res.invite_code || null,
+        ownerId:     res.owner_id,
+        isMember:    !!res.is_member,
+        isOwner:     !!res.is_owner,
+        memberCount: res.member_count,
+      };
+      STATE.selectedLeagueId   = league.id;
+      STATE.selectedLeagueSlug = league.slug;
+      _LEAGUE_DETAIL_CACHE = { id: league.id, league, members: null };
+      return league;
+    }
+    return { error: (res && res.error) || 'not_found_or_private' };
+  }
+  return { error: 'no_league_selected' };
+}
+
+// Top-level renderer — invoked from setView('league').
+async function renderLeagueDetail() {
+  const host = document.getElementById('lg-detail-host');
+  if (!host) return;
+
+  // Loading shimmer while we resolve.
+  host.innerHTML = `
+    <div class="lg-detail-loading">
+      <div class="lg-detail-loading-cover"></div>
+      <div class="lg-detail-loading-row"></div>
+      <div class="lg-detail-loading-row short"></div>
+    </div>`;
+
+  const resolved = await _resolveLeagueForDetail();
+  if (resolved && resolved.error) {
+    host.innerHTML = `
+      <div class="lg-detail-error">
+        <div class="lg-detail-error-title">Couldn't open this league</div>
+        <div class="lg-detail-error-sub">${escapeHTML(errorToHuman(resolved.error))}</div>
+        <div class="lg-detail-error-row">
+          <button class="lg-btn lg-btn-primary" id="lg-detail-error-back">Back to Your Leagues</button>
+        </div>
+      </div>`;
+    const back = host.querySelector('#lg-detail-error-back');
+    if (back) back.onclick = () => setView('leagues');
+    return;
+  }
+  const league = resolved;
+  const theme  = LEAGUE_THEMES[league.themeColor] || LEAGUE_THEMES['purple'];
+
+  // Compute which tabs are visible. Settings is owner-only.
+  const visibleTabs = LEAGUE_TABS.filter(t => !t.ownerOnly || league.isOwner);
+  // If Settings was the selected tab but we're not owner, fall back.
+  if (!visibleTabs.find(t => t.id === STATE.selectedLeagueTab)) {
+    STATE.selectedLeagueTab = 'standings';
+  }
+  const tabId = STATE.selectedLeagueTab;
+
+  // Build hero + tabs shell
+  const hero = `
+    <div class="lg-detail" style="--lg-accent:${theme.accent}; --lg-soft:${theme.soft}; --lg-stroke:${theme.stroke}">
+      <div class="lg-detail-hero">
+        ${_leagueCoverHTML(league.coverId, league.themeColor)}
+        <div class="lg-detail-hero-body">
+          <div class="lg-detail-hero-meta">
+            ${league.focusGenre ? `<span class="lg-card-focus">${escapeHTML(league.focusGenre)} Cup</span>` : ''}
+            ${league.isPublic ? `<span class="lg-pill-public">Public</span>` : `<span class="lg-pill-private">Private</span>`}
+            ${league.isOwner ? `<span class="lg-card-owner">Owner</span>` : ''}
+          </div>
+          <h1 class="lg-detail-name">${escapeHTML(league.name)}</h1>
+          ${league.description ? `<div class="lg-detail-desc">${escapeHTML(league.description)}</div>` : ''}
+          <div class="lg-detail-actions">
+            ${league.inviteCode
+              ? `<button class="lg-btn lg-btn-ghost lg-detail-share" data-act="share-code">
+                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                   <span>Invite code <b>${escapeHTML(league.inviteCode)}</b></span>
+                 </button>`
+              : ''}
+            ${league.isMember && !league.isOwner
+              ? `<button class="lg-btn lg-btn-ghost" data-act="leave">Leave league</button>`
+              : ''}
+            ${!league.isMember && league.isPublic
+              ? `<button class="lg-btn lg-btn-primary" data-act="join-public">Join league</button>`
+              : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="lg-tabs" role="tablist">
+        ${visibleTabs.map(t => `
+          <button class="lg-tab${t.id === tabId ? ' active' : ''}" role="tab" data-tab="${t.id}">${t.label}</button>
+        `).join('')}
+      </div>
+
+      <div class="lg-tab-body" id="lg-tab-body"></div>
+    </div>
+  `;
+  host.innerHTML = hero;
+
+  // Wire tab switching
+  host.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.tab;
+      if (id === STATE.selectedLeagueTab) return;
+      STATE.selectedLeagueTab = id;
+      host.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('active', b === btn));
+      _renderLeagueTabBody(league);
+    };
+  });
+
+  // Wire hero actions
+  const shareBtn = host.querySelector('[data-act="share-code"]');
+  if (shareBtn) {
+    shareBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(league.inviteCode);
+        if (typeof showToast === 'function') showToast('Invite code copied');
+      } catch (_) {}
+    };
+  }
+  const leaveBtn = host.querySelector('[data-act="leave"]');
+  if (leaveBtn) {
+    leaveBtn.onclick = async () => {
+      const ok = window.confirm(`Leave "${league.name}"? You'll need a new invite code to rejoin.`);
+      if (!ok) return;
+      const res = await leaveLeagueRPC(league.id);
+      if (res.error) {
+        if (typeof showToast === 'function') showToast(errorToHuman(res.error), true);
+        return;
+      }
+      _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null };
+      await fetchUserLeagues(true);
+      if (typeof showToast === 'function') showToast('Left the league');
+      setView('leagues');
+    };
+  }
+  const joinBtn = host.querySelector('[data-act="join-public"]');
+  if (joinBtn && league.inviteCode == null) {
+    // Public league join — we don't have an invite_code-less join_public_league
+    // RPC yet. For now, route the user through the join-by-code modal.
+    joinBtn.onclick = () => openJoinLeagueModal();
+  }
+
+  // Paint the active tab
+  _renderLeagueTabBody(league);
+}
+
+// Per-tab body painter. Branches on STATE.selectedLeagueTab.
+async function _renderLeagueTabBody(league) {
+  const body = document.getElementById('lg-tab-body');
+  if (!body) return;
+  const tab = STATE.selectedLeagueTab;
+
+  if (tab === 'standings') {
+    body.innerHTML = `<div class="lg-tab-loading">Loading standings…</div>`;
+    let members = _LEAGUE_DETAIL_CACHE.members;
+    if (!members) {
+      members = await fetchLeagueMembers(league.id);
+      _LEAGUE_DETAIL_CACHE.members = members;
+    }
+    body.innerHTML = _leagueStandingsHTML(league, members);
+    return;
+  }
+  if (tab === 'members') {
+    body.innerHTML = `<div class="lg-tab-loading">Loading members…</div>`;
+    let members = _LEAGUE_DETAIL_CACHE.members;
+    if (!members) {
+      members = await fetchLeagueMembers(league.id);
+      _LEAGUE_DETAIL_CACHE.members = members;
+    }
+    body.innerHTML = _leagueMembersHTML(league, members);
+    return;
+  }
+  if (tab === 'activity') {
+    body.innerHTML = _leagueActivityHTML(league);
+    return;
+  }
+  if (tab === 'awards') {
+    body.innerHTML = _leagueAwardsHTML(league);
+    return;
+  }
+  if (tab === 'settings') {
+    body.innerHTML = _leagueSettingsHTML(league);
+    _wireLeagueSettings(league, body);
+    return;
+  }
+}
+
+// ─── Standings ────────────────────────────────────────────────────────
+function _leagueStandingsHTML(league, members) {
+  if (!members || members.length === 0) {
+    return `<div class="lg-tab-empty">No members yet. Share the invite code to grow the league.</div>`;
+  }
+  // Sort by season_return_pct desc, fallback to portfolio_value
+  const sorted = members.slice().sort((a, b) => {
+    const ar = a.seasonPct ?? a.retPct;
+    const br = b.seasonPct ?? b.retPct;
+    if (ar == null && br == null) return (b.pv || 0) - (a.pv || 0);
+    if (ar == null) return 1;
+    if (br == null) return -1;
+    return br - ar;
+  });
+
+  const focusNote = league.focusGenre
+    ? `<div class="lg-tab-note">Standings rank by overall return; the <b>${escapeHTML(league.focusGenre)} Cup</b> awards (Phase C) will use ${escapeHTML(league.focusGenre)}-specific returns.</div>`
+    : '';
+
+  const rows = sorted.map((m, i) => {
+    const rank = i + 1;
+    const ret  = m.seasonPct ?? m.retPct;
+    const retStr = (ret != null)
+      ? `<span class="${ret >= 0 ? 'up' : 'down'}">${ret >= 0 ? '+' : ''}${ret.toFixed(2)}%</span>`
+      : '<span class="lg-dim">—</span>';
+    const isYou  = window.MUSE_USER && m.userId === window.MUSE_USER.id;
+    const medal  = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+    const pvStr  = (m.pv != null)
+      ? '$' + Number(m.pv).toLocaleString('en-US', { maximumFractionDigits: 0 })
+      : '<span class="lg-dim">—</span>';
+    return `
+      <div class="lg-stand-row${isYou ? ' lg-stand-you' : ''}">
+        <div class="lg-stand-rank">${medal || `#${rank}`}</div>
+        <div class="lg-stand-name">
+          ${escapeHTML(m.name)}
+          ${isYou ? ' <span class="lg-you-tag">you</span>' : ''}
+          ${m.role === 'owner' ? ' <span class="lg-owner-tag">owner</span>' : ''}
+        </div>
+        <div class="lg-stand-pv">${pvStr}</div>
+        <div class="lg-stand-ret">${retStr}</div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    ${focusNote}
+    <div class="lg-stand-head">
+      <div class="lg-stand-rank">Rank</div>
+      <div class="lg-stand-name">Player</div>
+      <div class="lg-stand-pv">Portfolio</div>
+      <div class="lg-stand-ret">Season</div>
+    </div>
+    <div class="lg-stand-list">${rows}</div>
+  `;
+}
+
+// ─── Members ──────────────────────────────────────────────────────────
+function _leagueMembersHTML(league, members) {
+  if (!members || members.length === 0) {
+    return `<div class="lg-tab-empty">No members yet. Share the invite code to grow the league.</div>`;
+  }
+  const cap = league.maxMembers || 50;
+  const cards = members.map(m => {
+    const isYou = window.MUSE_USER && m.userId === window.MUSE_USER.id;
+    const initials = (m.name || 'T').split(/\s+/).map(s => s[0]).join('').slice(0, 2).toUpperCase();
+    const joined = m.joinedAt ? new Date(m.joinedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+    return `
+      <div class="lg-member-card${isYou ? ' lg-member-you' : ''}">
+        <div class="lg-member-avatar">${escapeHTML(initials)}</div>
+        <div class="lg-member-body">
+          <div class="lg-member-name">
+            ${escapeHTML(m.name)}
+            ${isYou ? ' <span class="lg-you-tag">you</span>' : ''}
+            ${m.role === 'owner' ? ' <span class="lg-owner-tag">owner</span>' : ''}
+          </div>
+          <div class="lg-member-meta">${joined ? 'Joined ' + escapeHTML(joined) : ''}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  return `
+    <div class="lg-tab-note">${members.length} of ${cap} members</div>
+    <div class="lg-members-grid">${cards}</div>
+  `;
+}
+
+// ─── Activity (placeholder until Phase C) ────────────────────────────
+function _leagueActivityHTML(league) {
+  return `
+    <div class="lg-tab-empty">
+      <div class="lg-tab-empty-title">Activity is coming with Phase C.</div>
+      <div class="lg-tab-empty-sub">
+        Weekly digests, big trades, biggest movers, and league chatter — all in one feed. For now, head to the Standings tab to see how everyone's stacking up.
+      </div>
+    </div>
+  `;
+}
+
+// ─── Awards (placeholder until Phase C) ──────────────────────────────
+function _leagueAwardsHTML(league) {
+  return `
+    <div class="lg-tab-empty">
+      <div class="lg-tab-empty-title">Trophy case opens with Phase C.</div>
+      <div class="lg-tab-empty-sub">
+        Weekly MVPs, biggest movers, season-end champions, and runner-up medals will all be displayed here once the awards cron is live.
+      </div>
+      <div class="lg-awards-preview">
+        <div class="lg-award-tile"><span>🏆</span><div>Champion</div></div>
+        <div class="lg-award-tile"><span>🥈</span><div>Runner-up</div></div>
+        <div class="lg-award-tile"><span>🥉</span><div>Bronze</div></div>
+        <div class="lg-award-tile"><span>⚡</span><div>Big Mover</div></div>
+        <div class="lg-award-tile"><span>🎯</span><div>Most Consistent</div></div>
+        <div class="lg-award-tile"><span>👑</span><div>Weekly MVP</div></div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── Settings (owner-only) ───────────────────────────────────────────
+function _leagueSettingsHTML(league) {
+  const coverThumbs = Object.entries(LEAGUE_COVERS).map(([id, c]) => `
+    <button type="button" class="lg-cover-thumb${id === league.coverId ? ' active' : ''}" data-cover="${id}" title="${c.label}" aria-label="${c.label}" style="background:${c.grad}">
+      <img src="${c.url}" alt="" loading="lazy" onerror="this.style.display='none'">
+    </button>
+  `).join('');
+  const themeSwatches = Object.entries(LEAGUE_THEMES).map(([id, t]) => `
+    <button type="button" class="lg-theme-swatch${id === league.themeColor ? ' active' : ''}" data-theme="${id}" title="${t.label}" aria-label="${t.label}" style="--swatch:${t.accent}"></button>
+  `).join('');
+  const focusOpts = ['', 'Pop','Hip-hop','R&B','Latin','Afropop','Indie','Alt','K-Pop','Electronic']
+    .map(g => `<option value="${escapeHTML(g)}"${(league.focusGenre || '') === g ? ' selected' : ''}>${g === '' ? 'All genres (overall)' : escapeHTML(g)}</option>`)
+    .join('');
+  const maxOpts = [10, 25, 50, 100, 250, 500]
+    .map(n => `<option value="${n}"${league.maxMembers === n ? ' selected' : ''}>${n}</option>`)
+    .join('');
+  return `
+    <form class="lg-settings-form" onsubmit="return false">
+      <div class="lg-field">
+        <label>League name</label>
+        <input type="text" class="lg-modal-input" id="lg-set-name" maxlength="50" value="${escapeHTML(league.name || '')}">
+      </div>
+      <div class="lg-field">
+        <label>Description <span class="lg-field-hint">160 chars</span></label>
+        <textarea class="lg-modal-input lg-modal-textarea" id="lg-set-desc" maxlength="160" rows="2">${escapeHTML(league.description || '')}</textarea>
+      </div>
+      <div class="lg-field">
+        <label>Cover</label>
+        <div class="lg-cover-grid" id="lg-set-cover">${coverThumbs}</div>
+      </div>
+      <div class="lg-field">
+        <label>Theme color</label>
+        <div class="lg-theme-row" id="lg-set-theme">${themeSwatches}</div>
+      </div>
+      <div class="lg-field-row">
+        <div class="lg-field">
+          <label>Focus genre</label>
+          <select class="lg-modal-input" id="lg-set-focus">${focusOpts}</select>
+        </div>
+        <div class="lg-field">
+          <label>Max members</label>
+          <select class="lg-modal-input" id="lg-set-max">${maxOpts}</select>
+        </div>
+      </div>
+      <label class="lg-field-check">
+        <input type="checkbox" id="lg-set-public" ${league.isPublic ? 'checked' : ''}>
+        <span><b>Discoverable</b> — listed publicly so anyone with the link can find this league</span>
+      </label>
+      <div class="lg-modal-error" id="lg-set-error" hidden></div>
+      <div class="lg-settings-actions">
+        <button class="lg-btn lg-btn-primary" id="lg-set-save">Save changes</button>
+      </div>
+    </form>
+  `;
+}
+
+function _wireLeagueSettings(league, body) {
+  // local mirror — start from current league state, mutate as user clicks
+  const draft = {
+    name:        league.name,
+    description: league.description || '',
+    coverId:     league.coverId,
+    themeColor:  league.themeColor,
+    focusGenre:  league.focusGenre || '',
+    maxMembers:  league.maxMembers,
+    isPublic:    !!league.isPublic,
+  };
+  const nameI = body.querySelector('#lg-set-name');
+  const descI = body.querySelector('#lg-set-desc');
+  const focusS = body.querySelector('#lg-set-focus');
+  const maxS  = body.querySelector('#lg-set-max');
+  const pubC  = body.querySelector('#lg-set-public');
+  const errEl = body.querySelector('#lg-set-error');
+  const saveBtn = body.querySelector('#lg-set-save');
+  const coverGrid = body.querySelector('#lg-set-cover');
+  const themeRow  = body.querySelector('#lg-set-theme');
+
+  nameI.addEventListener('input', () => { draft.name = nameI.value; });
+  descI.addEventListener('input', () => { draft.description = descI.value; });
+  focusS.addEventListener('change', () => { draft.focusGenre = focusS.value; });
+  maxS.addEventListener('change',  () => { draft.maxMembers = +maxS.value; });
+  pubC.addEventListener('change', () => { draft.isPublic = pubC.checked; });
+
+  coverGrid.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cover]'); if (!b) return;
+    draft.coverId = b.dataset.cover;
+    coverGrid.querySelectorAll('[data-cover]').forEach(x => x.classList.toggle('active', x === b));
+  });
+  themeRow.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-theme]'); if (!b) return;
+    draft.themeColor = b.dataset.theme;
+    themeRow.querySelectorAll('[data-theme]').forEach(x => x.classList.toggle('active', x === b));
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    errEl.hidden = true;
+    const name = (draft.name || '').trim();
+    if (name.length < 2 || name.length > 50) {
+      errEl.textContent = 'Name must be 2–50 characters.';
+      errEl.hidden = false;
+      return;
+    }
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+    const res = await updateLeagueRPC(league.id, {
+      name:         draft.name,
+      description:  draft.description,
+      coverId:      draft.coverId,
+      themeColor:   draft.themeColor,
+      focusGenre:   draft.focusGenre || null,  // empty string → null
+      maxMembers:   draft.maxMembers,
+      isPublic:     draft.isPublic,
+    });
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save changes';
+    if (res.error) {
+      errEl.textContent = errorToHuman(res.error);
+      errEl.hidden = false;
+      return;
+    }
+    // Refresh USER_LEAGUES + cache + redraw
+    _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null };
+    await fetchUserLeagues(true);
+    if (typeof showToast === 'function') showToast('League updated');
+    renderLeagueDetail();
   });
 }
 
@@ -18076,6 +18960,9 @@ const STATE = {
   realized: 0,
   transactions: [],
   selected: ARTISTS[0],
+  selectedLeagueId: null,    // numeric league id when on /leagues/<slug>
+  selectedLeagueSlug: null,  // url slug for the active league detail page
+  selectedLeagueTab: 'standings', // 'standings' | 'members' | 'activity' | 'awards' | 'settings'
   tradeSide: 'buy',
   tradeOrderType: 'market',  // 'market' | 'limit' | 'stop'
   tradeLimitPrice: null,
@@ -18284,8 +19171,8 @@ function smoothSeries(pts, steps) {
 }
 
 // ============ NAV ============
-const VIEWS = ['markets','artists','genres','portfolio','orders','swap','tournaments','leaderboard','leagues','predictions','profile','settings','help','artist','tournament','genre'];
-const VIEW_TITLES = { markets: 'Markets', artists: 'Artists', genres: 'Genres', portfolio: 'Portfolio', orders: 'Orders', swap: 'Swap', tournaments: 'Tournaments', leaderboard: 'Leaderboard', leagues: 'Your Leagues', predictions: 'Predictions', profile: 'Profile', settings: 'Settings', help: 'Help & Support', artist: 'Artist', tournament: 'Tournament', genre: 'Genre' };
+const VIEWS = ['markets','artists','genres','portfolio','orders','swap','tournaments','leaderboard','leagues','league','predictions','profile','settings','help','artist','tournament','genre'];
+const VIEW_TITLES = { markets: 'Markets', artists: 'Artists', genres: 'Genres', portfolio: 'Portfolio', orders: 'Orders', swap: 'Swap', tournaments: 'Tournaments', leaderboard: 'Leaderboard', leagues: 'Your Leagues', league: 'League', predictions: 'Predictions', profile: 'Profile', settings: 'Settings', help: 'Help & Support', artist: 'Artist', tournament: 'Tournament', genre: 'Genre' };
 
 // ============ PAPER / REAL MONEY BADGE HELPERS ============
 const PAPER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>';
@@ -18358,7 +19245,7 @@ const VIEW_ICONS = { markets: '#i-markets', artists: '#i-users', genres: '#i-gri
 
 // Track previous view so detail back-buttons can return to the right page
 let CURRENT_VIEW = 'markets';
-const DETAIL_VIEWS = new Set(['artist', 'tournament', 'genre']);
+const DETAIL_VIEWS = new Set(['artist', 'tournament', 'genre', 'league']);
 function setView(name) {
   // Push current view to history stack
   if (name !== CURRENT_VIEW) {
@@ -18405,6 +19292,7 @@ function setView(name) {
   if (name === 'artist') navHighlight = 'markets';
   if (name === 'tournament') navHighlight = 'tournaments';
   if (name === 'genre') navHighlight = 'genres';
+  if (name === 'league') navHighlight = 'leagues';
   document.querySelectorAll('[data-nav]').forEach(el => {
     el.classList.toggle('active', el.dataset.nav === navHighlight);
   });
@@ -18436,6 +19324,7 @@ function setView(name) {
   if (name === 'genres') renderGenresDirectory();
   if (name === 'artists') renderAllArtists();
   if (name === 'leagues') renderLeaguesPage();
+  if (name === 'league' && typeof renderLeagueDetail === 'function') renderLeagueDetail();
   if (name === 'predictions') renderPredictionsPage();
   if (name === 'profile') renderProfile();
   if (name === 'orders') renderOrdersView();
@@ -18523,6 +19412,10 @@ function routeForState(name) {
     const id = STATE.selectedTournament || '';
     return id ? ('/tournaments/' + encodeURIComponent(id)) : '/tournaments';
   }
+  if (name === 'league') {
+    const slug = STATE.selectedLeagueSlug || '';
+    return slug ? ('/leagues/' + encodeURIComponent(slug)) : '/leagues';
+  }
   if (ROOT_SINGLE_ROUTES.has(name)) return '/' + name;
   return '/exchange/markets';
 }
@@ -18569,6 +19462,12 @@ function parsePathToRoute(path) {
     const id = decodeURIComponent(root.slice('tournaments/'.length).split('/')[0]);
     return { view: 'tournament', tournamentId: id };
   }
+  // /leagues/<slug>
+  if (root.startsWith('leagues/')) {
+    const slug = decodeURIComponent(root.slice('leagues/'.length).split('/')[0]);
+    if (slug) return { view: 'league', leagueSlug: slug };
+    return { view: 'leagues' };
+  }
   // /exchange[/...]
   if (path === '/exchange' || path === '/exchange/' || path === '/exchange/markets') {
     return { view: 'markets' };
@@ -18595,6 +19494,10 @@ function applyRoute(route, opts) {
   opts = opts || {};
   if (route.artist) STATE.selected = route.artist;
   if (route.tournamentId) STATE.selectedTournament = route.tournamentId;
+  if (route.leagueSlug) {
+    STATE.selectedLeagueSlug = route.leagueSlug;
+    STATE.selectedLeagueId = null; // resolved by renderLeagueDetail via fetch_league_by_slug
+  }
   if (route.genreSlug) {
     // Match slug back to a display-name genre if we know them; else pass through capitalised.
     let match = route.genreSlug;
