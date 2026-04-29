@@ -209,7 +209,10 @@ begin
       with members_lb as (
         select
           lb.user_id,
-          coalesce(lb.return_pct, 0) as ret_pct,
+          -- Prefer season_return_pct (return since season started) over
+          -- the lifetime return_pct, so a steady-eddy who has been on
+          -- the platform forever doesn't beat a hot-streak this season.
+          coalesce(lb.season_return_pct, lb.return_pct, 0) as ret_pct,
           coalesce(lb.portfolio_value, 0) as pv
         from leaderboard lb
         join league_members lm
