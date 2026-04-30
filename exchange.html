@@ -21385,13 +21385,10 @@ function _leagueSettingsHTML(league) {
       </div>
     </form>
 
-    <!-- Danger zone: delete league -->
-    <div class="lg-danger-zone">
-      <div class="lg-danger-head">
-        <div class="lg-danger-title">Danger zone</div>
-        <div class="lg-danger-sub">Closing the league hides it from members and ends all standings + awards. This can't be undone.</div>
-      </div>
-      <button type="button" class="lg-btn lg-btn-danger" id="lg-set-delete">Close league</button>
+    <!-- Close league — plain inline button, no Danger Zone framing.
+         Sander wanted this to feel like a regular control. -->
+    <div class="lg-settings-actions" style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+      <button type="button" class="lg-btn" id="lg-set-delete">Close league</button>
     </div>
   `;
 }
