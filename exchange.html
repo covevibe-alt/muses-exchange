@@ -22349,7 +22349,7 @@ function openCreateMarketModal() {
     if (state.type === 'yes_no') {
       fieldsHost.innerHTML = `
         <div class="lg-field">
-          <label>Ticker <span class="lg-field-hint">optional · leave blank for general questions</span></label>
+          <label>Artist <span class="lg-field-hint">optional · ticker symbol, e.g. TAY · leave blank for general questions</span></label>
           <input type="text" class="lg-modal-input" id="pm-ticker" maxlength="12" value="${escapeHTML(state.ticker)}" placeholder="TAY">
         </div>`;
       fieldsHost.querySelector('#pm-ticker').addEventListener('input', e => { state.ticker = e.target.value.toUpperCase(); refreshPreview(); });
@@ -22357,7 +22357,7 @@ function openCreateMarketModal() {
       fieldsHost.innerHTML = `
         <div class="lg-field-row">
           <div class="lg-field">
-            <label>Ticker</label>
+            <label>Artist <span class="lg-field-hint">ticker symbol</span></label>
             <input type="text" class="lg-modal-input" id="pm-ticker" maxlength="12" value="${escapeHTML(state.ticker)}" placeholder="TAY">
           </div>
           <div class="lg-field">
@@ -22382,7 +22382,7 @@ function openCreateMarketModal() {
     } else if (state.type === 'by_date') {
       fieldsHost.innerHTML = `
         <div class="lg-field">
-          <label>Ticker <span class="lg-field-hint">optional</span></label>
+          <label>Artist <span class="lg-field-hint">optional · ticker symbol, e.g. TAY</span></label>
           <input type="text" class="lg-modal-input" id="pm-ticker" maxlength="12" value="${escapeHTML(state.ticker)}" placeholder="TAY">
           <div class="lg-field-hint" style="margin-top:6px">The deadline is the time-limit you pick below — no extra date needed.</div>
         </div>`;
@@ -22391,11 +22391,11 @@ function openCreateMarketModal() {
       fieldsHost.innerHTML = `
         <div class="lg-field-row">
           <div class="lg-field">
-            <label>Ticker A</label>
+            <label>Artist A <span class="lg-field-hint">ticker</span></label>
             <input type="text" class="lg-modal-input" id="pm-tA" maxlength="12" value="${escapeHTML(state.tickerA)}" placeholder="TAY">
           </div>
           <div class="lg-field">
-            <label>Ticker B</label>
+            <label>Artist B <span class="lg-field-hint">ticker</span></label>
             <input type="text" class="lg-modal-input" id="pm-tB" maxlength="12" value="${escapeHTML(state.tickerB)}" placeholder="DRKE">
           </div>
         </div>`;
@@ -22427,9 +22427,23 @@ function openCreateMarketModal() {
     syncTypeMeta();
     const yesPct = 50;
     const noPct  = 50;
+    // Type-aware pill: when an artist ticker is set, show $TAY style.
+    // Otherwise show the prediction type label ("Genre vs Genre",
+    // "Head-to-head", "Deadline", "Price", "House") so the preview
+    // mirrors what the live detail page renders.
+    const previewLabel = (() => {
+      switch (state.prediction_type) {
+        case 'up_down':   return 'Price';
+        case 'by_date':   return 'Deadline';
+        case 'vs_artist': return 'Head-to-head';
+        case 'vs_genre':  return 'Genre vs Genre';
+        case 'yes_no':
+        default:          return 'House';
+      }
+    })();
     const tickerPill = state.ticker
       ? `<span class="pm-card-ticker">$${escapeHTML(state.ticker)}</span>`
-      : `<span class="pm-card-ticker pm-card-ticker-house">House</span>`;
+      : `<span class="pm-card-ticker pm-card-ticker-house">${escapeHTML(previewLabel)}</span>`;
     previewCard.innerHTML = `
       <div class="pm-card-top">
         ${tickerPill}
