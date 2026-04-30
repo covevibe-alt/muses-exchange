@@ -7902,11 +7902,11 @@
 
   .pmd-bar-big {
     display: flex; height: 40px;
+    margin: 12px 0 0;
     border-radius: 10px;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
-    margin-bottom: 14px;
   }
   .pmd-bar-yes, .pmd-bar-no {
     display: flex; align-items: center; justify-content: center;
@@ -7978,16 +7978,27 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     min-width: 110px;
     padding: 8px 18px;
-    border: 0;
     border-radius: 10px;
-    color: #fff;
     cursor: pointer;
-    transition: transform .12s ease, filter .12s ease;
+    transition: background .12s ease, border-color .12s ease, transform .12s ease;
   }
-  .pmd-buy-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+  .pmd-buy-btn:hover { transform: translateY(-1px); }
   .pmd-buy-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .pmd-buy-yes { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); }
-  .pmd-buy-no  { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
+  /* Muted-tone buy buttons: dark fill, accent border + accent text. */
+  .pmd-buy-yes {
+    background: rgba(34, 197, 94, 0.16);
+    border: 1px solid rgba(34, 197, 94, 0.40);
+    color: #22c55e;
+  }
+  .pmd-buy-yes:hover { background: rgba(34, 197, 94, 0.24); border-color: rgba(34, 197, 94, 0.60); }
+  .pmd-buy-no {
+    background: rgba(239, 68, 68, 0.16);
+    border: 1px solid rgba(239, 68, 68, 0.40);
+    color: #ef4444;
+  }
+  .pmd-buy-no:hover  { background: rgba(239, 68, 68, 0.24); border-color: rgba(239, 68, 68, 0.60); }
+  /* Drop the white text-shadow on labels (was needed for the bright bg) */
+  .pmd-buy-side, .pmd-buy-pct { text-shadow: none; }
   .pmd-buy-side {
     font-size: 13px; font-weight: 800; letter-spacing: 0.06em;
     line-height: 1;
@@ -8235,6 +8246,8 @@
     letter-spacing: -0.01em;
   }
   .pmd-pct-yes span { color: #22c55e; }
+  /* When the leading side is option B (NO), tint the inline label red. */
+  .pmd-pct-yes.pmd-pct-leader-b span { color: #ef4444; }
   .pmd-pct-vol { font-size: 12.5px; color: var(--text-dim); font-weight: 600; }
 
   /* Context strip below the percentage row — current prices, target,
@@ -8323,8 +8336,30 @@
   .pmd-chart-axis { fill: var(--text-faint); font-size: 10px; font-family: 'JetBrains Mono', 'SF Mono', monospace; }
   .pmd-chart-axis-y { font-size: 9px; }
   .pmd-chart-area { fill: rgba(34, 197, 94, 0.10); }
-  .pmd-chart-line { fill: none; stroke: #22c55e; stroke-width: 2; stroke-linejoin: round; }
-  .pmd-chart-dot { fill: #22c55e; stroke: var(--card-2); stroke-width: 2; }
+  .pmd-chart-area-b { fill: rgba(239, 68, 68, 0.10); }
+  /* Both lines render simultaneously — option A in green, option B in red. */
+  .pmd-chart-line { fill: none; stroke-width: 2; stroke-linejoin: round; }
+  .pmd-chart-line-a { stroke: #22c55e; }
+  .pmd-chart-line-b { stroke: #ef4444; }
+  .pmd-chart-dot { stroke: var(--card-2); stroke-width: 2; }
+  .pmd-chart-dot-a { fill: #22c55e; }
+  .pmd-chart-dot-b { fill: #ef4444; }
+  /* Chart legend above the SVG — keys to which color is which side */
+  .pmd-chart-legend {
+    display: flex; gap: 14px; align-items: center;
+    padding: 0 4px 8px;
+    font-size: 11.5px; color: var(--text-dim);
+    font-weight: 600;
+  }
+  .pmd-chart-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .pmd-chart-swatch {
+    width: 12px; height: 4px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .pmd-chart-swatch-a { background: #22c55e; }
+  .pmd-chart-swatch-b { background: #ef4444; }
+  .pmd-chart-block { display: flex; flex-direction: column; }
   .pmd-chart-empty {
     padding: 56px 16px;
     text-align: center;
@@ -8340,6 +8375,15 @@
     border-bottom: 1px solid var(--border);
     margin-top: 4px;
     overflow-x: auto;
+    /* Pin the tab strip to the top of its scroll container (.pmd-left)
+       so the user never loses the Comments / Top Holders / Positions /
+       Activity switcher while scrolling through tab content. */
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--bg, #0f0c14);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
   .pmd-tab {
     appearance: none;
@@ -18623,9 +18667,24 @@ function _predMarketDetailHTML(m) {
             </div>
             <h1 class="pmd-q">${escapeHTML(m.question)}</h1>
             ${resolvedBanner}
-            <div class="pmd-pct-row">
-              <div class="pmd-pct-yes">${Math.round(yesPct)}% chance · <span>${escapeHTML(aLabel)}</span></div>
-              <div class="pmd-pct-vol">$${Math.round(total).toLocaleString()} pool</div>
+            ${(() => {
+              // Headline shows whichever side currently leads (most %).
+              // Ties default to option A. The pmd-pct-yes class colors the
+              // leading-side label green when it's option A, red when B.
+              const leadIsA = yesPct >= noPct;
+              const leadPct = leadIsA ? yesPct : noPct;
+              const leadLabel = leadIsA ? aLabel : bLabel;
+              const sideClass = leadIsA ? 'pmd-pct-leader-a' : 'pmd-pct-leader-b';
+              return `
+                <div class="pmd-pct-row">
+                  <div class="pmd-pct-yes ${sideClass}">${Math.round(leadPct)}% chance · <span>${escapeHTML(leadLabel)}</span></div>
+                  <div class="pmd-pct-vol">$${Math.round(total).toLocaleString()} pool</div>
+                </div>
+              `;
+            })()}
+            <div class="pmd-bar-big">
+              <div class="pmd-bar-yes" style="width:${yesPct.toFixed(1)}%"><span>${Math.round(yesPct)}% ${escapeHTML(aLabel)}</span></div>
+              <div class="pmd-bar-no"  style="width:${noPct.toFixed(1)}%"><span>${Math.round(noPct)}% ${escapeHTML(bLabel)}</span></div>
             </div>
             ${_predContextStripHTML(m)}
           </div>
@@ -18975,6 +19034,10 @@ function _PMD_activityHTML(m) {
 // don't pull in a chart dep just for this. Uses snapshot_at (timestamps)
 // on x, yes_pct (0..100) on y, plus a 50% reference line.
 function _PMD_chartSVG(snaps, m) {
+  const aLabel = m.option_a_label || 'YES';
+  const bLabel = m.option_b_label || 'NO';
+
+  // Empty state with a legend so the user can still see the option labels
   if (!snaps || snaps.length === 0) {
     return `<div class="pmd-chart-empty" id="pmd-chart">
       <div class="pmd-chart-empty-title">No movement yet</div>
@@ -18982,43 +19045,71 @@ function _PMD_chartSVG(snaps, m) {
     </div>`;
   }
   const W = 760, H = 240, P = 28;
-  const pts = snaps.map(s => ({ t: new Date(s.snapshot_at).getTime(), y: Math.max(0, Math.min(100, +s.yes_pct || 50)) }));
-  // Add an "open at 50%" anchor at market creation if we have created_at
+  // Two parallel point arrays: A (yes_pct) and B (100 - yes_pct).
+  // They mirror around 50%, but rendering both makes the head-to-head
+  // story obvious at a glance — especially for vs_artist / vs_genre
+  // markets where the user is comparing two distinct options.
+  const ptsA = snaps.map(s => ({ t: new Date(s.snapshot_at).getTime(), y: Math.max(0, Math.min(100, +s.yes_pct || 50)) }));
+  // Anchor at creation (50/50) so the line opens from the start of the market.
   if (m.created_at) {
     const c = new Date(m.created_at).getTime();
-    if (pts.length === 0 || pts[0].t > c) pts.unshift({ t: c, y: 50 });
+    if (ptsA.length === 0 || ptsA[0].t > c) ptsA.unshift({ t: c, y: 50 });
   }
-  // Add a final "now" point at the latest pct so the line extends to the right edge
-  const last = pts[pts.length - 1];
-  pts.push({ t: Date.now(), y: last.y });
-  const tMin = pts[0].t, tMax = pts[pts.length - 1].t;
+  // Extend to "now" so the line reaches the right edge.
+  ptsA.push({ t: Date.now(), y: ptsA[ptsA.length - 1].y });
+  const ptsB = ptsA.map(p => ({ t: p.t, y: 100 - p.y }));
+
+  const tMin = ptsA[0].t, tMax = ptsA[ptsA.length - 1].t;
   const xRange = Math.max(1, tMax - tMin);
   const sx = t => P + ((t - tMin) / xRange) * (W - 2 * P);
   const sy = y => H - P - (y / 100) * (H - 2 * P);
-  const pathD = pts.map((p, i) => (i === 0 ? 'M' : 'L') + sx(p.t).toFixed(1) + ' ' + sy(p.y).toFixed(1)).join(' ');
-  const areaD = pathD + ` L ${sx(tMax).toFixed(1)} ${sy(0).toFixed(1)} L ${sx(tMin).toFixed(1)} ${sy(0).toFixed(1)} Z`;
-  // X-axis labels: 4 evenly spaced
+  const buildPath = pts => pts.map((p, i) => (i === 0 ? 'M' : 'L') + sx(p.t).toFixed(1) + ' ' + sy(p.y).toFixed(1)).join(' ');
+  const pathA = buildPath(ptsA);
+  const pathB = buildPath(ptsB);
+  // Area fill is keyed to whichever side leads at the latest point —
+  // green tint when A leads, red tint when B leads.
+  const lastA = ptsA[ptsA.length - 1].y;
+  const aLeads = lastA >= 50;
+  const leadPath = aLeads ? pathA : pathB;
+  const areaD = leadPath + ` L ${sx(tMax).toFixed(1)} ${sy(0).toFixed(1)} L ${sx(tMin).toFixed(1)} ${sy(0).toFixed(1)} Z`;
+  const areaClass = aLeads ? 'pmd-chart-area' : 'pmd-chart-area-b';
+
+  // Time-axis labels (4 evenly spaced).
   const labels = [0, 1, 2, 3].map(i => {
     const t = tMin + (xRange * i / 3);
     const d = new Date(t);
     const lab = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     return `<text x="${sx(t).toFixed(1)}" y="${H - 6}" class="pmd-chart-axis">${escapeHTML(lab)}</text>`;
   }).join('');
+
+  // Chart legend above the SVG so the user knows which color is which side.
+  const legend = `
+    <div class="pmd-chart-legend">
+      <span class="pmd-chart-legend-item"><span class="pmd-chart-swatch pmd-chart-swatch-a"></span>${escapeHTML(aLabel)}</span>
+      <span class="pmd-chart-legend-item"><span class="pmd-chart-swatch pmd-chart-swatch-b"></span>${escapeHTML(bLabel)}</span>
+    </div>
+  `;
+
   return `
-    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="pmd-chart-svg" id="pmd-chart">
-      <!-- gridlines at 0 / 25 / 50 / 75 / 100 -->
-      ${[0, 25, 50, 75, 100].map(g => `
-        <line x1="${P}" y1="${sy(g).toFixed(1)}" x2="${W - P}" y2="${sy(g).toFixed(1)}" class="pmd-chart-grid${g === 50 ? ' pmd-chart-grid-mid' : ''}"/>
-        <text x="${P - 4}" y="${(sy(g) + 4).toFixed(1)}" class="pmd-chart-axis pmd-chart-axis-y" text-anchor="end">${g}</text>
-      `).join('')}
-      <!-- area fill -->
-      <path d="${areaD}" class="pmd-chart-area"/>
-      <!-- line -->
-      <path d="${pathD}" class="pmd-chart-line"/>
-      <!-- last-point dot -->
-      <circle cx="${sx(pts[pts.length-1].t).toFixed(1)}" cy="${sy(pts[pts.length-1].y).toFixed(1)}" r="3.5" class="pmd-chart-dot"/>
-      ${labels}
-    </svg>`;
+    <div id="pmd-chart" class="pmd-chart-block">
+      ${legend}
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="pmd-chart-svg">
+        ${[0, 25, 50, 75, 100].map(g => `
+          <line x1="${P}" y1="${sy(g).toFixed(1)}" x2="${W - P}" y2="${sy(g).toFixed(1)}" class="pmd-chart-grid${g === 50 ? ' pmd-chart-grid-mid' : ''}"/>
+          <text x="${P - 4}" y="${(sy(g) + 4).toFixed(1)}" class="pmd-chart-axis pmd-chart-axis-y" text-anchor="end">${g}</text>
+        `).join('')}
+        <!-- shaded fill under the leading side -->
+        <path d="${areaD}" class="${areaClass}"/>
+        <!-- option B line (red) -->
+        <path d="${pathB}" class="pmd-chart-line pmd-chart-line-b"/>
+        <!-- option A line (green) -->
+        <path d="${pathA}" class="pmd-chart-line pmd-chart-line-a"/>
+        <!-- end-point dots, both sides -->
+        <circle cx="${sx(ptsA[ptsA.length-1].t).toFixed(1)}" cy="${sy(ptsA[ptsA.length-1].y).toFixed(1)}" r="3.5" class="pmd-chart-dot pmd-chart-dot-a"/>
+        <circle cx="${sx(ptsB[ptsB.length-1].t).toFixed(1)}" cy="${sy(ptsB[ptsB.length-1].y).toFixed(1)}" r="3.5" class="pmd-chart-dot pmd-chart-dot-b"/>
+        ${labels}
+      </svg>
+    </div>`;
 }
 
 function _wirePredMarketDetail(host, m) {
