@@ -6181,61 +6181,173 @@
   .lg-stand-genre.up { color: #6effb8; background: rgba(110,255,184,0.10); }
   .lg-stand-genre.down { color: #ff7a7a; background: rgba(255,122,122,0.10); }
 
-  /* Celebration modal (post-create) */
+  /* ─── Celebration modal (post-create) — bigger, animated, theme-tinted */
   .lg-modal-celebrate {
-    max-width: 480px;
+    --lg-accent: #a78bfa;
+    --lg-soft:   rgba(167, 139, 250, 0.12);
+    --lg-stroke: rgba(167, 139, 250, 0.30);
+    max-width: 540px;
     text-align: center;
-    padding: 30px 28px 22px;
+    padding: 28px 28px 22px;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 0%, var(--lg-soft), transparent 60%),
+      #13101a;
+    border: 1px solid var(--lg-stroke);
   }
-  .lg-celebrate-emoji {
-    font-size: 42px; line-height: 1;
-    margin-bottom: 8px;
+  /* Confetti container — 24 particles fall from the top with random colors */
+  .lg-celebrate-confetti {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    overflow: hidden;
   }
-  .lg-modal-celebrate .lg-modal-title { font-size: 22px; }
-  .lg-modal-celebrate .lg-modal-sub { margin-bottom: 16px; }
-  .lg-celebrate-invites {
-    font-size: 12px; color: var(--text-dim);
-    background: rgba(167, 139, 250, 0.08);
-    border: 1px solid rgba(167, 139, 250, 0.22);
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin-bottom: 12px;
+  .lg-confetti {
+    position: absolute;
+    top: -10px;
+    width: 8px; height: 14px;
+    border-radius: 2px;
+    opacity: 0.9;
+    animation-name: lg-confetti-fall;
+    animation-timing-function: cubic-bezier(.5, .0, .8, 1);
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+  }
+  @keyframes lg-confetti-fall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0.95; }
+    80%  { opacity: 0.85; }
+    100% { transform: translateY(640px) rotate(720deg); opacity: 0; }
+  }
+
+  /* Mini league card preview — shows the cover the user picked */
+  .lg-celebrate-mini-card {
+    position: relative; z-index: 1;
+    margin: 0 auto 16px;
+    max-width: 340px;
+    background: var(--card-2);
+    border: 1px solid var(--lg-stroke);
+    border-radius: 14px;
+    overflow: hidden;
     text-align: left;
+    box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.55);
   }
+  .lg-celebrate-mini-card .lg-cover {
+    aspect-ratio: 16 / 9;
+    min-height: 140px;
+    max-height: 180px;
+  }
+  .lg-celebrate-mini-body {
+    padding: 10px 14px 12px;
+    background: linear-gradient(180deg, transparent 0%, var(--lg-soft) 100%);
+    border-top: 1px solid var(--lg-stroke);
+  }
+  .lg-celebrate-mini-name {
+    font-size: 16px; font-weight: 700; color: var(--text);
+    letter-spacing: -0.005em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    margin-bottom: 4px;
+  }
+  .lg-celebrate-mini-meta {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+
+  /* Big SVG party-popper icon — animated bounce */
+  .lg-celebrate-icon-wrap {
+    position: relative; z-index: 1;
+    width: 56px; height: 56px;
+    margin: 0 auto 8px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: var(--lg-soft);
+    border: 1px solid var(--lg-stroke);
+    color: var(--lg-accent);
+    animation: lg-celebrate-pop .55s cubic-bezier(.2, .9, .3, 1.4);
+  }
+  .lg-celebrate-icon { width: 30px; height: 30px; }
+  @keyframes lg-celebrate-pop {
+    0%   { transform: scale(0.4) rotate(-10deg); opacity: 0; }
+    70%  { transform: scale(1.12) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  .lg-celebrate-title {
+    position: relative; z-index: 1;
+    font-size: 26px; font-weight: 800;
+    letter-spacing: -0.015em;
+    color: var(--text);
+    margin: 0 0 8px;
+    background: linear-gradient(135deg, var(--lg-accent), #fff 70%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .lg-modal-celebrate .lg-modal-sub {
+    position: relative; z-index: 1;
+    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .lg-modal-celebrate .lg-modal-sub b { color: var(--text); font-weight: 700; }
+
+  .lg-celebrate-invites {
+    position: relative; z-index: 1;
+    font-size: 12px; color: var(--text-dim);
+    background: var(--lg-soft);
+    border: 1px solid var(--lg-stroke);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+  }
+  .lg-celebrate-invites b { color: var(--text); font-weight: 700; }
+
   .lg-celebrate-link {
-    display: flex; gap: 6px;
-    margin-bottom: 10px;
+    position: relative; z-index: 1;
+    display: flex; gap: 8px;
+    margin-bottom: 12px;
   }
   .lg-celebrate-link .lg-modal-input {
-    font-size: 13px;
+    font-size: 12.5px;
     font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--lg-accent);
   }
+  .lg-celebrate-copy-btn {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+
   .lg-celebrate-code {
+    position: relative; z-index: 1;
     font-size: 12.5px; color: var(--text-dim);
     margin-bottom: 18px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    flex-wrap: wrap;
   }
-  .lg-celebrate-code code {
-    color: #b98fff;
-    background: rgba(167, 139, 250, 0.12);
-    padding: 2px 8px;
-    border-radius: 5px;
+  .lg-celebrate-code-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--lg-accent);
+    background: var(--lg-soft);
+    border: 1px solid var(--lg-stroke);
+    padding: 4px 10px;
+    border-radius: 6px;
     font-family: 'JetBrains Mono', 'SF Mono', monospace;
     letter-spacing: 0.08em;
-    font-weight: 700;
-  }
-  .lg-celebrate-code-copy {
-    appearance: none;
-    background: transparent;
-    border: 0;
-    color: var(--text-dim);
-    font-size: 14px;
+    font-weight: 800;
     cursor: pointer;
-    margin-left: 4px;
-    padding: 2px 6px;
-    border-radius: 5px;
+    transition: background .12s ease, transform .12s ease;
   }
-  .lg-celebrate-code-copy:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
-  .lg-modal-celebrate .lg-modal-row { justify-content: center; gap: 10px; }
+  .lg-celebrate-code-pill:hover { background: rgba(167, 139, 250, 0.18); transform: translateY(-1px); }
+  .lg-celebrate-code-pill svg { opacity: 0.7; }
+
+  .lg-modal-celebrate .lg-modal-row {
+    position: relative; z-index: 1;
+    justify-content: center; gap: 10px;
+  }
+  .lg-celebrate-open {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
 
   /* Legacy customize-* selectors retained as no-ops (kept for any
      stale-cache callers). Real form is now flat in the wizard body. */
@@ -6490,6 +6602,8 @@
     margin-top: 8px;
     display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   }
+  /* Restore the [hidden] semantics — author display:flex above clobbers it. */
+  .lg-cover-upload[hidden] { display: none; }
   .lg-upload-btn {
     appearance: none;
     display: inline-flex; align-items: center; gap: 8px;
@@ -19447,10 +19561,14 @@ function openCreateLeagueModal() {
 
     // Open the celebration modal with copy-link + open-league actions.
     openLeagueCelebrationModal({
-      leagueId: res.league_id,
-      slug:     res.slug,
-      name:     res.name || name,
-      inviteCode: res.invite_code,
+      leagueId:    res.league_id,
+      slug:        res.slug,
+      name:        res.name || name,
+      inviteCode:  res.invite_code,
+      coverId:     res.cover_id || state.coverId,
+      coverUrl:    res.cover_url || (state.coverId === 'custom' ? state.coverUrl : null),
+      themeColor:  res.theme_color || state.themeColor,
+      focusGenres: res.focus_genres || state.focusGenres,
       inviteSummary,
     });
   });
@@ -19458,36 +19576,85 @@ function openCreateLeagueModal() {
 
 // Post-create celebration. Replaces the v1 toast — gives the user a copyable
 // invite link, a "Copy code" shortcut, and a clear Open League CTA.
-function openLeagueCelebrationModal({ leagueId, slug, name, inviteCode, inviteSummary }) {
+function openLeagueCelebrationModal({ leagueId, slug, name, inviteCode, inviteSummary, coverId, coverUrl, themeColor, focusGenres }) {
   const wrap = document.createElement('div');
   wrap.className = 'lg-modal-overlay';
   const link = (typeof location !== 'undefined' ? location.origin : '') + '/leagues/' + encodeURIComponent(slug || '');
+  const theme = LEAGUE_THEMES[themeColor] || LEAGUE_THEMES['purple'];
+  const focusList = Array.isArray(focusGenres) ? focusGenres : [];
+
   let inviteLine = '';
   if (inviteSummary) {
     const parts = [];
-    if (inviteSummary.invited > 0) parts.push(`${inviteSummary.invited} added`);
-    if (inviteSummary.already_member > 0) parts.push(`${inviteSummary.already_member} already in`);
+    if (inviteSummary.invited > 0) parts.push(`<b>${inviteSummary.invited}</b> added`);
+    if (inviteSummary.already_member > 0) parts.push(`<b>${inviteSummary.already_member}</b> already in`);
     const nf = Array.isArray(inviteSummary.not_found) ? inviteSummary.not_found : [];
-    if (nf.length > 0) parts.push(`${nf.length} not found`);
-    if (parts.length > 0) inviteLine = `<div class="lg-celebrate-invites">Invites: ${parts.join(' · ')}${nf.length > 0 ? ' (' + nf.map(escapeHTML).join(', ') + ')' : ''}</div>`;
+    if (nf.length > 0) parts.push(`<b>${nf.length}</b> not found`);
+    if (parts.length > 0) inviteLine = `<div class="lg-celebrate-invites">${parts.join(' · ')}${nf.length > 0 ? ' (' + nf.map(escapeHTML).join(', ') + ')' : ''}</div>`;
   }
+
+  // Confetti particles — 24 of them, randomized colors + start positions.
+  const confettiColors = [theme.accent, '#fbbf24', '#10d88b', '#ff8a65', '#ec4899', '#06b6d4', '#a78bfa'];
+  const confetti = Array.from({ length: 24 }).map((_, i) => {
+    const left = Math.floor(Math.random() * 100);
+    const delay = (Math.random() * 0.6).toFixed(2);
+    const duration = (1.6 + Math.random() * 0.8).toFixed(2);
+    const rotate = Math.floor(Math.random() * 360);
+    const color = confettiColors[i % confettiColors.length];
+    return `<span class="lg-confetti" style="left:${left}%;background:${color};animation-delay:${delay}s;animation-duration:${duration}s;transform:rotate(${rotate}deg)"></span>`;
+  }).join('');
+
+  // SVG party-popper icon (replaces the 🎉 emoji)
+  const partyIcon = `
+    <svg class="lg-celebrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M5.8 11.3 2 22l10.7-3.79"/>
+      <path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01"/>
+      <path d="M22 2 11 13"/>
+      <path d="M11 13 22 2c-3.5-.5-7 1-9 4-1 1.5-2 3.5-2 5.5 0 1.5.5 3 1.5 4l4-4"/>
+      <path d="M16.7 7.3a2.5 2.5 0 0 1 3.4 3.4"/>
+    </svg>`;
+
   wrap.innerHTML = `
-    <div class="lg-modal lg-modal-celebrate">
-      <div class="lg-celebrate-emoji">🎉</div>
-      <div class="lg-modal-title">League created!</div>
-      <div class="lg-modal-sub">"${escapeHTML(name)}" is live. Share the link below to grow it.</div>
+    <div class="lg-modal lg-modal-celebrate" style="--lg-accent:${theme.accent}; --lg-soft:${theme.soft}; --lg-stroke:${theme.stroke}">
+      <div class="lg-celebrate-confetti" aria-hidden="true">${confetti}</div>
+
+      <div class="lg-celebrate-mini-card">
+        ${_leagueCoverHTML(coverId, themeColor, coverUrl)}
+        <div class="lg-celebrate-mini-body">
+          <div class="lg-celebrate-mini-name">${escapeHTML(name)}</div>
+          <div class="lg-celebrate-mini-meta">
+            ${focusList.length > 0 ? `<span class="lg-card-focus">${escapeHTML(focusList.join(' · '))}</span>` : ''}
+            <span class="lg-card-owner">Owner</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg-celebrate-icon-wrap">${partyIcon}</div>
+      <div class="lg-celebrate-title">League created</div>
+      <div class="lg-modal-sub">Your league <b>${escapeHTML(name)}</b> is live. Share the link below — anyone who opens it can join.</div>
       ${inviteLine}
+
       <div class="lg-celebrate-link">
         <input type="text" class="lg-modal-input" id="lg-celebrate-link-input" readonly value="${escapeHTML(link)}">
-        <button class="lg-btn lg-btn-ghost" data-act="copy-link" id="lg-celebrate-copy">Copy link</button>
+        <button class="lg-btn lg-btn-primary lg-celebrate-copy-btn" data-act="copy-link" id="lg-celebrate-copy">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy link
+        </button>
       </div>
+
       <div class="lg-celebrate-code">
-        Or share the invite code: <code>${escapeHTML(inviteCode || '')}</code>
-        <button class="lg-celebrate-code-copy" data-act="copy-code" title="Copy code">⧉</button>
+        Or share the invite code:
+        <code class="lg-celebrate-code-pill" data-act="copy-code">${escapeHTML(inviteCode || '')}
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </code>
       </div>
+
       <div class="lg-modal-row">
         <button class="lg-btn lg-btn-ghost" data-act="close">Done</button>
-        <button class="lg-btn lg-btn-primary" data-act="open">Open league</button>
+        <button class="lg-btn lg-btn-primary lg-celebrate-open" data-act="open">
+          Open league
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
       </div>
     </div>
   `;
