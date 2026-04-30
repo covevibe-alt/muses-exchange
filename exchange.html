@@ -7914,12 +7914,11 @@
   .pmd-bar-yes, .pmd-bar-no {
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; font-weight: 800;
-    color: #fff;
     overflow: hidden; white-space: nowrap;
     transition: width .3s ease;
   }
-  .pmd-bar-yes { background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%); }
-  .pmd-bar-no  { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); }
+  .pmd-bar-yes { background: rgba(34, 197, 94, 0.22); color: #4ade80; }
+  .pmd-bar-no  { background: rgba(239, 68, 68, 0.22); color: #f87171; }
 
   .pmd-stats {
     display: grid;
@@ -8020,6 +8019,78 @@
     font-size: 12px; color: #ff7a7a;
   }
 
+  /* Potential-winnings preview panel (live-updates as user types amount) */
+  .pmd-payout-preview {
+    margin-top: 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+  }
+  .pmd-payout-head {
+    padding: 8px 12px 6px;
+    font-size: 10.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint);
+    border-bottom: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.015);
+  }
+  .pmd-payout-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pmd-payout-row:last-child { border-bottom: 0; }
+  .pmd-payout-row.pmd-payout-win-yes { color: #4ade80; }
+  .pmd-payout-row.pmd-payout-win-no  { color: #f87171; }
+  .pmd-payout-row.pmd-payout-lose     { color: var(--text-faint); }
+  .pmd-payout-label { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .pmd-payout-label svg { flex-shrink: 0; }
+  .pmd-payout-amount {
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .pmd-payout-amount-sub {
+    margin-left: 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    opacity: 0.75;
+  }
+  .pmd-payout-foot {
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--text-faint);
+    line-height: 1.45;
+    background: rgba(255, 255, 255, 0.015);
+    border-top: 1px solid var(--border);
+  }
+  .pmd-payout-foot b { color: var(--text-dim); font-weight: 700; }
+
+  /* Concrete-example explainer card */
+  .pmd-explainer {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border: 1px dashed rgba(167, 139, 250, 0.30);
+    border-radius: 10px;
+    background: rgba(167, 139, 250, 0.04);
+  }
+  .pmd-explainer-head {
+    font-size: 11px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: #b98fff;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pmd-explainer-body {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .pmd-explainer-body b { color: var(--text); }
+
   /* Two-column layout for bets feed + rules */
   .pmd-cols {
     display: grid;
@@ -8072,6 +8143,25 @@
   .pmd-rules p { margin: 0 0 10px; }
   .pmd-rules p:last-child { margin-bottom: 0; }
   .pmd-rules b { color: var(--text); }
+  .pmd-rules-list {
+    margin: 0 0 10px;
+    padding: 8px 12px;
+    list-style: none;
+    background: rgba(255, 255, 255, 0.025);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 12.5px;
+  }
+  .pmd-rules-list li {
+    padding: 4px 0;
+    line-height: 1.5;
+  }
+  .pmd-rules-list li + li { border-top: 1px solid var(--border); margin-top: 4px; padding-top: 8px; }
+  .pmd-rules-note {
+    font-style: italic;
+    color: var(--text-faint) !important;
+    font-size: 12px;
+  }
 
   /* Loading + error */
   .pmd-loading { display: flex; flex-direction: column; gap: 14px; padding-top: 8px; }
@@ -8323,12 +8413,13 @@
     color: var(--text-faint);
   }
 
-  /* Probability chart */
+  /* Probability chart — padding matches .pmd-tab-body so chart contents and
+     comments contents share the same left/right inner edge. */
   .pmd-chart-wrap {
     background: var(--card-2);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 12px 16px 8px;
+    padding: 12px 20px 8px;
   }
   .pmd-chart-svg {
     width: 100%; height: 240px;
@@ -18639,6 +18730,11 @@ function _predMarketDetailHTML(m) {
     ? `<div class="pmd-resolved pmd-resolved-${m.resolution || 'cancelled'}">Resolved: ${String(m.resolution || 'cancelled').toUpperCase()}</div>`
     : '';
 
+  // Idle-state payout multipliers for the preview panel — the math is identical
+  // to the per-amount computation but with amount→0, which collapses to the
+  // implied price (ie. how many $ you get back per $ staked at current odds).
+  const yesMultIdle = yesPool > 0 ? (yesPool + noPool) / yesPool : 2;
+  const noMultIdle  = noPool  > 0 ? (yesPool + noPool) / noPool  : 2;
   const buyForm = closed ? '' : `
     <div class="pmd-buy">
       <input type="number" id="pmd-amt" class="pmd-amt" placeholder="Amount" min="1" step="1" />
@@ -18652,7 +18748,32 @@ function _predMarketDetailHTML(m) {
           <span class="pmd-buy-pct">${Math.round(noPct)}%</span>
         </button>
       </div>
-      <div class="pmd-buy-hint">Parimutuel: winning side splits the full pot pro-rata to their stake.</div>
+
+      <!-- Live potential-payout preview. Updates as the user types in #pmd-amt
+           (see _wirePmdPayoutPreview). Default state shows "per $1 staked" so
+           people understand the odds before they enter anything. -->
+      <div class="pmd-payout-preview" id="pmd-payout-preview" data-yes-pool="${yesPool}" data-no-pool="${noPool}" data-a-label="${escapeHTML(aLabel)}" data-b-label="${escapeHTML(bLabel)}">
+        <div class="pmd-payout-head" id="pmd-payout-title">If you win — per $1 staked</div>
+        <div class="pmd-payout-row pmd-payout-win-yes">
+          <div class="pmd-payout-label">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            ${escapeHTML(aLabel)} wins
+          </div>
+          <div class="pmd-payout-amount" id="pmd-payout-yes">$${yesMultIdle.toFixed(2)}<span class="pmd-payout-amount-sub">×</span></div>
+        </div>
+        <div class="pmd-payout-row pmd-payout-win-no">
+          <div class="pmd-payout-label">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            ${escapeHTML(bLabel)} wins
+          </div>
+          <div class="pmd-payout-amount" id="pmd-payout-no">$${noMultIdle.toFixed(2)}<span class="pmd-payout-amount-sub">×</span></div>
+        </div>
+        <div class="pmd-payout-foot" id="pmd-payout-foot">
+          Type an amount to see your exact payout. <b>Lose side</b> forfeits its full stake.
+        </div>
+      </div>
+
+      <div class="pmd-buy-hint">Parimutuel: every $ on the winning side splits the entire pot pro-rata. Lose side forfeits its stake.</div>
       <div class="pmd-buy-error" id="pmd-buy-error" hidden></div>
     </div>
   `;
@@ -18727,13 +18848,33 @@ function _predMarketDetailHTML(m) {
               ${balLine}
             </div>
             <div class="pmd-rules-card">
-              <div class="pmd-section-title">How this works</div>
+              <div class="pmd-section-title">How payouts work</div>
               <div class="pmd-rules">
-                <p>Parimutuel: every $ on the winning side splits the full pot pro-rata.</p>
-                <p>Percentages reflect <b>where the money is right now</b>, not true probability — they move as people bet.</p>
-                <p><b>Paper credits</b> from your $10k Predictions bankroll. No real money.</p>
+                <p><b>Parimutuel.</b> All bets go into one pot. When the market resolves, the <b>winning side</b> splits the entire pot pro-rata to their stake — losers forfeit their stake to the winners.</p>
+                ${(() => {
+                  // Concrete, type-aware worked example using current pool sizes
+                  // (or a stand-in 60/40 split when the pool is empty so people
+                  // can still see the math). Shows: implied price → $1 → payout.
+                  const ex_total = total > 0 ? total : 100;
+                  const ex_yes = total > 0 ? yesPool : 60;
+                  const ex_no  = total > 0 ? noPool  : 40;
+                  const ex_yesPct = (ex_yes / ex_total) * 100;
+                  const ex_noPct  = 100 - ex_yesPct;
+                  const ex_yesMult = ex_total / ex_yes;
+                  const ex_noMult  = ex_total / ex_no;
+                  return `
+                    <p><b>Example with the current pool</b> (${total > 0 ? '' : 'illustrative — '}$${Math.round(ex_yes).toLocaleString()} on ${escapeHTML(aLabel)}, $${Math.round(ex_no).toLocaleString()} on ${escapeHTML(bLabel)}):</p>
+                    <ul class="pmd-rules-list">
+                      <li>Bet <b>$10 on ${escapeHTML(aLabel)}</b> → if ${escapeHTML(aLabel)} wins, you get back ≈ <b>$${(10 * ex_yesMult).toFixed(2)}</b> (profit $${(10 * ex_yesMult - 10).toFixed(2)}). If it loses, you forfeit $10.</li>
+                      <li>Bet <b>$10 on ${escapeHTML(bLabel)}</b> → if ${escapeHTML(bLabel)} wins, you get back ≈ <b>$${(10 * ex_noMult).toFixed(2)}</b> (profit $${(10 * ex_noMult - 10).toFixed(2)}). If it loses, you forfeit $10.</li>
+                    </ul>
+                    <p class="pmd-rules-note">Bigger underdog = bigger payout. The side with less money pays out more per $ when it wins.</p>
+                  `;
+                })()}
+                <p>Percentages reflect <b>where the money is right now</b>, not true probability. As people bet, the prices and your potential payout shift.</p>
+                <p><b>Paper credits</b> from your $10k Predictions bankroll. No real money — rewards stay on Muses for now (winning unlocks streaks, leaderboard rank, and future rewards).</p>
                 ${m.prediction_type === 'up_down' && m.type_config && m.type_config.target_value != null
-                  ? `<p><b>Auto-resolution:</b> resolves YES (${escapeHTML(aLabel)}) if $${escapeHTML(m.type_config.ticker || m.artist_ticker || '')} is ${escapeHTML(m.type_config.direction || 'above')} $${(+m.type_config.target_value).toFixed(2)} at the resolution date.</p>`
+                  ? `<p><b>Auto-resolution:</b> resolves ${escapeHTML(aLabel)} if $${escapeHTML(m.type_config.ticker || m.artist_ticker || '')} is ${escapeHTML(m.type_config.direction || 'above')} $${(+m.type_config.target_value).toFixed(2)} at the resolution date.</p>`
                   : `<p><b>Manual resolution:</b> a Muses curator settles this at the resolution date.</p>`}
                 <p class="pmd-rules-end">Ends ${escapeHTML(new Date(m.resolves_at).toLocaleString())}.</p>
               </div>
@@ -18890,11 +19031,11 @@ function _commentRowHTML(c, isReply) {
         ${isLong ? `<button type="button" class="pmd-comment-more" data-act="more">Read more</button>` : ''}
         <div class="pmd-comment-foot">
           <button type="button" class="pmd-vote pmd-vote-up${my === 1 ? ' active' : ''}" data-act="like" title="Like">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="${my === 1 ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-6 0v4H4l1.5 11h11L18 9zM8 9h10"/></svg>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="${my === 1 ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
             <span class="pmd-vote-count">${likeCount}</span>
           </button>
           <button type="button" class="pmd-vote pmd-vote-down${my === -1 ? ' active' : ''}" data-act="dislike" title="Dislike">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="${my === -1 ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 6 0v-4h4l-1.5-11H7.5L6 15zM8 15h10"/></svg>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="${my === -1 ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
             <span class="pmd-vote-count">${dislikeCount}</span>
           </button>
           ${!isReply ? `<button type="button" class="pmd-comment-reply-btn" data-act="reply">Reply</button>` : ''}
@@ -19123,6 +19264,54 @@ function _wirePredMarketDetail(host, m) {
       if (typeof showToast === 'function') showToast('Market link copied');
     } catch (_) {}
   };
+
+  // Live payout preview — updates the "if X wins" amounts as the user types.
+  // Math: when user adds `amt` to side S, the new winning pool grows by `amt`
+  // and the new total grows by `amt`. Their share of the winning pool is
+  // amt / (sidePool + amt), which times the new total = their gross payout.
+  // With amt = 0 the preview collapses to "per $1 staked" (implied price).
+  const amt = host.querySelector('#pmd-amt');
+  const prev = host.querySelector('#pmd-payout-preview');
+  if (amt && prev) {
+    const yesPool = +prev.dataset.yesPool || 0;
+    const noPool  = +prev.dataset.noPool  || 0;
+    const aLabel  = prev.dataset.aLabel || 'YES';
+    const bLabel  = prev.dataset.bLabel || 'NO';
+    const titleEl = prev.querySelector('#pmd-payout-title');
+    const yesEl   = prev.querySelector('#pmd-payout-yes');
+    const noEl    = prev.querySelector('#pmd-payout-no');
+    const footEl  = prev.querySelector('#pmd-payout-foot');
+    const fmt = n => '$' + Math.max(0, n).toLocaleString('en-US', { maximumFractionDigits: 2, minimumFractionDigits: n >= 100 ? 0 : 2 });
+    const idleYesMult = yesPool > 0 ? (yesPool + noPool) / yesPool : 2;
+    const idleNoMult  = noPool  > 0 ? (yesPool + noPool) / noPool  : 2;
+    const updatePayout = () => {
+      const a = parseFloat(amt.value);
+      if (!a || a <= 0) {
+        // Idle state — show per-$1 multipliers.
+        titleEl.textContent = 'If you win — per $1 staked';
+        yesEl.innerHTML = `${fmt(idleYesMult)}<span class="pmd-payout-amount-sub">×</span>`;
+        noEl.innerHTML  = `${fmt(idleNoMult)}<span class="pmd-payout-amount-sub">×</span>`;
+        footEl.innerHTML = `Type an amount to see your exact payout. <b>Lose side</b> forfeits its full stake.`;
+        return;
+      }
+      // YES-side payout if user adds `a` to YES and YES wins:
+      // payout = (a / (yesPool + a)) * (yesPool + noPool + a)
+      const yesNewPool  = yesPool + a;
+      const noNewPool   = noPool  + a;
+      const yesNewTotal = yesPool + noPool + a;
+      const yesPayout = (a / yesNewPool) * yesNewTotal;
+      const noPayout  = (a / noNewPool)  * yesNewTotal;
+      const yesProfit = yesPayout - a;
+      const noProfit  = noPayout  - a;
+      titleEl.textContent = `If you bet $${a.toLocaleString()}`;
+      yesEl.innerHTML = `${fmt(yesPayout)}<span class="pmd-payout-amount-sub">+${fmt(yesProfit)}</span>`;
+      noEl.innerHTML  = `${fmt(noPayout)}<span class="pmd-payout-amount-sub">+${fmt(noProfit)}</span>`;
+      footEl.innerHTML = `If your side <b>wins</b>, you get back stake + profit shown above. If your side <b>loses</b>, you forfeit your $${a.toLocaleString()} stake.`;
+    };
+    amt.addEventListener('input', updatePayout);
+    // Run once in case the field already has a value (e.g. browser autofill).
+    updatePayout();
+  }
   // Buy buttons
   host.querySelectorAll('[data-pmd-side]').forEach(btn => {
     btn.onclick = async () => {
