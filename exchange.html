@@ -8512,8 +8512,10 @@
   .pmd-tab-body {
     background: var(--card-2);
     border: 1px solid var(--border);
-    border-radius: 0 0 14px 14px;
-    border-top: none;
+    /* All four corners rounded — the tab strip sits above with its own
+       gap, not flush against the body, so a flat top edge looked broken
+       (Sander caught this on /predictions/<slug>). */
+    border-radius: 14px;
     padding: 16px 20px 18px;
     min-height: 200px;
     /* Block-level layout — every direct child fills full width so
