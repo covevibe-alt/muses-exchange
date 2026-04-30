@@ -8476,6 +8476,12 @@
     border-bottom: 1px solid var(--border);
     margin-top: 4px;
     overflow-x: auto;
+    /* CRITICAL: flex-shrink: 0. Inside a column flex container (.pmd-left),
+       setting overflow-x makes the default min-height: auto resolve to 0,
+       which lets flex collapse this strip to 1px when the column overflows.
+       Pinning shrink=0 keeps the tab buttons visible. Same goes for
+       .pmd-tab-body below. */
+    flex-shrink: 0;
     /* Pin the tab strip to the top of its scroll container (.pmd-left)
        so the user never loses the Comments / Top Holders / Positions /
        Activity switcher while scrolling through tab content. */
@@ -8515,6 +8521,9 @@
     display: block;
     width: 100%;
     box-sizing: border-box;
+    /* Same flex-shrink trap as .pmd-tabs — keep the tab body from
+       collapsing when the left column needs to scroll. */
+    flex-shrink: 0;
   }
   .pmd-tab-body > * { max-width: 100%; }
 
