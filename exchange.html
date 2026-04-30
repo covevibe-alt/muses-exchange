@@ -6349,6 +6349,25 @@
     display: inline-flex; align-items: center; gap: 6px;
   }
 
+  /* Prediction-flavored variant of the celebration modal — purple/cyan
+     accents to match the predictions chrome instead of the league theme. */
+  .pm-modal-celebrate {
+    --lg-accent: #b98fff;
+    --lg-soft:   rgba(167, 139, 250, 0.14);
+    --lg-stroke: rgba(167, 139, 250, 0.34);
+  }
+  .pm-celebrate-mini-card {
+    position: relative; z-index: 1;
+    max-width: 360px;
+    margin: 0 auto 16px;
+    cursor: default;
+    text-align: left;
+    box-shadow: 0 14px 32px -12px rgba(0, 0, 0, 0.6);
+  }
+  .pm-celebrate-mini-card:hover {
+    transform: none; /* don't lift on hover inside the modal */
+  }
+
   /* Legacy customize-* selectors retained as no-ops (kept for any
      stale-cache callers). Real form is now flat in the wizard body. */
   .lg-customize-toggle, .lg-customize-pill, .lg-customize-chev, .lg-customize-panel {
@@ -7019,6 +7038,38 @@
   .lg-settings-actions {
     display: flex; justify-content: flex-end;
     margin-top: 6px;
+  }
+
+  /* Owner danger zone (Close league) */
+  .lg-danger-zone {
+    margin-top: 28px;
+    padding: 16px 18px;
+    border: 1px solid rgba(239, 68, 68, 0.30);
+    background: rgba(239, 68, 68, 0.05);
+    border-radius: 12px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .lg-danger-head { flex: 1 1 auto; min-width: 220px; }
+  .lg-danger-title {
+    font-size: 13px; font-weight: 700;
+    color: #ff7a7a;
+    letter-spacing: -0.005em;
+    margin-bottom: 4px;
+  }
+  .lg-danger-sub {
+    font-size: 12px; color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .lg-btn-danger {
+    background: rgba(239, 68, 68, 0.10);
+    border: 1px solid rgba(239, 68, 68, 0.40);
+    color: #ff7a7a;
+    flex-shrink: 0;
+  }
+  .lg-btn-danger:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.16);
+    border-color: rgba(239, 68, 68, 0.55);
+    transform: translateY(-1px);
   }
 
   /* Loading skeleton + error state */
@@ -8072,7 +8123,19 @@
     background: rgba(167, 139, 250, 0.10);
     box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15) inset;
   }
-  .pm-type-icon { font-size: 20px; line-height: 1; flex-shrink: 0; }
+  .pm-type-icon {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(167, 139, 250, 0.10);
+    color: #b98fff;
+  }
+  .pm-type-icon svg { width: 18px; height: 18px; }
+  .pm-type-tile.active .pm-type-icon {
+    background: rgba(167, 139, 250, 0.25);
+    color: #fff;
+  }
   .pm-type-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
   .pm-type-sub { font-size: 11.5px; color: var(--text-dim); line-height: 1.4; }
 
@@ -8097,27 +8160,42 @@
 
   .cm-char-count { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
 
-  /* ─── DETAIL PAGE — 2-column sticky layout ────────────────────────── */
-  /* Fix the back button padding inside view-prediction (was clipped). */
-  #view-prediction .back-btn { padding: 8px 12px; margin-bottom: 12px; }
+  /* ─── DETAIL PAGE — independently scrollable 2-column layout ──────── */
+  /* Fix the back button width (was stretching full row) + padding. */
+  #view-prediction .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    align-self: flex-start;
+    width: auto;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+  }
 
   .pmd-page { display: block; }
   .pmd-shell {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 360px;
     gap: 18px;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+  /* Each column scrolls inside its own viewport-bound box, so the user
+     can scroll the question/chart/tabs on the left without losing the
+     buy form on the right (and vice-versa). */
+  .pmd-left, .pmd-right {
+    min-width: 0;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 4px; /* room for the scrollbar */
   }
   .pmd-left {
-    min-width: 0;
     display: flex; flex-direction: column; gap: 16px;
   }
-  .pmd-right {
-    min-width: 0;
-  }
   .pmd-sticky {
-    position: sticky;
-    top: 12px;
+    /* Inside .pmd-right's overflow:auto, sticky doesn't pin the way
+       we want anymore. Drop sticky — the right column itself is the
+       scroll container, and its content is short enough to fit when
+       collapsed. */
     display: flex; flex-direction: column; gap: 12px;
   }
   .pmd-buy-card, .pmd-rules-card {
@@ -8251,20 +8329,148 @@
   }
   .pmd-composer textarea { resize: vertical; min-height: 56px; font-size: 13.5px; line-height: 1.45; }
   .pmd-composer-row {
-    display: flex; justify-content: flex-end;
+    display: flex; justify-content: flex-end; gap: 6px;
     margin-top: 8px;
   }
+
+  /* Comments header */
+  .pmd-comments-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .pmd-comments-count {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint);
+  }
+  .pmd-comments-count span {
+    margin-left: 4px;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+  }
+
+  /* Comment row — avatar + body + foot */
   .pmd-comment {
-    padding: 10px 0;
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+    padding: 12px 0;
     border-bottom: 1px solid var(--border);
   }
   .pmd-comment:last-child { border-bottom: 0; }
+  .pmd-comment-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    color: #0a0612;
+    font-size: 13px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .pmd-comment-main { min-width: 0; }
   .pmd-comment-head {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; align-items: center;
     gap: 8px; margin-bottom: 4px;
   }
-  .pmd-comment-author { font-size: 12.5px; font-weight: 700; color: var(--text); }
-  .pmd-comment-body { font-size: 13.5px; color: var(--text); line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+  .pmd-comment-author { font-size: 13px; font-weight: 700; color: var(--text); }
+  .pmd-comment-when { font-size: 11.5px; color: var(--text-faint); }
+  .pmd-comment-body {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  /* Read-more clamp at 6 lines */
+  .pmd-comment-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pmd-comment-more {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--lg-accent, #b98fff);
+    font-size: 12.5px; font-weight: 600;
+    cursor: pointer;
+    padding: 0; margin-top: 4px;
+  }
+  .pmd-comment-more:hover { text-decoration: underline; }
+
+  /* Foot — like / dislike / reply */
+  .pmd-comment-foot {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 8px;
+  }
+  .pmd-vote {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 9px;
+    color: var(--text-dim);
+    font-size: 12px; font-weight: 700;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: inherit;
+    transition: background .12s ease, border-color .12s ease, color .12s ease;
+  }
+  .pmd-vote:hover { background: rgba(255, 255, 255, 0.04); color: var(--text); }
+  .pmd-vote.active.pmd-vote-up {
+    color: #22c55e; border-color: rgba(34, 197, 94, 0.45);
+    background: rgba(34, 197, 94, 0.10);
+  }
+  .pmd-vote.active.pmd-vote-down {
+    color: #ef4444; border-color: rgba(239, 68, 68, 0.45);
+    background: rgba(239, 68, 68, 0.10);
+  }
+  .pmd-vote-count { font-variant-numeric: tabular-nums; }
+  .pmd-comment-reply-btn {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--text-dim);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-family: inherit;
+  }
+  .pmd-comment-reply-btn:hover { color: var(--text); background: rgba(255, 255, 255, 0.04); }
+
+  /* Threaded replies */
+  .pmd-comment-replies {
+    display: flex; flex-direction: column;
+    margin-top: 4px;
+    margin-left: 48px;
+    border-left: 2px solid var(--border);
+    padding-left: 14px;
+  }
+  .pmd-comment-reply {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .pmd-comment-reply:last-child { border-bottom: 0; }
+  .pmd-comment-reply .pmd-comment-avatar {
+    width: 28px; height: 28px;
+    font-size: 11px;
+  }
+  .pmd-comment-reply { grid-template-columns: 28px 1fr; gap: 10px; }
+
+  /* Reply composer (revealed inline below a comment) */
+  .pmd-reply-composer {
+    margin-top: 8px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .pmd-reply-composer textarea { width: 100%; min-height: 56px; font-size: 13px; }
+  .pmd-reply-composer .pmd-composer-row { margin-top: 6px; }
 
   /* Top Holders / Positions table */
   .pmd-table {
@@ -8323,10 +8529,17 @@
     max-width: 80px;
   }
 
-  /* Stack columns on tablet/mobile */
+  /* Stack columns on tablet/mobile + drop the column-scroll constraints
+     so the page scrolls naturally instead of carving out two narrow
+     scroll panes. */
   @media (max-width: 980px) {
     .pmd-shell {
       grid-template-columns: 1fr;
+    }
+    .pmd-left, .pmd-right {
+      max-height: none;
+      overflow: visible;
+      padding-right: 0;
     }
     .pmd-sticky {
       position: static;
@@ -18424,6 +18637,65 @@ function _PMD_renderTabBody(m) {
   return '';
 }
 
+// Build initials + a stable color for an avatar circle from a handle.
+function _avatarBits(handle, displayName) {
+  const src = (displayName || handle || 'T').replace(/^@/, '');
+  const initials = src.split(/\s+/).map(s => s[0]).join('').slice(0, 2).toUpperCase() || src.slice(0, 2).toUpperCase();
+  // Stable color per handle (8 hues)
+  const hues = ['#a78bfa', '#22c55e', '#fbbf24', '#ec4899', '#06b6d4', '#ff8a65', '#818cf8', '#a3e635'];
+  let h = 0;
+  for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0;
+  const color = hues[Math.abs(h) % hues.length];
+  return { initials, color };
+}
+
+function _humanRelativeTime(iso) {
+  const d = new Date(iso).getTime();
+  if (!Number.isFinite(d)) return '';
+  const ms = Date.now() - d;
+  if (ms < 60000) return 'just now';
+  if (ms < 3600000) return Math.floor(ms / 60000) + 'm ago';
+  if (ms < 86400000) return Math.floor(ms / 3600000) + 'h ago';
+  if (ms < 7 * 86400000) return Math.floor(ms / 86400000) + 'd ago';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// Single-comment rendering. Used both at top-level and for nested replies.
+function _commentRowHTML(c, isReply) {
+  const handle = c.handle && c.handle !== 'trader' ? '@' + c.handle : (c.display_name || 'Trader');
+  const av = _avatarBits(c.handle || c.display_name || '', c.display_name);
+  const when = _humanRelativeTime(c.created_at);
+  const my = c.my_vote | 0;
+  const isLong = (c.body || '').length > 280;
+  const likeCount = +c.like_count || 0;
+  const dislikeCount = +c.dislike_count || 0;
+  const score = likeCount - dislikeCount;
+  return `
+    <div class="pmd-comment${isReply ? ' pmd-comment-reply' : ''}" data-comment-id="${c.id}">
+      <div class="pmd-comment-avatar" style="background:${av.color}">${escapeHTML(av.initials)}</div>
+      <div class="pmd-comment-main">
+        <div class="pmd-comment-head">
+          <span class="pmd-comment-author">${escapeHTML(handle)}</span>
+          <span class="pmd-comment-when">${escapeHTML(when)}</span>
+        </div>
+        <div class="pmd-comment-body${isLong ? ' pmd-comment-clamp' : ''}">${escapeHTML(c.body)}</div>
+        ${isLong ? `<button type="button" class="pmd-comment-more" data-act="more">Read more</button>` : ''}
+        <div class="pmd-comment-foot">
+          <button type="button" class="pmd-vote pmd-vote-up${my === 1 ? ' active' : ''}" data-act="like" title="Like">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="${my === 1 ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-6 0v4H4l1.5 11h11L18 9zM8 9h10"/></svg>
+            <span class="pmd-vote-count">${likeCount}</span>
+          </button>
+          <button type="button" class="pmd-vote pmd-vote-down${my === -1 ? ' active' : ''}" data-act="dislike" title="Dislike">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="${my === -1 ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 6 0v-4h4l-1.5-11H7.5L6 15zM8 15h10"/></svg>
+            <span class="pmd-vote-count">${dislikeCount}</span>
+          </button>
+          ${!isReply ? `<button type="button" class="pmd-comment-reply-btn" data-act="reply">Reply</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function _PMD_commentsHTML(m) {
   const list = _PRED_DETAIL_CACHE.comments;
   const authed = !!(window.MUSE_USER && window.MUSE_USER.authed);
@@ -18431,26 +18703,43 @@ function _PMD_commentsHTML(m) {
     ? `<div class="pmd-composer">
          <textarea class="lg-modal-input" id="pmd-comment-input" rows="2" placeholder="Add a comment…" maxlength="1000"></textarea>
          <div class="pmd-composer-row">
-           <button class="lg-btn lg-btn-primary" id="pmd-comment-post">Post</button>
+           <button class="lg-btn lg-btn-primary" id="pmd-comment-post">Post comment</button>
          </div>
          <div class="pmd-buy-error" id="pmd-comment-error" hidden></div>
        </div>`
     : `<div class="pmd-feed-empty">Sign in to comment.</div>`;
   if (list == null) return composer + `<div class="pmd-feed-empty">Loading comments…</div>`;
   if (list.length === 0) return composer + `<div class="pmd-feed-empty">No comments yet — start the conversation.</div>`;
-  return composer + `<div class="pmd-feed">${list.map(c => {
-    const when = new Date(c.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    const handle = c.handle && c.handle !== 'trader' ? '@' + c.handle : (c.display_name || 'Trader');
+
+  // Build tree: top-level comments + map<parent_id, replies[]>
+  const top = list.filter(c => !c.parent_id);
+  const repliesByParent = new Map();
+  list.filter(c => c.parent_id).forEach(c => {
+    if (!repliesByParent.has(c.parent_id)) repliesByParent.set(c.parent_id, []);
+    repliesByParent.get(c.parent_id).push(c);
+  });
+  // Newest first within each branch
+  top.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  repliesByParent.forEach(arr => arr.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
+
+  // Build header (count + sort placeholder for future)
+  const header = `
+    <div class="pmd-comments-head">
+      <div class="pmd-comments-count">Comments <span>${list.length}</span></div>
+    </div>`;
+
+  const tree = top.map(c => {
+    const replies = repliesByParent.get(c.id) || [];
+    const repliesHTML = replies.map(r => _commentRowHTML(r, true)).join('');
     return `
-      <div class="pmd-comment">
-        <div class="pmd-comment-head">
-          <span class="pmd-comment-author">${escapeHTML(handle)}</span>
-          <span class="pmd-feed-when">${escapeHTML(when)}</span>
-        </div>
-        <div class="pmd-comment-body">${escapeHTML(c.body)}</div>
+      <div class="pmd-comment-thread" data-thread-id="${c.id}">
+        ${_commentRowHTML(c, false)}
+        ${repliesHTML ? `<div class="pmd-comment-replies">${repliesHTML}</div>` : ''}
       </div>
     `;
-  }).join('')}</div>`;
+  }).join('');
+
+  return composer + header + `<div class="pmd-feed">${tree}</div>`;
 }
 
 function _PMD_topHoldersHTML(m) {
@@ -18655,38 +18944,134 @@ function _wirePredMarketDetail(host, m) {
   _PMD_wireTabBody(host, m);
 }
 
-// Comment composer wiring. Re-runs on every tab switch since the textarea
-// only exists when the Comments tab is active.
+// Comment composer + interactions (like/dislike/reply/read-more) wiring.
+// Re-runs on every tab switch since the DOM only exists when the
+// Comments tab is active.
 function _PMD_wireTabBody(host, m) {
-  const post = host.querySelector('#pmd-comment-post');
-  if (!post) return;
-  post.onclick = async () => {
-    const input = host.querySelector('#pmd-comment-input');
-    const errEl = host.querySelector('#pmd-comment-error');
-    const body  = (input && input.value || '').trim();
-    if (!body) return;
-    errEl.hidden = true;
-    post.disabled = true;
-    try {
-      const { data, error } = await window.SUPABASE.rpc('post_market_comment', { p_market_id: m.id, p_body: body });
-      if (error || (data && data.error)) {
-        errEl.textContent = errorToHumanPred((data && data.error) || error.message);
+  const tabBody = host.querySelector('#pmd-tab-body');
+  if (!tabBody) return;
+
+  // Top-level composer
+  const post = tabBody.querySelector('#pmd-comment-post');
+  if (post) {
+    post.onclick = async () => {
+      const input = tabBody.querySelector('#pmd-comment-input');
+      const errEl = tabBody.querySelector('#pmd-comment-error');
+      const body  = (input && input.value || '').trim();
+      if (!body) return;
+      errEl.hidden = true;
+      post.disabled = true;
+      try {
+        const { data, error } = await window.SUPABASE.rpc('post_market_comment', { p_market_id: m.id, p_body: body, p_parent_id: null });
+        if (error || (data && data.error)) {
+          errEl.textContent = errorToHumanPred((data && data.error) || error.message);
+          errEl.hidden = false;
+          post.disabled = false;
+          return;
+        }
+        input.value = '';
+        _PRED_DETAIL_CACHE.comments = await _PMD_fetchComments(m.id);
+        tabBody.innerHTML = _PMD_renderTabBody(m);
+        _PMD_wireTabBody(host, m);
+      } catch (e) {
+        errEl.textContent = 'Could not post — try again.';
         errEl.hidden = false;
-        post.disabled = false;
+      }
+      post.disabled = false;
+    };
+  }
+
+  // Per-comment actions (like / dislike / reply / read-more) via delegation.
+  // Each .pmd-comment carries data-comment-id; the action lives on a
+  // descendant button with [data-act].
+  tabBody.addEventListener('click', async (e) => {
+    const actBtn = e.target.closest('[data-act]'); if (!actBtn) return;
+    const cell = actBtn.closest('.pmd-comment'); if (!cell) return;
+    const cid = parseInt(cell.dataset.commentId, 10);
+    if (!Number.isFinite(cid)) return;
+    const act = actBtn.dataset.act;
+
+    if (act === 'more') {
+      // Expand long comment
+      cell.querySelector('.pmd-comment-body')?.classList.remove('pmd-comment-clamp');
+      actBtn.remove();
+      return;
+    }
+
+    if (act === 'like' || act === 'dislike') {
+      if (!window.MUSE_USER || !window.MUSE_USER.authed) {
+        if (typeof showToast === 'function') showToast('Sign in to vote', true);
         return;
       }
-      input.value = '';
-      // Refresh comments + repaint
-      _PRED_DETAIL_CACHE.comments = await _PMD_fetchComments(m.id);
-      const tabBody = host.querySelector('#pmd-tab-body');
-      if (tabBody) tabBody.innerHTML = _PMD_renderTabBody(m);
-      _PMD_wireTabBody(host, m);
-    } catch (e) {
-      errEl.textContent = 'Could not post — try again.';
-      errEl.hidden = false;
+      // Find current state via cache so we can toggle
+      const list = _PRED_DETAIL_CACHE.comments || [];
+      const c = list.find(x => x.id === cid); if (!c) return;
+      const current = c.my_vote | 0;
+      const target = act === 'like' ? 1 : -1;
+      const next = current === target ? 0 : target;
+      try {
+        const { data, error } = await window.SUPABASE.rpc('vote_market_comment', { p_comment_id: cid, p_vote: next });
+        if (error || (data && data.error)) {
+          if (typeof showToast === 'function') showToast('Could not vote — try again', true);
+          return;
+        }
+        // Update cache locally (avoid full refetch)
+        c.my_vote = data.my_vote | 0;
+        c.like_count = +data.like_count || 0;
+        c.dislike_count = +data.dislike_count || 0;
+        // Re-render just this row
+        const isReply = !!c.parent_id;
+        const newRow = document.createElement('div');
+        newRow.innerHTML = _commentRowHTML(c, isReply).trim();
+        cell.replaceWith(newRow.firstChild);
+      } catch (_) {}
+      return;
     }
-    post.disabled = false;
-  };
+
+    if (act === 'reply') {
+      // Toggle a reply composer below this comment
+      const existing = cell.querySelector('.pmd-reply-composer');
+      if (existing) { existing.remove(); return; }
+      const composer = document.createElement('div');
+      composer.className = 'pmd-reply-composer';
+      composer.innerHTML = `
+        <textarea class="lg-modal-input" rows="2" placeholder="Reply…" maxlength="1000"></textarea>
+        <div class="pmd-composer-row">
+          <button class="lg-btn lg-btn-ghost" data-act="reply-cancel">Cancel</button>
+          <button class="lg-btn lg-btn-primary" data-act="reply-submit">Reply</button>
+        </div>
+        <div class="pmd-buy-error pmd-reply-error" hidden></div>
+      `;
+      cell.querySelector('.pmd-comment-main')?.appendChild(composer);
+      composer.querySelector('textarea').focus();
+      composer.querySelector('[data-act="reply-cancel"]').onclick = () => composer.remove();
+      composer.querySelector('[data-act="reply-submit"]').onclick = async () => {
+        const ta = composer.querySelector('textarea');
+        const errEl = composer.querySelector('.pmd-reply-error');
+        const body = (ta.value || '').trim();
+        if (!body) return;
+        const submit = composer.querySelector('[data-act="reply-submit"]');
+        submit.disabled = true;
+        try {
+          const { data, error } = await window.SUPABASE.rpc('post_market_comment', { p_market_id: m.id, p_body: body, p_parent_id: cid });
+          if (error || (data && data.error)) {
+            errEl.textContent = errorToHumanPred((data && data.error) || error.message);
+            errEl.hidden = false;
+            submit.disabled = false;
+            return;
+          }
+          _PRED_DETAIL_CACHE.comments = await _PMD_fetchComments(m.id);
+          tabBody.innerHTML = _PMD_renderTabBody(m);
+          _PMD_wireTabBody(host, m);
+        } catch (_) {
+          errEl.textContent = 'Could not reply — try again.';
+          errEl.hidden = false;
+          submit.disabled = false;
+        }
+      };
+      return;
+    }
+  });
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -19829,6 +20214,15 @@ async function updateLeagueRPC(leagueId, opts) {
   } catch (e) { return { error: e?.message || String(e) }; }
 }
 
+async function deleteLeagueRPC(leagueId) {
+  if (!window.SUPABASE) return { error: 'no_supabase' };
+  try {
+    const { data, error } = await window.SUPABASE.rpc('delete_league', { p_league_id: leagueId });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e?.message || String(e) }; }
+}
+
 async function inviteUsersToLeagueRPC(leagueId, handles) {
   if (!window.SUPABASE) return { error: 'no_supabase' };
   try {
@@ -20517,6 +20911,15 @@ function _leagueSettingsHTML(league) {
         <button class="lg-btn lg-btn-primary" id="lg-set-save">Save changes</button>
       </div>
     </form>
+
+    <!-- Danger zone: delete league -->
+    <div class="lg-danger-zone">
+      <div class="lg-danger-head">
+        <div class="lg-danger-title">Danger zone</div>
+        <div class="lg-danger-sub">Closing the league hides it from members and ends all standings + awards. This can't be undone.</div>
+      </div>
+      <button type="button" class="lg-btn lg-btn-danger" id="lg-set-delete">Close league</button>
+    </div>
   `;
 }
 
@@ -20646,6 +21049,29 @@ function _wireLeagueSettings(league, body) {
     if (typeof showToast === 'function') showToast('League updated');
     renderLeagueDetail();
   });
+
+  // Danger zone — owner closes the league. Two-step confirm via prompt.
+  const deleteBtn = body.querySelector('#lg-set-delete');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      const sure = window.confirm(`Close "${league.name}"? Members will lose access and standings + awards will stop. This can't be undone.`);
+      if (!sure) return;
+      deleteBtn.disabled = true;
+      deleteBtn.textContent = 'Closing…';
+      const res = await deleteLeagueRPC(league.id);
+      deleteBtn.disabled = false;
+      deleteBtn.textContent = 'Close league';
+      if (res.error) {
+        if (typeof showToast === 'function') showToast(errorToHuman(res.error), true);
+        return;
+      }
+      _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null, awards: null };
+      _stopLeagueCountdown();
+      await fetchUserLeagues(true);
+      if (typeof showToast === 'function') showToast('League closed');
+      setView('leagues');
+    });
+  }
 }
 
 async function openLeagueDetailModal(leagueId) {
@@ -21284,12 +21710,20 @@ async function createPredictionMarketV2(opts) {
 //   • by_date   — event by deadline (Yes/No, with explicit deadline)
 //   • vs_artist — head-to-head between two tickers
 //   • vs_genre  — head-to-head between two genres
+// SVG icons for the prediction-type tile picker (no emojis).
+const _PM_TYPE_ICONS = {
+  yes_no:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>',
+  up_down:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>',
+  by_date:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="15" r="1.6" fill="currentColor"/></svg>',
+  vs_artist: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="9" r="3"/><path d="M2 19c0-2.8 2.2-5 5-5s5 2.2 5 5"/><circle cx="17" cy="9" r="3"/><path d="M12 19c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg>',
+  vs_genre:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+};
 const PREDICTION_TYPES = [
-  { id: 'yes_no',    label: 'Yes / No',         icon: '🎯', sub: 'Open-ended event question.' },
-  { id: 'up_down',   label: 'Up / Down',        icon: '📈', sub: 'Will an artist\'s price be above or below a target?' },
-  { id: 'by_date',   label: 'By date',          icon: '📅', sub: 'Will something happen by a deadline?' },
-  { id: 'vs_artist', label: 'Artist vs Artist', icon: '🎤', sub: 'Head-to-head: which ticker performs better?' },
-  { id: 'vs_genre',  label: 'Genre vs Genre',   icon: '🎼', sub: 'Head-to-head: which genre rises more?' },
+  { id: 'yes_no',    label: 'Yes / No',         icon: _PM_TYPE_ICONS.yes_no,    sub: 'Open-ended event question.' },
+  { id: 'up_down',   label: 'Up / Down',        icon: _PM_TYPE_ICONS.up_down,   sub: 'Will an artist\'s price be above or below a target?' },
+  { id: 'by_date',   label: 'By date',          icon: _PM_TYPE_ICONS.by_date,   sub: 'Will something happen by a deadline?' },
+  { id: 'vs_artist', label: 'Artist vs Artist', icon: _PM_TYPE_ICONS.vs_artist, sub: 'Head-to-head: which ticker performs better?' },
+  { id: 'vs_genre',  label: 'Genre vs Genre',   icon: _PM_TYPE_ICONS.vs_genre,  sub: 'Head-to-head: which genre rises more?' },
 ];
 const PRED_DURATION_PRESETS = [
   { id: 'd1',  label: '1 day',     hours: 24 },
@@ -21628,17 +22062,109 @@ function openCreateMarketModal() {
       try { renderPredictionsPage(); } catch (_) {}
     }
     close();
-    if (typeof showToast === 'function') {
-      const newSlug = res.slug || null;
-      showToast('Prediction created!', false, {
-        label: 'Open prediction',
-        handler: () => {
-          if (newSlug) _navigateToMarket(res.market_id, newSlug);
-          else if (typeof setView === 'function') setView('predictions');
-        },
-      });
-    }
+
+    // Celebration popup with confetti, mini market preview, share + open
+    openMarketCelebrationModal({
+      marketId:    res.market_id,
+      slug:        res.slug,
+      question:    q,
+      type:        state.type,
+      optionA:     state.optionA,
+      optionB:     state.optionB,
+      ticker:      state.ticker || null,
+      resolvesAt,
+    });
   });
+}
+
+// Celebration modal shown after a prediction is created. Mirrors the
+// leagues celebration pattern: confetti, animated icon, mini preview,
+// share + open CTAs.
+function openMarketCelebrationModal({ marketId, slug, question, type, optionA, optionB, ticker, resolvesAt }) {
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  const link = (typeof location !== 'undefined' ? location.origin : '') + '/predictions/' + encodeURIComponent(slug || '');
+  const typeMeta = PREDICTION_TYPES.find(t => t.id === type) || PREDICTION_TYPES[0];
+
+  // 22 confetti particles with random colors + delays
+  const colors = ['#a78bfa', '#fbbf24', '#22c55e', '#ec4899', '#06b6d4', '#ff8a65'];
+  const confetti = Array.from({ length: 22 }).map((_, i) => {
+    const left = Math.floor(Math.random() * 100);
+    const delay = (Math.random() * 0.6).toFixed(2);
+    const duration = (1.6 + Math.random() * 0.8).toFixed(2);
+    const rotate = Math.floor(Math.random() * 360);
+    const color = colors[i % colors.length];
+    return `<span class="lg-confetti" style="left:${left}%;background:${color};animation-delay:${delay}s;animation-duration:${duration}s;transform:rotate(${rotate}deg)"></span>`;
+  }).join('');
+
+  // Bullseye target SVG (matches the make-prediction wizard's primary icon)
+  const bigIcon = `
+    <svg class="lg-celebrate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/>
+    </svg>`;
+
+  // Mini market card preview (50/50 bar — no bets yet)
+  const tickerPill = ticker
+    ? `<span class="pm-card-ticker">$${escapeHTML(ticker)}</span>`
+    : `<span class="pm-card-ticker pm-card-ticker-house">${escapeHTML(typeMeta.label)}</span>`;
+  const endsLabel = resolvesAt
+    ? 'Ends ' + new Date(resolvesAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : '';
+
+  wrap.innerHTML = `
+    <div class="lg-modal lg-modal-celebrate pm-modal-celebrate">
+      <div class="lg-celebrate-confetti" aria-hidden="true">${confetti}</div>
+
+      <div class="pm-celebrate-mini-card pm-card">
+        <div class="pm-card-top">
+          ${tickerPill}
+          <span class="pm-card-vol">$0 pool</span>
+        </div>
+        <div class="pm-card-q">${escapeHTML(question)}</div>
+        <div class="pm-card-bar">
+          <div class="pm-bar-yes" style="width:50%"><span>50% ${escapeHTML(optionA || 'YES')}</span></div>
+          <div class="pm-bar-no"  style="width:50%"><span>50% ${escapeHTML(optionB || 'NO')}</span></div>
+        </div>
+        <div class="pm-card-foot">
+          <span class="pm-card-ends">${escapeHTML(endsLabel)}</span>
+        </div>
+      </div>
+
+      <div class="lg-celebrate-icon-wrap">${bigIcon}</div>
+      <div class="lg-celebrate-title">Prediction live</div>
+      <div class="lg-modal-sub">Your market is open. Drop the link in any chat — anyone with $10k of paper credits can place a bet.</div>
+
+      <div class="lg-celebrate-link">
+        <input type="text" class="lg-modal-input" id="pm-celebrate-link-input" readonly value="${escapeHTML(link)}">
+        <button class="lg-btn lg-btn-primary lg-celebrate-copy-btn" data-act="copy-link">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy link
+        </button>
+      </div>
+
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-ghost" data-act="close">Done</button>
+        <button class="lg-btn lg-btn-primary lg-celebrate-open" data-act="open">
+          See prediction
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap || e.target.closest('[data-act="close"]')) { e.stopPropagation(); close(); }
+  });
+  wrap.querySelector('[data-act="open"]').onclick = () => {
+    close();
+    if (slug) _navigateToMarket(marketId, slug);
+    else if (typeof setView === 'function') setView('predictions');
+  };
+  wrap.querySelector('[data-act="copy-link"]').onclick = async () => {
+    try { await navigator.clipboard.writeText(link); if (typeof showToast === 'function') showToast('Link copied'); } catch (_) {}
+  };
+  setTimeout(() => { try { wrap.querySelector('#pm-celebrate-link-input').select(); } catch (_) {} }, 60);
 }
 
 function renderMarketCard(m, userBets) {
