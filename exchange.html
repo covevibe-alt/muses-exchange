@@ -6346,8 +6346,8 @@
   }
 
   /* ════════════════════════════════════════════════════════════════════════
-     LEAGUE DETAIL PAGE (Phase B)
-     SPA route at /leagues/<slug> — hero + 5 tabs.
+     LEAGUE DETAIL PAGE — compact 2-column layout (left: cover/info card,
+     right: tabs + scrollable body). Replaces the wide 6:1 hero from Phase B.
      ════════════════════════════════════════════════════════════════════════ */
   .lg-detail {
     --lg-accent: #a78bfa;
@@ -6355,7 +6355,119 @@
     --lg-stroke: rgba(167,139,250,0.30);
   }
 
-  /* Hero — cover photo on top, body below with theme-tinted gradient */
+  /* Right-size the back button (was stretching full width) */
+  #view-league .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    align-self: flex-start;
+    width: auto;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+  }
+
+  /* Two-column shell. Each side scrolls independently within the
+     viewport so neither side disappears when the other is long. */
+  .lg-detail-shell {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 18px;
+    align-items: stretch;
+  }
+  .lg-detail-side {
+    /* Sticky on tall viewports so the side card stays visible while the
+       tab body scrolls. Scroll its own contents if the card itself is taller. */
+    position: sticky;
+    top: 12px;
+    align-self: flex-start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .lg-side-card {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .lg-side-card .lg-cover {
+    aspect-ratio: 16 / 10;       /* compact, no more wide banner */
+    min-height: 140px;
+    max-height: 200px;
+  }
+  .lg-side-body {
+    padding: 14px 16px 16px;
+    background: linear-gradient(180deg, transparent 0%, var(--lg-soft) 100%);
+    border-top: 1px solid var(--lg-stroke);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .lg-side-meta {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin: 0;
+  }
+  .lg-side-name {
+    font-size: 20px; font-weight: 700;
+    color: var(--text); letter-spacing: -0.01em;
+    margin: 0;
+    line-height: 1.2;
+  }
+  .lg-side-desc {
+    font-size: 13px; color: var(--text-dim); line-height: 1.5;
+  }
+  .lg-side-countdown { margin-top: 2px; }
+  .lg-side-actions {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-top: 4px;
+  }
+  .lg-side-actions .lg-btn { width: 100%; justify-content: center; }
+
+  /* Right column — tab strip stays at top of its column, body scrolls
+     independently. Sized to viewport so it doesn't push the page taller. */
+  .lg-detail-main {
+    display: flex; flex-direction: column;
+    min-width: 0;
+    max-height: calc(100vh - 100px);
+  }
+  .lg-detail-main .lg-tabs {
+    flex-shrink: 0;
+    margin-bottom: 12px;
+  }
+  .lg-detail-main .lg-tab-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 4px; /* room for the scrollbar without clipping content */
+  }
+
+  /* Mobile: stack vertically, drop sticky behavior, let the page scroll. */
+  @media (max-width: 880px) {
+    .lg-detail-shell {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .lg-detail-side {
+      position: static;
+      max-height: none;
+      overflow: visible;
+    }
+    .lg-detail-main {
+      max-height: none;
+    }
+    .lg-detail-main .lg-tab-body {
+      overflow: visible;
+    }
+  }
+
+  /* URL input shown when 'Custom' cover is picked */
+  .lg-cover-url-input {
+    margin-top: 6px;
+    font-size: 12.5px;
+    font-family: 'SF Mono', 'JetBrains Mono', monospace;
+  }
+
+  /* Legacy hero rules — leftover from Phase B's full-width hero.
+     Kept here so any stale-cache page still has something to render
+     against. The classes themselves are no longer emitted by the new
+     renderLeagueDetail. */
   .lg-detail-hero {
     position: relative;
     background: var(--card-2);
@@ -17331,7 +17443,7 @@ async function fetchUserLeagues(force) {
     // leagues the user belongs to.
     const { data, error } = await window.SUPABASE
       .from('league_members')
-      .select('role, joined_at, leagues(id, slug, name, description, invite_code, owner_id, max_members, status, cover_id, theme_color, focus_genres, is_public, ends_at)')
+      .select('role, joined_at, leagues(id, slug, name, description, invite_code, owner_id, max_members, status, cover_id, cover_url, theme_color, focus_genres, is_public, ends_at)')
       .eq('user_id', window.MUSE_USER.id);
     if (error) {
       console.warn('[Muses] fetchUserLeagues failed:', error.message || error);
@@ -17350,6 +17462,7 @@ async function fetchUserLeagues(force) {
         role:        r.role,
         joinedAt:    r.joined_at,
         coverId:     r.leagues.cover_id || 'concert',
+        coverUrl:    r.leagues.cover_url || null,
         themeColor:  r.leagues.theme_color || 'purple',
         focusGenres: Array.isArray(r.leagues.focus_genres) ? r.leagues.focus_genres : [],
         endsAt:      r.leagues.ends_at || null,
@@ -18635,6 +18748,9 @@ const LEAGUE_COVERS = {
   'studio':     { label: 'Studio',        url: '/lifestyle/producer-studio-arms-raised.jpg',        grad: 'linear-gradient(135deg,#10d88b 0%,#0e9c69 60%,#064e3b 100%)' },
   'rapper':     { label: 'Rapper',        url: '/lifestyle/rapper-studio-neon-graffiti.jpg',        grad: 'linear-gradient(135deg,#dc2626 0%,#7f1d1d 60%,#1f0606 100%)' },
   'vocalist':   { label: 'Vocalist',      url: '/lifestyle/vocalist-studio-orange-mic.jpg',         grad: 'linear-gradient(135deg,#ff8a65 0%,#dc2626 60%,#7f1d1d 100%)' },
+  // Sentinel for user-supplied cover URLs. The wizard reveals a URL field
+  // when this is picked; the URL is stored in leagues.cover_url.
+  'custom':     { label: 'Custom URL',    url: '',                                                  grad: 'linear-gradient(135deg,#1e1b4b 0%,#312e81 60%,#020617 100%)', isCustom: true },
 };
 
 const LEAGUE_THEMES = {
@@ -18648,16 +18764,15 @@ const LEAGUE_THEMES = {
   'indigo': { label: 'Indigo', accent: '#818cf8', soft: 'rgba(129, 140, 248, 0.12)', stroke: 'rgba(129, 140, 248, 0.32)' },
 };
 
-function _leagueCoverHTML(coverId, themeColor) {
+function _leagueCoverHTML(coverId, themeColor, customUrl) {
   const cover = LEAGUE_COVERS[coverId] || LEAGUE_COVERS['concert'];
   const theme = LEAGUE_THEMES[themeColor] || LEAGUE_THEMES['purple'];
-  // Image on top of gradient: if the image 404s, the gradient shows through
-  // (onerror handler hides the broken-img icon). Empty url → skip <img>
-  // entirely so the user gets the pure-gradient cover for those entries.
-  // The accent overlay tints the image with the league's theme color.
+  // For coverId='custom' use the user-supplied URL (or fall through to
+  // gradient if empty). Otherwise use the catalog url. Empty → gradient only.
+  const effectiveUrl = (coverId === 'custom' && customUrl) ? customUrl : (cover.url || '');
   return `
     <div class="lg-cover" style="background:${cover.grad}">
-      ${cover.url ? `<img src="${cover.url}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}
+      ${effectiveUrl ? `<img src="${escapeHTML(effectiveUrl)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}
       <div class="lg-cover-tint" style="background:linear-gradient(180deg, transparent 40%, ${theme.soft} 100%)"></div>
     </div>`;
 }
@@ -18708,7 +18823,7 @@ function renderLeaguesCard() {
     const ownerBadge = isOwner ? `<span class="lg-card-owner">Owner</span>` : '';
     return `
       <div class="lg-card" data-league-id="${l.id}" style="--lg-accent:${theme.accent}; --lg-soft:${theme.soft}; --lg-stroke:${theme.stroke}">
-        ${_leagueCoverHTML(l.coverId, l.themeColor)}
+        ${_leagueCoverHTML(l.coverId, l.themeColor, l.coverUrl)}
         <div class="lg-card-body">
           <div class="lg-card-row">
             <div class="lg-card-name">${escapeHTML(l.name)}</div>
@@ -18854,6 +18969,7 @@ async function createLeagueV2RPC(name, opts) {
       p_focus_genres:  Array.isArray(opts?.focusGenres) ? opts.focusGenres : [],
       p_is_public:     !!opts?.isPublic,
       p_ends_at:       opts?.endsAt || null,
+      p_cover_url:     opts?.coverUrl || null,
     });
     if (error) return { error: error.message || String(error) };
     return data || {};
@@ -18885,6 +19001,7 @@ function openCreateLeagueModal() {
     name: '',
     description: '',
     coverId: 'concert',
+    coverUrl: '',             // user-supplied URL when coverId === 'custom'
     themeColor: 'purple',
     focusGenres: [],          // multi-select, default empty (overall)
     maxMembers: 50,
@@ -18918,6 +19035,7 @@ function openCreateLeagueModal() {
           <div class="lg-field">
             <label>Cover</label>
             <div class="lg-cover-grid" id="lg-cover-grid"></div>
+            <input type="url" class="lg-modal-input lg-cover-url-input" id="lg-cover-url" hidden placeholder="https://example.com/your-photo.jpg">
           </div>
 
           <div class="lg-field">
@@ -19033,7 +19151,7 @@ function openCreateLeagueModal() {
       : '';
     previewCard.style.cssText = `--lg-accent:${theme.accent}; --lg-soft:${theme.soft}; --lg-stroke:${theme.stroke};`;
     previewCard.innerHTML = `
-      ${_leagueCoverHTML(state.coverId, state.themeColor)}
+      ${_leagueCoverHTML(state.coverId, state.themeColor, state.coverUrl)}
       <div class="lg-card-body">
         <div class="lg-card-row">
           <div class="lg-card-name">${escapeHTML(state.name || 'Your league name')}</div>
@@ -19066,12 +19184,22 @@ function openCreateLeagueModal() {
   });
   durationCustom.addEventListener('input', () => { state.customEndsAt = durationCustom.value; });
 
+  const coverUrlInput = wrap.querySelector('#lg-cover-url');
   coverGrid.addEventListener('click', (e) => {
     const b = e.target.closest('[data-cover]'); if (!b) return;
     const id = b.dataset.cover;
     if (!LEAGUE_COVERS[id]) return;
     state.coverId = id;
     coverGrid.querySelectorAll('[data-cover]').forEach(x => x.classList.toggle('active', x === b));
+    // Show the URL field only when 'custom' is picked.
+    coverUrlInput.hidden = id !== 'custom';
+    if (id === 'custom') {
+      try { coverUrlInput.focus(); } catch (_) {}
+    }
+    refreshPreview();
+  });
+  coverUrlInput.addEventListener('input', () => {
+    state.coverUrl = coverUrlInput.value.trim();
     refreshPreview();
   });
   themeRow.addEventListener('click', (e) => {
@@ -19124,10 +19252,18 @@ function openCreateLeagueModal() {
       .map(h => h.trim())
       .filter(Boolean);
 
+    // Custom cover URL must be present + valid when picked.
+    if (state.coverId === 'custom') {
+      if (!state.coverUrl || !/^https?:\/\//i.test(state.coverUrl)) {
+        errEl.textContent = 'Paste an https:// image URL or pick a preset cover.';
+        errEl.hidden = false; return;
+      }
+    }
     createBtn.disabled = true;
     const res = await createLeagueV2RPC(name, {
       description: state.description,
       coverId: state.coverId,
+      coverUrl: state.coverId === 'custom' ? state.coverUrl : null,
       themeColor: state.themeColor,
       focusGenres: state.focusGenres,
       maxMembers: state.maxMembers,
@@ -19329,16 +19465,18 @@ async function updateLeagueRPC(leagueId, opts) {
   if (!window.SUPABASE) return { error: 'no_supabase' };
   try {
     const { data, error } = await window.SUPABASE.rpc('update_league', {
-      p_league_id:     leagueId,
-      p_name:          opts.name        ?? null,
-      p_description:   opts.description ?? null,
-      p_cover_id:      opts.coverId     ?? null,
-      p_theme_color:   opts.themeColor  ?? null,
-      p_focus_genres:  Array.isArray(opts.focusGenres) ? opts.focusGenres : null,
-      p_max_members:   opts.maxMembers  ?? null,
-      p_is_public:     opts.isPublic    ?? null,
-      p_ends_at:       opts.endsAt      ?? null,
-      p_clear_ends_at: !!opts.clearEndsAt,
+      p_league_id:       leagueId,
+      p_name:            opts.name        ?? null,
+      p_description:     opts.description ?? null,
+      p_cover_id:        opts.coverId     ?? null,
+      p_theme_color:     opts.themeColor  ?? null,
+      p_focus_genres:    Array.isArray(opts.focusGenres) ? opts.focusGenres : null,
+      p_max_members:     opts.maxMembers  ?? null,
+      p_is_public:       opts.isPublic    ?? null,
+      p_ends_at:         opts.endsAt      ?? null,
+      p_clear_ends_at:   !!opts.clearEndsAt,
+      p_cover_url:       opts.coverUrl ?? null,
+      p_clear_cover_url: !!opts.clearCoverUrl,
     });
     if (error) return { error: error.message || String(error) };
     return data || {};
@@ -19382,6 +19520,7 @@ async function _resolveLeagueForDetail() {
         name:        hit.name,
         description: hit.description,
         coverId:     hit.coverId,
+        coverUrl:    hit.coverUrl || null,
         themeColor:  hit.themeColor,
         focusGenres: Array.isArray(hit.focusGenres) ? hit.focusGenres : [],
         endsAt:      hit.endsAt || null,
@@ -19409,6 +19548,7 @@ async function _resolveLeagueForDetail() {
         name:        res.name,
         description: res.description,
         coverId:     res.cover_id    || 'concert',
+        coverUrl:    res.cover_url   || null,
         themeColor:  res.theme_color || 'purple',
         focusGenres: Array.isArray(res.focus_genres) ? res.focus_genres : [],
         endsAt:      res.ends_at || null,
@@ -19468,44 +19608,54 @@ async function renderLeagueDetail() {
   }
   const tabId = STATE.selectedLeagueTab;
 
-  // Build hero + tabs shell
+  // Compact 2-column layout: cover/info on the LEFT (sticky on wide
+   // viewports), tab content on the RIGHT (scrolls independently).
   const hero = `
     <div class="lg-detail" style="--lg-accent:${theme.accent}; --lg-soft:${theme.soft}; --lg-stroke:${theme.stroke}">
-      <div class="lg-detail-hero">
-        ${_leagueCoverHTML(league.coverId, league.themeColor)}
-        <div class="lg-detail-hero-body">
-          <div class="lg-detail-hero-meta">
-            ${(league.focusGenres && league.focusGenres.length > 0) ? `<span class="lg-card-focus">${escapeHTML(league.focusGenres.join(' · '))}</span>` : ''}
-            ${league.isPublic ? `<span class="lg-pill-public">Public</span>` : `<span class="lg-pill-private">Private</span>`}
-            ${league.isOwner ? `<span class="lg-card-owner">Owner</span>` : ''}
-            ${league.endsAt ? `<span class="lg-countdown" data-lg-countdown="${escapeHTML(league.endsAt)}"></span>` : ''}
-          </div>
-          <h1 class="lg-detail-name">${escapeHTML(league.name)}</h1>
-          ${league.description ? `<div class="lg-detail-desc">${escapeHTML(league.description)}</div>` : ''}
-          <div class="lg-detail-actions">
-            ${league.inviteCode
-              ? `<button class="lg-btn lg-btn-ghost lg-detail-share" data-act="share-code">
-                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                   <span>Invite code <b>${escapeHTML(league.inviteCode)}</b></span>
-                 </button>`
-              : ''}
-            ${league.isMember && !league.isOwner
-              ? `<button class="lg-btn lg-btn-ghost" data-act="leave">Leave league</button>`
-              : ''}
-            ${!league.isMember && league.isPublic
-              ? `<button class="lg-btn lg-btn-primary" data-act="join-public">Join league</button>`
-              : ''}
-          </div>
-        </div>
-      </div>
+      <div class="lg-detail-shell">
 
-      <div class="lg-tabs" role="tablist">
-        ${visibleTabs.map(t => `
-          <button class="lg-tab${t.id === tabId ? ' active' : ''}" role="tab" data-tab="${t.id}">${t.label}</button>
-        `).join('')}
-      </div>
+        <!-- LEFT — compact cover card with name + meta + actions -->
+        <aside class="lg-detail-side">
+          <div class="lg-side-card">
+            ${_leagueCoverHTML(league.coverId, league.themeColor, league.coverUrl)}
+            <div class="lg-side-body">
+              <div class="lg-side-meta">
+                ${(league.focusGenres && league.focusGenres.length > 0) ? `<span class="lg-card-focus">${escapeHTML(league.focusGenres.join(' · '))}</span>` : ''}
+                ${league.isPublic ? `<span class="lg-pill-public">Public</span>` : `<span class="lg-pill-private">Private</span>`}
+                ${league.isOwner ? `<span class="lg-card-owner">Owner</span>` : ''}
+              </div>
+              <h1 class="lg-side-name">${escapeHTML(league.name)}</h1>
+              ${league.description ? `<div class="lg-side-desc">${escapeHTML(league.description)}</div>` : ''}
+              ${league.endsAt ? `<div class="lg-side-countdown"><span class="lg-countdown" data-lg-countdown="${escapeHTML(league.endsAt)}"></span></div>` : ''}
+              <div class="lg-side-actions">
+                ${league.inviteCode
+                  ? `<button class="lg-btn lg-btn-ghost lg-detail-share" data-act="share-code">
+                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                       <span>Invite code <b>${escapeHTML(league.inviteCode)}</b></span>
+                     </button>`
+                  : ''}
+                ${league.isMember && !league.isOwner
+                  ? `<button class="lg-btn lg-btn-ghost" data-act="leave">Leave league</button>`
+                  : ''}
+                ${!league.isMember && league.isPublic
+                  ? `<button class="lg-btn lg-btn-primary" data-act="join-public">Join league</button>`
+                  : ''}
+              </div>
+            </div>
+          </div>
+        </aside>
 
-      <div class="lg-tab-body" id="lg-tab-body"></div>
+        <!-- RIGHT — tabs + scrollable tab body -->
+        <section class="lg-detail-main">
+          <div class="lg-tabs" role="tablist">
+            ${visibleTabs.map(t => `
+              <button class="lg-tab${t.id === tabId ? ' active' : ''}" role="tab" data-tab="${t.id}">${t.label}</button>
+            `).join('')}
+          </div>
+          <div class="lg-tab-body" id="lg-tab-body"></div>
+        </section>
+
+      </div>
     </div>
   `;
   host.innerHTML = hero;
@@ -19965,6 +20115,7 @@ function _leagueSettingsHTML(league) {
       <div class="lg-field">
         <label>Cover</label>
         <div class="lg-cover-grid" id="lg-set-cover">${coverThumbs}</div>
+        <input type="url" class="lg-modal-input lg-cover-url-input" id="lg-set-cover-url" ${league.coverId === 'custom' ? '' : 'hidden'} value="${escapeHTML(league.coverUrl || '')}" placeholder="https://example.com/your-photo.jpg">
       </div>
       <div class="lg-field">
         <label>Theme color</label>
@@ -20012,6 +20163,7 @@ function _wireLeagueSettings(league, body) {
     isPublic:     !!league.isPublic,
     durationId:   league.endsAt ? 'custom' : 'none',
     customEndsAt: league.endsAt ? league.endsAt : '',
+    coverUrl:     league.coverUrl || '',
   };
   const nameI = body.querySelector('#lg-set-name');
   const descI = body.querySelector('#lg-set-desc');
@@ -20023,6 +20175,7 @@ function _wireLeagueSettings(league, body) {
   const errEl = body.querySelector('#lg-set-error');
   const saveBtn = body.querySelector('#lg-set-save');
   const coverGrid = body.querySelector('#lg-set-cover');
+  const coverUrlEl = body.querySelector('#lg-set-cover-url');
   const themeRow  = body.querySelector('#lg-set-theme');
 
   nameI.addEventListener('input', () => { draft.name = nameI.value; });
@@ -20057,7 +20210,12 @@ function _wireLeagueSettings(league, body) {
     if (!LEAGUE_COVERS[id]) return;
     draft.coverId = id;
     coverGrid.querySelectorAll('[data-cover]').forEach(x => x.classList.toggle('active', x === b));
+    if (coverUrlEl) {
+      coverUrlEl.hidden = id !== 'custom';
+      if (id === 'custom') { try { coverUrlEl.focus(); } catch (_) {} }
+    }
   });
+  if (coverUrlEl) coverUrlEl.addEventListener('input', () => { draft.coverUrl = coverUrlEl.value.trim(); });
   themeRow.addEventListener('click', (e) => {
     const b = e.target.closest('[data-theme]'); if (!b) return;
     const id = b.dataset.theme;
@@ -20092,6 +20250,17 @@ function _wireLeagueSettings(league, body) {
         errEl.hidden = false; return;
       }
       opts.endsAt = new Date(draft.customEndsAt).toISOString();
+    }
+    // Cover URL is required when 'custom' is picked. Otherwise we clear any
+    // stale URL so the canonical cover renders cleanly.
+    if (draft.coverId === 'custom') {
+      if (!draft.coverUrl || !/^https?:\/\//i.test(draft.coverUrl)) {
+        errEl.textContent = 'Paste an https:// image URL or pick a preset cover.';
+        errEl.hidden = false; return;
+      }
+      opts.coverUrl = draft.coverUrl;
+    } else {
+      opts.clearCoverUrl = true;
     }
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving…';
