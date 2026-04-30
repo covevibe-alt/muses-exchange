@@ -8277,16 +8277,16 @@
   .pmd-page { display: block; }
   .pmd-shell {
     display: grid;
-    /* Cap the left column at 720px so the comment composer, tab tables,
-       and chart don't sprawl across an ultra-wide viewport. Left-aligned
-       (not centered) so the hero/chart/comments share the Back button's
-       left edge — Sander asked to keep them flush with the back button
-       rather than floating in the middle of an ultra-wide page. */
-    grid-template-columns: minmax(0, 720px) 360px;
-    gap: 18px;
+    /* Left column grows up to ~1020px on a laptop / 1440px desktop, so we
+       fill the visible viewport instead of leaving 200+ px of empty
+       space on the right. Still capped (not 1fr) so an ultra-wide
+       monitor doesn't sprawl the textarea to 1500+ px. Left-aligned so
+       the hero/chart/comments share the Back button's left edge. */
+    grid-template-columns: minmax(0, 1020px) 380px;
+    gap: 20px;
     align-items: stretch;
     justify-content: start;
-    max-width: 1120px;
+    max-width: 1420px;
   }
   /* Each column scrolls inside its own viewport-bound box, so the user
      can scroll the question/chart/tabs on the left without losing the
@@ -8572,10 +8572,13 @@
   .pmd-comment-avatar {
     width: 36px; height: 36px;
     border-radius: 50%;
-    color: #0a0612;
+    /* White text on the gradient — matches the profile pill avatar so a
+       user's comment circle is visually identical to their topbar avatar. */
+    color: #fff;
     font-size: 13px; font-weight: 800;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
   .pmd-comment-main { min-width: 0; }
   .pmd-comment-head {
@@ -19008,12 +19011,28 @@ function _PMD_renderTabBody(m) {
 function _avatarBits(handle, displayName) {
   const src = (displayName || handle || 'T').replace(/^@/, '');
   const initials = src.split(/\s+/).map(s => s[0]).join('').slice(0, 2).toUpperCase() || src.slice(0, 2).toUpperCase();
-  // Stable color per handle (8 hues)
-  const hues = ['#a78bfa', '#22c55e', '#fbbf24', '#ec4899', '#06b6d4', '#ff8a65', '#818cf8', '#a3e635'];
-  let h = 0;
-  for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0;
-  const color = hues[Math.abs(h) % hues.length];
-  return { initials, color };
+  // Use the same AVATAR_GRADIENTS palette the profile avatar uses, so a
+  // user's comment circle looks identical to their topbar pill instead of
+  // a flat hash-color disk. For the current user, fall back to their
+  // saved profile.avatarGradient (or sunset) so it's pixel-perfect.
+  const myHandle = (window.STATE && window.STATE.profile && window.STATE.profile.handle) || '';
+  const isMe = myHandle && (myHandle === handle || myHandle === src);
+  const palette = (typeof AVATAR_GRADIENTS === 'object' && AVATAR_GRADIENTS)
+    ? AVATAR_GRADIENTS
+    : { sunset: { css: 'linear-gradient(135deg, #c084fc, #f472b6, #fb923c)' } };
+  let gradKey;
+  if (isMe && window.STATE && window.STATE.profile) {
+    gradKey = window.STATE.profile.avatarGradient || 'sunset';
+  } else {
+    const keys = Object.keys(palette);
+    let h = 0;
+    for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0;
+    gradKey = keys[Math.abs(h) % keys.length];
+  }
+  const grad = palette[gradKey] || palette.sunset || Object.values(palette)[0];
+  // Image avatar takes precedence for the current user when they uploaded one.
+  const imgUrl = isMe && window.STATE && window.STATE.profile && window.STATE.profile.avatarImage;
+  return { initials, color: grad.css, gradient: grad.css, imageUrl: imgUrl || null };
 }
 
 function _humanRelativeTime(iso) {
@@ -19037,9 +19056,15 @@ function _commentRowHTML(c, isReply) {
   const likeCount = +c.like_count || 0;
   const dislikeCount = +c.dislike_count || 0;
   const score = likeCount - dislikeCount;
+  // If the avatar has an uploaded image, show it; otherwise paint the
+  // gradient and overlay the initials. Mirrors the profile pill exactly.
+  const avatarStyle = av.imageUrl
+    ? `background-image:url('${av.imageUrl}');background-size:cover;background-position:center`
+    : `background:${av.gradient || av.color}`;
+  const avatarText = av.imageUrl ? '' : escapeHTML(av.initials);
   return `
     <div class="pmd-comment${isReply ? ' pmd-comment-reply' : ''}" data-comment-id="${c.id}">
-      <div class="pmd-comment-avatar" style="background:${av.color}">${escapeHTML(av.initials)}</div>
+      <div class="pmd-comment-avatar" style="${avatarStyle}">${avatarText}</div>
       <div class="pmd-comment-main">
         <div class="pmd-comment-head">
           <span class="pmd-comment-author">${escapeHTML(handle)}</span>
@@ -19423,6 +19448,14 @@ function _PMD_wireTabBody(host, m) {
   // Per-comment actions (like / dislike / reply / read-more) via delegation.
   // Each .pmd-comment carries data-comment-id; the action lives on a
   // descendant button with [data-act].
+  // CRITICAL: only attach the delegated listener ONCE per tabBody element.
+  // _PMD_wireTabBody runs on every tab switch / comment post / reply submit,
+  // and addEventListener stacks duplicate listeners. With two listeners
+  // attached, clicking Reply toggled the composer ON via the first listener
+  // and OFF via the second on the very same click — the user saw nothing
+  // happen because the composer was created and immediately destroyed.
+  if (!tabBody._pmdDelegated) {
+  tabBody._pmdDelegated = true;
   tabBody.addEventListener('click', async (e) => {
     const actBtn = e.target.closest('[data-act]'); if (!actBtn) return;
     const cell = actBtn.closest('.pmd-comment'); if (!cell) return;
@@ -19511,6 +19544,7 @@ function _PMD_wireTabBody(host, m) {
       return;
     }
   });
+  } // end if (!tabBody._pmdDelegated)
 }
 
 // ════════════════════════════════════════════════════════════════════════
