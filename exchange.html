@@ -8237,6 +8237,52 @@
   .pmd-pct-yes span { color: #22c55e; }
   .pmd-pct-vol { font-size: 12.5px; color: var(--text-dim); font-weight: 600; }
 
+  /* Context strip below the percentage row — current prices, target,
+     leader, etc. Type-specific (only renders for up_down + vs_artist). */
+  .pmd-context {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .pmd-ctx-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .pmd-ctx-cell-wide {
+    grid-column: span 1;
+  }
+  .pmd-ctx-l {
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint);
+    margin-bottom: 3px;
+  }
+  .pmd-ctx-v {
+    font-size: 14px; font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pmd-ctx-v.up { color: #22c55e; }
+  .pmd-ctx-v.down { color: #ef4444; }
+  .pmd-ctx-tag {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px; font-weight: 700;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  @media (max-width: 720px) {
+    .pmd-ctx-row { grid-template-columns: 1fr 1fr; }
+    .pmd-ctx-cell-wide { grid-column: span 2; }
+  }
+
   /* Live countdown chip in the hero */
   .pmd-countdown {
     margin-left: auto;
@@ -8531,19 +8577,30 @@
 
   /* Stack columns on tablet/mobile + drop the column-scroll constraints
      so the page scrolls naturally instead of carving out two narrow
-     scroll panes. */
+     scroll panes. The buy form should sit RIGHT BELOW the hero — so we
+     flatten .pmd-left / .pmd-right / .pmd-sticky via display:contents
+     and reorder their children with `order:`. */
   @media (max-width: 980px) {
     .pmd-shell {
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .pmd-left, .pmd-right, .pmd-sticky {
+      display: contents;
     }
     .pmd-left, .pmd-right {
       max-height: none;
       overflow: visible;
       padding-right: 0;
     }
-    .pmd-sticky {
-      position: static;
-    }
+    /* Mobile order: hero → buy form → chart → tabs → tab body → rules */
+    .pmd-hero        { order: 1; }
+    .pmd-buy-card    { order: 2; }
+    .pmd-chart-wrap  { order: 3; }
+    .pmd-tabs        { order: 4; }
+    .pmd-tab-body    { order: 5; }
+    .pmd-rules-card  { order: 6; }
   }
   @media (max-width: 720px) {
     .pmd-feed-row {
@@ -18240,6 +18297,10 @@ function _predMarketCardHTML(m) {
   const resolvedTone = m.status === 'resolved'
     ? (m.resolution === 'yes' ? 'pm-card-yes' : (m.resolution === 'no' ? 'pm-card-no' : ''))
     : '';
+  // Use the market's option labels (e.g. "TAY"/"DRKE" for vs_artist).
+  // Falls back to YES/NO for legacy markets without labels set.
+  const aLabel = m.option_a_label || 'YES';
+  const bLabel = m.option_b_label || 'NO';
   return `
     <div class="pm-card ${closed ? 'pm-card-closed' : ''} ${resolvedTone}" data-pm-card="${escapeHTML(m.slug || '')}" data-pm-id="${m.id}">
       <div class="pm-card-top">
@@ -18249,10 +18310,10 @@ function _predMarketCardHTML(m) {
       <div class="pm-card-q">${escapeHTML(m.question)}</div>
       <div class="pm-card-bar">
         <div class="pm-bar-yes" style="width:${yesPct.toFixed(1)}%">
-          <span>${Math.round(yesPct)}% YES</span>
+          <span>${Math.round(yesPct)}% ${escapeHTML(aLabel)}</span>
         </div>
         <div class="pm-bar-no"  style="width:${noPct.toFixed(1)}%">
-          <span>${Math.round(noPct)}% NO</span>
+          <span>${Math.round(noPct)}% ${escapeHTML(bLabel)}</span>
         </div>
       </div>
       <div class="pm-card-foot">
@@ -18566,6 +18627,7 @@ function _predMarketDetailHTML(m) {
               <div class="pmd-pct-yes">${Math.round(yesPct)}% chance · <span>${escapeHTML(aLabel)}</span></div>
               <div class="pmd-pct-vol">$${Math.round(total).toLocaleString()} pool</div>
             </div>
+            ${_predContextStripHTML(m)}
           </div>
 
           <!-- Probability chart -->
@@ -18614,6 +18676,84 @@ function _predMarketDetailHTML(m) {
       </div>
     </div>
   `;
+}
+
+// Pull the current price for a ticker out of the live ARTISTS roster.
+// Returns null when the ticker isn't on the roster (or hasn't priced yet).
+function _liveArtistPrice(ticker) {
+  if (!ticker || !Array.isArray(ARTISTS)) return null;
+  const a = ARTISTS.find(x => x.ticker === ticker);
+  if (!a) return null;
+  const p = +(a.price ?? a.start);
+  return Number.isFinite(p) && p > 0 ? p : null;
+}
+
+// Build a per-type context strip — extra info that helps the user act on
+// the market. Returns HTML or '' when there's nothing useful to add.
+function _predContextStripHTML(m) {
+  const tc = m.type_config || {};
+  if (m.prediction_type === 'up_down') {
+    const ticker = tc.ticker || m.artist_ticker;
+    const target = +tc.target_value;
+    const dir = tc.direction || 'above';
+    const live = _liveArtistPrice(ticker);
+    if (live == null || !Number.isFinite(target)) return '';
+    const delta = live - target;
+    const pct = Math.abs(target) > 0 ? Math.abs(delta / target) * 100 : 0;
+    const onTrack = (dir === 'above' && delta >= 0) || (dir === 'below' && delta <= 0);
+    const verb = onTrack ? 'currently' : 'needs';
+    const arrow = onTrack
+      ? (dir === 'above' ? `${pct.toFixed(1)}% above target` : `${pct.toFixed(1)}% below target`)
+      : (dir === 'above' ? `${pct.toFixed(1)}% to climb` : `${pct.toFixed(1)}% to drop`);
+    return `
+      <div class="pmd-context">
+        <div class="pmd-ctx-row">
+          <div class="pmd-ctx-cell">
+            <div class="pmd-ctx-l">$${escapeHTML(ticker)} now</div>
+            <div class="pmd-ctx-v">$${live.toFixed(2)}</div>
+          </div>
+          <div class="pmd-ctx-cell">
+            <div class="pmd-ctx-l">Target</div>
+            <div class="pmd-ctx-v">$${target.toFixed(2)} <span class="pmd-ctx-tag">${escapeHTML(dir)}</span></div>
+          </div>
+          <div class="pmd-ctx-cell pmd-ctx-cell-wide">
+            <div class="pmd-ctx-l">Status</div>
+            <div class="pmd-ctx-v ${onTrack ? 'up' : 'down'}">${verb} ${arrow}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  if (m.prediction_type === 'vs_artist') {
+    const a = tc.ticker_a;
+    const b = tc.ticker_b;
+    const pa = _liveArtistPrice(a);
+    const pb = _liveArtistPrice(b);
+    if (pa == null && pb == null) return '';
+    const leader = (pa != null && pb != null)
+      ? (pa >= pb ? a : b)
+      : (pa != null ? a : b);
+    return `
+      <div class="pmd-context">
+        <div class="pmd-ctx-row">
+          <div class="pmd-ctx-cell">
+            <div class="pmd-ctx-l">$${escapeHTML(a || '')} now</div>
+            <div class="pmd-ctx-v">${pa != null ? '$' + pa.toFixed(2) : '—'}</div>
+          </div>
+          <div class="pmd-ctx-cell">
+            <div class="pmd-ctx-l">$${escapeHTML(b || '')} now</div>
+            <div class="pmd-ctx-v">${pb != null ? '$' + pb.toFixed(2) : '—'}</div>
+          </div>
+          <div class="pmd-ctx-cell pmd-ctx-cell-wide">
+            <div class="pmd-ctx-l">Currently leading</div>
+            <div class="pmd-ctx-v up">$${escapeHTML(leader || '')}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  // For yes_no / by_date / vs_genre — nothing useful to surface yet.
+  return '';
 }
 
 // Helper: human label for the prediction type (shown when there's no ticker).
