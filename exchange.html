@@ -18205,7 +18205,10 @@ function openCreateLeagueModal() {
   setTimeout(() => { try { nameInput.focus(); } catch (_) {} }, 50);
 
   function refreshPreview() {
-    const theme = LEAGUE_THEMES[state.themeColor];
+    // Defensive fallback — Sentry MUSES-EXCHANGE-8 caught a TypeError here
+    // when state.themeColor briefly resolved to an unexpected key. Mirrors
+    // the same fallback used by _leagueCoverHTML / renderLeagueDetail.
+    const theme = LEAGUE_THEMES[state.themeColor] || LEAGUE_THEMES['purple'];
     const focusBadge = state.focusGenre
       ? `<span class="lg-card-focus" style="color:${theme.accent};border-color:${theme.stroke};background:${theme.soft}">${escapeHTML(state.focusGenre)} Cup</span>`
       : '';
@@ -18241,13 +18244,18 @@ function openCreateLeagueModal() {
 
   coverGrid.addEventListener('click', (e) => {
     const b = e.target.closest('[data-cover]'); if (!b) return;
-    state.coverId = b.dataset.cover;
+    // Only accept known cover ids — defensive against unexpected DOM state.
+    const id = b.dataset.cover;
+    if (!LEAGUE_COVERS[id]) return;
+    state.coverId = id;
     coverGrid.querySelectorAll('[data-cover]').forEach(x => x.classList.toggle('active', x === b));
     refreshPreview();
   });
   themeRow.addEventListener('click', (e) => {
     const b = e.target.closest('[data-theme]'); if (!b) return;
-    state.themeColor = b.dataset.theme;
+    const id = b.dataset.theme;
+    if (!LEAGUE_THEMES[id]) return;
+    state.themeColor = id;
     themeRow.querySelectorAll('[data-theme]').forEach(x => x.classList.toggle('active', x === b));
     refreshPreview();
   });
@@ -18984,12 +18992,16 @@ function _wireLeagueSettings(league, body) {
 
   coverGrid.addEventListener('click', (e) => {
     const b = e.target.closest('[data-cover]'); if (!b) return;
-    draft.coverId = b.dataset.cover;
+    const id = b.dataset.cover;
+    if (!LEAGUE_COVERS[id]) return;
+    draft.coverId = id;
     coverGrid.querySelectorAll('[data-cover]').forEach(x => x.classList.toggle('active', x === b));
   });
   themeRow.addEventListener('click', (e) => {
     const b = e.target.closest('[data-theme]'); if (!b) return;
-    draft.themeColor = b.dataset.theme;
+    const id = b.dataset.theme;
+    if (!LEAGUE_THEMES[id]) return;
+    draft.themeColor = id;
     themeRow.querySelectorAll('[data-theme]').forEach(x => x.classList.toggle('active', x === b));
   });
 
