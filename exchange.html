@@ -7784,21 +7784,24 @@
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
   }
+  /* Muted YES/NO segments — match the buy-button palette so the whole
+     palette reads coherently (was bright green/red gradient + white text). */
   .pm-bar-yes, .pm-bar-no {
     display: flex; align-items: center; justify-content: center;
     font-size: 11px; font-weight: 700;
-    color: #fff;
     overflow: hidden; white-space: nowrap;
     transition: width .25s ease;
   }
   .pm-bar-yes {
-    background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%);
+    background: rgba(34, 197, 94, 0.22);
+    color: #4ade80;
   }
   .pm-bar-no {
-    background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+    background: rgba(239, 68, 68, 0.22);
+    color: #f87171;
   }
   .pm-bar-yes span, .pm-bar-no span {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    text-shadow: none;
   }
   .pm-bar-yes:empty, .pm-bar-no:empty {
     /* Hide the gradient when width=0 */
@@ -8407,9 +8410,15 @@
     border: 1px solid var(--border);
     border-radius: 0 0 14px 14px;
     border-top: none;
-    padding: 14px 16px;
+    padding: 16px 20px 18px;
     min-height: 200px;
+    /* Block-level layout — every direct child fills full width so
+       composer / header / comments line up at the same left edge. */
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
   }
+  .pmd-tab-body > * { max-width: 100%; }
 
   /* Comment composer */
   .pmd-composer {
@@ -19066,13 +19075,7 @@ function _PMD_chartSVG(snaps, m) {
   const buildPath = pts => pts.map((p, i) => (i === 0 ? 'M' : 'L') + sx(p.t).toFixed(1) + ' ' + sy(p.y).toFixed(1)).join(' ');
   const pathA = buildPath(ptsA);
   const pathB = buildPath(ptsB);
-  // Area fill is keyed to whichever side leads at the latest point —
-  // green tint when A leads, red tint when B leads.
-  const lastA = ptsA[ptsA.length - 1].y;
-  const aLeads = lastA >= 50;
-  const leadPath = aLeads ? pathA : pathB;
-  const areaD = leadPath + ` L ${sx(tMax).toFixed(1)} ${sy(0).toFixed(1)} L ${sx(tMin).toFixed(1)} ${sy(0).toFixed(1)} Z`;
-  const areaClass = aLeads ? 'pmd-chart-area' : 'pmd-chart-area-b';
+  // (No area fill — just the two lines, per the latest design ask.)
 
   // Time-axis labels (4 evenly spaced).
   const labels = [0, 1, 2, 3].map(i => {
@@ -19098,8 +19101,6 @@ function _PMD_chartSVG(snaps, m) {
           <line x1="${P}" y1="${sy(g).toFixed(1)}" x2="${W - P}" y2="${sy(g).toFixed(1)}" class="pmd-chart-grid${g === 50 ? ' pmd-chart-grid-mid' : ''}"/>
           <text x="${P - 4}" y="${(sy(g) + 4).toFixed(1)}" class="pmd-chart-axis pmd-chart-axis-y" text-anchor="end">${g}</text>
         `).join('')}
-        <!-- shaded fill under the leading side -->
-        <path d="${areaD}" class="${areaClass}"/>
         <!-- option B line (red) -->
         <path d="${pathB}" class="pmd-chart-line pmd-chart-line-b"/>
         <!-- option A line (green) -->
