@@ -7738,6 +7738,326 @@
   .pmd-error-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; }
   .pmd-error-row { display: flex; justify-content: center; }
 
+  /* ════════════════════════════════════════════════════════════════════════
+     PREDICTIONS F — typed wizard, 2-col sticky detail, chart, social tabs
+     ════════════════════════════════════════════════════════════════════════ */
+
+  /* Streak chip — bigger label + info icon */
+  .pm-streak { padding: 7px 11px 7px 12px; gap: 7px; }
+  .pm-streak-label {
+    color: var(--text); font-weight: 700; font-size: 13px;
+  }
+  .pm-streak.hot .pm-streak-label { color: #ff8a65; }
+  .pm-streak-info {
+    color: var(--text-faint);
+    flex-shrink: 0;
+    margin-left: 1px;
+  }
+
+  /* Make-prediction wizard — type tile picker */
+  .pm-make-modal { max-width: 820px; }
+  .pm-create-body { grid-template-columns: 1.2fr 1fr; }
+  .pm-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 8px;
+  }
+  .pm-type-tile {
+    appearance: none;
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 12px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color .12s ease, background .12s ease, transform .12s ease;
+  }
+  .pm-type-tile:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+  .pm-type-tile.active {
+    border-color: rgba(167, 139, 250, 0.55);
+    background: rgba(167, 139, 250, 0.10);
+    box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15) inset;
+  }
+  .pm-type-icon { font-size: 20px; line-height: 1; flex-shrink: 0; }
+  .pm-type-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .pm-type-sub { font-size: 11.5px; color: var(--text-dim); line-height: 1.4; }
+
+  /* Direction toggle (up/down picker) */
+  .pm-direction-row { display: flex; gap: 6px; }
+  .pm-dir-btn {
+    flex: 1; padding: 9px 12px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: border-color .12s ease, color .12s ease, background .12s ease;
+  }
+  .pm-dir-btn.active {
+    border-color: rgba(34, 197, 94, 0.45);
+    background: rgba(34, 197, 94, 0.10);
+    color: #22c55e;
+  }
+  .pm-dir-btn:hover:not(.active) { color: var(--text); border-color: var(--border-strong); }
+
+  .cm-char-count { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+
+  /* ─── DETAIL PAGE — 2-column sticky layout ────────────────────────── */
+  /* Fix the back button padding inside view-prediction (was clipped). */
+  #view-prediction .back-btn { padding: 8px 12px; margin-bottom: 12px; }
+
+  .pmd-page { display: block; }
+  .pmd-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 18px;
+    align-items: flex-start;
+  }
+  .pmd-left {
+    min-width: 0;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .pmd-right {
+    min-width: 0;
+  }
+  .pmd-sticky {
+    position: sticky;
+    top: 12px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .pmd-buy-card, .pmd-rules-card {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .pmd-buy-head { margin-bottom: 14px; }
+  .pmd-buy-prob {
+    font-size: 28px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.015em; line-height: 1;
+  }
+  .pmd-buy-prob-sub {
+    margin-top: 4px;
+    font-size: 11.5px; font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  /* Buy form is now stacked: amount on top, two side-by-side buttons */
+  .pmd-buy { padding: 0; background: none; border: 0; }
+  .pmd-buy-row { grid-template-columns: 1fr 1fr; margin-top: 10px; }
+  .pmd-amt { width: 100%; font-size: 18px; padding: 12px 14px; }
+  .pmd-buy-btn { padding: 12px 8px; min-width: 0; }
+  .pmd-rules-end { color: var(--text-faint) !important; font-size: 12px; padding-top: 6px; border-top: 1px solid var(--border); margin-top: 10px !important; }
+  .pmd-bal { margin-top: 10px; }
+
+  /* Hero refinements */
+  .pmd-hero { padding: 18px 20px 16px; }
+  .pmd-pct-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    flex-wrap: wrap; gap: 8px;
+    margin-bottom: 0;
+  }
+  .pmd-pct-yes {
+    font-size: 24px; font-weight: 800; color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .pmd-pct-yes span { color: #22c55e; }
+  .pmd-pct-vol { font-size: 12.5px; color: var(--text-dim); font-weight: 600; }
+
+  /* Live countdown chip in the hero */
+  .pmd-countdown {
+    margin-left: auto;
+    display: inline-flex; align-items: center;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .pmd-countdown.pmd-countdown-soon {
+    background: rgba(255, 138, 101, 0.12);
+    border-color: rgba(255, 138, 101, 0.35);
+    color: #ff8a65;
+  }
+  .pmd-countdown.pmd-countdown-done {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-faint);
+  }
+
+  /* Probability chart */
+  .pmd-chart-wrap {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px 8px;
+  }
+  .pmd-chart-svg {
+    width: 100%; height: 240px;
+    display: block;
+  }
+  .pmd-chart-grid { stroke: rgba(255, 255, 255, 0.05); stroke-width: 1; }
+  .pmd-chart-grid-mid { stroke: rgba(255, 255, 255, 0.10); stroke-dasharray: 2 4; }
+  .pmd-chart-axis { fill: var(--text-faint); font-size: 10px; font-family: 'JetBrains Mono', 'SF Mono', monospace; }
+  .pmd-chart-axis-y { font-size: 9px; }
+  .pmd-chart-area { fill: rgba(34, 197, 94, 0.10); }
+  .pmd-chart-line { fill: none; stroke: #22c55e; stroke-width: 2; stroke-linejoin: round; }
+  .pmd-chart-dot { fill: #22c55e; stroke: var(--card-2); stroke-width: 2; }
+  .pmd-chart-empty {
+    padding: 56px 16px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+  }
+  .pmd-chart-empty-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .pmd-chart-empty-sub { font-size: 12px; color: var(--text-dim); }
+
+  /* Bottom tab strip */
+  .pmd-tabs {
+    display: flex; gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-top: 4px;
+    overflow-x: auto;
+  }
+  .pmd-tab {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 10px 14px;
+    font-size: 13px; font-weight: 700;
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color .12s ease, border-color .12s ease;
+  }
+  .pmd-tab:hover { color: var(--text); }
+  .pmd-tab.active {
+    color: #b98fff;
+    border-bottom-color: #b98fff;
+  }
+  .pmd-tab-body {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 0 0 14px 14px;
+    border-top: none;
+    padding: 14px 16px;
+    min-height: 200px;
+  }
+
+  /* Comment composer */
+  .pmd-composer {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pmd-composer textarea { resize: vertical; min-height: 56px; font-size: 13.5px; line-height: 1.45; }
+  .pmd-composer-row {
+    display: flex; justify-content: flex-end;
+    margin-top: 8px;
+  }
+  .pmd-comment {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .pmd-comment:last-child { border-bottom: 0; }
+  .pmd-comment-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; margin-bottom: 4px;
+  }
+  .pmd-comment-author { font-size: 12.5px; font-weight: 700; color: var(--text); }
+  .pmd-comment-body { font-size: 13.5px; color: var(--text); line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+
+  /* Top Holders / Positions table */
+  .pmd-table {
+    display: flex; flex-direction: column;
+  }
+  .pmd-table-head, .pmd-table-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 8px 4px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    font-size: 12.5px;
+  }
+  .pmd-table-head {
+    font-size: 10.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint);
+  }
+  .pmd-table-row:last-child { border-bottom: 0; }
+  .pmd-table-row.pmd-row-you { background: rgba(167, 139, 250, 0.06); }
+  .pmd-num {
+    text-align: right;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .pmd-num-yes { color: #6effb8; }
+  .pmd-num-no { color: #ff7a7a; }
+  .pmd-trader {
+    color: var(--text); font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* Activity row layout — reuses .pmd-feed-row but adds an author column */
+  .pmd-feed-row {
+    display: grid;
+    grid-template-columns: 110px 80px 70px auto 1fr;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 4px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12.5px;
+  }
+  .pmd-feed-author {
+    color: var(--text); font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .pmd-feed-side {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-size: 10.5px; font-weight: 800;
+    letter-spacing: 0.04em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-width: 80px;
+  }
+
+  /* Stack columns on tablet/mobile */
+  @media (max-width: 980px) {
+    .pmd-shell {
+      grid-template-columns: 1fr;
+    }
+    .pmd-sticky {
+      position: static;
+    }
+  }
+  @media (max-width: 720px) {
+    .pmd-feed-row {
+      grid-template-columns: 90px 60px 60px auto;
+      font-size: 11.5px;
+    }
+    .pmd-feed-when { display: none; }
+    .pmd-table-head, .pmd-table-row {
+      grid-template-columns: 1fr 1fr 1fr;
+      font-size: 11.5px;
+    }
+    .pmd-table-head > div:nth-child(4),
+    .pmd-table-row > div:nth-child(4) {
+      display: none; /* hide net side / total col on phones */
+    }
+    .pm-create-body { grid-template-columns: 1fr; }
+  }
+
   /* ─── Top Callers leaderboard subpage (pcp-) ──────────────────────── */
   .pcp-head { margin-bottom: 14px; }
   .pcp-head h1 {
@@ -17192,12 +17512,21 @@ function _predictionsHeaderHTML() {
   const mult = _multiplierForStreak(streak);
   const nextMult = _multiplierForStreak(streak + 1);
   const hot = streak >= 3;
+  // Compose tooltip with the threshold table + explicit multiplier line.
+  const streakTip = streak === 0
+    ? 'Win 3 in a row → +$500. 5 → +$2k. 10 → +$10k. Each correct call also adds 0.1× to your payout multiplier (caps at 2.0×).'
+    : (streak >= 10
+        ? `🔥 ${streak}-call streak — multiplier locked at 2.0×. Don't drop it.`
+        : `🔥 ${streak}-call streak — your NEXT correct call pays ${nextMult.toFixed(1)}× of the parimutuel split. Hit 3 / 5 / 10 in a row for bonus credits.`);
   const streakChip = authed ? `
-    <button class="pm-streak${hot ? ' hot' : ''}" data-pm-act="streak" title="${streak === 0 ? 'Win 3 in a row → +$500 bonus' : `Next correct call pays ${nextMult.toFixed(1)}× — keep it going`}">
+    <button class="pm-streak${hot ? ' hot' : ''}" data-pm-act="streak" title="${escapeHTML(streakTip)}">
       <span class="pm-streak-icon">${hot ? '🔥' : '·'}</span>
-      <span class="pm-streak-num">${streak}</span>
+      <span class="pm-streak-label">${streak}-call streak</span>
       <span class="pm-streak-sep">·</span>
-      <span class="pm-streak-mult">${mult.toFixed(1)}×</span>
+      <span class="pm-streak-mult">${mult.toFixed(1)}× next</span>
+      <svg class="pm-streak-info" viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><path d="M12 8v.01M11 12h1v4h1"/>
+      </svg>
     </button>
   ` : '';
   return `
@@ -17211,7 +17540,7 @@ function _predictionsHeaderHTML() {
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M5 4h14v6a7 7 0 0 1-14 0z"/></svg>
         Top Callers
       </button>
-      ${authed ? `<button class="pm-btn pm-btn-primary" data-pm-act="create">+ Create market</button>` : ''}
+      ${authed ? `<button class="pm-btn pm-btn-primary" data-pm-act="create">+ Make prediction</button>` : ''}
     </div>
   `;
 }
@@ -17472,7 +17801,7 @@ async function _resolveMarketForDetail() {
     try {
       const { data, error } = await window.SUPABASE
         .from('prediction_markets')
-        .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status, created_by, created_at')
+        .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status, created_by, created_at, prediction_type, option_a_label, option_b_label, type_config')
         .eq('slug', wantSlug)
         .maybeSingle();
       if (error) return { error: error.message };
@@ -17515,6 +17844,13 @@ async function _fetchMarketRecentBets(marketId) {
   } catch (_) { return []; }
 }
 
+// Tab state for the detail page bottom tab strip.
+let _PMD_TAB = 'comments'; // 'comments' | 'holders' | 'positions' | 'activity'
+let _PMD_COUNTDOWN_INTERVAL = null;
+function _stopPmdCountdown() {
+  if (_PMD_COUNTDOWN_INTERVAL) { clearInterval(_PMD_COUNTDOWN_INTERVAL); _PMD_COUNTDOWN_INTERVAL = null; }
+}
+
 async function renderPredictionMarketDetail() {
   const host = document.getElementById('pred-detail-host');
   if (!host) return;
@@ -17539,35 +17875,129 @@ async function renderPredictionMarketDetail() {
     if (back) back.onclick = () => setView('predictions');
     return;
   }
-  // Pull balance + bets in parallel — non-blocking for first paint.
+  _PMD_TAB = 'comments';
+  // Synchronous initial paint
+  _paintPredMarketDetail(host, resolved);
+  // Live data — non-blocking
   fetchPredictionBalance().then(() => _paintPredMarketDetailHeader(host, resolved));
-  _fetchMarketRecentBets(resolved.id).then(bets => {
-    _PRED_DETAIL_CACHE.recentBets = bets;
-    _paintPredMarketDetailBody(host, resolved, bets);
-  });
-  // Synchronous initial paint with whatever we already have.
-  _paintPredMarketDetail(host, resolved, _PRED_DETAIL_CACHE.recentBets || []);
+  _PMD_loadAllTabsData(host, resolved);
+  _PMD_loadChart(host, resolved);
+  _startPmdCountdown(resolved);
 }
 
-function _paintPredMarketDetail(host, m, bets) {
-  host.innerHTML = _predMarketDetailHTML(m, bets);
+function _paintPredMarketDetail(host, m) {
+  host.innerHTML = _predMarketDetailHTML(m);
   _wirePredMarketDetail(host, m);
 }
 
 function _paintPredMarketDetailHeader(host, m) {
-  // Re-paints just the balance line in case it arrived late.
   const balEl = host.querySelector('[data-pmd-bal]');
   if (balEl && PREDICTION_BALANCE != null) {
     balEl.textContent = '$' + (+PREDICTION_BALANCE).toLocaleString('en-US', { maximumFractionDigits: 2 });
   }
 }
 
-function _paintPredMarketDetailBody(host, m, bets) {
-  const feed = host.querySelector('#pmd-feed');
-  if (feed) feed.innerHTML = _predMarketBetsFeedHTML(bets, m);
+// Live countdown for resolves_at. Mirrors the league countdown helper but
+// scoped to the prediction detail page. Updates every second; the < 24h
+// path shows hh:mm:ss precision.
+function _startPmdCountdown(m) {
+  _stopPmdCountdown();
+  if (!m || !m.resolves_at) return;
+  const ends = new Date(m.resolves_at).getTime();
+  if (!Number.isFinite(ends)) return;
+  const tick = () => {
+    document.querySelectorAll('[data-pmd-countdown]').forEach(el => {
+      const ms = ends - Date.now();
+      const isLessThan24h = ms > 0 && ms < 24 * 3600000;
+      let text;
+      if (m.status === 'resolved') text = 'Resolved';
+      else if (ms <= 0) text = 'Awaiting resolution';
+      else if (isLessThan24h) {
+        const h = Math.floor(ms / 3600000);
+        const mm = Math.floor((ms % 3600000) / 60000);
+        const s = Math.floor((ms % 60000) / 1000);
+        text = `Ends in ${String(h).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      } else {
+        const d = Math.floor(ms / 86400000);
+        const h = Math.floor((ms % 86400000) / 3600000);
+        text = `Ends in ${d}d ${h}h`;
+      }
+      el.textContent = text;
+      el.classList.toggle('pmd-countdown-soon', isLessThan24h);
+      el.classList.toggle('pmd-countdown-done', ms <= 0);
+    });
+  };
+  tick();
+  _PMD_COUNTDOWN_INTERVAL = setInterval(tick, 1000);
 }
 
-function _predMarketDetailHTML(m, bets) {
+// Pull all four tabs' data in parallel + the snapshots for the chart.
+async function _PMD_loadAllTabsData(host, m) {
+  const [comments, holders, positions, activity] = await Promise.all([
+    _PMD_fetchComments(m.id),
+    _PMD_fetchTopHolders(m.id),
+    _PMD_fetchPositions(m.id),
+    _PMD_fetchRecentBets(m.id),
+  ]);
+  _PRED_DETAIL_CACHE.comments  = comments;
+  _PRED_DETAIL_CACHE.holders   = holders;
+  _PRED_DETAIL_CACHE.positions = positions;
+  _PRED_DETAIL_CACHE.activity  = activity;
+  // Repaint the active tab body
+  const body = host.querySelector('#pmd-tab-body');
+  if (body) body.innerHTML = _PMD_renderTabBody(m);
+  _PMD_wireTabBody(host, m);
+}
+
+async function _PMD_loadChart(host, m) {
+  const snaps = await _PMD_fetchSnapshots(m.id);
+  _PRED_DETAIL_CACHE.snapshots = snaps;
+  const chart = host.querySelector('#pmd-chart');
+  if (chart) chart.outerHTML = _PMD_chartSVG(snaps, m);
+}
+
+async function _PMD_fetchComments(marketId) {
+  if (!window.SUPABASE) return [];
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_market_comments', { p_market_id: marketId, p_limit: 100 });
+    if (error || !Array.isArray(data)) return [];
+    return data;
+  } catch (_) { return []; }
+}
+async function _PMD_fetchTopHolders(marketId) {
+  if (!window.SUPABASE) return [];
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_market_top_holders', { p_market_id: marketId, p_limit: 10 });
+    if (error || !Array.isArray(data)) return [];
+    return data;
+  } catch (_) { return []; }
+}
+async function _PMD_fetchPositions(marketId) {
+  if (!window.SUPABASE) return [];
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_market_positions', { p_market_id: marketId });
+    if (error || !Array.isArray(data)) return [];
+    return data;
+  } catch (_) { return []; }
+}
+async function _PMD_fetchRecentBets(marketId) {
+  if (!window.SUPABASE) return [];
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_market_recent_bets', { p_market_id: marketId, p_limit: 25 });
+    if (error || !Array.isArray(data)) return [];
+    return data;
+  } catch (_) { return []; }
+}
+async function _PMD_fetchSnapshots(marketId) {
+  if (!window.SUPABASE) return [];
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_market_snapshots', { p_market_id: marketId });
+    if (error || !Array.isArray(data)) return [];
+    return data;
+  } catch (_) { return []; }
+}
+
+function _predMarketDetailHTML(m) {
   const yesPool = +m.yes_pool || 0;
   const noPool  = +m.no_pool  || 0;
   const total = yesPool + noPool;
@@ -17576,34 +18006,29 @@ function _predMarketDetailHTML(m, bets) {
   const ends = new Date(m.resolves_at).getTime();
   const now = Date.now();
   const closed = m.status !== 'open' || ends <= now;
+  const aLabel = m.option_a_label || 'YES';
+  const bLabel = m.option_b_label || 'NO';
 
-  let endsLabel;
-  if (m.status === 'resolved') {
-    endsLabel = 'Resolved as ' + String(m.resolution || '').toUpperCase() + ' on ' + new Date(m.resolved_at).toLocaleString();
-  } else if (ends <= now) {
-    endsLabel = 'Awaiting resolution (closed ' + new Date(m.resolves_at).toLocaleString() + ')';
-  } else {
-    endsLabel = 'Resolves ' + new Date(m.resolves_at).toLocaleString();
-  }
   const balLine = (window.MUSE_USER && window.MUSE_USER.authed)
     ? `<div class="pmd-bal">Bankroll: <b data-pmd-bal>${PREDICTION_BALANCE != null ? '$' + (+PREDICTION_BALANCE).toLocaleString('en-US', { maximumFractionDigits: 2 }) : '—'}</b></div>`
     : '';
   const tickerPill = m.artist_ticker
     ? `<span class="pm-card-ticker">$${escapeHTML(m.artist_ticker)}</span>`
-    : `<span class="pm-card-ticker pm-card-ticker-house">House</span>`;
+    : `<span class="pm-card-ticker pm-card-ticker-house">${escapeHTML(_predTypeLabel(m))}</span>`;
   const resolvedBanner = m.status === 'resolved'
     ? `<div class="pmd-resolved pmd-resolved-${m.resolution || 'cancelled'}">Resolved: ${String(m.resolution || 'cancelled').toUpperCase()}</div>`
     : '';
+
   const buyForm = closed ? '' : `
     <div class="pmd-buy">
+      <input type="number" id="pmd-amt" class="pmd-amt" placeholder="Amount" min="1" step="1" />
       <div class="pmd-buy-row">
-        <input type="number" id="pmd-amt" class="pmd-amt" placeholder="Amount" min="1" step="1" />
         <button class="pmd-buy-btn pmd-buy-yes" data-pmd-side="yes">
-          <span class="pmd-buy-side">YES</span>
+          <span class="pmd-buy-side">${escapeHTML(aLabel)}</span>
           <span class="pmd-buy-pct">${Math.round(yesPct)}%</span>
         </button>
         <button class="pmd-buy-btn pmd-buy-no"  data-pmd-side="no">
-          <span class="pmd-buy-side">NO</span>
+          <span class="pmd-buy-side">${escapeHTML(bLabel)}</span>
           <span class="pmd-buy-pct">${Math.round(noPct)}%</span>
         </button>
       </div>
@@ -17612,74 +18037,200 @@ function _predMarketDetailHTML(m, bets) {
     </div>
   `;
 
+  // Polymarket-style two-column layout: left scrolls, right sticks.
   return `
     <div class="pmd-page">
-      <div class="pmd-hero ${closed ? 'pmd-hero-closed' : ''}">
-        <div class="pmd-hero-top">
-          ${tickerPill}
-          ${m.creator_name ? `<span class="pm-card-by">by ${escapeHTML(m.creator_name)}</span>` : ''}
-          <button class="pmd-share" data-pmd-act="share" title="Copy link">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></svg>
-            Share
-          </button>
-        </div>
-        <h1 class="pmd-q">${escapeHTML(m.question)}</h1>
-        ${resolvedBanner}
-        <div class="pmd-bar-big">
-          <div class="pmd-bar-yes" style="width:${yesPct.toFixed(1)}%"><span>${Math.round(yesPct)}% YES</span></div>
-          <div class="pmd-bar-no"  style="width:${noPct.toFixed(1)}%"><span>${Math.round(noPct)}% NO</span></div>
-        </div>
-        <div class="pmd-stats">
-          <div class="pmd-stat">
-            <div class="pmd-stat-l">Pool</div>
-            <div class="pmd-stat-v">$${Math.round(total).toLocaleString()}</div>
-          </div>
-          <div class="pmd-stat">
-            <div class="pmd-stat-l">YES pool</div>
-            <div class="pmd-stat-v">$${Math.round(yesPool).toLocaleString()}</div>
-          </div>
-          <div class="pmd-stat">
-            <div class="pmd-stat-l">NO pool</div>
-            <div class="pmd-stat-v">$${Math.round(noPool).toLocaleString()}</div>
-          </div>
-          <div class="pmd-stat">
-            <div class="pmd-stat-l">Status</div>
-            <div class="pmd-stat-v">${escapeHTML(endsLabel)}</div>
-          </div>
-        </div>
-        ${balLine}
-      </div>
+      <div class="pmd-shell">
 
-      ${buyForm}
+        <!-- LEFT column: question, chart, stats, tabs -->
+        <div class="pmd-left">
+          <div class="pmd-hero ${closed ? 'pmd-hero-closed' : ''}">
+            <div class="pmd-hero-top">
+              ${tickerPill}
+              ${m.creator_name ? `<span class="pm-card-by">by ${escapeHTML(m.creator_name)}</span>` : ''}
+              <span class="pmd-countdown" data-pmd-countdown></span>
+              <button class="pmd-share" data-pmd-act="share" title="Copy link">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></svg>
+                Share
+              </button>
+            </div>
+            <h1 class="pmd-q">${escapeHTML(m.question)}</h1>
+            ${resolvedBanner}
+            <div class="pmd-pct-row">
+              <div class="pmd-pct-yes">${Math.round(yesPct)}% chance · <span>${escapeHTML(aLabel)}</span></div>
+              <div class="pmd-pct-vol">$${Math.round(total).toLocaleString()} pool</div>
+            </div>
+          </div>
 
-      <div class="pmd-cols">
-        <div class="pmd-col">
-          <div class="pmd-section-title">Your bets on this market</div>
-          <div id="pmd-feed">${_predMarketBetsFeedHTML(bets, m)}</div>
-        </div>
-        <div class="pmd-col">
-          <div class="pmd-section-title">How this works</div>
-          <div class="pmd-rules">
-            <p>This is a parimutuel market: every dollar bet on the winning side gets a pro-rata share of the full pot at resolution.</p>
-            <p>The percentages above reflect <b>where the money is right now</b> — not the true probability. They move as people bet.</p>
-            <p><b>Stakes are paid in paper credits</b> from your $10k Predictions bankroll. No real money is at risk.</p>
-            ${m.market_type === 'price_target' && m.target_value != null
-              ? `<p><b>Auto-resolution:</b> resolves YES if the artist's price is ${m.target_direction === 'above' ? 'above' : 'below'} $${(+m.target_value).toFixed(2)} at ${new Date(m.resolves_at).toLocaleString()}.</p>`
-              : `<p><b>Manual resolution:</b> a Muses curator settles this at the resolution date based on public information.</p>`}
+          <!-- Probability chart -->
+          <div class="pmd-chart-wrap">
+            <div id="pmd-chart">${_PMD_chartSVG(_PRED_DETAIL_CACHE.snapshots || [], m)}</div>
+          </div>
+
+          <!-- Bottom tab strip: comments / top holders / positions / activity -->
+          <div class="pmd-tabs" id="pmd-tabs">
+            <button class="pmd-tab${_PMD_TAB === 'comments' ? ' active' : ''}" data-pmd-tab="comments">Comments</button>
+            <button class="pmd-tab${_PMD_TAB === 'holders' ? ' active' : ''}" data-pmd-tab="holders">Top Holders</button>
+            <button class="pmd-tab${_PMD_TAB === 'positions' ? ' active' : ''}" data-pmd-tab="positions">Positions</button>
+            <button class="pmd-tab${_PMD_TAB === 'activity' ? ' active' : ''}" data-pmd-tab="activity">Activity</button>
+          </div>
+          <div class="pmd-tab-body" id="pmd-tab-body">
+            ${_PMD_renderTabBody(m)}
           </div>
         </div>
+
+        <!-- RIGHT column: sticky buy form + how-it-works -->
+        <div class="pmd-right">
+          <div class="pmd-sticky">
+            <div class="pmd-buy-card">
+              <div class="pmd-buy-head">
+                <div class="pmd-buy-prob">${Math.round(yesPct)}% chance</div>
+                <div class="pmd-buy-prob-sub">${escapeHTML(aLabel)} · ${escapeHTML(bLabel)}</div>
+              </div>
+              ${buyForm}
+              ${balLine}
+            </div>
+            <div class="pmd-rules-card">
+              <div class="pmd-section-title">How this works</div>
+              <div class="pmd-rules">
+                <p>Parimutuel: every $ on the winning side splits the full pot pro-rata.</p>
+                <p>Percentages reflect <b>where the money is right now</b>, not true probability — they move as people bet.</p>
+                <p><b>Paper credits</b> from your $10k Predictions bankroll. No real money.</p>
+                ${m.prediction_type === 'up_down' && m.type_config && m.type_config.target_value != null
+                  ? `<p><b>Auto-resolution:</b> resolves YES (${escapeHTML(aLabel)}) if $${escapeHTML(m.type_config.ticker || m.artist_ticker || '')} is ${escapeHTML(m.type_config.direction || 'above')} $${(+m.type_config.target_value).toFixed(2)} at the resolution date.</p>`
+                  : `<p><b>Manual resolution:</b> a Muses curator settles this at the resolution date.</p>`}
+                <p class="pmd-rules-end">Ends ${escapeHTML(new Date(m.resolves_at).toLocaleString())}.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   `;
 }
 
-function _predMarketBetsFeedHTML(bets, m) {
-  if (!bets || bets.length === 0) {
-    return `<div class="pmd-feed-empty">No bets from you yet${m.status === 'open' ? ' — place one above.' : '.'}</div>`;
+// Helper: human label for the prediction type (shown when there's no ticker).
+function _predTypeLabel(m) {
+  switch (m.prediction_type) {
+    case 'yes_no':    return 'House';
+    case 'up_down':   return 'Price';
+    case 'by_date':   return 'Deadline';
+    case 'vs_artist': return 'Head-to-head';
+    case 'vs_genre':  return 'Genre vs Genre';
+    default:          return 'House';
   }
-  return `<div class="pmd-feed">${bets.map(b => {
+}
+
+// Render a 4-tab body. Branches on _PMD_TAB.
+function _PMD_renderTabBody(m) {
+  if (_PMD_TAB === 'comments')  return _PMD_commentsHTML(m);
+  if (_PMD_TAB === 'holders')   return _PMD_topHoldersHTML(m);
+  if (_PMD_TAB === 'positions') return _PMD_positionsHTML(m);
+  if (_PMD_TAB === 'activity')  return _PMD_activityHTML(m);
+  return '';
+}
+
+function _PMD_commentsHTML(m) {
+  const list = _PRED_DETAIL_CACHE.comments;
+  const authed = !!(window.MUSE_USER && window.MUSE_USER.authed);
+  const composer = authed
+    ? `<div class="pmd-composer">
+         <textarea class="lg-modal-input" id="pmd-comment-input" rows="2" placeholder="Add a comment…" maxlength="1000"></textarea>
+         <div class="pmd-composer-row">
+           <button class="lg-btn lg-btn-primary" id="pmd-comment-post">Post</button>
+         </div>
+         <div class="pmd-buy-error" id="pmd-comment-error" hidden></div>
+       </div>`
+    : `<div class="pmd-feed-empty">Sign in to comment.</div>`;
+  if (list == null) return composer + `<div class="pmd-feed-empty">Loading comments…</div>`;
+  if (list.length === 0) return composer + `<div class="pmd-feed-empty">No comments yet — start the conversation.</div>`;
+  return composer + `<div class="pmd-feed">${list.map(c => {
+    const when = new Date(c.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const handle = c.handle && c.handle !== 'trader' ? '@' + c.handle : (c.display_name || 'Trader');
+    return `
+      <div class="pmd-comment">
+        <div class="pmd-comment-head">
+          <span class="pmd-comment-author">${escapeHTML(handle)}</span>
+          <span class="pmd-feed-when">${escapeHTML(when)}</span>
+        </div>
+        <div class="pmd-comment-body">${escapeHTML(c.body)}</div>
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+function _PMD_topHoldersHTML(m) {
+  const list = _PRED_DETAIL_CACHE.holders;
+  if (list == null) return `<div class="pmd-feed-empty">Loading holders…</div>`;
+  if (list.length === 0) return `<div class="pmd-feed-empty">No bets yet.</div>`;
+  const aLabel = m.option_a_label || 'YES';
+  const bLabel = m.option_b_label || 'NO';
+  return `
+    <div class="pmd-table">
+      <div class="pmd-table-head">
+        <div>Trader</div>
+        <div class="pmd-num">${escapeHTML(aLabel)} stake</div>
+        <div class="pmd-num">${escapeHTML(bLabel)} stake</div>
+        <div class="pmd-num">Total</div>
+      </div>
+      ${list.map((r, i) => {
+        const handle = r.handle && r.handle !== 'trader' ? '@' + r.handle : (r.display_name || 'Trader');
+        const isYou = window.MUSE_USER && r.user_id === window.MUSE_USER.id;
+        return `
+          <div class="pmd-table-row${isYou ? ' pmd-row-you' : ''}">
+            <div class="pmd-trader">${i+1}. ${escapeHTML(handle)}${isYou ? ' <span class="lg-you-tag">you</span>' : ''}</div>
+            <div class="pmd-num pmd-num-yes">$${Math.round(+r.yes_stake || 0).toLocaleString()}</div>
+            <div class="pmd-num pmd-num-no">$${Math.round(+r.no_stake || 0).toLocaleString()}</div>
+            <div class="pmd-num"><b>$${Math.round(+r.total_stake || 0).toLocaleString()}</b></div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function _PMD_positionsHTML(m) {
+  const list = _PRED_DETAIL_CACHE.positions;
+  if (list == null) return `<div class="pmd-feed-empty">Loading positions…</div>`;
+  if (list.length === 0) return `<div class="pmd-feed-empty">No bets yet.</div>`;
+  const aLabel = m.option_a_label || 'YES';
+  const bLabel = m.option_b_label || 'NO';
+  return `
+    <div class="pmd-table">
+      <div class="pmd-table-head">
+        <div>Trader</div>
+        <div class="pmd-num">${escapeHTML(aLabel)}</div>
+        <div class="pmd-num">${escapeHTML(bLabel)}</div>
+        <div class="pmd-num">Net side</div>
+      </div>
+      ${list.map(r => {
+        const handle = r.handle && r.handle !== 'trader' ? '@' + r.handle : (r.display_name || 'Trader');
+        const isYou = window.MUSE_USER && r.user_id === window.MUSE_USER.id;
+        const yes = +r.yes_stake || 0;
+        const no = +r.no_stake || 0;
+        const netSide = yes >= no ? aLabel : bLabel;
+        const netCls = yes >= no ? 'pmd-num-yes' : 'pmd-num-no';
+        return `
+          <div class="pmd-table-row${isYou ? ' pmd-row-you' : ''}">
+            <div class="pmd-trader">${escapeHTML(handle)}${isYou ? ' <span class="lg-you-tag">you</span>' : ''}</div>
+            <div class="pmd-num">$${Math.round(yes).toLocaleString()}</div>
+            <div class="pmd-num">$${Math.round(no).toLocaleString()}</div>
+            <div class="pmd-num ${netCls}"><b>${escapeHTML(netSide)}</b></div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function _PMD_activityHTML(m) {
+  const list = _PRED_DETAIL_CACHE.activity;
+  if (list == null) return `<div class="pmd-feed-empty">Loading activity…</div>`;
+  if (list.length === 0) return `<div class="pmd-feed-empty">No bets yet — be the first.</div>`;
+  const aLabel = m.option_a_label || 'YES';
+  const bLabel = m.option_b_label || 'NO';
+  return `<div class="pmd-feed">${list.map(b => {
     const when = new Date(b.placed_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     const sideCls = b.side === 'yes' ? 'up' : 'down';
+    const sideLabel = b.side === 'yes' ? aLabel : bLabel;
+    const handle = b.handle && b.handle !== 'trader' ? '@' + b.handle : (b.display_name || 'Trader');
     let payoutStr = '';
     if (b.payout != null) {
       const isWin = +b.payout > 0;
@@ -17689,13 +18240,63 @@ function _predMarketBetsFeedHTML(bets, m) {
     }
     return `
       <div class="pmd-feed-row">
-        <span class="pmd-feed-side ${sideCls}">${b.side.toUpperCase()}</span>
+        <span class="pmd-feed-author">${escapeHTML(handle)}</span>
+        <span class="pmd-feed-side ${sideCls}">${escapeHTML(sideLabel)}</span>
         <span class="pmd-feed-amt">$${(+b.amount).toFixed(0)}</span>
         ${payoutStr}
         <span class="pmd-feed-when">${escapeHTML(when)}</span>
-      </div>
-    `;
+      </div>`;
   }).join('')}</div>`;
+}
+
+// SVG line chart for the YES% over time. Hand-rolled (no library) so we
+// don't pull in a chart dep just for this. Uses snapshot_at (timestamps)
+// on x, yes_pct (0..100) on y, plus a 50% reference line.
+function _PMD_chartSVG(snaps, m) {
+  if (!snaps || snaps.length === 0) {
+    return `<div class="pmd-chart-empty" id="pmd-chart">
+      <div class="pmd-chart-empty-title">No movement yet</div>
+      <div class="pmd-chart-empty-sub">The probability chart fills in as bets land. Be the first to move it.</div>
+    </div>`;
+  }
+  const W = 760, H = 240, P = 28;
+  const pts = snaps.map(s => ({ t: new Date(s.snapshot_at).getTime(), y: Math.max(0, Math.min(100, +s.yes_pct || 50)) }));
+  // Add an "open at 50%" anchor at market creation if we have created_at
+  if (m.created_at) {
+    const c = new Date(m.created_at).getTime();
+    if (pts.length === 0 || pts[0].t > c) pts.unshift({ t: c, y: 50 });
+  }
+  // Add a final "now" point at the latest pct so the line extends to the right edge
+  const last = pts[pts.length - 1];
+  pts.push({ t: Date.now(), y: last.y });
+  const tMin = pts[0].t, tMax = pts[pts.length - 1].t;
+  const xRange = Math.max(1, tMax - tMin);
+  const sx = t => P + ((t - tMin) / xRange) * (W - 2 * P);
+  const sy = y => H - P - (y / 100) * (H - 2 * P);
+  const pathD = pts.map((p, i) => (i === 0 ? 'M' : 'L') + sx(p.t).toFixed(1) + ' ' + sy(p.y).toFixed(1)).join(' ');
+  const areaD = pathD + ` L ${sx(tMax).toFixed(1)} ${sy(0).toFixed(1)} L ${sx(tMin).toFixed(1)} ${sy(0).toFixed(1)} Z`;
+  // X-axis labels: 4 evenly spaced
+  const labels = [0, 1, 2, 3].map(i => {
+    const t = tMin + (xRange * i / 3);
+    const d = new Date(t);
+    const lab = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `<text x="${sx(t).toFixed(1)}" y="${H - 6}" class="pmd-chart-axis">${escapeHTML(lab)}</text>`;
+  }).join('');
+  return `
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="pmd-chart-svg" id="pmd-chart">
+      <!-- gridlines at 0 / 25 / 50 / 75 / 100 -->
+      ${[0, 25, 50, 75, 100].map(g => `
+        <line x1="${P}" y1="${sy(g).toFixed(1)}" x2="${W - P}" y2="${sy(g).toFixed(1)}" class="pmd-chart-grid${g === 50 ? ' pmd-chart-grid-mid' : ''}"/>
+        <text x="${P - 4}" y="${(sy(g) + 4).toFixed(1)}" class="pmd-chart-axis pmd-chart-axis-y" text-anchor="end">${g}</text>
+      `).join('')}
+      <!-- area fill -->
+      <path d="${areaD}" class="pmd-chart-area"/>
+      <!-- line -->
+      <path d="${pathD}" class="pmd-chart-line"/>
+      <!-- last-point dot -->
+      <circle cx="${sx(pts[pts.length-1].t).toFixed(1)}" cy="${sy(pts[pts.length-1].y).toFixed(1)}" r="3.5" class="pmd-chart-dot"/>
+      ${labels}
+    </svg>`;
 }
 
 function _wirePredMarketDetail(host, m) {
@@ -17727,11 +18328,9 @@ function _wirePredMarketDetail(host, m) {
         return;
       }
       if (errEl) errEl.hidden = true;
-      // Update local state and re-render.
       PREDICTION_BALANCE = typeof res.balance === 'number' ? res.balance : PREDICTION_BALANCE;
       m.yes_pool = res.yes_pool ?? m.yes_pool;
       m.no_pool  = res.no_pool  ?? m.no_pool;
-      // Mirror back into the global cache so the homepage list is fresh too.
       if (Array.isArray(PREDICTION_MARKETS)) {
         const idx = PREDICTION_MARKETS.findIndex(x => x.id === m.id);
         if (idx >= 0) {
@@ -17739,15 +18338,62 @@ function _wirePredMarketDetail(host, m) {
           PREDICTION_MARKETS[idx].no_pool  = m.no_pool;
         }
       }
-      // Refresh streak so the chip can update if this completed a resolution
-      // (rare — usually only on resolved-by-cron events).
       try { fetchPredictionStreak(true); } catch (_) {}
-      const freshBets = await _fetchMarketRecentBets(m.id);
-      _PRED_DETAIL_CACHE.recentBets = freshBets;
-      _paintPredMarketDetail(host, m, freshBets);
-      if (typeof showToast === 'function') showToast(`Placed $${amt.toFixed(0)} on ${side.toUpperCase()}`);
+      // Re-fetch tabs + chart since the bet just changed everything.
+      await _PMD_loadAllTabsData(host, m);
+      await _PMD_loadChart(host, m);
+      // Repaint full detail (updates the big % + bar + buy form pcts).
+      _paintPredMarketDetail(host, m);
+      _startPmdCountdown(m);
+      if (typeof showToast === 'function') showToast(`Placed $${amt.toFixed(0)} on ${escapeHTML(side === 'yes' ? (m.option_a_label || 'YES') : (m.option_b_label || 'NO'))}`);
     };
   });
+
+  // Tabs
+  const tabs = host.querySelector('#pmd-tabs');
+  if (tabs) tabs.addEventListener('click', e => {
+    const t = e.target.closest('[data-pmd-tab]'); if (!t) return;
+    _PMD_TAB = t.dataset.pmdTab;
+    tabs.querySelectorAll('[data-pmd-tab]').forEach(b => b.classList.toggle('active', b === t));
+    const body = host.querySelector('#pmd-tab-body');
+    if (body) body.innerHTML = _PMD_renderTabBody(m);
+    _PMD_wireTabBody(host, m);
+  });
+  _PMD_wireTabBody(host, m);
+}
+
+// Comment composer wiring. Re-runs on every tab switch since the textarea
+// only exists when the Comments tab is active.
+function _PMD_wireTabBody(host, m) {
+  const post = host.querySelector('#pmd-comment-post');
+  if (!post) return;
+  post.onclick = async () => {
+    const input = host.querySelector('#pmd-comment-input');
+    const errEl = host.querySelector('#pmd-comment-error');
+    const body  = (input && input.value || '').trim();
+    if (!body) return;
+    errEl.hidden = true;
+    post.disabled = true;
+    try {
+      const { data, error } = await window.SUPABASE.rpc('post_market_comment', { p_market_id: m.id, p_body: body });
+      if (error || (data && data.error)) {
+        errEl.textContent = errorToHumanPred((data && data.error) || error.message);
+        errEl.hidden = false;
+        post.disabled = false;
+        return;
+      }
+      input.value = '';
+      // Refresh comments + repaint
+      _PRED_DETAIL_CACHE.comments = await _PMD_fetchComments(m.id);
+      const tabBody = host.querySelector('#pmd-tab-body');
+      if (tabBody) tabBody.innerHTML = _PMD_renderTabBody(m);
+      _PMD_wireTabBody(host, m);
+    } catch (e) {
+      errEl.textContent = 'Could not post — try again.';
+      errEl.hidden = false;
+    }
+    post.disabled = false;
+  };
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -19843,7 +20489,7 @@ async function fetchPredictionMarkets(force) {
   try {
     const { data, error } = await window.SUPABASE
       .from('prediction_markets')
-      .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status, created_by, created_at')
+      .select('id, slug, question, artist_ticker, market_type, target_value, target_direction, resolves_at, resolved_at, resolution, yes_pool, no_pool, status, created_by, created_at, prediction_type, option_a_label, option_b_label, type_config')
       .in('status', ['open', 'resolved'])
       .order('resolves_at', { ascending: true })
       .limit(50);
@@ -20065,94 +20711,374 @@ function errorToHumanPred(code) {
 // Wrap create_user_prediction_market RPC. Returns the raw RPC result so
 // the caller can dispatch on { ok / error / market_id }.
 async function createUserMarketRPC(question, ticker, resolvesAt) {
+  // Legacy wrapper — kept for any stale callers. Prefer createPredictionMarketV2.
+  return createPredictionMarketV2({
+    question, ticker, resolvesAt,
+    type: 'yes_no', optionA: 'YES', optionB: 'NO', typeConfig: {},
+  });
+}
+
+// Typed market create. Routes via create_prediction_market_v2 with the
+// per-type option labels + jsonb config (price target, ticker pair, etc.).
+async function createPredictionMarketV2(opts) {
   if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) {
     return { error: 'not_signed_in' };
   }
   try {
-    const { data, error } = await window.SUPABASE.rpc('create_user_prediction_market', {
-      p_question: question,
-      p_artist_ticker: ticker || null,
-      p_resolves_at: resolvesAt || null,
+    const { data, error } = await window.SUPABASE.rpc('create_prediction_market_v2', {
+      p_question:       opts.question,
+      p_type:           opts.type || 'yes_no',
+      p_option_a_label: opts.optionA || 'YES',
+      p_option_b_label: opts.optionB || 'NO',
+      p_artist_ticker:  opts.ticker || null,
+      p_resolves_at:    opts.resolvesAt || null,
+      p_type_config:    opts.typeConfig || {},
     });
     if (error) return { error: error.message || String(error) };
     return data || {};
   } catch (e) { return { error: e.message || String(e) }; }
 }
 
-// Modal: user creates a new prediction market. Question + optional ticker
-// + resolution date. Routes through the create_user_prediction_market RPC
-// (rate-limited + active-cap'd server-side).
+// Make Prediction wizard — typed market creation.
+// Five types share one parimutuel YES/NO mechanism but with type-specific
+// inputs and option labels:
+//   • yes_no    — open-ended event (YES/NO)
+//   • up_down   — price target on a ticker (Above/Below)
+//   • by_date   — event by deadline (Yes/No, with explicit deadline)
+//   • vs_artist — head-to-head between two tickers
+//   • vs_genre  — head-to-head between two genres
+const PREDICTION_TYPES = [
+  { id: 'yes_no',    label: 'Yes / No',         icon: '🎯', sub: 'Open-ended event question.' },
+  { id: 'up_down',   label: 'Up / Down',        icon: '📈', sub: 'Will an artist\'s price be above or below a target?' },
+  { id: 'by_date',   label: 'By date',          icon: '📅', sub: 'Will something happen by a deadline?' },
+  { id: 'vs_artist', label: 'Artist vs Artist', icon: '🎤', sub: 'Head-to-head: which ticker performs better?' },
+  { id: 'vs_genre',  label: 'Genre vs Genre',   icon: '🎼', sub: 'Head-to-head: which genre rises more?' },
+];
+const PRED_DURATION_PRESETS = [
+  { id: 'd1',  label: '1 day',     hours: 24 },
+  { id: 'w1',  label: '1 week',    hours: 24 * 7 },
+  { id: 'm1',  label: '1 month',   hours: 24 * 30 },
+  { id: 'm3',  label: '3 months',  hours: 24 * 90 },
+  { id: 'y1',  label: '1 year (max)', hours: 24 * 365 },
+  { id: 'cus', label: 'Pick a date…',  hours: null },
+];
+
 function openCreateMarketModal() {
-  // Default resolution date: 14 days from now, in datetime-local format.
-  const defaultResolves = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-  const localISO = (d) => {
-    const pad = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const state = {
+    type:        'yes_no',
+    question:    '',
+    ticker:      '',
+    optionA:     'YES',
+    optionB:     'NO',
+    typeConfig:  {},
+    durationId:  'm1',
+    customResolvesAt: '',
+    // up_down extras
+    targetValue: '',
+    direction:   'above',
+    // vs_artist extras
+    tickerA:     '',
+    tickerB:     '',
+    // vs_genre extras
+    genreA:      'Pop',
+    genreB:      'Hip-hop',
   };
+  // Reasonable default custom date (14 days out)
+  const _padN = n => String(n).padStart(2, '0');
+  const _toLocalISO = d => `${d.getFullYear()}-${_padN(d.getMonth()+1)}-${_padN(d.getDate())}T${_padN(d.getHours())}:${_padN(d.getMinutes())}`;
+  state.customResolvesAt = _toLocalISO(new Date(Date.now() + 14 * 24 * 3600000));
 
   const wrap = document.createElement('div');
   wrap.className = 'lg-modal-overlay';
   wrap.innerHTML = `
-    <div class="lg-modal lg-modal-wide">
-      <div class="lg-modal-title">Create a prediction market</div>
-      <div class="lg-modal-sub">
-        Free-form open question. Anyone can bet YES/NO with paper credits.
-        Winners share the full pot pro-rata at resolution. Max 1 new market per day, 5 active at a time.
-      </div>
-      <label class="cm-label">Question</label>
-      <textarea class="cm-input cm-input-question" placeholder="Will $TAY drop a surprise album by Christmas?" maxlength="200" rows="3"></textarea>
-      <div class="cm-row">
-        <div class="cm-field">
-          <label class="cm-label">Ticker (optional)</label>
-          <input type="text" class="cm-input cm-input-ticker" placeholder="TAY" maxlength="12" />
+    <div class="lg-modal lg-modal-create pm-make-modal">
+      <div class="lg-modal-head">
+        <div>
+          <div class="lg-modal-title">Make a prediction</div>
+          <div class="lg-modal-sub">Pick a type, frame the question, set a deadline. Anyone can bet — winners split the pot.</div>
         </div>
-        <div class="cm-field">
-          <label class="cm-label">Resolves at</label>
-          <input type="datetime-local" class="cm-input cm-input-date" value="${localISO(defaultResolves)}" />
+        <button class="lg-modal-close" data-act="close" aria-label="Close">×</button>
+      </div>
+
+      <div class="lg-create-body pm-create-body">
+        <div class="lg-create-form">
+          <div class="lg-field">
+            <label>Type</label>
+            <div class="pm-type-grid" id="pm-type-grid">
+              ${PREDICTION_TYPES.map(t => `
+                <button type="button" class="pm-type-tile${t.id === state.type ? ' active' : ''}" data-pm-type="${t.id}">
+                  <span class="pm-type-icon">${t.icon}</span>
+                  <div>
+                    <div class="pm-type-label">${escapeHTML(t.label)}</div>
+                    <div class="pm-type-sub">${escapeHTML(t.sub)}</div>
+                  </div>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="lg-field">
+            <label>Question <span class="lg-field-hint">12–200 chars</span></label>
+            <textarea class="lg-modal-input lg-modal-textarea" id="pm-q" maxlength="200" rows="3" placeholder="Will Taylor's next single hit #1 by August?"></textarea>
+            <div class="cm-char-count" id="pm-q-count">0 / 200</div>
+          </div>
+
+          <!-- Type-specific fields (rendered into this slot by paintTypeFields) -->
+          <div id="pm-type-fields"></div>
+
+          <div class="lg-field">
+            <label>Time limit <span class="lg-field-hint">when does this resolve?</span></label>
+            <select class="lg-modal-input" id="pm-duration">
+              ${PRED_DURATION_PRESETS.map(p => `<option value="${p.id}"${p.id === state.durationId ? ' selected' : ''}>${escapeHTML(p.label)}</option>`).join('')}
+            </select>
+            <input type="datetime-local" class="lg-modal-input lg-duration-custom" id="pm-duration-custom" hidden value="${escapeHTML(state.customResolvesAt)}">
+          </div>
+
+          <div class="lg-modal-error" id="pm-error" hidden></div>
+        </div>
+
+        <div class="lg-create-preview">
+          <div class="lg-preview-label">Preview</div>
+          <div class="pm-card" id="pm-preview-card"></div>
         </div>
       </div>
-      <div class="cm-char-count">0 / 200 · between 12 and 200 chars</div>
-      <div class="cm-error" hidden></div>
+
       <div class="lg-modal-row">
-        <button class="lg-btn lg-btn-ghost" data-act="cancel">Cancel</button>
-        <button class="lg-btn lg-btn-primary" data-act="create">Create market</button>
+        <button class="lg-btn lg-btn-ghost" data-act="close">Cancel</button>
+        <button class="lg-btn lg-btn-primary" id="pm-create-btn">Make prediction</button>
       </div>
     </div>
   `;
   document.body.appendChild(wrap);
-
   const close = () => { try { wrap.remove(); } catch (_) {} };
-  const qEl   = wrap.querySelector('.cm-input-question');
-  const tEl   = wrap.querySelector('.cm-input-ticker');
-  const dEl   = wrap.querySelector('.cm-input-date');
-  const cnt   = wrap.querySelector('.cm-char-count');
-  const errEl = wrap.querySelector('.cm-error');
-  const btn   = wrap.querySelector('[data-act="create"]');
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap || e.target.closest('[data-act="close"]')) { e.stopPropagation(); close(); }
+  });
 
-  setTimeout(() => { try { qEl.focus(); } catch (_) {} }, 40);
-  const updateCount = () => {
-    const n = (qEl.value || '').length;
-    cnt.textContent = `${n} / 200 · between 12 and 200 chars`;
-    cnt.className = 'cm-char-count' + (n < 12 || n > 200 ? ' dim' : '');
-  };
-  qEl.oninput = updateCount; updateCount();
+  const typeGrid     = wrap.querySelector('#pm-type-grid');
+  const qEl          = wrap.querySelector('#pm-q');
+  const qCount       = wrap.querySelector('#pm-q-count');
+  const fieldsHost   = wrap.querySelector('#pm-type-fields');
+  const durSel       = wrap.querySelector('#pm-duration');
+  const durCustom    = wrap.querySelector('#pm-duration-custom');
+  const errEl        = wrap.querySelector('#pm-error');
+  const previewCard  = wrap.querySelector('#pm-preview-card');
+  const createBtn    = wrap.querySelector('#pm-create-btn');
+  setTimeout(() => { try { qEl.focus(); } catch (_) {} }, 50);
 
-  wrap.querySelector('[data-act="cancel"]').onclick = close;
-  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+  // Sync option labels + typeConfig from state.type whenever the type or
+  // related fields change. Then repaint preview.
+  function syncTypeMeta() {
+    if (state.type === 'yes_no') {
+      state.optionA = 'YES'; state.optionB = 'NO';
+      state.typeConfig = {};
+    } else if (state.type === 'up_down') {
+      const tk = (state.ticker || '').toUpperCase() || 'TICKER';
+      const t = parseFloat(state.targetValue);
+      const tv = Number.isFinite(t) ? t : 0;
+      const dir = state.direction === 'below' ? 'below' : 'above';
+      if (dir === 'above') {
+        state.optionA = `Above $${tv.toFixed(2)}`;
+        state.optionB = `Below $${tv.toFixed(2)}`;
+      } else {
+        state.optionA = `Below $${tv.toFixed(2)}`;
+        state.optionB = `Above $${tv.toFixed(2)}`;
+      }
+      state.typeConfig = { ticker: tk, target_value: tv, direction: dir };
+    } else if (state.type === 'by_date') {
+      state.optionA = 'Yes — by deadline';
+      state.optionB = 'No — misses deadline';
+      // The resolves_at IS the deadline; type_config keeps a denormalized copy.
+      state.typeConfig = {};
+    } else if (state.type === 'vs_artist') {
+      const a = (state.tickerA || '').toUpperCase();
+      const b = (state.tickerB || '').toUpperCase();
+      state.optionA = a || 'A';
+      state.optionB = b || 'B';
+      state.typeConfig = { ticker_a: a, ticker_b: b };
+      state.ticker = a || null; // store the primary ticker on the row for filtering
+    } else if (state.type === 'vs_genre') {
+      state.optionA = state.genreA || 'A';
+      state.optionB = state.genreB || 'B';
+      state.typeConfig = { genre_a: state.genreA, genre_b: state.genreB };
+    }
+  }
 
-  btn.onclick = async () => {
+  function paintTypeFields() {
+    if (state.type === 'yes_no') {
+      fieldsHost.innerHTML = `
+        <div class="lg-field">
+          <label>Ticker <span class="lg-field-hint">optional · leave blank for general questions</span></label>
+          <input type="text" class="lg-modal-input" id="pm-ticker" maxlength="12" value="${escapeHTML(state.ticker)}" placeholder="TAY">
+        </div>`;
+      fieldsHost.querySelector('#pm-ticker').addEventListener('input', e => { state.ticker = e.target.value.toUpperCase(); refreshPreview(); });
+    } else if (state.type === 'up_down') {
+      fieldsHost.innerHTML = `
+        <div class="lg-field-row">
+          <div class="lg-field">
+            <label>Ticker</label>
+            <input type="text" class="lg-modal-input" id="pm-ticker" maxlength="12" value="${escapeHTML(state.ticker)}" placeholder="TAY">
+          </div>
+          <div class="lg-field">
+            <label>Target price ($)</label>
+            <input type="number" min="0" step="0.01" class="lg-modal-input" id="pm-tv" value="${escapeHTML(String(state.targetValue || ''))}" placeholder="100">
+          </div>
+        </div>
+        <div class="lg-field">
+          <label>Direction</label>
+          <div class="pm-direction-row">
+            <button type="button" class="pm-dir-btn${state.direction === 'above' ? ' active' : ''}" data-dir="above">↑ Above target</button>
+            <button type="button" class="pm-dir-btn${state.direction === 'below' ? ' active' : ''}" data-dir="below">↓ Below target</button>
+          </div>
+        </div>`;
+      fieldsHost.querySelector('#pm-ticker').addEventListener('input', e => { state.ticker = e.target.value.toUpperCase(); refreshPreview(); });
+      fieldsHost.querySelector('#pm-tv').addEventListener('input', e => { state.targetValue = e.target.value; refreshPreview(); });
+      fieldsHost.querySelectorAll('[data-dir]').forEach(b => b.addEventListener('click', () => {
+        state.direction = b.dataset.dir;
+        fieldsHost.querySelectorAll('[data-dir]').forEach(x => x.classList.toggle('active', x === b));
+        refreshPreview();
+      }));
+    } else if (state.type === 'by_date') {
+      fieldsHost.innerHTML = `
+        <div class="lg-field">
+          <label>Ticker <span class="lg-field-hint">optional</span></label>
+          <input type="text" class="lg-modal-input" id="pm-ticker" maxlength="12" value="${escapeHTML(state.ticker)}" placeholder="TAY">
+          <div class="lg-field-hint" style="margin-top:6px">The deadline is the time-limit you pick below — no extra date needed.</div>
+        </div>`;
+      fieldsHost.querySelector('#pm-ticker').addEventListener('input', e => { state.ticker = e.target.value.toUpperCase(); refreshPreview(); });
+    } else if (state.type === 'vs_artist') {
+      fieldsHost.innerHTML = `
+        <div class="lg-field-row">
+          <div class="lg-field">
+            <label>Ticker A</label>
+            <input type="text" class="lg-modal-input" id="pm-tA" maxlength="12" value="${escapeHTML(state.tickerA)}" placeholder="TAY">
+          </div>
+          <div class="lg-field">
+            <label>Ticker B</label>
+            <input type="text" class="lg-modal-input" id="pm-tB" maxlength="12" value="${escapeHTML(state.tickerB)}" placeholder="DRKE">
+          </div>
+        </div>`;
+      fieldsHost.querySelector('#pm-tA').addEventListener('input', e => { state.tickerA = e.target.value.toUpperCase(); refreshPreview(); });
+      fieldsHost.querySelector('#pm-tB').addEventListener('input', e => { state.tickerB = e.target.value.toUpperCase(); refreshPreview(); });
+    } else if (state.type === 'vs_genre') {
+      const opts = LEAGUE_GENRES.map(g => `<option value="${escapeHTML(g)}">${escapeHTML(g)}</option>`).join('');
+      fieldsHost.innerHTML = `
+        <div class="lg-field-row">
+          <div class="lg-field">
+            <label>Genre A</label>
+            <select class="lg-modal-input" id="pm-gA">${opts}</select>
+          </div>
+          <div class="lg-field">
+            <label>Genre B</label>
+            <select class="lg-modal-input" id="pm-gB">${opts}</select>
+          </div>
+        </div>`;
+      const gA = fieldsHost.querySelector('#pm-gA');
+      const gB = fieldsHost.querySelector('#pm-gB');
+      gA.value = state.genreA || 'Pop';
+      gB.value = state.genreB || 'Hip-hop';
+      gA.addEventListener('change', () => { state.genreA = gA.value; refreshPreview(); });
+      gB.addEventListener('change', () => { state.genreB = gB.value; refreshPreview(); });
+    }
+  }
+
+  function refreshPreview() {
+    syncTypeMeta();
+    const yesPct = 50;
+    const noPct  = 50;
+    const tickerPill = state.ticker
+      ? `<span class="pm-card-ticker">$${escapeHTML(state.ticker)}</span>`
+      : `<span class="pm-card-ticker pm-card-ticker-house">House</span>`;
+    previewCard.innerHTML = `
+      <div class="pm-card-top">
+        ${tickerPill}
+        <span class="pm-card-vol">$0 pool</span>
+      </div>
+      <div class="pm-card-q">${escapeHTML(state.question || 'Your question here…')}</div>
+      <div class="pm-card-bar">
+        <div class="pm-bar-yes" style="width:${yesPct.toFixed(1)}%"><span>${Math.round(yesPct)}% ${escapeHTML(state.optionA)}</span></div>
+        <div class="pm-bar-no"  style="width:${noPct.toFixed(1)}%"><span>${Math.round(noPct)}% ${escapeHTML(state.optionB)}</span></div>
+      </div>
+      <div class="pm-card-foot">
+        <span class="pm-card-ends">Awaiting first bet</span>
+      </div>`;
+  }
+
+  // Type-tile picker
+  typeGrid.addEventListener('click', e => {
+    const b = e.target.closest('[data-pm-type]'); if (!b) return;
+    const id = b.dataset.pmType;
+    if (!PREDICTION_TYPES.find(t => t.id === id)) return;
+    state.type = id;
+    typeGrid.querySelectorAll('[data-pm-type]').forEach(x => x.classList.toggle('active', x === b));
+    paintTypeFields(); refreshPreview();
+  });
+
+  qEl.addEventListener('input', () => {
+    state.question = qEl.value;
+    qCount.textContent = `${qEl.value.length} / 200`;
+    refreshPreview();
+  });
+  durSel.addEventListener('change', () => {
+    state.durationId = durSel.value;
+    durCustom.hidden = state.durationId !== 'cus';
+  });
+  durCustom.addEventListener('input', () => { state.customResolvesAt = durCustom.value; });
+
+  paintTypeFields();
+  refreshPreview();
+
+  createBtn.addEventListener('click', async () => {
+    errEl.hidden = true;
     const q = (qEl.value || '').trim();
-    const t = (tEl.value || '').trim().toUpperCase();
-    // Convert datetime-local back to ISO 8601 with timezone.
-    const dStr = dEl.value;
-    const resolvesAt = dStr ? new Date(dStr).toISOString() : null;
-
     if (q.length < 12) { errEl.textContent = 'Question must be at least 12 characters.'; errEl.hidden = false; return; }
-    if (!resolvesAt) { errEl.textContent = 'Pick a resolution date.'; errEl.hidden = false; return; }
 
-    btn.disabled = true;
-    const res = await createUserMarketRPC(q, t || null, resolvesAt);
-    btn.disabled = false;
+    // Resolve duration → ISO
+    let resolvesAt = null;
+    const preset = PRED_DURATION_PRESETS.find(p => p.id === state.durationId);
+    if (preset) {
+      if (typeof preset.hours === 'number') {
+        resolvesAt = new Date(Date.now() + preset.hours * 3600000).toISOString();
+      } else {
+        if (!state.customResolvesAt) { errEl.textContent = 'Pick a custom resolution date.'; errEl.hidden = false; return; }
+        resolvesAt = new Date(state.customResolvesAt).toISOString();
+      }
+    }
+
+    // Type-specific validation
+    if (state.type === 'up_down') {
+      if (!state.ticker || !state.ticker.match(/^[A-Z0-9]{1,12}$/)) {
+        errEl.textContent = 'Enter a valid ticker (uppercase letters/digits).'; errEl.hidden = false; return;
+      }
+      if (!Number.isFinite(parseFloat(state.targetValue))) {
+        errEl.textContent = 'Enter a target price.'; errEl.hidden = false; return;
+      }
+    } else if (state.type === 'vs_artist') {
+      if (!state.tickerA.match(/^[A-Z0-9]{1,12}$/) || !state.tickerB.match(/^[A-Z0-9]{1,12}$/)) {
+        errEl.textContent = 'Enter two valid tickers.'; errEl.hidden = false; return;
+      }
+      if (state.tickerA === state.tickerB) {
+        errEl.textContent = 'Pick two different tickers.'; errEl.hidden = false; return;
+      }
+    } else if (state.type === 'vs_genre') {
+      if (state.genreA === state.genreB) {
+        errEl.textContent = 'Pick two different genres.'; errEl.hidden = false; return;
+      }
+    }
+
+    syncTypeMeta();
+
+    createBtn.disabled = true;
+    const res = await createPredictionMarketV2({
+      question:    q,
+      type:        state.type,
+      optionA:     state.optionA,
+      optionB:     state.optionB,
+      ticker:      state.ticker || null,
+      resolvesAt,
+      typeConfig:  state.typeConfig,
+    });
+    createBtn.disabled = false;
 
     if (res.error) {
       errEl.textContent = errorToHumanPred(res.error);
@@ -20160,8 +21086,6 @@ function openCreateMarketModal() {
       return;
     }
 
-    // Refresh markets list so the new one appears, then repaint the
-    // Predictions homepage if the user is currently looking at it.
     await fetchPredictionMarkets(true);
     if (CURRENT_VIEW === 'predictions') {
       try { renderPredictionsPage(); } catch (_) {}
@@ -20169,15 +21093,15 @@ function openCreateMarketModal() {
     close();
     if (typeof showToast === 'function') {
       const newSlug = res.slug || null;
-      showToast('Market created. Tap Open to start the YES/NO pool.', false, {
-        label: 'Open market',
+      showToast('Prediction created!', false, {
+        label: 'Open prediction',
         handler: () => {
           if (newSlug) _navigateToMarket(res.market_id, newSlug);
           else if (typeof setView === 'function') setView('predictions');
         },
       });
     }
-  };
+  });
 }
 
 function renderMarketCard(m, userBets) {
@@ -21375,6 +22299,7 @@ function setView(name) {
   else if (typeof _stopLeagueCountdown === 'function') _stopLeagueCountdown();
   if (name === 'predictions') renderPredictionsPage();
   if (name === 'prediction' && typeof renderPredictionMarketDetail === 'function') renderPredictionMarketDetail();
+  else if (typeof _stopPmdCountdown === 'function') _stopPmdCountdown();
   if (name === 'pred-leaderboard' && typeof renderPredCallersPage === 'function') renderPredCallersPage();
   if (name === 'profile') renderProfile();
   if (name === 'orders') renderOrdersView();

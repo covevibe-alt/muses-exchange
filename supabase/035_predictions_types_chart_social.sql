@@ -1,0 +1,30 @@
+-- ════════════════════════════════════════════════════════════════════════════
+-- Migration 035 — Predictions F: 5 market types + chart + social tabs
+-- ════════════════════════════════════════════════════════════════════════════
+-- Phase F of the predictions redesign. Adds:
+--
+--   1. Typed markets — prediction_type column + option_a/option_b labels +
+--      per-type config jsonb. The parimutuel YES/NO mechanics stay; what
+--      changes is how the question is framed and rendered. Old yes_no markets
+--      get their type backfilled.
+--
+--   2. Probability snapshots — prediction_market_snapshots table + an
+--      INSERT trigger on prediction_bets that records (yes_pool, no_pool,
+--      yes_pct) after every bet. Drives the new probability chart.
+--
+--   3. Comments — prediction_comments table with RLS (any authed user can
+--      read; only the author can edit/delete their own).
+--
+--   4. Public bet RPCs — get_market_top_holders / get_market_recent_bets /
+--      get_market_positions read across users via SECURITY DEFINER, since
+--      the existing RLS scopes prediction_bets to "own bets only".
+--
+--   5. New create RPC — create_prediction_market_v2 accepts the type-aware
+--      params. Old create_user_prediction_market kept as a thin wrapper
+--      that forwards to v2 with type='yes_no' for back-compat.
+--
+--   6. Seed 10 markets across the 5 types so the redesigned page has
+--      something to show on day one.
+--
+-- APPLIED VIA SUPABASE MCP on 2026-04-30.
+-- ════════════════════════════════════════════════════════════════════════════
