@@ -8278,15 +8278,15 @@
   .pmd-shell {
     display: grid;
     /* Cap the left column at 720px so the comment composer, tab tables,
-       and chart don't sprawl across an ultra-wide viewport. The whole
-       shell is centered horizontally so the layout reads like Polymarket
-       even at 1920px+ widths. */
+       and chart don't sprawl across an ultra-wide viewport. Left-aligned
+       (not centered) so the hero/chart/comments share the Back button's
+       left edge — Sander asked to keep them flush with the back button
+       rather than floating in the middle of an ultra-wide page. */
     grid-template-columns: minmax(0, 720px) 360px;
     gap: 18px;
     align-items: stretch;
-    justify-content: center;
+    justify-content: start;
     max-width: 1120px;
-    margin: 0 auto;
   }
   /* Each column scrolls inside its own viewport-bound box, so the user
      can scroll the question/chart/tabs on the left without losing the
