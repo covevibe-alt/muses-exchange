@@ -6140,9 +6140,17 @@
     color: var(--text-dim);
     display: flex; align-items: center; gap: 8px;
   }
+  /* SVG clock icon (replaces the ⏱ emoji) — emitted via CSS background. */
   .lg-stand-countdown::before {
-    content: '⏱';
-    font-size: 14px;
+    content: '';
+    width: 14px; height: 14px;
+    flex-shrink: 0;
+    background: currentColor;
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='13' r='8'/><path d='M12 9v4l2 2M9 2h6'/></svg>");
+            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='13' r='8'/><path d='M12 9v4l2 2M9 2h6'/></svg>");
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center;
+    color: var(--text-dim);
   }
   .lg-stand-countdown [data-lg-countdown] {
     font-family: 'JetBrains Mono', 'SF Mono', monospace;
@@ -6457,12 +6465,69 @@
     }
   }
 
-  /* URL input shown when 'Custom' cover is picked */
-  .lg-cover-url-input {
-    margin-top: 6px;
-    font-size: 12.5px;
-    font-family: 'SF Mono', 'JetBrains Mono', monospace;
+  /* Inline SVG icon wrapper used on standings ranks + award chips/cards.
+     Sizes via the parent's font-size; color via 'color' so style overrides
+     pick the right tint per award type. */
+  .lg-icon-wrap {
+    display: inline-flex; align-items: center;
+    line-height: 1;
+    flex-shrink: 0;
   }
+  .lg-icon { width: 1em; height: 1em; }
+  /* Standings rank cell: icons for 1/2/3, plain text for the rest */
+  .lg-stand-rank .lg-icon-wrap { font-size: 22px; }
+  /* Activity feed icon column */
+  .lg-act-icon .lg-icon { width: 22px; height: 22px; }
+  /* Trophy card icon — bigger, sits to the left of the title */
+  .lg-trophy-emoji .lg-icon { width: 28px; height: 28px; }
+  .lg-trophy-emoji { display: inline-flex; align-items: center; }
+  /* Award chips on standings rows — icon + label */
+  .lg-stand-chip { gap: 4px; }
+  .lg-stand-chip .lg-icon { width: 12px; height: 12px; }
+
+  /* Upload widget shown when 'Custom' cover is picked */
+  .lg-cover-upload {
+    margin-top: 8px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .lg-upload-btn {
+    appearance: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 14px;
+    background: var(--card-2);
+    border: 1px dashed rgba(167, 139, 250, 0.40);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: background .12s ease, border-color .12s ease;
+  }
+  .lg-upload-btn:hover {
+    background: rgba(167, 139, 250, 0.06);
+    border-color: rgba(167, 139, 250, 0.60);
+  }
+  .lg-upload-btn:disabled { opacity: 0.6; cursor: progress; }
+  .lg-upload-btn svg { color: var(--text-dim); }
+  .lg-upload-hint {
+    font-size: 12px; color: var(--text-faint); line-height: 1.4;
+    flex: 1 1 auto; min-width: 160px;
+  }
+  .lg-upload-preview {
+    width: 64px; height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    flex-shrink: 0;
+  }
+  .lg-upload-preview img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* When upload widget renders, the error el sits below; let it span the full row. */
+  .lg-cover-upload .lg-modal-error { flex: 0 0 100%; margin-top: 0; }
 
   /* Legacy hero rules — leftover from Phase B's full-width hero.
      Kept here so any stale-cache page still has something to render
@@ -17443,7 +17508,7 @@ async function fetchUserLeagues(force) {
     // leagues the user belongs to.
     const { data, error } = await window.SUPABASE
       .from('league_members')
-      .select('role, joined_at, leagues(id, slug, name, description, invite_code, owner_id, max_members, status, cover_id, cover_url, theme_color, focus_genres, is_public, ends_at)')
+      .select('role, joined_at, leagues(id, slug, name, description, invite_code, owner_id, max_members, status, cover_id, cover_url, theme_color, focus_genres, is_public, ends_at, created_at)')
       .eq('user_id', window.MUSE_USER.id);
     if (error) {
       console.warn('[Muses] fetchUserLeagues failed:', error.message || error);
@@ -17466,6 +17531,7 @@ async function fetchUserLeagues(force) {
         themeColor:  r.leagues.theme_color || 'purple',
         focusGenres: Array.isArray(r.leagues.focus_genres) ? r.leagues.focus_genres : [],
         endsAt:      r.leagues.ends_at || null,
+        createdAt:   r.leagues.created_at || null,
         isPublic:    !!r.leagues.is_public,
       }));
     _userLeaguesFetchAt = Date.now();
@@ -18750,7 +18816,7 @@ const LEAGUE_COVERS = {
   'vocalist':   { label: 'Vocalist',      url: '/lifestyle/vocalist-studio-orange-mic.jpg',         grad: 'linear-gradient(135deg,#ff8a65 0%,#dc2626 60%,#7f1d1d 100%)' },
   // Sentinel for user-supplied cover URLs. The wizard reveals a URL field
   // when this is picked; the URL is stored in leagues.cover_url.
-  'custom':     { label: 'Custom URL',    url: '',                                                  grad: 'linear-gradient(135deg,#1e1b4b 0%,#312e81 60%,#020617 100%)', isCustom: true },
+  'custom':     { label: 'Upload',        url: '',                                                  grad: 'linear-gradient(135deg,#1e1b4b 0%,#312e81 60%,#020617 100%)', isCustom: true },
 };
 
 const LEAGUE_THEMES = {
@@ -18763,6 +18829,99 @@ const LEAGUE_THEMES = {
   'lime':   { label: 'Lime',   accent: '#a3e635', soft: 'rgba(163, 230, 53, 0.12)',  stroke: 'rgba(163, 230, 53, 0.32)' },
   'indigo': { label: 'Indigo', accent: '#818cf8', soft: 'rgba(129, 140, 248, 0.12)', stroke: 'rgba(129, 140, 248, 0.32)' },
 };
+
+// Upload a user-supplied image to the league-covers Storage bucket and
+// return its public URL. Validates type + size client-side; the bucket
+// enforces both server-side as a backstop. Path is `<user_id>/<rand>.<ext>`
+// so RLS scopes writes to the uploader's own folder.
+async function uploadLeagueCoverFile(file) {
+  if (!window.SUPABASE) return { error: 'no_supabase' };
+  if (!window.MUSE_USER || !window.MUSE_USER.authed) return { error: 'not_signed_in' };
+  if (!file) return { error: 'no_file' };
+  const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+  if (!allowed.includes(file.type)) return { error: 'invalid_type' };
+  if (file.size > 4 * 1024 * 1024) return { error: 'too_large' };
+  try {
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+    const rand = (Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 14);
+    const path = `${window.MUSE_USER.id}/${rand}.${ext}`;
+    const { error: upErr } = await window.SUPABASE.storage
+      .from('league-covers')
+      .upload(path, file, {
+        cacheControl: '3600',
+        contentType: file.type,
+        upsert: false,
+      });
+    if (upErr) return { error: upErr.message || 'upload_failed' };
+    const { data: pub } = window.SUPABASE.storage
+      .from('league-covers')
+      .getPublicUrl(path);
+    if (!pub || !pub.publicUrl) return { error: 'no_public_url' };
+    return { ok: true, url: pub.publicUrl, path };
+  } catch (e) { return { error: e?.message || 'upload_failed' }; }
+}
+
+// Render the upload widget HTML. Reused by the wizard + Settings.
+// Hidden by default; revealed when the 'custom' tile is picked.
+function _coverUploadHTML(idPrefix, currentUrl) {
+  return `
+    <div class="lg-cover-upload" id="${idPrefix}-wrap" hidden>
+      <input type="file" id="${idPrefix}-file" accept="image/png,image/jpeg,image/webp" hidden>
+      <button type="button" class="lg-upload-btn" id="${idPrefix}-btn">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <span class="lg-upload-btn-label">Upload photo</span>
+      </button>
+      <div class="lg-upload-hint">PNG or JPG · max 4MB · square works best</div>
+      ${currentUrl ? `<div class="lg-upload-preview"><img src="${escapeHTML(currentUrl)}" alt="" /></div>` : `<div class="lg-upload-preview" hidden></div>`}
+      <div class="lg-modal-error" id="${idPrefix}-err" hidden></div>
+    </div>`;
+}
+
+// Wire an upload button to its file input + a state-updating callback.
+// onUrl(url) is called with the public URL once the upload succeeds; the
+// caller is responsible for stashing it in form state and refreshing
+// any previews that read from it.
+function _wireCoverUpload(root, idPrefix, onUrl) {
+  const wrap = root.querySelector('#' + idPrefix + '-wrap');
+  if (!wrap) return;
+  const btn  = wrap.querySelector('#' + idPrefix + '-btn');
+  const file = wrap.querySelector('#' + idPrefix + '-file');
+  const err  = wrap.querySelector('#' + idPrefix + '-err');
+  const prev = wrap.querySelector('.lg-upload-preview');
+  btn.addEventListener('click', () => { try { file.click(); } catch (_) {} });
+  file.addEventListener('change', async () => {
+    const f = file.files && file.files[0];
+    if (!f) return;
+    err.hidden = true;
+    btn.disabled = true;
+    const oldLabel = btn.querySelector('.lg-upload-btn-label').textContent;
+    btn.querySelector('.lg-upload-btn-label').textContent = 'Uploading…';
+    const res = await uploadLeagueCoverFile(f);
+    btn.disabled = false;
+    btn.querySelector('.lg-upload-btn-label').textContent = oldLabel;
+    if (res.error) {
+      err.textContent = ({
+        invalid_type: 'Pick a PNG, JPG, or WebP image.',
+        too_large:    'File is too big. Max 4MB.',
+        not_signed_in: 'Please sign in first.',
+        no_supabase:  'Could not reach the upload service.',
+        no_public_url: 'Upload finished but the URL is missing — try again.',
+      }[res.error]) || ('Upload failed: ' + res.error);
+      err.hidden = false;
+      return;
+    }
+    // Update preview + caller state
+    if (prev) {
+      prev.hidden = false;
+      prev.innerHTML = `<img src="${escapeHTML(res.url)}" alt="" />`;
+    }
+    onUrl(res.url);
+    // Reset the file input so picking the same file again still triggers change
+    try { file.value = ''; } catch (_) {}
+  });
+}
 
 function _leagueCoverHTML(coverId, themeColor, customUrl) {
   const cover = LEAGUE_COVERS[coverId] || LEAGUE_COVERS['concert'];
@@ -19035,7 +19194,7 @@ function openCreateLeagueModal() {
           <div class="lg-field">
             <label>Cover</label>
             <div class="lg-cover-grid" id="lg-cover-grid"></div>
-            <input type="url" class="lg-modal-input lg-cover-url-input" id="lg-cover-url" hidden placeholder="https://example.com/your-photo.jpg">
+            ${_coverUploadHTML('lg-cv', '')}
           </div>
 
           <div class="lg-field">
@@ -19184,22 +19343,20 @@ function openCreateLeagueModal() {
   });
   durationCustom.addEventListener('input', () => { state.customEndsAt = durationCustom.value; });
 
-  const coverUrlInput = wrap.querySelector('#lg-cover-url');
+  const uploadWrap = wrap.querySelector('#lg-cv-wrap');
   coverGrid.addEventListener('click', (e) => {
     const b = e.target.closest('[data-cover]'); if (!b) return;
     const id = b.dataset.cover;
     if (!LEAGUE_COVERS[id]) return;
     state.coverId = id;
     coverGrid.querySelectorAll('[data-cover]').forEach(x => x.classList.toggle('active', x === b));
-    // Show the URL field only when 'custom' is picked.
-    coverUrlInput.hidden = id !== 'custom';
-    if (id === 'custom') {
-      try { coverUrlInput.focus(); } catch (_) {}
-    }
+    // Show the upload widget only when 'custom' is picked.
+    if (uploadWrap) uploadWrap.hidden = id !== 'custom';
     refreshPreview();
   });
-  coverUrlInput.addEventListener('input', () => {
-    state.coverUrl = coverUrlInput.value.trim();
+  // Wire file upload — when a URL comes back, stash it on state + repaint preview.
+  _wireCoverUpload(wrap, 'lg-cv', (url) => {
+    state.coverUrl = url;
     refreshPreview();
   });
   themeRow.addEventListener('click', (e) => {
@@ -19403,14 +19560,36 @@ const LEAGUE_TABS = [
 // Display metadata for each award_type. Order matters for the trophy
 // case grid (champion-first). Keep in sync with migration 033's CHECK
 // constraint on league_awards.award_type.
-const LEAGUE_AWARD_META = {
-  'champion':       { emoji: '🏆', label: 'Champion',     short: 'Champion',  rank: 1, kind: 'season' },
-  'runner-up':      { emoji: '🥈', label: 'Runner-up',    short: 'Runner-up', rank: 2, kind: 'season' },
-  'bronze':         { emoji: '🥉', label: 'Bronze',       short: 'Bronze',    rank: 3, kind: 'season' },
-  'mvp-week':       { emoji: '👑', label: 'Weekly MVP',   short: 'MVP',       rank: 4, kind: 'weekly' },
-  'big-mover-week': { emoji: '⚡', label: 'Big Mover',    short: 'Big Mover', rank: 5, kind: 'weekly' },
+// Inline SVG icon library for league trophies / standings ranks. All
+// icons share the lg-icon class so size + currentColor work.
+const _LG_SVG = {
+  trophy: '<svg class="lg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M5 4h14v6a7 7 0 0 1-14 0z"/><path d="M19 4h2a2 2 0 0 1 2 2v0a4 4 0 0 1-4 4M5 4H3a2 2 0 0 0-2 2v0a4 4 0 0 0 4 4"/></svg>',
+  medal:  '<svg class="lg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="14" r="6"/><path d="M12 8V2M8 2l4 6 4-6"/></svg>',
+  crown:  '<svg class="lg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 5 5-7 5 7 4-5v11H3z"/><circle cx="3" cy="8" r="1"/><circle cx="21" cy="8" r="1"/><circle cx="12" cy="6" r="1"/></svg>',
+  bolt:   '<svg class="lg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  badge:  '<svg class="lg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>',
 };
-function _awardMeta(t) { return LEAGUE_AWARD_META[t] || { emoji: '🏅', label: t, short: t, rank: 99, kind: 'other' }; }
+
+const LEAGUE_AWARD_META = {
+  'champion':       { icon: _LG_SVG.trophy, color: '#fbbf24', label: 'Champion',   short: 'Champion',  rank: 1, kind: 'season' },
+  'runner-up':      { icon: _LG_SVG.medal,  color: '#cbd5e1', label: 'Runner-up',  short: 'Runner-up', rank: 2, kind: 'season' },
+  'bronze':         { icon: _LG_SVG.medal,  color: '#d97706', label: 'Bronze',     short: 'Bronze',    rank: 3, kind: 'season' },
+  'mvp-week':       { icon: _LG_SVG.crown,  color: '#a78bfa', label: 'Weekly MVP', short: 'MVP',       rank: 4, kind: 'weekly' },
+  'big-mover-week': { icon: _LG_SVG.bolt,   color: '#f59e0b', label: 'Big Mover',  short: 'Big Mover', rank: 5, kind: 'weekly' },
+};
+function _awardMeta(t) { return LEAGUE_AWARD_META[t] || { icon: _LG_SVG.badge, color: 'var(--text-dim)', label: t, short: t, rank: 99, kind: 'other' }; }
+function _awardIcon(t) {
+  const m = _awardMeta(t);
+  return `<span class="lg-icon-wrap" style="color:${m.color}">${m.icon}</span>`;
+}
+// Rank-specific icon for the standings 1/2/3 column. Falls back to the
+// numeric rank for everyone else.
+function _rankIcon(rank) {
+  if (rank === 1) return `<span class="lg-icon-wrap" style="color:#fbbf24" title="1st">${_LG_SVG.trophy}</span>`;
+  if (rank === 2) return `<span class="lg-icon-wrap" style="color:#cbd5e1" title="2nd">${_LG_SVG.medal}</span>`;
+  if (rank === 3) return `<span class="lg-icon-wrap" style="color:#d97706" title="3rd">${_LG_SVG.medal}</span>`;
+  return '';
+}
 
 // Slim cache so flipping between tabs doesn't refetch.
 let _LEAGUE_DETAIL_CACHE = { id: null, league: null, members: null, awards: null };
@@ -19524,6 +19703,7 @@ async function _resolveLeagueForDetail() {
         themeColor:  hit.themeColor,
         focusGenres: Array.isArray(hit.focusGenres) ? hit.focusGenres : [],
         endsAt:      hit.endsAt || null,
+        createdAt:   hit.createdAt || null,
         maxMembers:  hit.maxMembers,
         isPublic:    hit.isPublic,
         inviteCode:  hit.inviteCode,
@@ -19552,6 +19732,7 @@ async function _resolveLeagueForDetail() {
         themeColor:  res.theme_color || 'purple',
         focusGenres: Array.isArray(res.focus_genres) ? res.focus_genres : [],
         endsAt:      res.ends_at || null,
+        createdAt:   res.created_at || null,
         maxMembers:  res.max_members,
         isPublic:    !!res.is_public,
         inviteCode:  res.invite_code || null,
@@ -19869,7 +20050,7 @@ function _leagueStandingsHTML(league, members, awards) {
         .forEach(a => {
           const meta = _awardMeta(a.awardType);
           const arr = chipsByUser.get(a.userId) || [];
-          arr.push(`<span class="lg-stand-chip" title="${escapeHTML(meta.label)} — week of ${escapeHTML(a.periodEnd)}">${meta.emoji} ${escapeHTML(meta.short)}</span>`);
+          arr.push(`<span class="lg-stand-chip" title="${escapeHTML(meta.label)} — week of ${escapeHTML(a.periodEnd)}"><span class="lg-icon-wrap" style="color:${meta.color}">${meta.icon}</span>${escapeHTML(meta.short)}</span>`);
           chipsByUser.set(a.userId, arr);
         });
     }
@@ -19878,7 +20059,7 @@ function _leagueStandingsHTML(league, members, awards) {
       const meta = _awardMeta(a.awardType);
       if (meta.kind !== 'season') return;
       const arr = chipsByUser.get(a.userId) || [];
-      arr.unshift(`<span class="lg-stand-chip lg-stand-chip-season" title="${escapeHTML(meta.label)} — ${escapeHTML(a.periodEnd || '')}">${meta.emoji} ${escapeHTML(meta.short)}</span>`);
+      arr.unshift(`<span class="lg-stand-chip lg-stand-chip-season" title="${escapeHTML(meta.label)} — ${escapeHTML(a.periodEnd || '')}"><span class="lg-icon-wrap" style="color:${meta.color}">${meta.icon}</span>${escapeHTML(meta.short)}</span>`);
       chipsByUser.set(a.userId, arr);
     });
   }
@@ -19900,7 +20081,7 @@ function _leagueStandingsHTML(league, members, awards) {
       ? `<span class="${ret >= 0 ? 'up' : 'down'}">${ret >= 0 ? '+' : ''}${ret.toFixed(2)}%</span>`
       : '<span class="lg-dim">—</span>';
     const isYou = window.MUSE_USER && m.userId === window.MUSE_USER.id;
-    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+    const medal = _rankIcon(rank);
     const pvStr = (m.pv != null)
       ? '$' + Number(m.pv).toLocaleString('en-US', { maximumFractionDigits: 0 })
       : '<span class="lg-dim">—</span>';
@@ -20007,7 +20188,7 @@ function _leagueActivityHTML(league, awards) {
     }
     return `
       <div class="lg-act-row">
-        <div class="lg-act-icon">${meta.emoji}</div>
+        <div class="lg-act-icon" style="color:${meta.color}">${meta.icon}</div>
         <div class="lg-act-body">
           <div class="lg-act-title">
             <b>${escapeHTML(a.userName)}</b> earned <b>${escapeHTML(meta.label)}</b>
@@ -20023,13 +20204,27 @@ function _leagueActivityHTML(league, awards) {
 
 // ─── Awards — trophy case grouped by award type ────────────────────────
 function _leagueAwardsHTML(league, awards) {
-  // Always render a structured grid even when empty so the page has shape.
-  const order = ['champion','runner-up','bronze','mvp-week','big-mover-week'];
+  // Decide which awards make sense for this league's duration.
+  // Mirrors the backend logic in compute_league_weekly_awards (skips weekly
+  // for leagues whose total span is < 14 days).
+  const endsMs = league.endsAt ? new Date(league.endsAt).getTime() : null;
+  const createdMs = league.createdAt ? new Date(league.createdAt).getTime() : null;
+  const isShort = endsMs && createdMs && (endsMs - createdMs) < 14 * 86400000;
+  const showWeekly = !isShort; // open-ended OR ≥14d duration
+
+  const order = showWeekly
+    ? ['champion','runner-up','bronze','mvp-week','big-mover-week']
+    : ['champion','runner-up','bronze'];
   const byType = new Map(order.map(t => [t, []]));
   (awards || []).forEach(a => {
     if (!byType.has(a.awardType)) byType.set(a.awardType, []);
     byType.get(a.awardType).push(a);
   });
+
+  // Award fires "at league end" when ends_at is set; otherwise at season end.
+  const seasonAwardSub = endsMs
+    ? 'Settles at league end'
+    : 'Settles at season end';
 
   const blocks = order.map(t => {
     const list = byType.get(t) || [];
@@ -20050,13 +20245,11 @@ function _leagueAwardsHTML(league, awards) {
     return `
       <div class="lg-trophy-card${isEmpty ? ' lg-trophy-empty' : ''}">
         <div class="lg-trophy-head">
-          <span class="lg-trophy-emoji">${meta.emoji}</span>
+          <span class="lg-trophy-emoji" style="color:${meta.color}">${meta.icon}</span>
           <div class="lg-trophy-titles">
             <div class="lg-trophy-label">${escapeHTML(meta.label)}</div>
             <div class="lg-trophy-sub">${
-              meta.kind === 'season'
-                ? 'Awarded at season end'
-                : 'Awarded every Friday'
+              meta.kind === 'season' ? escapeHTML(seasonAwardSub) : 'Every Friday'
             }</div>
           </div>
           ${isEmpty ? '' : `<div class="lg-trophy-count">${list.length}</div>`}
@@ -20068,10 +20261,19 @@ function _leagueAwardsHTML(league, awards) {
     `;
   }).join('');
 
-  const note = `
-    <div class="lg-tab-note">
-      Weekly awards run on the <b>Friday Market Close</b> cron (18:00 UTC). Season awards (Champion / Runner-up / Bronze) drop when the global season ends, with <b>$5k / $2k / $1k</b> in tournament credits.
-    </div>`;
+  // Adaptive explainer copy.
+  const credits = isShort ? '$1k / $500 / $250' : '$5k / $2k / $1k';
+  let noteText;
+  if (!endsMs) {
+    noteText = `Weekly MVP + Big Mover settle every <b>Friday at 18:00 UTC</b>. Champion / Runner-up / Bronze drop when the season ends, with <b>${credits}</b> in tournament credits.`;
+  } else if (showWeekly) {
+    const endLabel = new Date(endsMs).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    noteText = `Weekly MVP + Big Mover settle every <b>Friday at 18:00 UTC</b> until <b>${escapeHTML(endLabel)}</b>. Champion / Runner-up / Bronze settle at league end with <b>${credits}</b> in tournament credits.`;
+  } else {
+    const endLabel = new Date(endsMs).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    noteText = `Short league — only Champion / Runner-up / Bronze fire on <b>${escapeHTML(endLabel)}</b>, with <b>${credits}</b> in tournament credits. (Weekly awards skip leagues under 14 days — there's no time for them to fire twice.)`;
+  }
+  const note = `<div class="lg-tab-note">${noteText}</div>`;
   return `${note}<div class="lg-trophy-grid">${blocks}</div>`;
 }
 
@@ -20115,7 +20317,7 @@ function _leagueSettingsHTML(league) {
       <div class="lg-field">
         <label>Cover</label>
         <div class="lg-cover-grid" id="lg-set-cover">${coverThumbs}</div>
-        <input type="url" class="lg-modal-input lg-cover-url-input" id="lg-set-cover-url" ${league.coverId === 'custom' ? '' : 'hidden'} value="${escapeHTML(league.coverUrl || '')}" placeholder="https://example.com/your-photo.jpg">
+        ${_coverUploadHTML('lg-scv', league.coverId === 'custom' ? (league.coverUrl || '') : '')}
       </div>
       <div class="lg-field">
         <label>Theme color</label>
@@ -20175,7 +20377,7 @@ function _wireLeagueSettings(league, body) {
   const errEl = body.querySelector('#lg-set-error');
   const saveBtn = body.querySelector('#lg-set-save');
   const coverGrid = body.querySelector('#lg-set-cover');
-  const coverUrlEl = body.querySelector('#lg-set-cover-url');
+  const uploadWrap = body.querySelector('#lg-scv-wrap');
   const themeRow  = body.querySelector('#lg-set-theme');
 
   nameI.addEventListener('input', () => { draft.name = nameI.value; });
@@ -20204,18 +20406,17 @@ function _wireLeagueSettings(league, body) {
     b.classList.toggle('active');
   });
 
+  // Show the upload widget on initial render if cover is already 'custom'.
+  if (uploadWrap) uploadWrap.hidden = draft.coverId !== 'custom';
   coverGrid.addEventListener('click', (e) => {
     const b = e.target.closest('[data-cover]'); if (!b) return;
     const id = b.dataset.cover;
     if (!LEAGUE_COVERS[id]) return;
     draft.coverId = id;
     coverGrid.querySelectorAll('[data-cover]').forEach(x => x.classList.toggle('active', x === b));
-    if (coverUrlEl) {
-      coverUrlEl.hidden = id !== 'custom';
-      if (id === 'custom') { try { coverUrlEl.focus(); } catch (_) {} }
-    }
+    if (uploadWrap) uploadWrap.hidden = id !== 'custom';
   });
-  if (coverUrlEl) coverUrlEl.addEventListener('input', () => { draft.coverUrl = coverUrlEl.value.trim(); });
+  _wireCoverUpload(body, 'lg-scv', (url) => { draft.coverUrl = url; });
   themeRow.addEventListener('click', (e) => {
     const b = e.target.closest('[data-theme]'); if (!b) return;
     const id = b.dataset.theme;
