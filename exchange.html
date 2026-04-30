@@ -19926,7 +19926,7 @@ function renderLeaguesCard() {
           </svg>
         </div>
         <div class="lg-empty-hero-title">Start a league with your people</div>
-        <div class="lg-empty-hero-sub">A private board for you and your friends. Compete on monthly returns, settle weekly bragging rights, crown a season champion. Up to 50 members.</div>
+        <div class="lg-empty-hero-sub">A private board for you and your friends. Compete on monthly returns, settle weekly bragging rights, crown a monthly champion. Up to 50 members.</div>
         <div class="lg-empty-hero-row">
           <button class="lg-btn lg-btn-primary lg-btn-big" data-lg-action="create">+ Create a league</button>
           <button class="lg-btn lg-btn-ghost lg-btn-big" data-lg-action="join">Join with code</button>
@@ -21255,10 +21255,10 @@ function _leagueAwardsHTML(league, awards) {
     byType.get(a.awardType).push(a);
   });
 
-  // Award fires "at league end" when ends_at is set; otherwise at season end.
+  // Award fires "at league end" when ends_at is set; otherwise at month end.
   const seasonAwardSub = endsMs
     ? 'Settles at league end'
-    : 'Settles at season end';
+    : 'Settles at month end';
 
   const blocks = order.map(t => {
     const list = byType.get(t) || [];
@@ -21299,7 +21299,7 @@ function _leagueAwardsHTML(league, awards) {
   const credits = isShort ? '$1k / $500 / $250' : '$5k / $2k / $1k';
   let noteText;
   if (!endsMs) {
-    noteText = `Weekly MVP + Big Mover settle every <b>Friday at 18:00 UTC</b>. Champion / Runner-up / Bronze drop when the season ends, with <b>${credits}</b> in tournament credits.`;
+    noteText = `Weekly MVP + Big Mover settle every <b>Friday at 18:00 UTC</b>. Champion / Runner-up / Bronze drop at month end, with <b>${credits}</b> in tournament credits.`;
   } else if (showWeekly) {
     const endLabel = new Date(endsMs).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     noteText = `Weekly MVP + Big Mover settle every <b>Friday at 18:00 UTC</b> until <b>${escapeHTML(endLabel)}</b>. Champion / Runner-up / Bronze settle at league end with <b>${credits}</b> in tournament credits.`;
@@ -25596,7 +25596,7 @@ function _competePanels(stats) {
       tag: 'Prediction markets',
       tagPulse: pr.open_count > 0,
       title: 'Wager on <em>what happens next.</em>',
-      lede: "Will $TYLA cross $100? Will any trader break +100% by season's end? Stake paper credits — the crowd sets the odds.",
+      lede: "Will $TYLA cross $100? Will any trader break +100% by month's end? Stake paper credits — the crowd sets the odds.",
       stats: [
         { num: _competeFmtCount(pr.open_count), label: 'Open now' },
         { num: _competeFmtMoney(pr.total_pool), label: 'In the pool' },
@@ -25788,7 +25788,7 @@ function _competeSeasonVisual(tn) {
 }
 function _competePredictionsVisual(pr) {
   const sample = (pr.sample && pr.sample[0]) || null;
-  let q = sample?.question || "Will any trader break +100% by season's end?";
+  let q = sample?.question || "Will any trader break +100% by month's end?";
   if (q.length > 70) q = q.slice(0, 67) + '…';
   const yes = Number(sample?.yes_pool || 0);
   const no  = Number(sample?.no_pool  || 0);
