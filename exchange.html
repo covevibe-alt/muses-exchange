@@ -5984,15 +5984,51 @@
   }
 
   /* ─── Create-league wizard ───────────────────────────────────────────── */
+  /* Viewport fit: modal capped at 90vh; body scrolls; footer sticks to
+     the bottom so the Create button is always reachable on small screens. */
   .lg-modal-create {
     max-width: 760px;
-    padding: 22px 24px 20px;
+    max-height: calc(100vh - 40px);
+    padding: 0;
+    display: flex; flex-direction: column;
+    overflow: hidden;
   }
-  .lg-create-body {
+  .lg-modal-create .lg-modal-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 14px;
+    padding: 20px 24px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .lg-modal-create .lg-modal-title { margin-bottom: 4px; }
+  .lg-modal-create .lg-modal-sub   { margin-bottom: 0; }
+  .lg-modal-close {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--text-dim);
+    font-size: 26px; line-height: 1;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background .12s ease, color .12s ease;
+  }
+  .lg-modal-close:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
+  .lg-modal-create .lg-create-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 16px 24px;
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
     gap: 22px;
-    margin-top: 14px;
+    margin-top: 0;
+  }
+  .lg-modal-create .lg-modal-row {
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
+    padding: 14px 24px;
+    margin-top: 0;
+    background: rgba(0, 0, 0, 0.18);
   }
   .lg-create-form {
     display: flex; flex-direction: column; gap: 12px;
@@ -6001,6 +6037,8 @@
   .lg-create-preview {
     display: flex; flex-direction: column; gap: 8px;
     min-width: 0;
+    position: sticky; top: 0;
+    align-self: flex-start;
   }
   .lg-preview-label {
     font-size: 10.5px; font-weight: 700;
@@ -6051,44 +6089,150 @@
     line-height: 1.45;
   }
 
-  /* Customize toggle */
-  .lg-customize-toggle {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-    padding: 10px 12px;
-    background: rgba(167,139,250,0.06);
-    border: 1px solid rgba(167,139,250,0.20);
-    border-radius: 10px;
-    color: #b98fff;
-    font-size: 13px; font-weight: 600;
-    cursor: pointer;
-    transition: background .15s ease, border-color .15s ease;
+  /* Genre chip selector */
+  .lg-genre-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
   }
-  .lg-customize-toggle:hover {
-    background: rgba(167,139,250,0.10);
-    border-color: rgba(167,139,250,0.32);
-  }
-  .lg-customize-pill {
-    display: inline-block; margin-left: 6px;
-    font-size: 9.5px; font-weight: 700;
-    background: rgba(167,139,250,0.18); color: #d6c4ff;
-    padding: 2px 7px; border-radius: 999px;
-    text-transform: uppercase; letter-spacing: 0.08em;
-  }
-  .lg-customize-chev {
-    transition: transform .18s ease;
-  }
-  .lg-customize-toggle.open .lg-customize-chev {
-    transform: rotate(180deg);
-  }
-  .lg-customize-panel {
-    display: flex; flex-direction: column; gap: 12px;
-    padding: 14px;
+  .lg-genre-chip {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    background: rgba(255,255,255,0.015);
-    animation: lg-fade-in .15s ease;
+    color: var(--text-dim);
+    font-size: 12px; font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .12s ease, border-color .12s ease, color .12s ease;
+  }
+  .lg-genre-chip:hover { color: var(--text); border-color: var(--border-strong); }
+  .lg-genre-chip.active {
+    background: rgba(167, 139, 250, 0.15);
+    border-color: rgba(167, 139, 250, 0.45);
+    color: #b98fff;
+  }
+
+  /* Custom datetime field shown beneath the duration dropdown */
+  .lg-duration-custom { margin-top: 6px; }
+
+  /* Countdown chip in the league hero + slim banner over standings */
+  .lg-countdown {
+    display: inline-flex; align-items: center;
+    font-size: 10.5px; font-weight: 700;
+    padding: 3px 8px; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+  }
+  .lg-countdown.lg-countdown-soon {
+    background: rgba(255, 138, 101, 0.12);
+    border-color: rgba(255, 138, 101, 0.32);
+    color: #ff8a65;
+  }
+  .lg-countdown.lg-countdown-done {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-faint);
+  }
+  .lg-stand-countdown {
+    margin-bottom: 10px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .lg-stand-countdown::before {
+    content: '⏱';
+    font-size: 14px;
+  }
+  .lg-stand-countdown [data-lg-countdown] {
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-weight: 700; color: var(--text);
+    font-variant-numeric: tabular-nums;
+    text-transform: none; letter-spacing: 0;
+  }
+
+  /* Standings — name + breakdown line */
+  .lg-stand-name-row {
+    display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+    min-width: 0;
+  }
+  .lg-stand-breakdown {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    margin-top: 4px;
+  }
+  .lg-stand-genre {
+    display: inline-flex; align-items: center;
+    font-size: 10.5px; font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+  .lg-stand-genre.up { color: #6effb8; background: rgba(110,255,184,0.10); }
+  .lg-stand-genre.down { color: #ff7a7a; background: rgba(255,122,122,0.10); }
+
+  /* Celebration modal (post-create) */
+  .lg-modal-celebrate {
+    max-width: 480px;
+    text-align: center;
+    padding: 30px 28px 22px;
+  }
+  .lg-celebrate-emoji {
+    font-size: 42px; line-height: 1;
+    margin-bottom: 8px;
+  }
+  .lg-modal-celebrate .lg-modal-title { font-size: 22px; }
+  .lg-modal-celebrate .lg-modal-sub { margin-bottom: 16px; }
+  .lg-celebrate-invites {
+    font-size: 12px; color: var(--text-dim);
+    background: rgba(167, 139, 250, 0.08);
+    border: 1px solid rgba(167, 139, 250, 0.22);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+  .lg-celebrate-link {
+    display: flex; gap: 6px;
+    margin-bottom: 10px;
+  }
+  .lg-celebrate-link .lg-modal-input {
+    font-size: 13px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  }
+  .lg-celebrate-code {
+    font-size: 12.5px; color: var(--text-dim);
+    margin-bottom: 18px;
+  }
+  .lg-celebrate-code code {
+    color: #b98fff;
+    background: rgba(167, 139, 250, 0.12);
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+  .lg-celebrate-code-copy {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 4px;
+    padding: 2px 6px;
+    border-radius: 5px;
+  }
+  .lg-celebrate-code-copy:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
+  .lg-modal-celebrate .lg-modal-row { justify-content: center; gap: 10px; }
+
+  /* Legacy customize-* selectors retained as no-ops (kept for any
+     stale-cache callers). Real form is now flat in the wizard body. */
+  .lg-customize-toggle, .lg-customize-pill, .lg-customize-chev, .lg-customize-panel {
+    display: none !important;
   }
 
   /* Cover thumbnail picker */
@@ -6171,14 +6315,18 @@
     }
     .lg-modal-create {
       max-width: 100%;
-      padding: 18px 16px 16px;
+      padding: 0;
     }
-    .lg-create-body {
+    .lg-modal-create .lg-modal-head { padding: 16px 16px 10px; }
+    .lg-modal-create .lg-create-body {
       grid-template-columns: 1fr;
       gap: 14px;
+      padding: 14px 16px;
     }
+    .lg-modal-create .lg-modal-row { padding: 12px 16px; }
     .lg-create-preview {
-      order: -1; /* show preview on top on mobile so it stays visible */
+      order: -1;
+      position: static; /* sticky doesn't help on a stacked layout */
     }
     .lg-cover-grid {
       grid-template-columns: repeat(3, 1fr);
@@ -16863,7 +17011,7 @@ async function fetchUserLeagues(force) {
     // leagues the user belongs to.
     const { data, error } = await window.SUPABASE
       .from('league_members')
-      .select('role, joined_at, leagues(id, slug, name, description, invite_code, owner_id, max_members, status, cover_id, theme_color, focus_genre, is_public)')
+      .select('role, joined_at, leagues(id, slug, name, description, invite_code, owner_id, max_members, status, cover_id, theme_color, focus_genres, is_public, ends_at)')
       .eq('user_id', window.MUSE_USER.id);
     if (error) {
       console.warn('[Muses] fetchUserLeagues failed:', error.message || error);
@@ -16883,7 +17031,8 @@ async function fetchUserLeagues(force) {
         joinedAt:    r.joined_at,
         coverId:     r.leagues.cover_id || 'concert',
         themeColor:  r.leagues.theme_color || 'purple',
-        focusGenre:  r.leagues.focus_genre || null,
+        focusGenres: Array.isArray(r.leagues.focus_genres) ? r.leagues.focus_genres : [],
+        endsAt:      r.leagues.ends_at || null,
         isPublic:    !!r.leagues.is_public,
       }));
     _userLeaguesFetchAt = Date.now();
@@ -16909,19 +17058,22 @@ async function fetchLeagueMembers(leagueId) {
     if (!userIds.length) return [];
     const { data: lbRows } = await window.SUPABASE
       .from('leaderboard')
-      .select('user_id, display_name, portfolio_value, return_pct, season_return_pct')
+      .select('user_id, display_name, portfolio_value, return_pct, season_return_pct, genre_returns')
       .in('user_id', userIds);
     const byId = new Map((lbRows || []).map(r => [r.user_id, r]));
     return data.map(r => {
       const lb = byId.get(r.user_id);
       return {
-        userId:     r.user_id,
-        role:       r.role,
-        joinedAt:   r.joined_at,
-        name:       (lb && lb.display_name) || 'trader',
-        pv:         lb ? +lb.portfolio_value : null,
-        retPct:     lb ? +lb.return_pct : null,
-        seasonPct:  (lb && lb.season_return_pct != null) ? +lb.season_return_pct : null,
+        userId:        r.user_id,
+        role:          r.role,
+        joinedAt:      r.joined_at,
+        name:          (lb && lb.display_name) || 'trader',
+        pv:            lb ? +lb.portfolio_value : null,
+        retPct:        lb ? +lb.return_pct : null,
+        seasonPct:     (lb && lb.season_return_pct != null) ? +lb.season_return_pct : null,
+        // genre_returns is a jsonb { 'Pop': 12.4, 'Hip-hop': -3.1, ... }
+        // Used by multi-genre league standings to compute filtered returns.
+        genreReturns:  (lb && lb.genre_returns && typeof lb.genre_returns === 'object') ? lb.genre_returns : {},
       };
     });
   } catch (e) {
@@ -17818,31 +17970,25 @@ function renderCallersCard() {
 // never shows a broken card. Photos are pulled at 800x450 / q=75 for fast
 // loads + acceptable quality on retina cards.
 // Cover photo catalog. Each entry has:
-//   • url  — Unsplash photo (cropped to 800x450 via query params)
-//   • grad — gradient fallback shown if the image 404s OR until it loads
-//   • label — name shown in the picker (also overlaid on the thumbnail
-//             so picks are scannable even when the photo is wrong)
+//   • url   — local /lifestyle/<file> photo (deployed alongside the SPA)
+//   • grad  — themed gradient shown until the image loads / as fallback
+//   • label — name shown in the picker (also overlaid on the thumbnail)
 //
-// Picture-rot defense: if a URL ever stops matching its label (Unsplash
-// reuploads or removes a photo), users still see a gradient + label —
-// not a broken or wrong-looking image. Fix the URL when noticed.
+// All 12 photos live in the repo under /lifestyle so they ship with the
+// site — no third-party dependency, no 404 risk, no image rot.
 const LEAGUE_COVERS = {
-  // Photo-backed (verified to load + visually match label):
-  'concert':     { label: 'Concert',       url: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#7c3aed 0%,#3b1366 60%,#1a0a2e 100%)' },
-  'headphones':  { label: 'Headphones',    url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#ff6b8a 0%,#a855f7 60%,#4c1d95 100%)' },
-  'equalizer':   { label: 'Equalizer',     url: 'https://images.unsplash.com/photo-1518972559570-7cc1309f3229?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#10d88b 0%,#0e9c69 60%,#064e3b 100%)' },
-  'festival':    { label: 'Festival',      url: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#fbbf24 0%,#f97316 60%,#7c2d12 100%)' },
-  'microphone':  { label: 'Microphone',    url: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#dc2626 0%,#7f1d1d 60%,#1f0606 100%)' },
-  'guitar':      { label: 'Guitar',        url: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#f59e0b 0%,#92400e 60%,#451a03 100%)' },
-  'piano':       { label: 'Piano',         url: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800&h=450&fit=crop&q=75', grad: 'linear-gradient(135deg,#e2e8f0 0%,#475569 60%,#0f172a 100%)' },
-  // Pure-gradient covers (Unsplash IDs for these labels were unreliable;
-  // the gradient + bottom label gives a clean themed tile that won't rot.
-  // Anyone can swap in a verified photo URL later — must match the label.):
-  'vinyl':       { label: 'Vinyl',         url: '', grad: 'linear-gradient(135deg,#1f2937 0%,#0f172a 60%,#020617 100%)' },
-  'neon-city':   { label: 'Neon City',     url: '', grad: 'linear-gradient(135deg,#ec4899 0%,#7c3aed 60%,#1e1b4b 100%)' },
-  'stadium':     { label: 'Stadium',       url: '', grad: 'linear-gradient(135deg,#0ea5e9 0%,#0c4a6e 60%,#082f49 100%)' },
-  'turntable':   { label: 'Turntable',     url: '', grad: 'linear-gradient(135deg,#a855f7 0%,#581c87 60%,#1e1b4b 100%)' },
-  'soundwave':   { label: 'Soundwave',     url: '', grad: 'linear-gradient(135deg,#06b6d4 0%,#0e7490 60%,#083344 100%)' },
+  'concert':    { label: 'Concert',       url: '/lifestyle/concert-silhouettes-purple-stage.jpg',   grad: 'linear-gradient(135deg,#7c3aed 0%,#3b1366 60%,#1a0a2e 100%)' },
+  'engineer':   { label: 'Engineer',      url: '/lifestyle/engineer-console-purple-live.jpg',       grad: 'linear-gradient(135deg,#a855f7 0%,#581c87 60%,#1e1b4b 100%)' },
+  'guitar':     { label: 'Guitar',        url: '/lifestyle/guitar-live-performance-crowd.jpg',      grad: 'linear-gradient(135deg,#f59e0b 0%,#92400e 60%,#451a03 100%)' },
+  'street':     { label: 'Street',        url: '/lifestyle/listener-couple-street-night.jpg',       grad: 'linear-gradient(135deg,#1f2937 0%,#0f172a 60%,#020617 100%)' },
+  'headphones': { label: 'Headphones',    url: '/lifestyle/listener-headphones-blue-studio.jpg',    grad: 'linear-gradient(135deg,#0ea5e9 0%,#0c4a6e 60%,#082f49 100%)' },
+  'listener':   { label: 'Listener',      url: '/lifestyle/listener-phone-happy-backwards-cap.jpg', grad: 'linear-gradient(135deg,#fbbf24 0%,#f97316 60%,#7c2d12 100%)' },
+  'neon':       { label: 'Neon',          url: '/lifestyle/listener-phone-neon-portrait.jpg',       grad: 'linear-gradient(135deg,#ec4899 0%,#7c3aed 60%,#1e1b4b 100%)' },
+  'subway':     { label: 'Subway',        url: '/lifestyle/listener-subway-airpods.jpg',            grad: 'linear-gradient(135deg,#06b6d4 0%,#0e7490 60%,#083344 100%)' },
+  'producer':   { label: 'Producer',      url: '/lifestyle/producer-ableton-darkroom.jpg',          grad: 'linear-gradient(135deg,#1e1b4b 0%,#312e81 60%,#020617 100%)' },
+  'studio':     { label: 'Studio',        url: '/lifestyle/producer-studio-arms-raised.jpg',        grad: 'linear-gradient(135deg,#10d88b 0%,#0e9c69 60%,#064e3b 100%)' },
+  'rapper':     { label: 'Rapper',        url: '/lifestyle/rapper-studio-neon-graffiti.jpg',        grad: 'linear-gradient(135deg,#dc2626 0%,#7f1d1d 60%,#1f0606 100%)' },
+  'vocalist':   { label: 'Vocalist',      url: '/lifestyle/vocalist-studio-orange-mic.jpg',         grad: 'linear-gradient(135deg,#ff8a65 0%,#dc2626 60%,#7f1d1d 100%)' },
 };
 
 const LEAGUE_THEMES = {
@@ -17909,8 +18055,9 @@ function renderLeaguesCard() {
   const cards = leagues.map(l => {
     const theme = LEAGUE_THEMES[l.themeColor] || LEAGUE_THEMES['purple'];
     const isOwner = l.role === 'owner';
-    const focusBadge = l.focusGenre
-      ? `<span class="lg-card-focus" style="color:${theme.accent};border-color:${theme.stroke};background:${theme.soft}">${escapeHTML(l.focusGenre)} Cup</span>`
+    const fg = Array.isArray(l.focusGenres) ? l.focusGenres : [];
+    const focusBadge = fg.length > 0
+      ? `<span class="lg-card-focus" style="color:${theme.accent};border-color:${theme.stroke};background:${theme.soft}">${escapeHTML(fg.join(' · '))}</span>`
       : '';
     const ownerBadge = isOwner ? `<span class="lg-card-owner">Owner</span>` : '';
     return `
@@ -18053,41 +18200,68 @@ async function createLeagueV2RPC(name, opts) {
   if (!window.SUPABASE) return { error: 'no_supabase' };
   try {
     const { data, error } = await window.SUPABASE.rpc('create_league_v2', {
-      p_name:         name,
-      p_description:  opts?.description || null,
-      p_max_members:  opts?.maxMembers || 50,
-      p_cover_id:     opts?.coverId || 'concert',
-      p_theme_color:  opts?.themeColor || 'purple',
-      p_focus_genre:  opts?.focusGenre || null,
-      p_is_public:    !!opts?.isPublic,
+      p_name:          name,
+      p_description:   opts?.description || null,
+      p_max_members:   opts?.maxMembers || 50,
+      p_cover_id:      opts?.coverId || 'concert',
+      p_theme_color:   opts?.themeColor || 'purple',
+      p_focus_genres:  Array.isArray(opts?.focusGenres) ? opts.focusGenres : [],
+      p_is_public:     !!opts?.isPublic,
+      p_ends_at:       opts?.endsAt || null,
     });
     if (error) return { error: error.message || String(error) };
     return data || {};
   } catch (e) { return { error: e?.message || String(e) }; }
 }
 
+// All 9 canonical genres — kept in sync with the leagues_focus_chk constraint.
+const LEAGUE_GENRES = ['Pop','Hip-hop','R&B','Latin','Afropop','Indie','Alt','K-Pop','Electronic'];
+
+// Time-limit presets shown in the wizard + Settings tab. Each option produces
+// either a JS Date or null (no limit). 'custom' opens a datetime-local input.
+const LEAGUE_DURATION_PRESETS = [
+  { id: 'none',    label: 'No time limit',  daysFromNow: null },
+  { id: 'week',    label: '1 week',         daysFromNow: 7 },
+  { id: 'month',   label: '1 month',        daysFromNow: 30 },
+  { id: 'quarter', label: '3 months',       daysFromNow: 90 },
+  { id: 'season',  label: 'Until season ends', daysFromNow: 'season' },
+  { id: 'custom',  label: 'Pick a date…',   daysFromNow: 'custom' },
+];
+
+function _datetimeLocalNowPlusDays(days) {
+  const d = new Date(Date.now() + days * 86400000);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 function openCreateLeagueModal() {
-  // Opts state managed locally — refreshed into the live preview on every change.
   const state = {
     name: '',
     description: '',
     coverId: 'concert',
     themeColor: 'purple',
-    focusGenre: '',
+    focusGenres: [],          // multi-select, default empty (overall)
     maxMembers: 50,
     isPublic: false,
-    customizeOpen: false,
+    durationId: 'none',       // 'none' | 'week' | 'month' | 'quarter' | 'season' | 'custom'
+    customEndsAt: '',         // datetime-local string when durationId === 'custom'
+    handles: '',              // raw text for invites
   };
 
   const wrap = document.createElement('div');
   wrap.className = 'lg-modal-overlay';
   wrap.innerHTML = `
     <div class="lg-modal lg-modal-create">
-      <div class="lg-modal-title">Create a league</div>
-      <div class="lg-modal-sub">Quick-create with one click, or customize the cover, theme, and focus.</div>
+      <div class="lg-modal-head">
+        <div>
+          <div class="lg-modal-title">Create a league</div>
+          <div class="lg-modal-sub">Pick a name and you're done — everything else is optional.</div>
+        </div>
+        <button class="lg-modal-close" data-act="close" aria-label="Close">×</button>
+      </div>
 
       <div class="lg-create-body">
-        <!-- Form column -->
+        <!-- Form column (scrollable) -->
         <div class="lg-create-form">
           <div class="lg-field">
             <label>League name</label>
@@ -18095,59 +18269,54 @@ function openCreateLeagueModal() {
             <div class="lg-modal-error" id="lg-error" hidden></div>
           </div>
 
-          <button type="button" class="lg-customize-toggle" id="lg-customize-toggle">
-            <span>Customize <span class="lg-customize-pill">Optional</span></span>
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="lg-customize-chev"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-
-          <div class="lg-customize-panel" id="lg-customize-panel" hidden>
-            <div class="lg-field">
-              <label>Cover</label>
-              <div class="lg-cover-grid" id="lg-cover-grid"></div>
-            </div>
-
-            <div class="lg-field">
-              <label>Theme color</label>
-              <div class="lg-theme-row" id="lg-theme-row"></div>
-            </div>
-
-            <div class="lg-field">
-              <label>Description <span class="lg-field-hint">optional · 160 chars</span></label>
-              <textarea class="lg-modal-input lg-modal-textarea" id="lg-description" maxlength="160" rows="2" placeholder="What's the vibe?"></textarea>
-            </div>
-
-            <div class="lg-field-row">
-              <div class="lg-field">
-                <label>Focus genre <span class="lg-field-hint">filters standings</span></label>
-                <select class="lg-modal-input" id="lg-focus">
-                  <option value="">All genres (overall)</option>
-                  <option value="Pop">Pop</option>
-                  <option value="Hip-hop">Hip-hop</option>
-                  <option value="R&B">R&amp;B</option>
-                  <option value="Latin">Latin</option>
-                  <option value="Afropop">Afropop</option>
-                  <option value="Indie">Indie</option>
-                  <option value="Alt">Alt</option>
-                  <option value="K-Pop">K-Pop</option>
-                  <option value="Electronic">Electronic</option>
-                </select>
-              </div>
-              <div class="lg-field">
-                <label>Max members</label>
-                <select class="lg-modal-input" id="lg-max">
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50" selected>50</option>
-                  <option value="100">100</option>
-                </select>
-              </div>
-            </div>
-
-            <label class="lg-field-check">
-              <input type="checkbox" id="lg-public">
-              <span><b>Discoverable</b> — listed in a public directory so anyone can join</span>
-            </label>
+          <div class="lg-field">
+            <label>Cover</label>
+            <div class="lg-cover-grid" id="lg-cover-grid"></div>
           </div>
+
+          <div class="lg-field">
+            <label>Theme color</label>
+            <div class="lg-theme-row" id="lg-theme-row"></div>
+          </div>
+
+          <div class="lg-field">
+            <label>Description <span class="lg-field-hint">optional · 160 chars</span></label>
+            <textarea class="lg-modal-input lg-modal-textarea" id="lg-description" maxlength="160" rows="2" placeholder="What's the vibe?"></textarea>
+          </div>
+
+          <div class="lg-field">
+            <label>Genres <span class="lg-field-hint">pick 1+ to focus standings · empty = overall</span></label>
+            <div class="lg-genre-chips" id="lg-genre-chips"></div>
+          </div>
+
+          <div class="lg-field-row">
+            <div class="lg-field">
+              <label>Time limit</label>
+              <select class="lg-modal-input" id="lg-duration">
+                ${LEAGUE_DURATION_PRESETS.map(p => `<option value="${p.id}"${p.id === 'none' ? ' selected' : ''}>${escapeHTML(p.label)}</option>`).join('')}
+              </select>
+              <input type="datetime-local" class="lg-modal-input lg-duration-custom" id="lg-duration-custom" hidden>
+            </div>
+            <div class="lg-field">
+              <label>Max members</label>
+              <select class="lg-modal-input" id="lg-max">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="lg-field">
+            <label>Invite friends <span class="lg-field-hint">optional · paste @handles, comma-separated</span></label>
+            <textarea class="lg-modal-input lg-modal-textarea" id="lg-handles" rows="2" placeholder="@alex, @jen.dl, @drumsmith"></textarea>
+          </div>
+
+          <label class="lg-field-check">
+            <input type="checkbox" id="lg-public">
+            <span><b>Discoverable</b> — listed publicly so anyone with the link can find this league</span>
+          </label>
         </div>
 
         <!-- Live preview column -->
@@ -18175,7 +18344,7 @@ function openCreateLeagueModal() {
     if (e.key === 'Escape') { close(); document.removeEventListener('keydown', _onEsc); }
   });
 
-  // Build the cover grid + theme row.
+  // Build cover thumbnails, theme swatches, and genre chips.
   const coverGrid = wrap.querySelector('#lg-cover-grid');
   coverGrid.innerHTML = Object.entries(LEAGUE_COVERS).map(([id, c]) => `
     <button type="button" class="lg-cover-thumb${id === state.coverId ? ' active' : ''}" data-cover="${id}" title="${c.label}" aria-label="${c.label}" style="background:${c.grad}">
@@ -18189,28 +18358,32 @@ function openCreateLeagueModal() {
     <button type="button" class="lg-theme-swatch${id === state.themeColor ? ' active' : ''}" data-theme="${id}" title="${t.label}" aria-label="${t.label}" style="--swatch:${t.accent}"></button>
   `).join('');
 
+  const genreChips = wrap.querySelector('#lg-genre-chips');
+  function paintGenreChips() {
+    genreChips.innerHTML = LEAGUE_GENRES.map(g => `
+      <button type="button" class="lg-genre-chip${state.focusGenres.includes(g) ? ' active' : ''}" data-genre="${escapeHTML(g)}">${escapeHTML(g)}</button>
+    `).join('');
+  }
+  paintGenreChips();
+
   // Inputs
   const nameInput = wrap.querySelector('#lg-name');
   const descInput = wrap.querySelector('#lg-description');
-  const focusSel  = wrap.querySelector('#lg-focus');
+  const durationSel = wrap.querySelector('#lg-duration');
+  const durationCustom = wrap.querySelector('#lg-duration-custom');
   const maxSel    = wrap.querySelector('#lg-max');
   const pubCheck  = wrap.querySelector('#lg-public');
+  const handlesEl = wrap.querySelector('#lg-handles');
   const errEl     = wrap.querySelector('#lg-error');
   const previewCard = wrap.querySelector('#lg-preview-card');
   const createBtn   = wrap.querySelector('#lg-create-btn');
-  const customizeToggle = wrap.querySelector('#lg-customize-toggle');
-  const customizePanel  = wrap.querySelector('#lg-customize-panel');
 
-  // Focus the name input.
   setTimeout(() => { try { nameInput.focus(); } catch (_) {} }, 50);
 
   function refreshPreview() {
-    // Defensive fallback — Sentry MUSES-EXCHANGE-8 caught a TypeError here
-    // when state.themeColor briefly resolved to an unexpected key. Mirrors
-    // the same fallback used by _leagueCoverHTML / renderLeagueDetail.
     const theme = LEAGUE_THEMES[state.themeColor] || LEAGUE_THEMES['purple'];
-    const focusBadge = state.focusGenre
-      ? `<span class="lg-card-focus" style="color:${theme.accent};border-color:${theme.stroke};background:${theme.soft}">${escapeHTML(state.focusGenre)} Cup</span>`
+    const focusBadge = state.focusGenres.length > 0
+      ? `<span class="lg-card-focus" style="color:${theme.accent};border-color:${theme.stroke};background:${theme.soft}">${escapeHTML(state.focusGenres.join(' · '))}</span>`
       : '';
     previewCard.style.cssText = `--lg-accent:${theme.accent}; --lg-soft:${theme.soft}; --lg-stroke:${theme.stroke};`;
     previewCard.innerHTML = `
@@ -18232,19 +18405,23 @@ function openCreateLeagueModal() {
   // Wire interactions.
   nameInput.addEventListener('input', () => { state.name = nameInput.value; refreshPreview(); });
   descInput.addEventListener('input', () => { state.description = descInput.value; refreshPreview(); });
-  focusSel.addEventListener('change', () => { state.focusGenre = focusSel.value; refreshPreview(); });
   maxSel.addEventListener('change', () => { state.maxMembers = +maxSel.value; });
   pubCheck.addEventListener('change', () => { state.isPublic = pubCheck.checked; });
+  handlesEl.addEventListener('input', () => { state.handles = handlesEl.value; });
 
-  customizeToggle.addEventListener('click', () => {
-    state.customizeOpen = !state.customizeOpen;
-    customizePanel.hidden = !state.customizeOpen;
-    customizeToggle.classList.toggle('open', state.customizeOpen);
+  durationSel.addEventListener('change', () => {
+    state.durationId = durationSel.value;
+    if (state.durationId === 'custom') {
+      durationCustom.hidden = false;
+      if (!durationCustom.value) durationCustom.value = _datetimeLocalNowPlusDays(14);
+    } else {
+      durationCustom.hidden = true;
+    }
   });
+  durationCustom.addEventListener('input', () => { state.customEndsAt = durationCustom.value; });
 
   coverGrid.addEventListener('click', (e) => {
     const b = e.target.closest('[data-cover]'); if (!b) return;
-    // Only accept known cover ids — defensive against unexpected DOM state.
     const id = b.dataset.cover;
     if (!LEAGUE_COVERS[id]) return;
     state.coverId = id;
@@ -18259,6 +18436,16 @@ function openCreateLeagueModal() {
     themeRow.querySelectorAll('[data-theme]').forEach(x => x.classList.toggle('active', x === b));
     refreshPreview();
   });
+  genreChips.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-genre]'); if (!b) return;
+    const g = b.dataset.genre;
+    if (!LEAGUE_GENRES.includes(g)) return;
+    const i = state.focusGenres.indexOf(g);
+    if (i >= 0) state.focusGenres.splice(i, 1);
+    else state.focusGenres.push(g);
+    b.classList.toggle('active');
+    refreshPreview();
+  });
 
   createBtn.addEventListener('click', async () => {
     errEl.hidden = true;
@@ -18268,14 +18455,38 @@ function openCreateLeagueModal() {
       errEl.hidden = false;
       return;
     }
+    // Resolve duration → ends_at ISO timestamp (or null).
+    let endsAtISO = null;
+    const preset = LEAGUE_DURATION_PRESETS.find(p => p.id === state.durationId);
+    if (preset) {
+      if (typeof preset.daysFromNow === 'number') {
+        endsAtISO = new Date(Date.now() + preset.daysFromNow * 86400000).toISOString();
+      } else if (preset.daysFromNow === 'season') {
+        // Approximate season-end as 90 days for now (real season cron picks up
+        // the specific date). Server validates >now.
+        endsAtISO = new Date(Date.now() + 90 * 86400000).toISOString();
+      } else if (preset.daysFromNow === 'custom') {
+        if (!state.customEndsAt) {
+          errEl.textContent = 'Pick a custom end date or change the time limit.'; errEl.hidden = false; return;
+        }
+        endsAtISO = new Date(state.customEndsAt).toISOString();
+      }
+    }
+    // Parse handles for invite
+    const handles = (state.handles || '')
+      .split(/[,\s]+/)
+      .map(h => h.trim())
+      .filter(Boolean);
+
     createBtn.disabled = true;
     const res = await createLeagueV2RPC(name, {
       description: state.description,
       coverId: state.coverId,
       themeColor: state.themeColor,
-      focusGenre: state.focusGenre,
+      focusGenres: state.focusGenres,
       maxMembers: state.maxMembers,
       isPublic: state.isPublic,
+      endsAt: endsAtISO,
     });
     if (res.error) {
       errEl.textContent = errorToHuman(res.error) || 'Could not create league.';
@@ -18283,16 +18494,79 @@ function openCreateLeagueModal() {
       createBtn.disabled = false;
       return;
     }
+
+    // Best-effort: invite handles, swallow errors (just log).
+    let inviteSummary = null;
+    if (handles.length > 0) {
+      const invRes = await inviteUsersToLeagueRPC(res.league_id, handles);
+      if (invRes && !invRes.error) inviteSummary = invRes;
+    }
+
     await fetchUserLeagues(true);
     renderLeaguesCard();
     close();
-    if (typeof showToast === 'function') {
-      showToast(`League "${res.name || name}" created — code: ${res.invite_code}`, false, {
-        label: 'Open league',
-        handler: () => navigateToLeague(res.league_id, { slug: res.slug }),
-      });
-    }
+
+    // Open the celebration modal with copy-link + open-league actions.
+    openLeagueCelebrationModal({
+      leagueId: res.league_id,
+      slug:     res.slug,
+      name:     res.name || name,
+      inviteCode: res.invite_code,
+      inviteSummary,
+    });
   });
+}
+
+// Post-create celebration. Replaces the v1 toast — gives the user a copyable
+// invite link, a "Copy code" shortcut, and a clear Open League CTA.
+function openLeagueCelebrationModal({ leagueId, slug, name, inviteCode, inviteSummary }) {
+  const wrap = document.createElement('div');
+  wrap.className = 'lg-modal-overlay';
+  const link = (typeof location !== 'undefined' ? location.origin : '') + '/leagues/' + encodeURIComponent(slug || '');
+  let inviteLine = '';
+  if (inviteSummary) {
+    const parts = [];
+    if (inviteSummary.invited > 0) parts.push(`${inviteSummary.invited} added`);
+    if (inviteSummary.already_member > 0) parts.push(`${inviteSummary.already_member} already in`);
+    const nf = Array.isArray(inviteSummary.not_found) ? inviteSummary.not_found : [];
+    if (nf.length > 0) parts.push(`${nf.length} not found`);
+    if (parts.length > 0) inviteLine = `<div class="lg-celebrate-invites">Invites: ${parts.join(' · ')}${nf.length > 0 ? ' (' + nf.map(escapeHTML).join(', ') + ')' : ''}</div>`;
+  }
+  wrap.innerHTML = `
+    <div class="lg-modal lg-modal-celebrate">
+      <div class="lg-celebrate-emoji">🎉</div>
+      <div class="lg-modal-title">League created!</div>
+      <div class="lg-modal-sub">"${escapeHTML(name)}" is live. Share the link below to grow it.</div>
+      ${inviteLine}
+      <div class="lg-celebrate-link">
+        <input type="text" class="lg-modal-input" id="lg-celebrate-link-input" readonly value="${escapeHTML(link)}">
+        <button class="lg-btn lg-btn-ghost" data-act="copy-link" id="lg-celebrate-copy">Copy link</button>
+      </div>
+      <div class="lg-celebrate-code">
+        Or share the invite code: <code>${escapeHTML(inviteCode || '')}</code>
+        <button class="lg-celebrate-code-copy" data-act="copy-code" title="Copy code">⧉</button>
+      </div>
+      <div class="lg-modal-row">
+        <button class="lg-btn lg-btn-ghost" data-act="close">Done</button>
+        <button class="lg-btn lg-btn-primary" data-act="open">Open league</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  const close = () => { try { wrap.remove(); } catch (_) {} };
+  wrap.addEventListener('click', (e) => {
+    if (e.target === wrap || e.target.closest('[data-act="close"]')) { e.stopPropagation(); close(); }
+  });
+  wrap.querySelector('[data-act="open"]').onclick = () => { close(); navigateToLeague(leagueId, { slug }); };
+  wrap.querySelector('[data-act="copy-link"]').onclick = async () => {
+    try { await navigator.clipboard.writeText(link); if (typeof showToast === 'function') showToast('Link copied'); } catch (_) {}
+  };
+  const codeBtn = wrap.querySelector('[data-act="copy-code"]');
+  if (codeBtn) codeBtn.onclick = async () => {
+    try { await navigator.clipboard.writeText(inviteCode || ''); if (typeof showToast === 'function') showToast('Code copied'); } catch (_) {}
+  };
+  // Auto-select the link for easy copying via cmd-c.
+  setTimeout(() => { try { wrap.querySelector('#lg-celebrate-link-input').select(); } catch (_) {} }, 60);
 }
 
 function openJoinLeagueModal() {
@@ -18409,14 +18683,28 @@ async function updateLeagueRPC(leagueId, opts) {
   if (!window.SUPABASE) return { error: 'no_supabase' };
   try {
     const { data, error } = await window.SUPABASE.rpc('update_league', {
-      p_league_id:    leagueId,
-      p_name:         opts.name        ?? null,
-      p_description:  opts.description ?? null,
-      p_cover_id:     opts.coverId     ?? null,
-      p_theme_color:  opts.themeColor  ?? null,
-      p_focus_genre:  opts.focusGenre  ?? null,
-      p_max_members:  opts.maxMembers  ?? null,
-      p_is_public:    opts.isPublic    ?? null,
+      p_league_id:     leagueId,
+      p_name:          opts.name        ?? null,
+      p_description:   opts.description ?? null,
+      p_cover_id:      opts.coverId     ?? null,
+      p_theme_color:   opts.themeColor  ?? null,
+      p_focus_genres:  Array.isArray(opts.focusGenres) ? opts.focusGenres : null,
+      p_max_members:   opts.maxMembers  ?? null,
+      p_is_public:     opts.isPublic    ?? null,
+      p_ends_at:       opts.endsAt      ?? null,
+      p_clear_ends_at: !!opts.clearEndsAt,
+    });
+    if (error) return { error: error.message || String(error) };
+    return data || {};
+  } catch (e) { return { error: e?.message || String(e) }; }
+}
+
+async function inviteUsersToLeagueRPC(leagueId, handles) {
+  if (!window.SUPABASE) return { error: 'no_supabase' };
+  try {
+    const { data, error } = await window.SUPABASE.rpc('invite_users_to_league', {
+      p_league_id: leagueId,
+      p_handles:   Array.isArray(handles) ? handles : [],
     });
     if (error) return { error: error.message || String(error) };
     return data || {};
@@ -18449,7 +18737,8 @@ async function _resolveLeagueForDetail() {
         description: hit.description,
         coverId:     hit.coverId,
         themeColor:  hit.themeColor,
-        focusGenre:  hit.focusGenre,
+        focusGenres: Array.isArray(hit.focusGenres) ? hit.focusGenres : [],
+        endsAt:      hit.endsAt || null,
         maxMembers:  hit.maxMembers,
         isPublic:    hit.isPublic,
         inviteCode:  hit.inviteCode,
@@ -18475,7 +18764,8 @@ async function _resolveLeagueForDetail() {
         description: res.description,
         coverId:     res.cover_id    || 'concert',
         themeColor:  res.theme_color || 'purple',
-        focusGenre:  res.focus_genre || null,
+        focusGenres: Array.isArray(res.focus_genres) ? res.focus_genres : [],
+        endsAt:      res.ends_at || null,
         maxMembers:  res.max_members,
         isPublic:    !!res.is_public,
         inviteCode:  res.invite_code || null,
@@ -18539,9 +18829,10 @@ async function renderLeagueDetail() {
         ${_leagueCoverHTML(league.coverId, league.themeColor)}
         <div class="lg-detail-hero-body">
           <div class="lg-detail-hero-meta">
-            ${league.focusGenre ? `<span class="lg-card-focus">${escapeHTML(league.focusGenre)} Cup</span>` : ''}
+            ${(league.focusGenres && league.focusGenres.length > 0) ? `<span class="lg-card-focus">${escapeHTML(league.focusGenres.join(' · '))}</span>` : ''}
             ${league.isPublic ? `<span class="lg-pill-public">Public</span>` : `<span class="lg-pill-private">Private</span>`}
             ${league.isOwner ? `<span class="lg-card-owner">Owner</span>` : ''}
+            ${league.endsAt ? `<span class="lg-countdown" data-lg-countdown="${escapeHTML(league.endsAt)}"></span>` : ''}
           </div>
           <h1 class="lg-detail-name">${escapeHTML(league.name)}</h1>
           ${league.description ? `<div class="lg-detail-desc">${escapeHTML(league.description)}</div>` : ''}
@@ -18619,6 +18910,49 @@ async function renderLeagueDetail() {
 
   // Paint the active tab
   _renderLeagueTabBody(league);
+
+  // Start the countdown ticker if the league has an end-time. Single
+  // global interval — cleared and restarted on every detail render so
+  // we don't accumulate handles across re-renders.
+  _startLeagueCountdown(league);
+}
+
+// Live countdown for league.endsAt. Runs once per second; the chip in the
+// hero + a slim banner above standings both share a `data-lg-countdown`
+// attribute that we re-target on each tick.
+let _LG_COUNTDOWN_INTERVAL = null;
+function _stopLeagueCountdown() {
+  if (_LG_COUNTDOWN_INTERVAL) {
+    clearInterval(_LG_COUNTDOWN_INTERVAL);
+    _LG_COUNTDOWN_INTERVAL = null;
+  }
+}
+function _formatCountdownLabel(endsMs) {
+  const ms = endsMs - Date.now();
+  if (ms <= 0) return 'Ended';
+  const d = Math.floor(ms / 86400000);
+  const h = Math.floor((ms % 86400000) / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  if (d >= 1) return `Ends in ${d}d ${h}h`;
+  if (h >= 1) return `Ends in ${h}h ${m}m`;
+  if (m >= 1) return `Ends in ${m}m ${String(s).padStart(2, '0')}s`;
+  return `Ends in ${s}s`;
+}
+function _startLeagueCountdown(league) {
+  _stopLeagueCountdown();
+  if (!league || !league.endsAt) return;
+  const endsMs = new Date(league.endsAt).getTime();
+  if (!Number.isFinite(endsMs)) return;
+  const tick = () => {
+    document.querySelectorAll('[data-lg-countdown]').forEach(el => {
+      el.textContent = _formatCountdownLabel(endsMs);
+      el.classList.toggle('lg-countdown-soon', endsMs - Date.now() < 24 * 3600000);
+      el.classList.toggle('lg-countdown-done', endsMs - Date.now() <= 0);
+    });
+  };
+  tick();
+  _LG_COUNTDOWN_INTERVAL = setInterval(tick, 1000);
 }
 
 // Per-tab body painter. Branches on STATE.selectedLeagueTab.
@@ -18687,14 +19021,33 @@ async function _renderLeagueTabBody(league) {
 }
 
 // ─── Standings ────────────────────────────────────────────────────────
+// Compute a member's "league standing return" for the picked focus_genres:
+// • zero genres → fall back to season return (or overall)
+// • 1+ genres   → SUM of that member's per-genre return for each picked genre
+function _memberStandingReturn(m, focusGenres) {
+  if (!Array.isArray(focusGenres) || focusGenres.length === 0) {
+    return m.seasonPct != null ? m.seasonPct : m.retPct;
+  }
+  const gr = m.genreReturns || {};
+  let sum = 0; let any = false;
+  for (const g of focusGenres) {
+    const v = gr[g];
+    if (v != null && Number.isFinite(+v)) { sum += +v; any = true; }
+  }
+  return any ? sum : null;
+}
+
 function _leagueStandingsHTML(league, members, awards) {
   if (!members || members.length === 0) {
     return `<div class="lg-tab-empty">No members yet. Share the invite code to grow the league.</div>`;
   }
-  // Sort by season_return_pct desc, fallback to portfolio_value
+  const focus = Array.isArray(league.focusGenres) ? league.focusGenres : [];
+  const isFiltered = focus.length > 0;
+
+  // Sort by the league standing return (genre-filtered if applicable).
   const sorted = members.slice().sort((a, b) => {
-    const ar = a.seasonPct ?? a.retPct;
-    const br = b.seasonPct ?? b.retPct;
+    const ar = _memberStandingReturn(a, focus);
+    const br = _memberStandingReturn(b, focus);
     if (ar == null && br == null) return (b.pv || 0) - (a.pv || 0);
     if (ar == null) return 1;
     if (br == null) return -1;
@@ -18734,30 +19087,50 @@ function _leagueStandingsHTML(league, members, awards) {
     });
   }
 
-  const focusNote = league.focusGenre
-    ? `<div class="lg-tab-note">Standings rank by overall return; the <b>${escapeHTML(league.focusGenre)} Cup</b> awards (Phase C) will use ${escapeHTML(league.focusGenre)}-specific returns.</div>`
-    : '';
+  // Header note: explain the focus + show the live countdown if endsAt is set.
+  let topNote = '';
+  if (isFiltered) {
+    topNote += `<div class="lg-tab-note">Standings ranked by sum of return across <b>${escapeHTML(focus.join(' · '))}</b>. Members with no positions in those genres are listed last.</div>`;
+  }
+  if (league.endsAt) {
+    topNote += `<div class="lg-stand-countdown"><span data-lg-countdown="${escapeHTML(league.endsAt)}"></span></div>`;
+  }
 
   const rows = sorted.map((m, i) => {
     const rank = i + 1;
-    const ret  = m.seasonPct ?? m.retPct;
+    // Primary return = filtered if multi-genre, else season/overall
+    const ret = _memberStandingReturn(m, focus);
     const retStr = (ret != null)
       ? `<span class="${ret >= 0 ? 'up' : 'down'}">${ret >= 0 ? '+' : ''}${ret.toFixed(2)}%</span>`
       : '<span class="lg-dim">—</span>';
-    const isYou  = window.MUSE_USER && m.userId === window.MUSE_USER.id;
-    const medal  = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
-    const pvStr  = (m.pv != null)
+    const isYou = window.MUSE_USER && m.userId === window.MUSE_USER.id;
+    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+    const pvStr = (m.pv != null)
       ? '$' + Number(m.pv).toLocaleString('en-US', { maximumFractionDigits: 0 })
       : '<span class="lg-dim">—</span>';
     const chips = (chipsByUser.get(m.userId) || []).join('');
+    // When filtered, show a per-genre breakdown beneath the row name (a row of small chips).
+    let breakdown = '';
+    if (isFiltered) {
+      const gr = m.genreReturns || {};
+      breakdown = `<div class="lg-stand-breakdown">${focus.map(g => {
+        const v = gr[g];
+        if (v == null || !Number.isFinite(+v)) return `<span class="lg-stand-genre lg-dim">${escapeHTML(g)} —</span>`;
+        const cls = +v >= 0 ? 'up' : 'down';
+        return `<span class="lg-stand-genre ${cls}">${escapeHTML(g)} ${(+v >= 0 ? '+' : '')}${(+v).toFixed(1)}%</span>`;
+      }).join('')}</div>`;
+    }
     return `
       <div class="lg-stand-row${isYou ? ' lg-stand-you' : ''}">
         <div class="lg-stand-rank">${medal || `#${rank}`}</div>
         <div class="lg-stand-name">
-          ${escapeHTML(m.name)}
-          ${isYou ? ' <span class="lg-you-tag">you</span>' : ''}
-          ${m.role === 'owner' ? ' <span class="lg-owner-tag">owner</span>' : ''}
-          ${chips}
+          <div class="lg-stand-name-row">
+            ${escapeHTML(m.name)}
+            ${isYou ? ' <span class="lg-you-tag">you</span>' : ''}
+            ${m.role === 'owner' ? ' <span class="lg-owner-tag">owner</span>' : ''}
+            ${chips}
+          </div>
+          ${breakdown}
         </div>
         <div class="lg-stand-pv">${pvStr}</div>
         <div class="lg-stand-ret">${retStr}</div>
@@ -18766,12 +19139,12 @@ function _leagueStandingsHTML(league, members, awards) {
   }).join('');
 
   return `
-    ${focusNote}
+    ${topNote}
     <div class="lg-stand-head">
       <div class="lg-stand-rank">Rank</div>
       <div class="lg-stand-name">Player</div>
       <div class="lg-stand-pv">Portfolio</div>
-      <div class="lg-stand-ret">Season</div>
+      <div class="lg-stand-ret">${isFiltered ? 'Genres' : 'Season'}</div>
     </div>
     <div class="lg-stand-list">${rows}</div>
   `;
@@ -18908,6 +19281,7 @@ function _leagueAwardsHTML(league, awards) {
 
 // ─── Settings (owner-only) ───────────────────────────────────────────
 function _leagueSettingsHTML(league) {
+  const fg = Array.isArray(league.focusGenres) ? league.focusGenres : [];
   const coverThumbs = Object.entries(LEAGUE_COVERS).map(([id, c]) => `
     <button type="button" class="lg-cover-thumb${id === league.coverId ? ' active' : ''}" data-cover="${id}" title="${c.label}" aria-label="${c.label}" style="background:${c.grad}">
       ${c.url ? `<img src="${c.url}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
@@ -18917,12 +19291,21 @@ function _leagueSettingsHTML(league) {
   const themeSwatches = Object.entries(LEAGUE_THEMES).map(([id, t]) => `
     <button type="button" class="lg-theme-swatch${id === league.themeColor ? ' active' : ''}" data-theme="${id}" title="${t.label}" aria-label="${t.label}" style="--swatch:${t.accent}"></button>
   `).join('');
-  const focusOpts = ['', 'Pop','Hip-hop','R&B','Latin','Afropop','Indie','Alt','K-Pop','Electronic']
-    .map(g => `<option value="${escapeHTML(g)}"${(league.focusGenre || '') === g ? ' selected' : ''}>${g === '' ? 'All genres (overall)' : escapeHTML(g)}</option>`)
-    .join('');
+  const genreChips = LEAGUE_GENRES.map(g => `
+    <button type="button" class="lg-genre-chip${fg.includes(g) ? ' active' : ''}" data-genre="${escapeHTML(g)}">${escapeHTML(g)}</button>
+  `).join('');
   const maxOpts = [10, 25, 50, 100, 250, 500]
     .map(n => `<option value="${n}"${league.maxMembers === n ? ' selected' : ''}>${n}</option>`)
     .join('');
+  // Time-limit display: pre-fill the datetime-local with the existing endsAt
+  // and show the picker ONLY when there's a time set; "No time limit" is the
+  // default to match the wizard.
+  const endsAtVal = league.endsAt ? (() => {
+    const d = new Date(league.endsAt);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  })() : '';
+  const initialDuration = league.endsAt ? 'custom' : 'none';
   return `
     <form class="lg-settings-form" onsubmit="return false">
       <div class="lg-field">
@@ -18941,10 +19324,18 @@ function _leagueSettingsHTML(league) {
         <label>Theme color</label>
         <div class="lg-theme-row" id="lg-set-theme">${themeSwatches}</div>
       </div>
+      <div class="lg-field">
+        <label>Genres <span class="lg-field-hint">pick 1+ to focus standings · empty = overall</span></label>
+        <div class="lg-genre-chips" id="lg-set-genres">${genreChips}</div>
+      </div>
       <div class="lg-field-row">
         <div class="lg-field">
-          <label>Focus genre</label>
-          <select class="lg-modal-input" id="lg-set-focus">${focusOpts}</select>
+          <label>Time limit</label>
+          <select class="lg-modal-input" id="lg-set-duration">
+            <option value="none"${initialDuration === 'none' ? ' selected' : ''}>No time limit</option>
+            <option value="custom"${initialDuration === 'custom' ? ' selected' : ''}>Pick a date…</option>
+          </select>
+          <input type="datetime-local" class="lg-modal-input lg-duration-custom" id="lg-set-duration-custom" value="${escapeHTML(endsAtVal)}" ${initialDuration === 'custom' ? '' : 'hidden'}>
         </div>
         <div class="lg-field">
           <label>Max members</label>
@@ -18966,19 +19357,23 @@ function _leagueSettingsHTML(league) {
 function _wireLeagueSettings(league, body) {
   // local mirror — start from current league state, mutate as user clicks
   const draft = {
-    name:        league.name,
-    description: league.description || '',
-    coverId:     league.coverId,
-    themeColor:  league.themeColor,
-    focusGenre:  league.focusGenre || '',
-    maxMembers:  league.maxMembers,
-    isPublic:    !!league.isPublic,
+    name:         league.name,
+    description:  league.description || '',
+    coverId:      league.coverId,
+    themeColor:   league.themeColor,
+    focusGenres:  Array.isArray(league.focusGenres) ? league.focusGenres.slice() : [],
+    maxMembers:   league.maxMembers,
+    isPublic:     !!league.isPublic,
+    durationId:   league.endsAt ? 'custom' : 'none',
+    customEndsAt: league.endsAt ? league.endsAt : '',
   };
   const nameI = body.querySelector('#lg-set-name');
   const descI = body.querySelector('#lg-set-desc');
-  const focusS = body.querySelector('#lg-set-focus');
+  const genres = body.querySelector('#lg-set-genres');
   const maxS  = body.querySelector('#lg-set-max');
   const pubC  = body.querySelector('#lg-set-public');
+  const durSel = body.querySelector('#lg-set-duration');
+  const durCustom = body.querySelector('#lg-set-duration-custom');
   const errEl = body.querySelector('#lg-set-error');
   const saveBtn = body.querySelector('#lg-set-save');
   const coverGrid = body.querySelector('#lg-set-cover');
@@ -18986,9 +19381,29 @@ function _wireLeagueSettings(league, body) {
 
   nameI.addEventListener('input', () => { draft.name = nameI.value; });
   descI.addEventListener('input', () => { draft.description = descI.value; });
-  focusS.addEventListener('change', () => { draft.focusGenre = focusS.value; });
   maxS.addEventListener('change',  () => { draft.maxMembers = +maxS.value; });
   pubC.addEventListener('change', () => { draft.isPublic = pubC.checked; });
+
+  durSel.addEventListener('change', () => {
+    draft.durationId = durSel.value;
+    if (draft.durationId === 'custom') {
+      durCustom.hidden = false;
+      if (!durCustom.value) durCustom.value = _datetimeLocalNowPlusDays(14);
+    } else {
+      durCustom.hidden = true;
+    }
+  });
+  durCustom.addEventListener('input', () => { draft.customEndsAt = durCustom.value; });
+
+  genres.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-genre]'); if (!b) return;
+    const g = b.dataset.genre;
+    if (!LEAGUE_GENRES.includes(g)) return;
+    const i = draft.focusGenres.indexOf(g);
+    if (i >= 0) draft.focusGenres.splice(i, 1);
+    else draft.focusGenres.push(g);
+    b.classList.toggle('active');
+  });
 
   coverGrid.addEventListener('click', (e) => {
     const b = e.target.closest('[data-cover]'); if (!b) return;
@@ -19013,17 +19428,28 @@ function _wireLeagueSettings(league, body) {
       errEl.hidden = false;
       return;
     }
-    saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving…';
-    const res = await updateLeagueRPC(league.id, {
+    // Resolve the time-limit dropdown into endsAt | clearEndsAt.
+    let opts = {
       name:         draft.name,
       description:  draft.description,
       coverId:      draft.coverId,
       themeColor:   draft.themeColor,
-      focusGenre:   draft.focusGenre || null,  // empty string → null
+      focusGenres:  draft.focusGenres,
       maxMembers:   draft.maxMembers,
       isPublic:     draft.isPublic,
-    });
+    };
+    if (draft.durationId === 'none') {
+      opts.clearEndsAt = true;
+    } else if (draft.durationId === 'custom') {
+      if (!draft.customEndsAt) {
+        errEl.textContent = 'Pick a custom end date or set "No time limit".';
+        errEl.hidden = false; return;
+      }
+      opts.endsAt = new Date(draft.customEndsAt).toISOString();
+    }
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+    const res = await updateLeagueRPC(league.id, opts);
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save changes';
     if (res.error) {
@@ -20946,6 +21372,7 @@ function setView(name) {
   if (name === 'artists') renderAllArtists();
   if (name === 'leagues') renderLeaguesPage();
   if (name === 'league' && typeof renderLeagueDetail === 'function') renderLeagueDetail();
+  else if (typeof _stopLeagueCountdown === 'function') _stopLeagueCountdown();
   if (name === 'predictions') renderPredictionsPage();
   if (name === 'prediction' && typeof renderPredictionMarketDetail === 'function') renderPredictionMarketDetail();
   if (name === 'pred-leaderboard' && typeof renderPredCallersPage === 'function') renderPredCallersPage();
