@@ -15215,7 +15215,7 @@
         <div class="section-head">
           <div>
             <h1>Leaderboard <span class="money-badge paper" style="vertical-align:middle;margin-left:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>Paper Trading</span></h1>
-            <div class="sub">Top performing portfolios this week</div>
+            <div class="sub">Top performing portfolios this month</div>
           </div>
         </div>
 
@@ -22801,25 +22801,29 @@ function renderIpoBanner() {
   `;
 }
 
-// Season-banner renderer — called from renderLeaderboard. Outputs a
-// compact countdown strip: "Season 1 — Spring 2026 · ends in 68 days".
+// Leaderboard-banner renderer — called from renderLeaderboard. Sander
+// asked to drop the season concept here and count down to the end of
+// the current month instead, since Monthly Cups (the only prize tier
+// shown on this page) settle monthly. So the strip now reads
+// "April 2026 · Ends in 1 day" / "May 2026 · 22 days left".
 function renderSeasonBanner() {
   const host = document.getElementById('lb-season-banner');
   if (!host) return;
-  if (!ACTIVE_SEASON) { host.innerHTML = ''; return; }
 
-  const endsAt = new Date(ACTIVE_SEASON.ends_at);
-  const msLeft = endsAt.getTime() - Date.now();
+  const now = new Date();
+  // First day of NEXT month at 00:00 local — that's the cup-close moment.
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const msLeft = monthEnd.getTime() - now.getTime();
   const daysLeft = Math.max(0, Math.ceil(msLeft / 86400000));
+  const monthName = now.toLocaleString('en-US', { month: 'long', year: 'numeric' });
   const countdown = daysLeft <= 0
     ? 'Final day'
     : (daysLeft === 1 ? 'Ends tomorrow' : `Ends in ${daysLeft} days`);
 
-  const name = escapeHTML(ACTIVE_SEASON.name || 'Season');
   host.innerHTML = `
     <div class="season-banner">
       <div class="sb-dot"></div>
-      <div class="sb-name">${name}</div>
+      <div class="sb-name">${escapeHTML(monthName)}</div>
       <div class="sb-sep">·</div>
       <div class="sb-count">${countdown}</div>
     </div>
