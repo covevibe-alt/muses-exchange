@@ -15315,6 +15315,12 @@
         <!-- Phase 0 — season countdown banner. Painted by renderSeasonBanner(). -->
         <div id="lb-season-banner"></div>
 
+        <!-- Monthly Cups — own section, painted by renderMonthlyCupsCard().
+             Sits directly under the month chip per Sander. Static
+             content, but rendered from JS so we can adjust the copy /
+             tier numbers in one place if the prize tiers ever change. -->
+        <div id="lb-monthly-cups"></div>
+
         <!-- Phase 1 — head-to-head matchup card. Painted by renderMatchupCard(). -->
         <div id="lb-matchup-card"></div>
 
@@ -23108,6 +23114,36 @@ function renderSeasonBanner() {
   `;
 }
 
+// Monthly Cups hero card — sits as its own section directly under the
+// month chip on the leaderboard. Static prize-tier info; rendered from
+// JS so we can adjust copy / amounts in one place. Called from
+// renderLeaderboard() so it repaints alongside the other phases.
+function renderMonthlyCupsCard() {
+  const host = document.getElementById('lb-monthly-cups');
+  if (!host) return;
+  host.innerHTML = `
+    <div class="lb-cup-info lb-cup-info-hero">
+      <div class="lb-cup-info-head">
+        <svg class="lb-cup-info-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+          <path d="M4 22h16"/>
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+        </svg>
+        <span class="lb-cup-info-tag">Monthly Cups</span>
+        <span class="lb-cup-info-tip">Hold any artist in a genre → you're entered. Top 10 win prizes when the month closes.</span>
+      </div>
+      <div class="lb-cup-tiers">
+        <span class="lb-cup-tier lb-cup-tier-gold"><b>#1</b> $10k credits + champion badge</span>
+        <span class="lb-cup-tier lb-cup-tier-silver"><b>#2–3</b> $3k credits + podium badge</span>
+        <span class="lb-cup-tier lb-cup-tier-bronze"><b>#4–10</b> $1k credits + finalist badge</span>
+      </div>
+    </div>
+  `;
+}
+
 // ─────────────────────────────────────────────────────────────────────
 // LEADERBOARD — public ranking table (migration 004)
 // ─────────────────────────────────────────────────────────────────────
@@ -30658,6 +30694,7 @@ function renderLeaderboard() {
   // banner slot, then re-paint as soon as the season resolves. Cheap
   // enough to call on every leaderboard render.
   try { renderSeasonBanner(); } catch (_e) { /* non-fatal */ }
+  try { renderMonthlyCupsCard(); } catch (_e) { /* non-fatal */ }
   ensureSeasonReady().then(() => { try { renderSeasonBanner(); } catch (_e) {} });
 
   // Phase 1 — paint the matchup card. TTL-cached; repaint cheap. The
@@ -30900,21 +30937,11 @@ function renderLeaderboard() {
     // "empty cup" — render the cup-tabs + the per-cup empty-state CTA
     // so the user can switch tabs or buy in to enter the cup.
     if (lb.cup) {
+      // Cup-info is now its own section above the leaderboard host
+      // (rendered by renderMonthlyCupsCard()) so we don't duplicate it
+      // in the empty-state path. Just paint the cup tabs + empty CTA.
       const allCups = ['Pop','Hip-hop','R&B','Latin','Afropop','Indie','Alt','K-Pop','Electronic'];
       host.innerHTML = `
-        <div class="lb-cup-info">
-          <div class="lb-cup-info-head">
-            <span class="lb-cup-info-tag">Monthly Cups</span>
-            <span class="lb-cup-info-tip">Hold any artist in a genre → you're entered. Top 10 win prizes when the month closes.</span>
-          </div>
-          <div class="lb-cup-tiers">
-            <span class="lb-cup-tier"><b>#1</b> $10k credits + champion badge</span>
-            <span class="lb-cup-tier-sep">·</span>
-            <span class="lb-cup-tier"><b>#2–3</b> $3k credits + podium badge</span>
-            <span class="lb-cup-tier-sep">·</span>
-            <span class="lb-cup-tier"><b>#4–10</b> $1k credits + finalist badge</span>
-          </div>
-        </div>
         <div class="lb-cup-tabs">
           <button data-lb-cup="" class="${!lb.cup?'active':''}">Overall</button>
           ${allCups.map(g => `<button data-lb-cup="${escapeHTML(g)}" class="${lb.cup===g?'active':''}">${escapeHTML(g)} Cup</button>`).join('')}
@@ -30959,35 +30986,6 @@ function renderLeaderboard() {
   // at which percentile math stops being absurd.
   const rankIsMeaningful = fullRanking.length >= 5;
   let html = `
-    ${(() => {
-      // Monthly Cups info — sits at the TOP of the leaderboard body now,
-      // right under the month-countdown banner. Sander asked to lead with
-      // the prize tiers since they're the actual "why" of this page.
-      // Always show all 9 canonical genre cup tabs (plus Overall) so
-      // empty cups still feel "open for entry" rather than absent.
-      const cups = ['Pop','Hip-hop','R&B','Latin','Afropop','Indie','Alt','K-Pop','Electronic'];
-      return `
-        <div class="lb-cup-info lb-cup-info-hero">
-          <div class="lb-cup-info-head">
-            <svg class="lb-cup-info-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
-              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-              <path d="M4 22h16"/>
-              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
-              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-            </svg>
-            <span class="lb-cup-info-tag">Monthly Cups</span>
-            <span class="lb-cup-info-tip">Hold any artist in a genre → you're entered. Top 10 win prizes when the month closes.</span>
-          </div>
-          <div class="lb-cup-tiers">
-            <span class="lb-cup-tier lb-cup-tier-gold"><b>#1</b> $10k credits + champion badge</span>
-            <span class="lb-cup-tier lb-cup-tier-silver"><b>#2–3</b> $3k credits + podium badge</span>
-            <span class="lb-cup-tier lb-cup-tier-bronze"><b>#4–10</b> $1k credits + finalist badge</span>
-          </div>
-        </div>
-      `;
-    })()}
     <div class="lb-stats">
       <div class="lb-stat">
         <div class="lb-stat-label">Your rank</div>
