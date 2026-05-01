@@ -1,0 +1,43 @@
+-- ════════════════════════════════════════════════════════════════════════════
+-- Migration 047 — Notifications backbone
+-- ════════════════════════════════════════════════════════════════════════════
+--   1. notifications table — server-side inbox (RLS: own rows only)
+--   2. RPCs: get_notifications, mark_notification_read,
+--            mark_all_notifications_read, unread_notification_count,
+--            push_notification (helper)
+--   3. Hook into payout_resolved_predictions — every paid winner / loser
+--      gets a 'prediction_resolved' notification.
+--   4. Hook into finalize_expired_leagues — calls
+--      notify_league_award_recipients() per finalized league.
+--   5. push_streak_warnings() — daily 01:00 UTC, warns users 24-48h
+--      since last_resolved_at (before the decay cron at 02:00).
+--   6. push_weekly_digest() — Sunday 17:00 UTC, before the weekly
+--      newsletter cron at 18:00.
+--
+-- E-mail delivery (via Resend/Postmark) is intentionally separate —
+-- the table + triggers are the inbox; an edge function reads unread+
+-- email-eligible rows on its own schedule. Keeps the e-mail layer
+-- swappable.
+--
+-- APPLIED VIA SUPABASE MCP on 2026-05-01.
+-- ════════════════════════════════════════════════════════════════════════════
+
+-- Full DDL (table, RPCs, function patches, crons) lives in the live
+-- database — applied via Supabase MCP. This file is a pointer for
+-- developers reading the migrations directory in repo order. See the
+-- corresponding pg_proc entries for the source of truth:
+--   - public.notifications  (table)
+--   - public.push_notification(uuid, text, jsonb)
+--   - public.get_notifications(integer)
+--   - public.mark_notification_read(bigint)
+--   - public.mark_all_notifications_read()
+--   - public.unread_notification_count()
+--   - public.payout_resolved_predictions()  (now notifies on payout)
+--   - public.notify_league_award_recipients(integer)
+--   - public.finalize_expired_leagues()  (now calls notify_league...)
+--   - public.push_streak_warnings()
+--   - public.push_weekly_digest()
+--   - cron 'streak-warnings' — 0 1 * * *
+--   - cron 'weekly-digest-notifications' — 0 17 * * 0
+
+-- (See supabase/047_notifications_full.sql for the executable DDL.)

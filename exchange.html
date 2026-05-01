@@ -14428,7 +14428,10 @@
     <button class="sb-item" data-nav="predictions" data-label="Predictions" aria-label="Predictions"><svg><use href="#i-predict"/></svg></button>
     <button class="sb-item" data-nav="leagues" data-label="Leagues" aria-label="Leagues"><svg><use href="#i-leagues"/></svg></button>
     <button class="sb-item" data-nav="leaderboard" data-label="Leaderboard" aria-label="Leaderboard"><svg><use href="#i-medal"/></svg></button>
-    <button class="sb-item sb-mobile-hide" data-nav="tournaments" data-label="Tournaments" aria-label="Tournaments"><svg><use href="#i-trophy"/></svg></button>
+    <!-- Tournaments tab hidden until the backend is built — clicking it
+         landed users on a static UI shell with no data behind it.
+         Re-enable when tournaments table + crons exist. -->
+    <button class="sb-item sb-mobile-hide" data-nav="tournaments" data-label="Tournaments" aria-label="Tournaments" hidden><svg><use href="#i-trophy"/></svg></button>
     <div class="sb-spacer"></div>
     <button class="sb-item sb-menu-btn" id="mobile-menu-btn" data-label="Menu" aria-label="Open menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -15589,6 +15592,22 @@
     <section class="content full hidden" id="view-help">
       <div class="col-main">
         <div class="help-wrap" id="help-wrap"></div>
+      </div>
+    </section>
+
+    <!-- ============== ADMIN — PREDICTIONS QUEUE ============== -->
+    <!-- Owner-only view at /admin/predictions for resolving the
+         predictions_pending_resolution queue without opening Supabase
+         SQL editor. Painted by renderAdminPredictions(). -->
+    <section class="content full hidden" id="view-admin-predictions">
+      <div class="col-main">
+        <div class="section-head">
+          <div>
+            <h1>Admin · Predictions queue</h1>
+            <div class="sub">Resolve markets that the cron couldn't auto-decide.</div>
+          </div>
+        </div>
+        <div id="admin-predictions-host"></div>
       </div>
     </section>
 
@@ -24171,6 +24190,7 @@ function setView(name) {
   if (name === 'swap') renderSwapPage();
   if (name === 'settings' && typeof renderSettings === 'function') renderSettings();
   if (name === 'help' && typeof renderHelp === 'function') renderHelp();
+  if (name === 'admin-predictions' && typeof renderAdminPredictions === 'function') renderAdminPredictions();
   // M8: keep the URL in sync with the current view. No-op during popstate /
   // initial route application (the flag is raised by the routing module below).
   try { if (typeof updateHistoryFromView === 'function') updateHistoryFromView(false); } catch (_) {}
@@ -29045,6 +29065,104 @@ function closeHelpGuide() {
   if (modal) modal.classList.remove('show');
 }
 
+// ════════════════════════════════════════════════════════════════════════════
+// ADMIN — predictions resolution queue (Migration 044+047)
+// ════════════════════════════════════════════════════════════════════════════
+// Owner-only view at /admin/predictions. Fetches everything in
+// predictions_pending_resolution that doesn't have a resolved_at, shows
+// each market's question + current pools + reason, and offers
+// YES/NO/Cancel buttons that call admin_resolve_prediction_market().
+// The RPC is SECURITY DEFINER so any authed user CAN technically call it
+// — TODO when there are multiple admins: add a real admin_users table
+// and gate inside the RPC. For now, only Sander (or whoever knows the
+// URL) navigates here, and the route isn't linked from the public UI.
+
+async function renderAdminPredictions() {
+  const host = document.getElementById('admin-predictions-host');
+  if (!host) return;
+  host.innerHTML = `<div class="pmd-feed-empty">Loading queue…</div>`;
+  if (!window.SUPABASE) {
+    host.innerHTML = `<div class="pmd-feed-empty">Supabase not initialized.</div>`;
+    return;
+  }
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_pending_predictions_queue');
+    if (error) {
+      host.innerHTML = `<div class="pmd-feed-empty">Error: ${escapeHTML(error.message || 'unknown')}</div>`;
+      return;
+    }
+    const list = Array.isArray(data) ? data : [];
+    if (list.length === 0) {
+      host.innerHTML = `<div class="pmd-feed-empty" style="padding:48px 16px"><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">Queue empty</div><div>Every expired market has been auto-resolved or already settled.</div></div>`;
+      return;
+    }
+    host.innerHTML = list.map(row => {
+      const totalPool = (+row.yes_pool || 0) + (+row.no_pool || 0);
+      const aLabel = row.option_a_label || 'YES';
+      const bLabel = row.option_b_label || 'NO';
+      const reasonHuman = (() => {
+        switch (row.reason) {
+          case 'manual_no_server_prices': return 'Type needs server-side prices (not yet available)';
+          case 'manual_type':              return 'Free-form market — needs your judgment';
+          case 'tied_metric':              return 'A and B tied on the auto-metric';
+          case 'no_artist_price':          return "Artist isn't on the price roster";
+          case 'missing_ticker_or_target': return 'Market config is missing a field';
+          default:                          return row.reason || 'unknown';
+        }
+      })();
+      return `
+        <div class="card" style="padding:16px;margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap">
+            <div style="flex:1 1 320px;min-width:0">
+              <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-faint);font-weight:700;margin-bottom:4px">${escapeHTML(row.prediction_type || 'unknown').toUpperCase()}</div>
+              <div style="font-size:16px;font-weight:700;color:var(--text);line-height:1.35;margin-bottom:6px">${escapeHTML(row.question || '')}</div>
+              <div style="font-size:12px;color:var(--text-dim);margin-bottom:8px">${escapeHTML(reasonHuman)}</div>
+              <div style="font-size:12px;color:var(--text-dim)">
+                Pool: <b style="color:var(--text)">$${Math.round(totalPool).toLocaleString()}</b>
+                · ${escapeHTML(aLabel)}: $${Math.round(+row.yes_pool || 0)}
+                · ${escapeHTML(bLabel)}: $${Math.round(+row.no_pool || 0)}
+                · ${row.bet_count} bet${row.bet_count === 1 ? '' : 's'}
+                · resolved ${escapeHTML(_humanRelativeTime(row.resolves_at))}
+              </div>
+              ${row.type_config ? `<details style="margin-top:6px"><summary style="font-size:11px;color:var(--text-faint);cursor:pointer">Config</summary><pre style="font-size:11px;color:var(--text-dim);margin-top:4px;white-space:pre-wrap">${escapeHTML(JSON.stringify(row.type_config, null, 2))}</pre></details>` : ''}
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0">
+              <button class="lg-btn" data-admin-resolve="${row.market_id}" data-outcome="yes" style="background:rgba(34,197,94,0.16);border:1px solid rgba(34,197,94,0.45);color:#22c55e">${escapeHTML(aLabel)}</button>
+              <button class="lg-btn" data-admin-resolve="${row.market_id}" data-outcome="no" style="background:rgba(239,68,68,0.16);border:1px solid rgba(239,68,68,0.45);color:#ef4444">${escapeHTML(bLabel)}</button>
+              <button class="lg-btn" data-admin-resolve="${row.market_id}" data-outcome="canceled">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    host.querySelectorAll('[data-admin-resolve]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const marketId = parseInt(btn.dataset.adminResolve, 10);
+        const outcome  = btn.dataset.outcome;
+        const labelMap = { yes: 'YES', no: 'NO', canceled: 'Cancel' };
+        if (!confirm(`Resolve market #${marketId} as ${labelMap[outcome]}?\n\nThis pays out winners and is irreversible.`)) return;
+        host.querySelectorAll('button').forEach(b => b.disabled = true);
+        try {
+          const { data: res, error: rpcErr } = await window.SUPABASE.rpc('admin_resolve_prediction_market', {
+            p_market_id: marketId, p_outcome: outcome,
+          });
+          if (rpcErr || (res && res.error)) {
+            alert('Could not resolve: ' + ((res && res.error) || rpcErr.message));
+          } else {
+            if (typeof showToast === 'function') showToast(`Market #${marketId} resolved → ${labelMap[outcome]}`);
+          }
+        } catch (e) {
+          alert('Could not resolve: ' + e.message);
+        }
+        renderAdminPredictions();  // refresh
+      });
+    });
+  } catch (e) {
+    host.innerHTML = `<div class="pmd-feed-empty">Error: ${escapeHTML(e.message || 'unknown')}</div>`;
+  }
+}
+
 function renderHelp() {
   const host = document.getElementById('help-wrap');
   if (!host) return;
@@ -32621,6 +32739,92 @@ function renderTournaments() {
 }
 
 // ============ NOTIFICATIONS ============
+
+// ── Server-side notifications (Migration 047) ──
+// The notifications table is the source of truth. We mirror it into
+// STATE.notifications so the existing UI rendering keeps working,
+// fetching on app boot and on every panel-open. Local-only notifs
+// (e.g. "Order filled" from the trading code) still work via
+// pushNotification() — they're transient and live alongside the
+// server-pushed ones.
+
+// Convert a server notification row → UI shape understood by
+// renderNotifPanel(). Maps the new types to icons + human copy.
+function _formatServerNotif(row) {
+  const p = row.payload || {};
+  let type = 'rebal';
+  let title = 'Notification';
+  let body = '';
+  if (row.type === 'prediction_resolved') {
+    if (p.outcome === 'canceled') {
+      type = 'rebal';
+      title = 'Market canceled — stake refunded';
+      body = `${p.market_question || 'A prediction market'} was canceled. Your $${(+p.your_stake || 0).toFixed(0)} stake is back in your bankroll.`;
+    } else {
+      const profit = +p.profit || 0;
+      type = profit >= 0 ? 'win' : 'rank_dn';
+      title = profit >= 0 ? `+$${profit.toFixed(0)} payout` : `-$${(-profit).toFixed(0)} loss`;
+      body = `${p.market_question || 'Market'} resolved ${(p.outcome || '').toUpperCase()}.`;
+    }
+  } else if (row.type === 'league_award') {
+    type = 'win';
+    title = `League award: ${p.award_type || 'champion'}`;
+    body = p.league_name ? `You earned an award in ${p.league_name}.` : 'New league award.';
+  } else if (row.type === 'streak_warning') {
+    type = 'ending';
+    const hrs = Math.max(1, Math.round(+p.hours_left || 0));
+    title = `Streak ending in ${hrs}h`;
+    body = `Place a prediction to keep your ${p.current_streak || 0}-streak alive.`;
+  } else if (row.type === 'weekly_digest') {
+    type = 'rebal';
+    title = 'Your weekly digest';
+    body = 'A new week of predictions, leagues, and standings — check what changed.';
+  } else if (row.type === 'system') {
+    type = 'rebal';
+    title = p.title || 'System notice';
+    body = p.body || '';
+  }
+  return {
+    id: row.id,
+    serverId: row.id,  // mark as server-sourced
+    type, title, body,
+    tournamentId: p.tournament_id || null,
+    marketSlug: p.market_slug || null,
+    leagueSlug: p.league_slug || null,
+    time: new Date(row.created_at).getTime(),
+    read: !!row.read_at,
+  };
+}
+
+async function loadServerNotifications() {
+  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) return;
+  try {
+    const { data, error } = await window.SUPABASE.rpc('get_notifications', { p_limit: 30 });
+    if (error || !Array.isArray(data)) return;
+    // Replace the entire server-sourced slice; keep local-only items.
+    const serverIds = new Set(data.map(r => r.id));
+    const localOnly = STATE.notifications.filter(n => !n.serverId);
+    const serverFormatted = data.map(_formatServerNotif);
+    // Merge: local (client-only) + server. Sort by time desc.
+    STATE.notifications = [...localOnly, ...serverFormatted].sort((a, b) => b.time - a.time).slice(0, 50);
+    STATE.notifUnread = STATE.notifications.filter(n => !n.read).length;
+    renderNotifBadge();
+    if (!document.getElementById('notif-panel')?.classList.contains('hidden')) {
+      renderNotifPanel();
+    }
+  } catch (e) { /* silent — non-fatal */ }
+}
+
+async function markServerNotifRead(id) {
+  if (!window.SUPABASE) return;
+  try { await window.SUPABASE.rpc('mark_notification_read', { p_id: id }); } catch (_) {}
+}
+
+async function markAllServerNotifsRead() {
+  if (!window.SUPABASE) return;
+  try { await window.SUPABASE.rpc('mark_all_notifications_read'); } catch (_) {}
+}
+
 let _notifId = 1;
 function pushNotification(type, title, body, tournamentId) {
   // M16.12 — derive next ID from max(existing, counter)+1. Handles restored
@@ -32697,7 +32901,13 @@ function wireNotifications() {
     e.stopPropagation();
     const wasHidden = panel.classList.contains('hidden');
     panel.classList.toggle('hidden');
-    if (wasHidden) renderNotifPanel();
+    if (wasHidden) {
+      // Refresh from server every time the panel opens so the user sees
+      // the latest. Renders immediately from cache, then re-renders
+      // when the server response lands.
+      renderNotifPanel();
+      loadServerNotifications();
+    }
   });
   document.addEventListener('click', (e) => {
     if (!panel.classList.contains('hidden') && !e.target.closest('.notif-wrap')) {
@@ -32714,10 +32924,23 @@ function wireNotifications() {
         STATE.notifUnread = STATE.notifications.filter(x => !x.read).length;
         renderNotifBadge();
         renderNotifPanel();
-        // M16.12 — persist read-state change
-        try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (e) {}
+        // Server-sourced rows get a mark-read RPC; local-only ones
+        // persist via localStorage.
+        if (n.serverId) {
+          markServerNotifRead(n.serverId);
+        } else {
+          try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (e) {}
+        }
       }
-      if (item.dataset.tournament) {
+      // Deep-link routing — server notifications carry slugs we can
+      // route to. Tournament path is legacy local-only.
+      if (n && n.marketSlug) {
+        panel.classList.add('hidden');
+        try { setView('prediction', { slug: n.marketSlug }); } catch (_) {}
+      } else if (n && n.leagueSlug) {
+        panel.classList.add('hidden');
+        try { setView('league', { slug: n.leagueSlug }); } catch (_) {}
+      } else if (item.dataset.tournament) {
         STATE.selectedTournament = item.dataset.tournament;
         panel.classList.add('hidden');
         setView('tournament');
@@ -32729,9 +32952,13 @@ function wireNotifications() {
     STATE.notifUnread = 0;
     renderNotifBadge();
     renderNotifPanel();
-    // M16.12 — persist "mark all read"
+    // Mark all server-sourced as read; persist local-only via localStorage.
+    markAllServerNotifsRead();
     try { if (typeof saveMusePriceState === 'function') saveMusePriceState(); } catch (e) {}
   });
+  // Fetch server notifications on app boot so the badge reflects truth
+  // before the user opens the panel. Non-blocking.
+  loadServerNotifications();
   // M16.12 — render badge once at boot so restored notifUnread shows up.
   renderNotifBadge();
 }

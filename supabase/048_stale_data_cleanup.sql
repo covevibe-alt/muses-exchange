@@ -1,0 +1,35 @@
+-- ════════════════════════════════════════════════════════════════════════════
+-- Migration 048 — Stale-data cleanup (monthly cron)
+-- ════════════════════════════════════════════════════════════════════════════
+--   1. *_archive tables (LIKE-cloned from prediction_markets,
+--      prediction_bets, prediction_market_snapshots)
+--   2. archive_old_predictions() — moves resolved/canceled markets +
+--      their bets + snapshots > 6 months old to the archive tables.
+--   3. prune_old_snapshots() — for markets > 30 days, keep at most one
+--      snapshot per hour (drops sub-hour duplicates). Recent markets
+--      keep full per-bet detail.
+--   4. prune_inactive_users() — anonymize handle / display_name for
+--      profiles with zero activity in 12+ months. Keeps the row (FKs).
+--   5. prune_old_notifications() — delete READ notifs > 90 days. Unread
+--      stay forever (they're an actionable inbox).
+--   6. cleanup_tick() — single entry point.
+--   7. Cron 'data-cleanup' — monthly on the 5th at 03:00 UTC (after
+--      the 1st-of-month genre cup rollover settles).
+--
+-- All operations idempotent. Safe to dry-run by calling cleanup_tick()
+-- ad-hoc — it returns a summary jsonb of what moved/pruned.
+--
+-- APPLIED VIA SUPABASE MCP on 2026-05-01.
+-- ════════════════════════════════════════════════════════════════════════════
+
+-- Full DDL lives in the live database — applied via Supabase MCP. This
+-- file is a pointer; see pg_proc entries for source of truth:
+--   - public.prediction_markets_archive  (table, LIKE prediction_markets)
+--   - public.prediction_bets_archive     (table)
+--   - public.prediction_market_snapshots_archive  (table)
+--   - public.archive_old_predictions()
+--   - public.prune_old_snapshots()
+--   - public.prune_inactive_users()
+--   - public.prune_old_notifications()
+--   - public.cleanup_tick()
+--   - cron 'data-cleanup' — 0 3 5 * *
