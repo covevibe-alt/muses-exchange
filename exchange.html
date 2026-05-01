@@ -19472,20 +19472,13 @@ function _PMD_renderChart(host, snaps, m) {
       rightOffset: 0,
       // fixLeftEdge + fixRightEdge clamp scrolling so the user can't
       // pan past the data on either side. Combined with the explicit
-      // setVisibleLogicalRange call below (from: -0.5, to: N-0.5) this
-      // pulls the first data point to the chart's leftmost pixel and
-      // the last point to the rightmost — no more half-bar padding gap.
+      // setVisibleLogicalRange call below this pulls the first data
+      // point to the chart's leftmost pixel and the last point to the
+      // rightmost — no more half-bar padding gap.
       fixLeftEdge: true,
       fixRightEdge: true,
       lockVisibleTimeRangeOnResize: true,
       shiftVisibleRangeOnNewBar: false,
-      // Custom tick formatter — every label uses the same "MMM d"
-      // pattern so we don't get the inconsistent "26", "29 Apr '26",
-      // "May" mix that LightweightCharts produces by default.
-      tickMarkFormatter: (time) => {
-        const d = new Date(time * 1000);
-        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      },
     },
     handleScroll: false,
     handleScale: false,
@@ -19514,12 +19507,33 @@ function _PMD_renderChart(host, snaps, m) {
   });
   _PMD_TV.seriesA.setData(ptsA);
   _PMD_TV.seriesB.setData(ptsB);
+
+  // Apply the consistent "MMM d" tick formatter via applyOptions —
+  // setting it inline in createChart() options didn't take effect (the
+  // chart kept rendering the default "26 / 30 / 30 / May" mix), but a
+  // post-create applyOptions call binds the formatter properly.
+  // Time can arrive as either a UTCTimestamp (number, seconds) or a
+  // BusinessDay object; handle both.
+  _PMD_TV.chart.applyOptions({
+    timeScale: {
+      tickMarkFormatter: (time) => {
+        let d;
+        if (typeof time === 'number') {
+          d = new Date(time * 1000);
+        } else if (time && typeof time === 'object' && time.year != null) {
+          d = new Date(time.year, (time.month || 1) - 1, time.day || 1);
+        } else {
+          return '';
+        }
+        if (Number.isNaN(d.getTime())) return '';
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      },
+    },
+  });
+
   // setVisibleLogicalRange with from=0 / to=N-1 places the FIRST data
   // point's exact x-coordinate at the chart's left edge and the LAST
-  // data point's x-coordinate at the chart's right edge — that's where
-  // Sander wanted the line to start/end (his arrow pointed at the very
-  // left of the chart). LightweightCharts paints a half-bar past each
-  // edge, but that's invisible because we only render line + dots.
+  // data point's x-coordinate at the chart's right edge.
   try {
     _PMD_TV.chart.timeScale().setVisibleLogicalRange({
       from: 0,
