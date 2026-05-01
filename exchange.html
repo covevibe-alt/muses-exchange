@@ -8503,12 +8503,16 @@
   }
 
   /* Probability chart — padding matches .pmd-tab-body so chart contents and
-     comments contents share the same left/right inner edge. */
+     comments contents share the same left/right inner edge.
+     overflow: hidden + a slightly bigger bottom padding so the
+     LightweightCharts X-axis labels never poke past the rounded corners
+     (Sander caught this on mobile where the height is tighter). */
   .pmd-chart-wrap {
     background: var(--card-2);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 12px 20px 8px;
+    padding: 12px 20px 14px;
+    overflow: hidden;
   }
   /* TradingView-style probability chart container — populated by
      LightweightCharts (see _PMD_renderChart). The legend above shows
