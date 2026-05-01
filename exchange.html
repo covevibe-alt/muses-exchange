@@ -19379,14 +19379,12 @@ function _PMD_renderChart(host, snaps, m) {
   const pctA = chartEl.querySelector('[data-pmd-pct="a"]');
   const pctB = chartEl.querySelector('[data-pmd-pct="b"]');
 
-  // Build A-side data points — anchor at creation if needed, then walk
-  // the snapshots, then extend to "now" so the line reaches the right
-  // edge. LightweightCharts demands strictly-increasing unique time
-  // values (in seconds), so we sort + dedupe.
+  // Build A-side data points — start at the FIRST actual snapshot (no
+  // synthetic 50/50 anchor at creation), walk the snapshots, then
+  // extend to "now" so the line reaches the right edge. LightweightCharts
+  // demands strictly-increasing unique time values (in seconds), so we
+  // sort + dedupe below.
   const rawA = [];
-  if (m.created_at) {
-    rawA.push({ t: new Date(m.created_at).getTime(), v: 50 });
-  }
   snaps.forEach(s => {
     rawA.push({
       t: new Date(s.snapshot_at).getTime(),
