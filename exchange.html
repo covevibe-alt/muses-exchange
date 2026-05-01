@@ -4033,48 +4033,128 @@
     color: var(--text);
   }
 
-  /* Cup info banner — explains how cups work + the prize tier table. */
+  /* Cup info banner — explains how cups work + the prize tier table.
+     Hero treatment used at the top of the leaderboard: richer gold
+     gradient + soft glow + trophy icon next to the tag. The three
+     tier rows now stack with podium-colored rank chips (#1 gold,
+     #2-3 silver, #4-10 bronze) instead of a comma-separated line. */
   .lb-cup-info {
-    background: linear-gradient(135deg, rgba(255,209,102,0.08), rgba(167,139,250,0.06));
-    border: 1px solid rgba(255,209,102,0.22);
+    background: linear-gradient(135deg, rgba(255,209,102,0.10), rgba(167,139,250,0.06) 60%, rgba(0,0,0,0));
+    border: 1px solid rgba(255,209,102,0.28);
     border-radius: var(--radius-md);
-    padding: 12px 16px;
-    margin: 0 0 12px;
+    padding: 14px 18px;
+    margin: 0 0 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .lb-cup-info-hero {
+    /* Top-of-page placement — bigger padding, soft golden glow, and a
+       subtle radial in the corner so it feels like the page's hero. */
+    padding: 18px 22px 16px;
+    margin: 0 0 16px;
+    box-shadow:
+      0 0 0 1px rgba(255,209,102,0.12) inset,
+      0 8px 32px -16px rgba(255,209,102,0.40);
+  }
+  .lb-cup-info-hero::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -20%;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(255,209,102,0.18) 0%, transparent 60%);
+    pointer-events: none;
   }
   .lb-cup-info-head {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
+    position: relative;
+  }
+  .lb-cup-info-trophy {
+    width: 18px; height: 18px;
+    color: var(--gold);
+    filter: drop-shadow(0 0 6px rgba(255,209,102,0.5));
+    flex-shrink: 0;
   }
   .lb-cup-info-tag {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--gold);
-    padding: 3px 8px;
+    padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(255,209,102,0.14);
-    border: 1px solid rgba(255,209,102,0.32);
+    background: linear-gradient(135deg, rgba(255,209,102,0.20), rgba(255,209,102,0.10));
+    border: 1px solid rgba(255,209,102,0.45);
+    box-shadow: 0 0 12px rgba(255,209,102,0.18);
   }
   .lb-cup-info-tip {
     font-size: 12.5px;
     color: var(--text-dim);
-    line-height: 1.4;
+    line-height: 1.45;
+    flex: 1 1 240px;
+    min-width: 0;
   }
   .lb-cup-tiers {
     display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    font-size: 12px;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
     color: var(--text);
+    position: relative;
   }
-  .lb-cup-tier { white-space: nowrap; }
-  .lb-cup-tier b { color: var(--gold); margin-right: 4px; }
-  .lb-cup-tier-sep { color: var(--text-faint); }
+  .lb-cup-tier {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .lb-cup-tier:hover {
+    background: rgba(255, 255, 255, 0.045);
+  }
+  .lb-cup-tier b {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    min-width: 50px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 12px;
+    font-weight: 800;
+    margin-right: 0;
+  }
+  .lb-cup-tier-gold {
+    border-color: rgba(255, 209, 102, 0.30);
+    background: linear-gradient(90deg, rgba(255, 209, 102, 0.10), rgba(255, 209, 102, 0.02));
+  }
+  .lb-cup-tier-gold b {
+    color: #1a1410;
+    background: linear-gradient(135deg, #ffd166, #f4a847);
+    box-shadow: 0 2px 10px rgba(255, 209, 102, 0.35);
+  }
+  .lb-cup-tier-silver {
+    border-color: rgba(203, 213, 225, 0.20);
+    background: linear-gradient(90deg, rgba(203, 213, 225, 0.06), rgba(203, 213, 225, 0.01));
+  }
+  .lb-cup-tier-silver b {
+    color: #1a1410;
+    background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+  }
+  .lb-cup-tier-bronze {
+    border-color: rgba(251, 146, 60, 0.20);
+    background: linear-gradient(90deg, rgba(251, 146, 60, 0.06), rgba(251, 146, 60, 0.01));
+  }
+  .lb-cup-tier-bronze b {
+    color: #1a1410;
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+  }
+  .lb-cup-tier-sep { display: none; } /* legacy — old comma-separator */
 
   /* Empty-cup card — shown when a cup tab has no current participants. */
   .lb-empty-cup {
@@ -4122,9 +4202,11 @@
   .lb-empty-cup-cta:hover { background: var(--purple-2); transform: translateY(-1px); }
 
   @media (max-width: 760px) {
-    .lb-cup-tiers { font-size: 11.5px; gap: 4px; }
-    .lb-cup-tier-sep { display: none; }
-    .lb-cup-tier { flex: 1 0 100%; }
+    .lb-cup-info-hero { padding: 14px 16px; }
+    .lb-cup-tiers { font-size: 12px; }
+    .lb-cup-tier { padding: 7px 10px; gap: 8px; }
+    .lb-cup-tier b { min-width: 46px; padding: 3px 8px; font-size: 11px; }
+    .lb-cup-info-tip { flex-basis: 100%; }
   }
 
   /* Genre Cup tabs — horizontally scrollable on mobile, pill row on
@@ -8428,24 +8510,15 @@
     border-radius: 14px;
     padding: 12px 20px 8px;
   }
-  .pmd-chart-svg {
+  /* TradingView-style probability chart container — populated by
+     LightweightCharts (see _PMD_renderChart). The legend above shows
+     the live percent on hover for each side. */
+  .pmd-chart-tv {
     width: 100%; height: 240px;
     display: block;
   }
-  .pmd-chart-grid { stroke: rgba(255, 255, 255, 0.05); stroke-width: 1; }
-  .pmd-chart-grid-mid { stroke: rgba(255, 255, 255, 0.10); stroke-dasharray: 2 4; }
-  .pmd-chart-axis { fill: var(--text-faint); font-size: 10px; font-family: 'JetBrains Mono', 'SF Mono', monospace; }
-  .pmd-chart-axis-y { font-size: 9px; }
-  .pmd-chart-area { fill: rgba(34, 197, 94, 0.10); }
-  .pmd-chart-area-b { fill: rgba(239, 68, 68, 0.10); }
-  /* Both lines render simultaneously — option A in green, option B in red. */
-  .pmd-chart-line { fill: none; stroke-width: 2; stroke-linejoin: round; }
-  .pmd-chart-line-a { stroke: #22c55e; }
-  .pmd-chart-line-b { stroke: #ef4444; }
-  .pmd-chart-dot { stroke: var(--card-2); stroke-width: 2; }
-  .pmd-chart-dot-a { fill: #22c55e; }
-  .pmd-chart-dot-b { fill: #ef4444; }
-  /* Chart legend above the SVG — keys to which color is which side */
+  /* Chart legend above the chart — keys to which color is which side
+     and shows the live hovered % next to the swatch. */
   .pmd-chart-legend {
     display: flex; gap: 14px; align-items: center;
     padding: 0 4px 8px;
@@ -8460,7 +8533,18 @@
   }
   .pmd-chart-swatch-a { background: #22c55e; }
   .pmd-chart-swatch-b { background: #ef4444; }
+  .pmd-chart-legend-pct {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    margin-left: 2px;
+    min-width: 36px;
+    display: inline-block;
+  }
   .pmd-chart-block { display: flex; flex-direction: column; }
+  /* Mobile — keep the same height, let LightweightCharts shrink width */
+  @media (max-width: 680px) {
+    .pmd-chart-tv { height: 220px; }
+  }
   .pmd-chart-empty {
     padding: 56px 16px;
     text-align: center;
@@ -18620,6 +18704,9 @@ async function renderPredictionMarketDetail() {
 function _paintPredMarketDetail(host, m) {
   host.innerHTML = _predMarketDetailHTML(m);
   _wirePredMarketDetail(host, m);
+  // _predMarketDetailHTML embeds an empty #pmd-chart placeholder; mount
+  // the LightweightCharts instance into it now that the host is in DOM.
+  _PMD_renderChart(host, _PRED_DETAIL_CACHE.snapshots || [], m);
 }
 
 function _paintPredMarketDetailHeader(host, m) {
@@ -18684,8 +18771,7 @@ async function _PMD_loadAllTabsData(host, m) {
 async function _PMD_loadChart(host, m) {
   const snaps = await _PMD_fetchSnapshots(m.id);
   _PRED_DETAIL_CACHE.snapshots = snaps;
-  const chart = host.querySelector('#pmd-chart');
-  if (chart) chart.outerHTML = _PMD_chartSVG(snaps, m);
+  _PMD_renderChart(host, snaps, m);
 }
 
 async function _PMD_fetchComments(marketId) {
@@ -19226,75 +19312,166 @@ function _PMD_activityHTML(m) {
 // SVG line chart for the YES% over time. Hand-rolled (no library) so we
 // don't pull in a chart dep just for this. Uses snapshot_at (timestamps)
 // on x, yes_pct (0..100) on y, plus a 50% reference line.
+// Synchronous placeholder — _predMarketDetailHTML embeds this string. The
+// actual LightweightCharts instance is mounted by _PMD_renderChart() once
+// the host is in the DOM (see _paintPredMarketDetail / _PMD_loadChart).
 function _PMD_chartSVG(snaps, m) {
+  return `<div id="pmd-chart" class="pmd-chart-block"></div>`;
+}
+
+// Holds the active LightweightCharts instance + line series so we can tear
+// it down + repaint cleanly on bet / theme switch / mobile resize.
+let _PMD_TV = { chart: null, seriesA: null, seriesB: null, ro: null, unsub: null };
+
+function _PMD_destroyChart() {
+  try { if (_PMD_TV.unsub) _PMD_TV.unsub(); } catch (_) {}
+  try { if (_PMD_TV.ro)   _PMD_TV.ro.disconnect(); } catch (_) {}
+  try { if (_PMD_TV.chart) _PMD_TV.chart.remove(); } catch (_) {}
+  _PMD_TV = { chart: null, seriesA: null, seriesB: null, ro: null, unsub: null };
+}
+
+// Build LightweightCharts inside the #pmd-chart placeholder. Two line
+// series (A green, B red), Y-axis as percentages, X-axis date labels,
+// crosshair tooltip with the values at the hovered timestamp shown
+// inline next to the legend swatches. Same theme as the artist /
+// portfolio chart so the two pages feel like the same product.
+function _PMD_renderChart(host, snaps, m) {
+  if (!host) return;
+  const chartEl = host.querySelector('#pmd-chart');
+  if (!chartEl) return;
+
+  // Always tear down the previous instance before painting fresh — both
+  // for memory hygiene and because LightweightCharts doesn't dedupe
+  // crosshair subscribers across instances.
+  _PMD_destroyChart();
+
   const aLabel = m.option_a_label || 'YES';
   const bLabel = m.option_b_label || 'NO';
 
-  // Empty state with a legend so the user can still see the option labels
+  // Empty state — keep the existing copy so a brand-new market still
+  // greets the user with "No movement yet" instead of an awkward blank.
   if (!snaps || snaps.length === 0) {
-    return `<div class="pmd-chart-empty" id="pmd-chart">
+    chartEl.className = 'pmd-chart-empty';
+    chartEl.innerHTML = `
       <div class="pmd-chart-empty-title">No movement yet</div>
       <div class="pmd-chart-empty-sub">The probability chart fills in as bets land. Be the first to move it.</div>
-    </div>`;
+    `;
+    return;
   }
-  const W = 760, H = 240, P = 28;
-  // Two parallel point arrays: A (yes_pct) and B (100 - yes_pct).
-  // They mirror around 50%, but rendering both makes the head-to-head
-  // story obvious at a glance — especially for vs_artist / vs_genre
-  // markets where the user is comparing two distinct options.
-  const ptsA = snaps.map(s => ({ t: new Date(s.snapshot_at).getTime(), y: Math.max(0, Math.min(100, +s.yes_pct || 50)) }));
-  // Anchor at creation (50/50) so the line opens from the start of the market.
-  if (m.created_at) {
-    const c = new Date(m.created_at).getTime();
-    if (ptsA.length === 0 || ptsA[0].t > c) ptsA.unshift({ t: c, y: 50 });
-  }
-  // Extend to "now" so the line reaches the right edge.
-  ptsA.push({ t: Date.now(), y: ptsA[ptsA.length - 1].y });
-  const ptsB = ptsA.map(p => ({ t: p.t, y: 100 - p.y }));
 
-  const tMin = ptsA[0].t, tMax = ptsA[ptsA.length - 1].t;
-  const xRange = Math.max(1, tMax - tMin);
-  const sx = t => P + ((t - tMin) / xRange) * (W - 2 * P);
-  const sy = y => H - P - (y / 100) * (H - 2 * P);
-  const buildPath = pts => pts.map((p, i) => (i === 0 ? 'M' : 'L') + sx(p.t).toFixed(1) + ' ' + sy(p.y).toFixed(1)).join(' ');
-  const pathA = buildPath(ptsA);
-  const pathB = buildPath(ptsB);
-  // (No area fill — just the two lines, per the latest design ask.)
-
-  // Time-axis labels (4 evenly spaced).
-  const labels = [0, 1, 2, 3].map(i => {
-    const t = tMin + (xRange * i / 3);
-    const d = new Date(t);
-    const lab = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    return `<text x="${sx(t).toFixed(1)}" y="${H - 6}" class="pmd-chart-axis">${escapeHTML(lab)}</text>`;
-  }).join('');
-
-  // Chart legend above the SVG so the user knows which color is which side.
-  const legend = `
+  // Reset placeholder state — switch to the live block style + paint
+  // the legend with two colored swatches whose pcts update on hover.
+  chartEl.className = 'pmd-chart-block';
+  chartEl.innerHTML = `
     <div class="pmd-chart-legend">
-      <span class="pmd-chart-legend-item"><span class="pmd-chart-swatch pmd-chart-swatch-a"></span>${escapeHTML(aLabel)}</span>
-      <span class="pmd-chart-legend-item"><span class="pmd-chart-swatch pmd-chart-swatch-b"></span>${escapeHTML(bLabel)}</span>
+      <span class="pmd-chart-legend-item">
+        <span class="pmd-chart-swatch pmd-chart-swatch-a"></span>
+        ${escapeHTML(aLabel)} <span class="pmd-chart-legend-pct" data-pmd-pct="a">—</span>
+      </span>
+      <span class="pmd-chart-legend-item">
+        <span class="pmd-chart-swatch pmd-chart-swatch-b"></span>
+        ${escapeHTML(bLabel)} <span class="pmd-chart-legend-pct" data-pmd-pct="b">—</span>
+      </span>
     </div>
+    <div class="pmd-chart-tv" data-pmd-chart-tv></div>
   `;
+  const tvEl = chartEl.querySelector('[data-pmd-chart-tv]');
+  const pctA = chartEl.querySelector('[data-pmd-pct="a"]');
+  const pctB = chartEl.querySelector('[data-pmd-pct="b"]');
 
-  return `
-    <div id="pmd-chart" class="pmd-chart-block">
-      ${legend}
-      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="pmd-chart-svg">
-        ${[0, 25, 50, 75, 100].map(g => `
-          <line x1="${P}" y1="${sy(g).toFixed(1)}" x2="${W - P}" y2="${sy(g).toFixed(1)}" class="pmd-chart-grid${g === 50 ? ' pmd-chart-grid-mid' : ''}"/>
-          <text x="${P - 4}" y="${(sy(g) + 4).toFixed(1)}" class="pmd-chart-axis pmd-chart-axis-y" text-anchor="end">${g}</text>
-        `).join('')}
-        <!-- option B line (red) -->
-        <path d="${pathB}" class="pmd-chart-line pmd-chart-line-b"/>
-        <!-- option A line (green) -->
-        <path d="${pathA}" class="pmd-chart-line pmd-chart-line-a"/>
-        <!-- end-point dots, both sides -->
-        <circle cx="${sx(ptsA[ptsA.length-1].t).toFixed(1)}" cy="${sy(ptsA[ptsA.length-1].y).toFixed(1)}" r="3.5" class="pmd-chart-dot pmd-chart-dot-a"/>
-        <circle cx="${sx(ptsB[ptsB.length-1].t).toFixed(1)}" cy="${sy(ptsB[ptsB.length-1].y).toFixed(1)}" r="3.5" class="pmd-chart-dot pmd-chart-dot-b"/>
-        ${labels}
-      </svg>
-    </div>`;
+  // Build A-side data points — anchor at creation if needed, then walk
+  // the snapshots, then extend to "now" so the line reaches the right
+  // edge. LightweightCharts demands strictly-increasing unique time
+  // values (in seconds), so we sort + dedupe.
+  const rawA = [];
+  if (m.created_at) {
+    rawA.push({ t: new Date(m.created_at).getTime(), v: 50 });
+  }
+  snaps.forEach(s => {
+    rawA.push({
+      t: new Date(s.snapshot_at).getTime(),
+      v: Math.max(0, Math.min(100, +s.yes_pct || 50)),
+    });
+  });
+  rawA.push({ t: Date.now(), v: rawA[rawA.length - 1].v });
+  rawA.sort((a, b) => a.t - b.t);
+
+  const seen = new Set();
+  const ptsA = [];
+  for (const p of rawA) {
+    const sec = Math.floor(p.t / 1000);
+    if (seen.has(sec)) continue;
+    seen.add(sec);
+    ptsA.push({ time: sec, value: p.v });
+  }
+  const ptsB = ptsA.map(p => ({ time: p.time, value: 100 - p.value }));
+
+  const theme = (typeof chartThemeOpts === 'function') ? chartThemeOpts() : {};
+  _PMD_TV.chart = LightweightCharts.createChart(tvEl, {
+    ...theme,
+    rightPriceScale: {
+      borderColor: 'transparent',
+      scaleMargins: { top: 0.1, bottom: 0.1 },
+    },
+    timeScale: {
+      borderColor: 'transparent',
+      timeVisible: false,
+      secondsVisible: false,
+    },
+    handleScroll: false,
+    handleScale: false,
+    height: 240,
+    localization: {
+      priceFormatter: p => Math.round(p) + '%',
+    },
+  });
+  _PMD_TV.seriesA = _PMD_TV.chart.addLineSeries({
+    color: '#22c55e',
+    lineWidth: 2,
+    priceLineVisible: false,
+    lastValueVisible: false,
+    crosshairMarkerVisible: true,
+    crosshairMarkerRadius: 4,
+    priceFormat: { type: 'custom', formatter: p => Math.round(p) + '%' },
+  });
+  _PMD_TV.seriesB = _PMD_TV.chart.addLineSeries({
+    color: '#ef4444',
+    lineWidth: 2,
+    priceLineVisible: false,
+    lastValueVisible: false,
+    crosshairMarkerVisible: true,
+    crosshairMarkerRadius: 4,
+    priceFormat: { type: 'custom', formatter: p => Math.round(p) + '%' },
+  });
+  _PMD_TV.seriesA.setData(ptsA);
+  _PMD_TV.seriesB.setData(ptsB);
+  _PMD_TV.chart.timeScale().fitContent();
+
+  // Default legend pcts = current (last) values
+  const lastA = ptsA[ptsA.length - 1].value;
+  pctA.textContent = Math.round(lastA) + '%';
+  pctB.textContent = Math.round(100 - lastA) + '%';
+  // Update on crosshair move; restore on leave.
+  _PMD_TV.unsub = _PMD_TV.chart.subscribeCrosshairMove(param => {
+    if (!param || !param.point || !param.seriesData || !param.seriesData.size) {
+      pctA.textContent = Math.round(lastA) + '%';
+      pctB.textContent = Math.round(100 - lastA) + '%';
+      return;
+    }
+    const dA = param.seriesData.get(_PMD_TV.seriesA);
+    const dB = param.seriesData.get(_PMD_TV.seriesB);
+    if (dA) pctA.textContent = Math.round(dA.value) + '%';
+    if (dB) pctB.textContent = Math.round(dB.value) + '%';
+  });
+
+  // Responsive width — re-apply on container resize so mobile rotation
+  // / breakpoint crossings re-render at the right size.
+  _PMD_TV.ro = new ResizeObserver(() => {
+    if (_PMD_TV.chart && tvEl.clientWidth > 0) {
+      _PMD_TV.chart.applyOptions({ width: tvEl.clientWidth });
+    }
+  });
+  _PMD_TV.ro.observe(tvEl);
 }
 
 function _wirePredMarketDetail(host, m) {
@@ -26371,6 +26548,11 @@ function chartThemeOpts() {
 function applyChartTheme() {
   try { if (chartDetail) chartDetail.applyOptions(chartThemeOpts()); } catch (_) {}
   try { if (chartPortfolio) chartPortfolio.applyOptions(chartThemeOpts()); } catch (_) {}
+  try {
+    if (typeof _PMD_TV !== 'undefined' && _PMD_TV.chart) {
+      _PMD_TV.chart.applyOptions(chartThemeOpts());
+    }
+  } catch (_) {}
 }
 
 let chartDetail, lineSeriesDetail;
@@ -30676,6 +30858,35 @@ function renderLeaderboard() {
   // at which percentile math stops being absurd.
   const rankIsMeaningful = fullRanking.length >= 5;
   let html = `
+    ${(() => {
+      // Monthly Cups info — sits at the TOP of the leaderboard body now,
+      // right under the month-countdown banner. Sander asked to lead with
+      // the prize tiers since they're the actual "why" of this page.
+      // Always show all 9 canonical genre cup tabs (plus Overall) so
+      // empty cups still feel "open for entry" rather than absent.
+      const cups = ['Pop','Hip-hop','R&B','Latin','Afropop','Indie','Alt','K-Pop','Electronic'];
+      return `
+        <div class="lb-cup-info lb-cup-info-hero">
+          <div class="lb-cup-info-head">
+            <svg class="lb-cup-info-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+              <path d="M4 22h16"/>
+              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+            </svg>
+            <span class="lb-cup-info-tag">Monthly Cups</span>
+            <span class="lb-cup-info-tip">Hold any artist in a genre → you're entered. Top 10 win prizes when the month closes.</span>
+          </div>
+          <div class="lb-cup-tiers">
+            <span class="lb-cup-tier lb-cup-tier-gold"><b>#1</b> $10k credits + champion badge</span>
+            <span class="lb-cup-tier lb-cup-tier-silver"><b>#2–3</b> $3k credits + podium badge</span>
+            <span class="lb-cup-tier lb-cup-tier-bronze"><b>#4–10</b> $1k credits + finalist badge</span>
+          </div>
+        </div>
+      `;
+    })()}
     <div class="lb-stats">
       <div class="lb-stat">
         <div class="lb-stat-label">Your rank</div>
@@ -30701,26 +30912,8 @@ function renderLeaderboard() {
       <button class="lb-jump" id="lb-jump-g">Jump to me · #${yourRank}</button>
     </div>` : ''}
     ${(() => {
-      // Always show all 9 canonical genre cup tabs (plus Overall) so empty
-      // cups still feel "open for entry" rather than absent. The dynamic
-      // derivation that used to hide a cup until someone held that genre
-      // gave a chicken-and-egg problem: nobody could see a cup existed
-      // until someone joined it.
       const cups = ['Pop','Hip-hop','R&B','Latin','Afropop','Indie','Alt','K-Pop','Electronic'];
       return `
-        <div class="lb-cup-info">
-          <div class="lb-cup-info-head">
-            <span class="lb-cup-info-tag">Monthly Cups</span>
-            <span class="lb-cup-info-tip">Hold any artist in a genre → you're entered. Top 10 win prizes when the month closes.</span>
-          </div>
-          <div class="lb-cup-tiers">
-            <span class="lb-cup-tier"><b>#1</b> $10k credits + champion badge</span>
-            <span class="lb-cup-tier-sep">·</span>
-            <span class="lb-cup-tier"><b>#2–3</b> $3k credits + podium badge</span>
-            <span class="lb-cup-tier-sep">·</span>
-            <span class="lb-cup-tier"><b>#4–10</b> $1k credits + finalist badge</span>
-          </div>
-        </div>
         <div class="lb-cup-tabs">
           <button data-lb-cup="" class="${!lb.cup?'active':''}">Overall</button>
           ${cups.map(g => `<button data-lb-cup="${escapeHTML(g)}" class="${lb.cup===g?'active':''}">${escapeHTML(g)} Cup</button>`).join('')}
