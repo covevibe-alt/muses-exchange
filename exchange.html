@@ -19421,11 +19421,26 @@ function _PMD_renderChart(host, snaps, m) {
     return;
   }
   rawA.sort((a, b) => a.t - b.t);
-  // Now (and only now) extend with the last sorted value. Use Date.now()
-  // unless it's already <= the last snapshot (clock skew safety).
+  // Extend with the last sorted value. The right-edge timestamp is
+  // min(now, resolves_at) — once a market has expired/resolved, the
+  // chart shouldn't pretend the line is still live past that point.
+  // Floor at lastSnapTime + 1s to guarantee strictly-increasing time.
   const lastSnapTime = rawA[rawA.length - 1].t;
   const lastSnapValue = rawA[rawA.length - 1].v;
-  const nowTime = Math.max(Date.now(), lastSnapTime + 1000);
+  const nowMs = Date.now();
+  const resolvesMs = m.resolves_at ? new Date(m.resolves_at).getTime() : NaN;
+  const resolvedMs = m.resolved_at ? new Date(m.resolved_at).getTime() : NaN;
+  // Pick the smallest "live until" boundary: the actual resolution time
+  // if the market resolved, else the planned end if it's past, else now.
+  let rightEdgeMs;
+  if (Number.isFinite(resolvedMs)) {
+    rightEdgeMs = Math.min(nowMs, resolvedMs);
+  } else if (Number.isFinite(resolvesMs) && resolvesMs <= nowMs) {
+    rightEdgeMs = resolvesMs;
+  } else {
+    rightEdgeMs = nowMs;
+  }
+  const nowTime = Math.max(rightEdgeMs, lastSnapTime + 1000);
   rawA.push({ t: nowTime, v: lastSnapValue });
 
   const seen = new Set();
@@ -19622,10 +19637,15 @@ function _wirePredMarketDetail(host, m) {
         }
       }
       try { fetchPredictionStreak(true); } catch (_) {}
-      // Re-fetch tabs + chart since the bet just changed everything.
+      // Refresh all read caches so the upcoming repaint uses fresh data
+      // — including snapshots, since the bet just generated a new one.
+      // We deliberately DON'T call _PMD_loadChart here: _paintPredMarketDetail
+      // re-renders everything (hero %, bar, buy-form pcts, AND chart via
+      // the cached snapshots). Calling both would double-mount the chart
+      // and briefly flicker the user's screen with the just-mounted
+      // chart against the stale hero / bar / buy-form values.
+      _PRED_DETAIL_CACHE.snapshots = await _PMD_fetchSnapshots(m.id);
       await _PMD_loadAllTabsData(host, m);
-      await _PMD_loadChart(host, m);
-      // Repaint full detail (updates the big % + bar + buy form pcts).
       _paintPredMarketDetail(host, m);
       _startPmdCountdown(m);
       if (typeof showToast === 'function') showToast(`Placed $${amt.toFixed(0)} on ${escapeHTML(side === 'yes' ? (m.option_a_label || 'YES') : (m.option_b_label || 'NO'))}`);
