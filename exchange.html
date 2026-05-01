@@ -8504,9 +8504,8 @@
 
   /* Probability chart — padding matches .pmd-tab-body so chart contents and
      comments contents share the same left/right inner edge.
-     overflow: hidden + a slightly bigger bottom padding so the
-     LightweightCharts X-axis labels never poke past the rounded corners
-     (Sander caught this on mobile where the height is tighter).
+     Bottom padding is generous (20px) so the LightweightCharts X-axis
+     date labels have a comfortable gap to the rounded bottom border.
      CRITICAL: flex-shrink: 0 — overflow on a flex item makes its default
      min-height: auto resolve to 0, which lets the .pmd-left column flex
      collapse the entire chart wrap to 0px (same trap that bit the tab
@@ -8516,7 +8515,7 @@
     background: var(--card-2);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 12px 20px 14px;
+    padding: 12px 20px 20px;
     overflow: hidden;
     flex-shrink: 0;
   }
@@ -19470,17 +19469,23 @@ function _PMD_renderChart(host, snaps, m) {
       borderColor: 'transparent',
       timeVisible: false,
       secondsVisible: false,
-      // CRITICAL: kill the default ~5 bar right-padding so the FIRST
-      // data point lands on the LEFT edge of the chart and the LAST
-      // ("now") point lands on the RIGHT edge. fitContent + rightOffset
-      // 0 + barSpacing 1 stops LightweightCharts from leaving room for
-      // future bars.
       rightOffset: 0,
-      barSpacing: 1,
-      lockVisibleTimeRangeOnResize: true,
-      shiftVisibleRangeOnNewBar: false,
+      // fixLeftEdge + fixRightEdge clamp scrolling so the user can't
+      // pan past the data on either side. Combined with the explicit
+      // setVisibleLogicalRange call below (from: -0.5, to: N-0.5) this
+      // pulls the first data point to the chart's leftmost pixel and
+      // the last point to the rightmost — no more half-bar padding gap.
       fixLeftEdge: true,
       fixRightEdge: true,
+      lockVisibleTimeRangeOnResize: true,
+      shiftVisibleRangeOnNewBar: false,
+      // Custom tick formatter — every label uses the same "MMM d"
+      // pattern so we don't get the inconsistent "26", "29 Apr '26",
+      // "May" mix that LightweightCharts produces by default.
+      tickMarkFormatter: (time) => {
+        const d = new Date(time * 1000);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      },
     },
     handleScroll: false,
     handleScale: false,
@@ -19509,14 +19514,16 @@ function _PMD_renderChart(host, snaps, m) {
   });
   _PMD_TV.seriesA.setData(ptsA);
   _PMD_TV.seriesB.setData(ptsB);
-  // Force the visible time range to span EXACTLY from first data point
-  // to last (the "now" extension). This is the airtight way to make
-  // LightweightCharts put the leftmost data point at the left edge of
-  // the chart — fitContent() left a small visual gap on either side.
+  // setVisibleLogicalRange with from=0 / to=N-1 places the FIRST data
+  // point's exact x-coordinate at the chart's left edge and the LAST
+  // data point's x-coordinate at the chart's right edge — that's where
+  // Sander wanted the line to start/end (his arrow pointed at the very
+  // left of the chart). LightweightCharts paints a half-bar past each
+  // edge, but that's invisible because we only render line + dots.
   try {
-    _PMD_TV.chart.timeScale().setVisibleRange({
-      from: ptsA[0].time,
-      to:   ptsA[ptsA.length - 1].time,
+    _PMD_TV.chart.timeScale().setVisibleLogicalRange({
+      from: 0,
+      to:   Math.max(0, ptsA.length - 1),
     });
   } catch (_) {
     _PMD_TV.chart.timeScale().fitContent();
