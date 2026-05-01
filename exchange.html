@@ -14506,6 +14506,12 @@
               <svg><use href="#i-list"/></svg>
               <span>Orders</span>
             </button>
+            <!-- Admin: predictions queue. Only Sander sees this — wireUserMenu()
+                 unhides it based on MUSE_USER.email. Stays hidden by default. -->
+            <button class="user-menu-item" data-nav="admin-predictions" id="user-menu-admin-predictions" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Admin · Predictions queue</span>
+            </button>
             <div class="user-menu-divider" id="user-menu-signout-divider" hidden></div>
             <button class="user-menu-item" id="user-menu-signout" hidden>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -24025,8 +24031,8 @@ function smoothSeries(pts, steps) {
 }
 
 // ============ NAV ============
-const VIEWS = ['markets','artists','genres','portfolio','orders','swap','tournaments','leaderboard','leagues','league','predictions','prediction','pred-leaderboard','profile','settings','help','artist','tournament','genre'];
-const VIEW_TITLES = { markets: 'Markets', artists: 'Artists', genres: 'Genres', portfolio: 'Portfolio', orders: 'Orders', swap: 'Swap', tournaments: 'Tournaments', leaderboard: 'Leaderboard', leagues: 'Your Leagues', league: 'League', predictions: 'Predictions', prediction: 'Market', 'pred-leaderboard': 'Top Callers', profile: 'Profile', settings: 'Settings', help: 'Help & Support', artist: 'Artist', tournament: 'Tournament', genre: 'Genre' };
+const VIEWS = ['markets','artists','genres','portfolio','orders','swap','tournaments','leaderboard','leagues','league','predictions','prediction','pred-leaderboard','profile','settings','help','artist','tournament','genre','admin-predictions'];
+const VIEW_TITLES = { markets: 'Markets', artists: 'Artists', genres: 'Genres', portfolio: 'Portfolio', orders: 'Orders', swap: 'Swap', tournaments: 'Tournaments', leaderboard: 'Leaderboard', leagues: 'Your Leagues', league: 'League', predictions: 'Predictions', prediction: 'Market', 'pred-leaderboard': 'Top Callers', profile: 'Profile', settings: 'Settings', help: 'Help & Support', artist: 'Artist', tournament: 'Tournament', genre: 'Genre', 'admin-predictions': 'Admin · Predictions' };
 
 // ============ PAPER / REAL MONEY BADGE HELPERS ============
 const PAPER_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>';
@@ -24470,6 +24476,14 @@ document.querySelectorAll('[data-nav]').forEach(el => {
     if (authed) {
       soDivider.hidden = false;
       soBtn.hidden = false;
+    }
+    // Show admin entry only for the platform owner (Sander). Hard-coded
+    // until we have a real admin_users table; cheap gate that hides
+    // the link from regular users without breaking RLS on the RPC.
+    const adminEmails = new Set(['sandertbroeke@hotmail.com']);
+    const adminBtn = document.getElementById('user-menu-admin-predictions');
+    if (adminBtn && authed && window.MUSE_USER.email && adminEmails.has((window.MUSE_USER.email || '').toLowerCase())) {
+      adminBtn.hidden = false;
     }
     soBtn.addEventListener('click', () => {
       if (!(window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed)) {
