@@ -19389,20 +19389,44 @@ function _PMD_renderChart(host, snaps, m) {
   const pctA = chartEl.querySelector('[data-pmd-pct="a"]');
   const pctB = chartEl.querySelector('[data-pmd-pct="b"]');
 
-  // Build A-side data points — start at the FIRST actual snapshot (no
-  // synthetic 50/50 anchor at creation), walk the snapshots, then
-  // extend to "now" so the line reaches the right edge. LightweightCharts
-  // demands strictly-increasing unique time values (in seconds), so we
-  // sort + dedupe below.
+  // ─── Build A-side data points ───────────────────────────────────────
+  // Defensive pipeline:
+  //   1. Coerce every snapshot into {t (ms), v (0..100)}, throwing out
+  //      rows with NaN timestamps or non-finite percentages.
+  //   2. Sort BY TIME first — never trust DB / network ordering.
+  //   3. Dedupe by floor(t/1000) so LightweightCharts (which demands
+  //      strictly-increasing unique seconds) doesn't error out on two
+  //      bets in the same second.
+  //   4. THEN extend with a "now" point at the LAST sorted value so the
+  //      line reaches the right edge — this used to push() before
+  //      sorting, picking the wrong "last" value when snapshots came
+  //      back in non-time order.
   const rawA = [];
   snaps.forEach(s => {
-    rawA.push({
-      t: new Date(s.snapshot_at).getTime(),
-      v: Math.max(0, Math.min(100, +s.yes_pct || 50)),
-    });
+    if (!s || !s.snapshot_at) return;
+    const t = new Date(s.snapshot_at).getTime();
+    if (!Number.isFinite(t)) return;
+    let v = +s.yes_pct;
+    if (!Number.isFinite(v)) v = 50;
+    v = Math.max(0, Math.min(100, v));
+    rawA.push({ t, v });
   });
-  rawA.push({ t: Date.now(), v: rawA[rawA.length - 1].v });
+  if (rawA.length === 0) {
+    // Every snapshot had bad data — fall back to empty state.
+    chartEl.className = 'pmd-chart-empty';
+    chartEl.innerHTML = `
+      <div class="pmd-chart-empty-title">No movement yet</div>
+      <div class="pmd-chart-empty-sub">The probability chart fills in as bets land. Be the first to move it.</div>
+    `;
+    return;
+  }
   rawA.sort((a, b) => a.t - b.t);
+  // Now (and only now) extend with the last sorted value. Use Date.now()
+  // unless it's already <= the last snapshot (clock skew safety).
+  const lastSnapTime = rawA[rawA.length - 1].t;
+  const lastSnapValue = rawA[rawA.length - 1].v;
+  const nowTime = Math.max(Date.now(), lastSnapTime + 1000);
+  rawA.push({ t: nowTime, v: lastSnapValue });
 
   const seen = new Set();
   const ptsA = [];
@@ -19411,6 +19435,12 @@ function _PMD_renderChart(host, snaps, m) {
     if (seen.has(sec)) continue;
     seen.add(sec);
     ptsA.push({ time: sec, value: p.v });
+  }
+  // Edge case: dedupe collapsed everything to one point (snapshot + now
+  // landed in the same second). Pad an artificial later second so the
+  // chart can still draw a horizontal line spanning the visible area.
+  if (ptsA.length === 1) {
+    ptsA.push({ time: ptsA[0].time + 60, value: ptsA[0].value });
   }
   const ptsB = ptsA.map(p => ({ time: p.time, value: 100 - p.value }));
 
@@ -19425,6 +19455,17 @@ function _PMD_renderChart(host, snaps, m) {
       borderColor: 'transparent',
       timeVisible: false,
       secondsVisible: false,
+      // CRITICAL: kill the default ~5 bar right-padding so the FIRST
+      // data point lands on the LEFT edge of the chart and the LAST
+      // ("now") point lands on the RIGHT edge. fitContent + rightOffset
+      // 0 + barSpacing 1 stops LightweightCharts from leaving room for
+      // future bars.
+      rightOffset: 0,
+      barSpacing: 1,
+      lockVisibleTimeRangeOnResize: true,
+      shiftVisibleRangeOnNewBar: false,
+      fixLeftEdge: true,
+      fixRightEdge: true,
     },
     handleScroll: false,
     handleScale: false,
@@ -19453,23 +19494,34 @@ function _PMD_renderChart(host, snaps, m) {
   });
   _PMD_TV.seriesA.setData(ptsA);
   _PMD_TV.seriesB.setData(ptsB);
-  _PMD_TV.chart.timeScale().fitContent();
+  // Force the visible time range to span EXACTLY from first data point
+  // to last (the "now" extension). This is the airtight way to make
+  // LightweightCharts put the leftmost data point at the left edge of
+  // the chart — fitContent() left a small visual gap on either side.
+  try {
+    _PMD_TV.chart.timeScale().setVisibleRange({
+      from: ptsA[0].time,
+      to:   ptsA[ptsA.length - 1].time,
+    });
+  } catch (_) {
+    _PMD_TV.chart.timeScale().fitContent();
+  }
 
   // Default legend pcts = current (last) values
-  const lastA = ptsA[ptsA.length - 1].value;
-  pctA.textContent = Math.round(lastA) + '%';
-  pctB.textContent = Math.round(100 - lastA) + '%';
+  const lastVal = ptsA[ptsA.length - 1].value;
+  pctA.textContent = Math.round(lastVal) + '%';
+  pctB.textContent = Math.round(100 - lastVal) + '%';
   // Update on crosshair move; restore on leave.
   _PMD_TV.unsub = _PMD_TV.chart.subscribeCrosshairMove(param => {
     if (!param || !param.point || !param.seriesData || !param.seriesData.size) {
-      pctA.textContent = Math.round(lastA) + '%';
-      pctB.textContent = Math.round(100 - lastA) + '%';
+      pctA.textContent = Math.round(lastVal) + '%';
+      pctB.textContent = Math.round(100 - lastVal) + '%';
       return;
     }
     const dA = param.seriesData.get(_PMD_TV.seriesA);
     const dB = param.seriesData.get(_PMD_TV.seriesB);
-    if (dA) pctA.textContent = Math.round(dA.value) + '%';
-    if (dB) pctB.textContent = Math.round(dB.value) + '%';
+    if (dA && Number.isFinite(dA.value)) pctA.textContent = Math.round(dA.value) + '%';
+    if (dB && Number.isFinite(dB.value)) pctB.textContent = Math.round(dB.value) + '%';
   });
 
   // Responsive width — re-apply on container resize so mobile rotation
