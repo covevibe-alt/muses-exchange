@@ -8506,13 +8506,19 @@
      comments contents share the same left/right inner edge.
      overflow: hidden + a slightly bigger bottom padding so the
      LightweightCharts X-axis labels never poke past the rounded corners
-     (Sander caught this on mobile where the height is tighter). */
+     (Sander caught this on mobile where the height is tighter).
+     CRITICAL: flex-shrink: 0 — overflow on a flex item makes its default
+     min-height: auto resolve to 0, which lets the .pmd-left column flex
+     collapse the entire chart wrap to 0px (same trap that bit the tab
+     strip in K3). Without this, the chart legend renders but the chart
+     itself disappears. */
   .pmd-chart-wrap {
     background: var(--card-2);
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 12px 20px 14px;
     overflow: hidden;
+    flex-shrink: 0;
   }
   /* TradingView-style probability chart container — populated by
      LightweightCharts (see _PMD_renderChart). The legend above shows
