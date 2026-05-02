@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-02T09:42:13Z",
+  "updatedAt": "2026-05-02T10:55:33Z",
   "marketIndex": 4.48,
   "rawAveragePrice": 1.48,
   "topGainers": [
@@ -306,7 +306,7 @@
       "fairPrice": 1.98,
       "price": 1.95,
       "chg24h": 0.52,
-      "volatility30d": 0.013,
+      "volatility30d": 0.012,
       "volume": 4370,
       "youtube": {
         "subscribers": 19200,
@@ -579,7 +579,7 @@
       "listenersSource": "ratio-calibrated",
       "image": "https://i.scdn.co/image/ab6761610000e5ebaf20f7db5288bce9beede034",
       "fairPrice": 4.98,
-      "price": 4.93,
+      "price": 4.94,
       "chg24h": 1.02,
       "volatility30d": 0.025,
       "volume": 5688,
@@ -656,7 +656,7 @@
       "fairPrice": 3.42,
       "price": 3.39,
       "chg24h": 0.3,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 4076,
       "youtube": {
         "subscribers": 146000,
@@ -756,7 +756,7 @@
       "fairPrice": 1.63,
       "price": 1.6,
       "chg24h": 0.63,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 4099,
       "youtube": {
         "subscribers": 78800,
@@ -1031,7 +1031,7 @@
       "fairPrice": 1.66,
       "price": 1.63,
       "chg24h": 0.62,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 3534,
       "youtube": {
         "subscribers": 478000,
@@ -1556,7 +1556,7 @@
       "fairPrice": 0.98,
       "price": 0.95,
       "chg24h": 1.06,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 1836,
       "youtube": {
         "subscribers": 21500,
@@ -1681,7 +1681,7 @@
       "fairPrice": 1.87,
       "price": 1.84,
       "chg24h": 0.55,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 4813,
       "youtube": {
         "subscribers": 40700,
@@ -1931,7 +1931,7 @@
       "fairPrice": 1.66,
       "price": 1.63,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 3014,
       "youtube": {
         "subscribers": 125000,
@@ -2022,8 +2022,8 @@
       "name": "Ayra Starr",
       "genre": "Afropop",
       "spotifyId": "3ZpEKRjHaHANcpk10u6Ntq",
-      "popularity": 75,
-      "popularityDelta": 0,
+      "popularity": 76,
+      "popularityDelta": 1,
       "followers": 6823756,
       "monthlyListeners": 16033779,
       "listenersSource": "ratio-calibrated",
@@ -2032,7 +2032,7 @@
       "price": 0.5,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 1567,
+      "volume": 2821,
       "youtube": {
         "subscribers": 4510,
         "views": 206000662,
@@ -2322,8 +2322,8 @@
       "name": "Lorde",
       "genre": "Alt",
       "spotifyId": "163tK9Wjr9P9DmM0AVK7lm",
-      "popularity": 80,
-      "popularityDelta": 0,
+      "popularity": 81,
+      "popularityDelta": 1,
       "followers": 10822192,
       "monthlyListeners": 26955916,
       "listenersSource": "ratio-calibrated",
@@ -2332,7 +2332,7 @@
       "price": 0.88,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 1974,
+      "volume": 3553,
       "youtube": {
         "subscribers": 22000,
         "views": 587849410,
@@ -2356,7 +2356,7 @@
       "fairPrice": 2.19,
       "price": 2.16,
       "chg24h": 0.47,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 1976,
       "youtube": {
         "subscribers": 28800,
@@ -2631,7 +2631,7 @@
       "fairPrice": 0.82,
       "price": 0.85,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 4609,
       "youtube": {
         "subscribers": 33800,
@@ -2831,7 +2831,7 @@
       "fairPrice": 1.81,
       "price": 1.78,
       "chg24h": 0.0,
-      "volatility30d": 0.006,
+      "volatility30d": 0.005,
       "volume": 3546,
       "youtube": {
         "subscribers": 23900,
