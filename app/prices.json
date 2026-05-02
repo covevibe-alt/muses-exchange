@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-02T11:49:59Z",
+  "updatedAt": "2026-05-02T13:19:41Z",
   "marketIndex": 4.48,
   "rawAveragePrice": 1.48,
   "topGainers": [
@@ -16,12 +16,12 @@
       "chg24h": 1.28
     },
     {
-      "ticker": "JBBR",
-      "chg24h": 1.23
-    },
-    {
       "ticker": "KHLN",
       "chg24h": 1.06
+    },
+    {
+      "ticker": "DCHI",
+      "chg24h": 1.03
     }
   ],
   "topLosers": [
@@ -169,7 +169,7 @@
     {
       "sector": "Pop",
       "avgPrice": 2.19,
-      "chg24h": 0.17,
+      "chg24h": 0.16,
       "members": [
         "SABR",
         "TSWF",
@@ -284,7 +284,7 @@
       "volatility30d": 0.0,
       "volume": 1712,
       "youtube": {
-        "subscribers": 978,
+        "subscribers": 977,
         "views": 664965951,
         "videos": 109
       },
@@ -580,8 +580,8 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebaf20f7db5288bce9beede034",
       "fairPrice": 4.98,
       "price": 4.95,
-      "chg24h": 1.23,
-      "volatility30d": 0.027,
+      "chg24h": 1.02,
+      "volatility30d": 0.028,
       "volume": 5688,
       "youtube": {
         "subscribers": 1610000,
@@ -709,7 +709,7 @@
       "volatility30d": 0.0,
       "volume": 1833,
       "youtube": {
-        "subscribers": 831,
+        "subscribers": 830,
         "views": 507197087,
         "videos": 280
       },
@@ -2784,7 +2784,7 @@
       "volatility30d": 0.0,
       "volume": 964,
       "youtube": {
-        "subscribers": 469,
+        "subscribers": 468,
         "views": 281630791,
         "videos": 349
       },
