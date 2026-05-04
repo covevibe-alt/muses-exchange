@@ -347,13 +347,40 @@
       const sign = pct >= 0 ? '+' : '';
       return sign + pct.toFixed(2) + '%';
     };
+    // Port of the SPA's computeFairPrice() so the displayed price matches
+    // the trading view's $100–500 range instead of the raw LIVE_MARKET.price
+    // ($1–5 range). PRICING constants mirror exchange.html exactly.
+    const PRICING = {
+      sharesOutstanding: 10000,
+      baseMarketCap: 50000000,
+      capPerArtist: 500000,
+      valuePerListener: 0.03,
+    };
+    const computeFairPrice = (artist, allArtists) => {
+      const listeners = (artist && artist.monthlyListeners) || 0;
+      const total = allArtists.reduce((s, x) => s + (x.monthlyListeners || 0), 0);
+      const totalCap = Math.max(PRICING.baseMarketCap, allArtists.length * PRICING.capPerArtist);
+      let marketCap;
+      if (total > 0) marketCap = (listeners / total) * totalCap;
+      else marketCap = listeners * PRICING.valuePerListener;
+      const base = Math.max(0.01, marketCap / PRICING.sharesOutstanding);
+      const yt = artist.youtubeBoost || 0;
+      const ch = artist.chartBoost || 0;
+      const pop = artist.popularityBoost || 0;
+      // listenerMomentum is computed from historyPoints which aren't in
+      // LIVE_MARKET — we accept a few % approximation vs the SPA.
+      return base * (1 + yt + ch + pop);
+    };
     const apply = (data) => {
       if (!data || !data.artists) return false;
       const a = data.artists.find(x => x.ticker === ticker);
       if (!a) return false;
       const setText = (sel, val) => { const el = document.querySelector(sel); if (el) el.textContent = val; };
-      // Field names match the LIVE_MARKET schema (price, monthlyListeners, chg24h).
-      if (a.price != null) setText('[data-stat="price"]', fmtPrice(a.price));
+      // Compute the SPA-equivalent fair price instead of using a.price
+      // (which is the raw market-index price from prices.py — different
+      // formula, off by ~50x).
+      const displayPrice = computeFairPrice(a, data.artists);
+      setText('[data-stat="price"]', fmtPrice(displayPrice));
       if (a.monthlyListeners != null) setText('[data-stat="listeners"]', fmtListeners(a.monthlyListeners));
       if (a.chg24h != null) setText('[data-stat="change"]', fmtChange(a.chg24h));
       return true;
