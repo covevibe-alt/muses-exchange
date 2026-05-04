@@ -253,10 +253,6 @@
     <div class="label">Monthly listeners</div>
     <div class="value" data-stat="listeners">—</div>
   </div>
-  <div class="artist-stat-card">
-    <div class="label">24h change</div>
-    <div class="value" data-stat="change">—</div>
-  </div>
 </section>
 
 <section class="artist-content">
@@ -338,11 +334,6 @@
       if (n >= 1_000) return (n / 1_000).toFixed(0) + 'K';
       return String(n);
     };
-    const fmtChange = (pct) => {
-      if (pct == null) return '—';
-      const sign = pct >= 0 ? '+' : '';
-      return sign + pct.toFixed(2) + '%';
-    };
     // Port of the SPA's computeFairPrice() so the displayed price matches
     // the trading view's $100–500 range instead of the raw LIVE_MARKET.price
     // ($1–5 range). PRICING constants mirror exchange.html exactly.
@@ -378,7 +369,6 @@
       const displayPrice = computeFairPrice(a, data.artists);
       setText('[data-stat="price"]', fmtPrice(displayPrice));
       if (a.monthlyListeners != null) setText('[data-stat="listeners"]', fmtListeners(a.monthlyListeners));
-      if (a.chg24h != null) setText('[data-stat="change"]', fmtChange(a.chg24h));
       return true;
     };
     // prices.js exposes window.LIVE_MARKET (verified live). First pass:
