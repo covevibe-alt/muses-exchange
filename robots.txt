@@ -1,13 +1,29 @@
 # robots.txt for muses.exchange
-# Last updated 2026-04-22
+# Last updated 2026-05-04
 
 User-agent: *
 Allow: /
 
-# Authenticated paper-trading application — don't index app shells
+# Authenticated paper-trading application — don't index app shells.
+# These all rewrite to /exchange.html via netlify.toml and require sign-in
+# to render anything useful. Letting Google crawl them produces
+# thin/duplicate-content signals across the whole site.
 Disallow: /exchange
 Disallow: /exchange.html
 Disallow: /exchange/
+Disallow: /portfolio
+Disallow: /orders
+Disallow: /swap
+Disallow: /tournaments
+Disallow: /tournaments/
+Disallow: /leaderboard
+Disallow: /leagues
+Disallow: /leagues/
+Disallow: /predictions
+Disallow: /predictions/
+Disallow: /profile
+Disallow: /settings
+Disallow: /help
 
 # Post-auth flows — nothing here is useful in a SERP
 Disallow: /signin
