@@ -441,6 +441,13 @@
     transition: all .15s ease;
     position: relative;
   }
+  /* Browser's [hidden] { display: none } UA rule loses to our explicit
+     display: grid above. Override so buttons with the hidden attribute
+     actually disappear (Tournaments tab waiting for backend). */
+  .sb-item[hidden] { display: none !important; }
+  .tab[hidden]     { display: none !important; }
+  .pf-tab[hidden]  { display: none !important; }
+  .md-item[hidden] { display: none !important; }  /* mobile sheet menu */
   .sb-item:hover { color: var(--text-dim); background: var(--card); }
   .sb-item.active {
     color: var(--text);
@@ -36832,7 +36839,8 @@ if (typeof syncUIPrefsButtons === 'function') syncUIPrefsButtons();
     </div>
     <div class="md-group">
       <div class="md-group-title">Compete</div>
-      <button class="md-item" data-nav="tournaments"><svg><use href="#i-trophy"/></svg><span>Tournaments</span></button>
+      <!-- Tournaments hidden until backend ships. -->
+      <button class="md-item" data-nav="tournaments" hidden><svg><use href="#i-trophy"/></svg><span>Tournaments</span></button>
       <button class="md-item" data-nav="leagues"><svg><use href="#i-leagues"/></svg><span>Leagues</span></button>
       <button class="md-item" data-nav="predictions"><svg><use href="#i-predict"/></svg><span>Predictions</span></button>
       <button class="md-item" data-nav="leaderboard"><svg><use href="#i-medal"/></svg><span>Leaderboard</span></button>
