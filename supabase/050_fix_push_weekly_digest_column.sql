@@ -1,0 +1,12 @@
+-- ════════════════════════════════════════════════════════════════════════════
+-- Migration 050 — Fix push_weekly_digest column name
+-- ════════════════════════════════════════════════════════════════════════════
+-- Cron health audit caught: weekly-digest-notifications failed last
+-- Sunday with "column fo.executed_at does not exist". The actual
+-- column on filled_orders is `filled_at`, not `executed_at`. I guessed
+-- wrong in 047.
+-- Fixed both push_weekly_digest() and prune_inactive_users() (same typo).
+-- Test run after fix returned notifs_sent=1.
+--
+-- APPLIED VIA SUPABASE MCP on 2026-05-04.
+-- ════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,40 @@
+-- ════════════════════════════════════════════════════════════════════════════
+-- Migration 049 — Security hardening (audit pass 1)
+-- ════════════════════════════════════════════════════════════════════════════
+-- Audit found 5 critical SECURITY DEFINER functions callable without auth
+-- check (privilege escalation surface), plus 4 archive tables without RLS:
+--
+--   1. admin_users table — single source of truth for who's an admin.
+--      Sander's UUID (aeb78f1c-bd78-4837-a348-88ffa139600e) seeded.
+--   2. is_admin() helper — used inside RPCs to gate admin-only paths.
+--   3. get_resend_api_key — was returning the Resend secret to ANY
+--      authed user. Now requires is_admin() (service role still passes).
+--   4. start_artist_ipo — any user could start any IPO with arbitrary
+--      ticker/duration. Now requires is_admin().
+--   5. resolve_prediction_market (legacy) — anyone could resolve any
+--      market with any outcome (effectively steal money). Now admin-
+--      gated; delegates to admin_resolve_prediction_market().
+--   6. get_pending_predictions_queue — admin-only.
+--   7. admin_resolve_prediction_market — strengthened from "any authed
+--      user" to is_admin().
+--   8. _apply_streak_loss / _apply_streak_win — REVOKE EXECUTE from
+--      anon + authenticated. Internal helpers, callers via SECURITY
+--      DEFINER still work.
+--   9. RLS enabled on the 4 archive tables + predictions_pending_
+--      resolution. No public policies = deny-all for anon/authenticated;
+--      SECURITY DEFINER funcs bypass RLS as needed.
+--
+-- APPLIED VIA SUPABASE MCP on 2026-05-01.
+-- ════════════════════════════════════════════════════════════════════════════
+
+-- Full DDL applied via MCP. See pg_proc / pg_class for source of truth:
+--   - public.admin_users (table)
+--   - public.is_admin()
+--   - public.get_resend_api_key()  [admin-gated]
+--   - public.start_artist_ipo(text, integer)  [admin-gated]
+--   - public.resolve_prediction_market(integer, text)  [admin-gated, delegates]
+--   - public.get_pending_predictions_queue()  [admin-gated]
+--   - public.admin_resolve_prediction_market(integer, text)  [admin-gated]
+--   - REVOKE EXECUTE ON _apply_streak_win / _apply_streak_loss FROM PUBLIC, anon, authenticated
+--   - RLS enabled on prediction_markets_archive, prediction_bets_archive,
+--     prediction_market_snapshots_archive, predictions_pending_resolution
