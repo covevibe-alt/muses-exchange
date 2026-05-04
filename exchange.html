@@ -23,6 +23,10 @@
 <meta name="twitter:image" content="https://muses.exchange/og-image.png" />
 <meta name="twitter:image:alt" content="Muses — a stock market for music, priced by streams." />
 <meta name="theme-color" content="#0b0910" />
+<!-- Default canonical for the SPA — every deep route serves this same
+     HTML. updateDocumentTitle()/updateRouteMeta() rewrites the rel=canonical
+     href client-side as the user navigates. -->
+<link rel="canonical" href="https://muses.exchange/exchange" id="canonical-link" />
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
@@ -24291,10 +24295,51 @@ function routeForState(name) {
 
 function updateDocumentTitle() {
   try {
-    let title = 'Muse';
-    if (CURRENT_VIEW === 'artist' && STATE.selected) title = STATE.selected.name + ' · Muse';
-    else if (VIEW_TITLES[CURRENT_VIEW]) title = VIEW_TITLES[CURRENT_VIEW] + ' · Muse';
+    // Build title + description per current view. Title is for the
+    // browser tab AND social bots that follow the JS render. Keeping
+    // it keyword-rich helps the rare /exchange/<artist> link that
+    // does end up shared on Slack/Discord.
+    let title = 'Muses — A stock market for music';
+    let desc  = 'Paper-trade artist stocks driven by real Spotify and YouTube data. $10,000 in virtual credits.';
+    if (CURRENT_VIEW === 'artist' && STATE.selected) {
+      const a = STATE.selected;
+      title = `${a.name} ($${a.ticker}) · Muses Exchange`;
+      desc  = `${a.name} on Muses — paper-trade $${a.ticker} based on real Spotify streams and YouTube views. Virtual credits, no deposit.`;
+    } else if (CURRENT_VIEW === 'genre' && STATE.selectedGenre) {
+      title = `${STATE.selectedGenre} artists · Muses Exchange`;
+      desc  = `Top ${STATE.selectedGenre} artists on Muses, ranked by streaming-driven price. Paper-trade with virtual credits.`;
+    } else if (CURRENT_VIEW === 'predictions') {
+      title = 'Predictions · Muses Exchange';
+      desc  = 'Will-they-won\'t-they music markets. Stake paper credits on streaming milestones, chart positions, and head-to-head matchups.';
+    } else if (CURRENT_VIEW === 'leaderboard') {
+      title = 'Leaderboard · Muses Exchange';
+      desc  = 'Top performing portfolios this month. Monthly Cups: top 10 win virtual credits + champion badges.';
+    } else if (CURRENT_VIEW === 'leagues') {
+      title = 'Your Leagues · Muses Exchange';
+      desc  = 'Private leaderboards for you and your friends. Compete on monthly returns, settle weekly bragging rights.';
+    } else if (CURRENT_VIEW === 'markets') {
+      title = 'Markets · Muses Exchange';
+      desc  = 'Buy shares in your favorite artists. Prices move with Spotify streams, YouTube views, and cultural momentum.';
+    } else if (VIEW_TITLES[CURRENT_VIEW]) {
+      title = VIEW_TITLES[CURRENT_VIEW] + ' · Muses Exchange';
+    }
     document.title = title;
+
+    // Update meta description, og:title, og:description, og:url, and
+    // the canonical link to match the current view. Helps when a deep
+    // link is shared (Slack/Discord/X bots that DO read OG tags).
+    const setMeta = (selector, attr, val) => {
+      const el = document.querySelector(selector);
+      if (el && val != null) el.setAttribute(attr, val);
+    };
+    const url = location.origin + location.pathname;
+    setMeta('meta[name="description"]', 'content', desc);
+    setMeta('meta[property="og:title"]', 'content', title);
+    setMeta('meta[property="og:description"]', 'content', desc);
+    setMeta('meta[property="og:url"]', 'content', url);
+    setMeta('meta[name="twitter:title"]', 'content', title);
+    setMeta('meta[name="twitter:description"]', 'content', desc);
+    setMeta('#canonical-link', 'href', url);
   } catch (_) {}
 }
 
