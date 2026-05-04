@@ -24451,7 +24451,41 @@ document.querySelectorAll('[data-nav]').forEach(el => {
   const menu = document.getElementById('user-menu');
   if (!wrap || !btn || !menu) return;
   function close() { menu.classList.add('hidden'); wrap.classList.remove('open'); }
-  function open() { menu.classList.remove('hidden'); wrap.classList.add('open'); }
+  function open() {
+    // Re-evaluate dynamic menu items every time we open. Was an IIFE-once
+    // bug: switching accounts (sign out → sign in as different email)
+    // didn't re-run the admin-visibility check, so the admin link stayed
+    // visible on the alt account. Reset + recompute on every open.
+    refreshDynamicMenuItems();
+    menu.classList.remove('hidden');
+    wrap.classList.add('open');
+  }
+
+  function refreshDynamicMenuItems() {
+    const authed = !!(window.MUSE_USER && window.MUSE_USER.authed);
+    const email  = ((window.MUSE_USER && window.MUSE_USER.email) || '').toLowerCase();
+
+    const soDivider = document.getElementById('user-menu-signout-divider');
+    const soBtn     = document.getElementById('user-menu-signout');
+    if (soBtn && soDivider) {
+      soBtn.hidden = !authed;
+      soDivider.hidden = !authed;
+    }
+
+    // Admin entry — only for the platform owner. Re-resets to hidden if
+    // the current user isn't on the allowlist (handles account switching).
+    // The server-side gate in is_admin() / admin_users is the actual
+    // hard barrier; this is just UI courtesy.
+    const adminEmails = new Set(['sandertbroeke@hotmail.com']);
+    const adminBtn = document.getElementById('user-menu-admin-predictions');
+    if (adminBtn) {
+      adminBtn.hidden = !(authed && email && adminEmails.has(email));
+    }
+  }
+
+  // Run once on boot so the badge is correct before the first menu open.
+  refreshDynamicMenuItems();
+
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (menu.classList.contains('hidden')) open(); else close();
@@ -24466,25 +24500,8 @@ document.querySelectorAll('[data-nav]').forEach(el => {
     if (e.key === 'Escape') close();
   });
 
-  // Sign-out item — only shown to authenticated Supabase users. Reuses the
-  // same teardown path as the Settings → Session → Sign out row so there's
-  // a single source of truth for sign-out behavior.
-  const soDivider = document.getElementById('user-menu-signout-divider');
   const soBtn = document.getElementById('user-menu-signout');
-  if (soBtn && soDivider) {
-    const authed = window.MUSE_USER && window.MUSE_USER.authed;
-    if (authed) {
-      soDivider.hidden = false;
-      soBtn.hidden = false;
-    }
-    // Show admin entry only for the platform owner (Sander). Hard-coded
-    // until we have a real admin_users table; cheap gate that hides
-    // the link from regular users without breaking RLS on the RPC.
-    const adminEmails = new Set(['sandertbroeke@hotmail.com']);
-    const adminBtn = document.getElementById('user-menu-admin-predictions');
-    if (adminBtn && authed && window.MUSE_USER.email && adminEmails.has((window.MUSE_USER.email || '').toLowerCase())) {
-      adminBtn.hidden = false;
-    }
+  if (soBtn) {
     soBtn.addEventListener('click', () => {
       if (!(window.SUPABASE && window.MUSE_USER && window.MUSE_USER.authed)) {
         showToast && showToast('Not signed in');
