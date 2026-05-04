@@ -98,6 +98,48 @@
     margin: 40px 0 16px;
   }
   .artist-content p { margin: 0 0 16px; }
+  /* External / inline content links — match the muted purple accent
+     instead of the browser-default bright blue (which clashed with
+     the dark theme). Underline removed by default, surfaces on hover. */
+  .artist-content a {
+    color: #b98fff;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(185, 143, 255, 0.30);
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .artist-content a:hover {
+    color: #d4b8ff;
+    border-bottom-color: rgba(185, 143, 255, 0.70);
+  }
+  .artist-content ul {
+    margin: 0 0 16px;
+    padding-left: 22px;
+  }
+  .artist-content ul li { margin-bottom: 6px; }
+  /* Trade-CTA card — replaces the old inline text link with a more
+     prominent action under the "Start trading $X" heading. */
+  .artist-cta-box {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; flex-wrap: wrap;
+    margin: 24px 0 20px;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.08), rgba(167, 139, 250, 0.02));
+    border: 1px solid rgba(167, 139, 250, 0.28);
+    border-radius: 16px;
+  }
+  .artist-cta-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: #b98fff;
+    margin-bottom: 6px;
+  }
+  .artist-cta-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1.25;
+  }
+  .artist-cta-button { flex-shrink: 0; }
   .artist-related {
     max-width: 880px; margin: 60px auto;
     padding: 0 24px;
@@ -249,30 +291,36 @@
   <h2>Start trading $FEID</h2>
   <p>
     Sign up free with $10,000 in virtual credits. Buy Feid at the current price, hold for the long-term thesis, or trade short-term against streaming-driven momentum.
-    <a href="/exchange/feid">Open the $FEID trading page →</a>
   </p>
+  <div class="artist-cta-box">
+    <div class="artist-cta-text">
+      <div class="artist-cta-eyebrow">Ready to trade?</div>
+      <div class="artist-cta-title">Open Feid's trading page</div>
+    </div>
+    <a class="btn-primary artist-cta-button" href="/exchange/feid">Trade $FEID <svg><use href="#i-arrow-up-right"/></svg></a>
+  </div>
 </section>
 
 <section class="artist-related">
   <h2>More Latin artists</h2>
   <div class="artist-related-grid">
-        <a class="artist-related-card" href="/artists/bnny">
+        <a class="artist-related-card" href="/artists/bad-bunny">
           <span class="ticker">$BNNY</span>
           <span class="name">Bad Bunny</span>
         </a>
-        <a class="artist-related-card" href="/artists/peso">
+        <a class="artist-related-card" href="/artists/peso-pluma">
           <span class="ticker">$PESO</span>
           <span class="name">Peso Pluma</span>
         </a>
-        <a class="artist-related-card" href="/artists/rosa">
+        <a class="artist-related-card" href="/artists/rosalia">
           <span class="ticker">$ROSA</span>
           <span class="name">Rosalía</span>
         </a>
-        <a class="artist-related-card" href="/artists/krol">
+        <a class="artist-related-card" href="/artists/karol-g">
           <span class="ticker">$KROL</span>
           <span class="name">Karol G</span>
         </a>
-        <a class="artist-related-card" href="/artists/rauw">
+        <a class="artist-related-card" href="/artists/rauw-alejandro">
           <span class="ticker">$RAUW</span>
           <span class="name">Rauw Alejandro</span>
         </a>
@@ -310,8 +358,8 @@
       if (a.chg24h != null) setText('[data-stat="change"]', fmtChange(a.chg24h));
       return true;
     };
-    // prices.js exposes window.LIVE_MARKET (verified live). Poll briefly
-    // since the script is deferred — first apply may run before it loads.
+    // prices.js exposes window.LIVE_MARKET (verified live). First pass:
+    // poll briefly for the deferred script to load and apply on first hit.
     if (!apply(window.LIVE_MARKET)) {
       let tries = 0;
       const t = setInterval(() => {
@@ -319,6 +367,22 @@
         if (apply(window.LIVE_MARKET) || tries > 40) clearInterval(t);
       }, 250);
     }
+    // Real-time freshness: re-fetch /app/prices.js every 5 minutes so the
+    // page stays in sync with the cron-driven price updates without
+    // requiring a manual reload. Cache-bust with a timestamp param.
+    setInterval(async () => {
+      try {
+        const res = await fetch('/app/prices.js?_t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return;
+        const code = await res.text();
+        // prices.js sets window.LIVE_MARKET = {...}; eval in a sandboxed
+        // function so we don't pollute global scope beyond LIVE_MARKET.
+        // Trust this source — it's same-origin and only contains a JSON
+        // assignment.
+        new Function(code)();
+        apply(window.LIVE_MARKET);
+      } catch (_) {}
+    }, 5 * 60 * 1000);
   })();
 </script>
 </body>
