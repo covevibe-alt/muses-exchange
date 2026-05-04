@@ -300,16 +300,19 @@
       const a = data.artists.find(x => x.ticker === ticker);
       if (!a) return false;
       const setText = (sel, val) => { const el = document.querySelector(sel); if (el) el.textContent = val; };
+      // Field names match the LIVE_MARKET schema (price, monthlyListeners, chg24h).
       if (a.price != null) setText('[data-stat="price"]', fmtPrice(a.price));
       if (a.monthlyListeners != null) setText('[data-stat="listeners"]', fmtListeners(a.monthlyListeners));
-      if (a.change24h != null) setText('[data-stat="change"]', fmtChange(a.change24h));
+      if (a.chg24h != null) setText('[data-stat="change"]', fmtChange(a.chg24h));
       return true;
     };
-    if (!apply(window.__MUSE_PRICES)) {
+    // prices.js exposes window.LIVE_MARKET (verified live). Poll briefly
+    // since the script is deferred — first apply may run before it loads.
+    if (!apply(window.LIVE_MARKET)) {
       let tries = 0;
       const t = setInterval(() => {
         tries++;
-        if (apply(window.__MUSE_PRICES) || tries > 40) clearInterval(t);
+        if (apply(window.LIVE_MARKET) || tries > 40) clearInterval(t);
       }, 250);
     }
   })();
