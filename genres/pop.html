@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pop artists on Muses Exchange — 25 stocks priced by streams</title>
+<meta name="description" content="Browse the 25 Pop artists on Muses, ranked by streaming-driven price. Paper-trade with $10,000 in virtual credits — no deposit, no KYC.">
+<meta property="og:title" content="Pop artists · Muses Exchange">
+<meta property="og:description" content="Browse the 25 Pop artists on Muses, ranked by streaming-driven price. Paper-trade with $10,000 in virtual credits — no deposit, no KYC.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Muses">
+<meta property="og:url" content="https://muses.exchange/genres/pop">
+<meta property="og:image" content="https://muses.exchange/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Muses — a stock market for music, priced by streams.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pop artists · Muses Exchange">
+<meta name="twitter:description" content="Browse the 25 Pop artists on Muses, ranked by streaming-driven price. Paper-trade with $10,000 in virtual credits — no deposit, no KYC.">
+<meta name="twitter:image" content="https://muses.exchange/og-image.png">
+<meta name="twitter:image:alt" content="Muses — a stock market for music, priced by streams.">
+<meta name="theme-color" content="#0b0910">
+<link rel="canonical" href="https://muses.exchange/genres/pop">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/muse-shared.css?v=20260420b">
+<style>
+  /* Per-genre page styles — scoped to body[data-page="genre-static"]. */
+  body[data-page="genre-static"] .genre-hero {
+    padding: 80px 24px 40px;
+    text-align: center;
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .genre-hero .genre-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(167, 139, 250, 0.14);
+    border: 1px solid rgba(167, 139, 250, 0.32);
+    color: #b98fff;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 6px 14px; border-radius: 999px;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+  .genre-hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 1.05;
+    margin: 0 0 16px;
+  }
+  .genre-hero h1 em { font-style: italic; color: var(--ink-dim); }
+  .genre-hero .lede {
+    font-family: var(--sans);
+    font-size: 18px; line-height: 1.6;
+    color: var(--ink-dim);
+    max-width: 640px; margin: 0 auto 28px;
+  }
+  .genre-hero .cta-row {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+  .genre-grid-wrap {
+    max-width: 960px; margin: 40px auto;
+    padding: 0 24px;
+  }
+  .genre-grid-wrap h2 {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--ink);
+    margin: 0 0 20px;
+  }
+  .genre-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .genre-artist-card {
+    display: flex; flex-direction: column; gap: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .genre-artist-card:hover {
+    border-color: rgba(167, 139, 250, 0.4);
+    transform: translateY(-1px);
+  }
+  .genre-artist-card .ticker {
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 11px; color: #b98fff;
+  }
+  .genre-artist-card .name {
+    font-family: var(--sans); font-size: 15px;
+    font-weight: 600; color: var(--ink);
+  }
+  .genre-content {
+    max-width: 760px; margin: 60px auto;
+    padding: 0 24px;
+    font-family: var(--sans);
+    font-size: 17px; line-height: 1.7;
+    color: var(--ink-dim);
+  }
+  .genre-content h2 {
+    font-family: var(--serif);
+    font-size: 32px;
+    color: var(--ink);
+    margin: 40px 0 16px;
+  }
+  .genre-content p { margin: 0 0 16px; }
+  .genre-other {
+    max-width: 880px; margin: 60px auto;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .genre-other h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    color: var(--ink);
+    margin: 0 0 16px;
+  }
+  .genre-pill {
+    display: inline-block;
+    margin: 4px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    text-decoration: none;
+    transition: border-color .15s ease;
+  }
+  .genre-pill:hover { border-color: rgba(167, 139, 250, 0.4); }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Pop artists on Muses Exchange",
+  "description": "Browse the 25 Pop artists on Muses, ranked by streaming-driven price. Paper-trade with $10,000 in virtual credits — no deposit, no KYC.",
+  "url": "https://muses.exchange/genres/pop",
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": 25,
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Ariana Grande",
+          "url": "https://muses.exchange/artists/argr",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Benson Boone",
+          "url": "https://muses.exchange/artists/bens",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Bruno Mars",
+          "url": "https://muses.exchange/artists/brno",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Camila Cabello",
+          "url": "https://muses.exchange/artists/cmla",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Chappell Roan",
+          "url": "https://muses.exchange/artists/chpl",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 6,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Charli XCX",
+          "url": "https://muses.exchange/artists/chrl",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 7,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Doja Cat",
+          "url": "https://muses.exchange/artists/doja",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 8,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Dua Lipa",
+          "url": "https://muses.exchange/artists/dual",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 9,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Ed Sheeran",
+          "url": "https://muses.exchange/artists/shrn",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 10,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Gracie Abrams",
+          "url": "https://muses.exchange/artists/grab",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 11,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Halsey",
+          "url": "https://muses.exchange/artists/hlsy",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 12,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Harry Styles",
+          "url": "https://muses.exchange/artists/hrst",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 13,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Justin Bieber",
+          "url": "https://muses.exchange/artists/jbbr",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 14,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Katy Perry",
+          "url": "https://muses.exchange/artists/ktpr",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 15,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Lady Gaga",
+          "url": "https://muses.exchange/artists/gaga",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 16,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Madison Beer",
+          "url": "https://muses.exchange/artists/madb",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 17,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Miley Cyrus",
+          "url": "https://muses.exchange/artists/mley",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 18,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Olivia Rodrigo",
+          "url": "https://muses.exchange/artists/olvr",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 19,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Sabrina Carpenter",
+          "url": "https://muses.exchange/artists/sabr",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 20,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Selena Gomez",
+          "url": "https://muses.exchange/artists/slna",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 21,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Shakira",
+          "url": "https://muses.exchange/artists/shkr",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 22,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Shawn Mendes",
+          "url": "https://muses.exchange/artists/shmn",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 23,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Tate McRae",
+          "url": "https://muses.exchange/artists/tate",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 24,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Taylor Swift",
+          "url": "https://muses.exchange/artists/tswf",
+          "genre": "Pop"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 25,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Troye Sivan",
+          "url": "https://muses.exchange/artists/troy",
+          "genre": "Pop"
+        }
+      }
+    ]
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Muses",
+      "item": "https://muses.exchange/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Artists",
+      "item": "https://muses.exchange/artists"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Pop",
+      "item": "https://muses.exchange/genres/pop"
+    }
+  ]
+}
+</script>
+</head>
+<body data-page="genre-static">
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  </defs>
+</svg>
+
+<div id="nav-mount"></div>
+
+<section class="genre-hero">
+  <div class="genre-badge">Pop · 25 artists</div>
+  <h1>Pop <em>on Muses.</em></h1>
+  <p class="lede">Pop is the largest sector on Muses — the artists with the most monthly listeners worldwide. Prices in this genre move on viral moments, album cycles, and chart performance.</p>
+  <div class="cta-row">
+    <a class="btn-primary" href="/exchange/genre/Pop">Browse Pop <svg><use href="#i-arrow-up-right"/></svg></a>
+    <a class="btn-ghost" href="/artists">All artists</a>
+  </div>
+</section>
+
+<section class="genre-grid-wrap">
+  <h2>25 Pop artists on Muses</h2>
+  <div class="genre-grid">
+        <a class="genre-artist-card" href="/artists/argr">
+          <span class="ticker">$ARGR</span>
+          <span class="name">Ariana Grande</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/bens">
+          <span class="ticker">$BENS</span>
+          <span class="name">Benson Boone</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/brno">
+          <span class="ticker">$BRNO</span>
+          <span class="name">Bruno Mars</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/cmla">
+          <span class="ticker">$CMLA</span>
+          <span class="name">Camila Cabello</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/chpl">
+          <span class="ticker">$CHPL</span>
+          <span class="name">Chappell Roan</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/chrl">
+          <span class="ticker">$CHRL</span>
+          <span class="name">Charli XCX</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/doja">
+          <span class="ticker">$DOJA</span>
+          <span class="name">Doja Cat</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/dual">
+          <span class="ticker">$DUAL</span>
+          <span class="name">Dua Lipa</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/shrn">
+          <span class="ticker">$SHRN</span>
+          <span class="name">Ed Sheeran</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/grab">
+          <span class="ticker">$GRAB</span>
+          <span class="name">Gracie Abrams</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/hlsy">
+          <span class="ticker">$HLSY</span>
+          <span class="name">Halsey</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/hrst">
+          <span class="ticker">$HRST</span>
+          <span class="name">Harry Styles</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/jbbr">
+          <span class="ticker">$JBBR</span>
+          <span class="name">Justin Bieber</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/ktpr">
+          <span class="ticker">$KTPR</span>
+          <span class="name">Katy Perry</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/gaga">
+          <span class="ticker">$GAGA</span>
+          <span class="name">Lady Gaga</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/madb">
+          <span class="ticker">$MADB</span>
+          <span class="name">Madison Beer</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/mley">
+          <span class="ticker">$MLEY</span>
+          <span class="name">Miley Cyrus</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/olvr">
+          <span class="ticker">$OLVR</span>
+          <span class="name">Olivia Rodrigo</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/sabr">
+          <span class="ticker">$SABR</span>
+          <span class="name">Sabrina Carpenter</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/slna">
+          <span class="ticker">$SLNA</span>
+          <span class="name">Selena Gomez</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/shkr">
+          <span class="ticker">$SHKR</span>
+          <span class="name">Shakira</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/shmn">
+          <span class="ticker">$SHMN</span>
+          <span class="name">Shawn Mendes</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/tate">
+          <span class="ticker">$TATE</span>
+          <span class="name">Tate McRae</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/tswf">
+          <span class="ticker">$TSWF</span>
+          <span class="name">Taylor Swift</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/troy">
+          <span class="ticker">$TROY</span>
+          <span class="name">Troye Sivan</span>
+        </a>
+  </div>
+</section>
+
+<section class="genre-content">
+  <h2>How Pop prices work on Muses</h2>
+  <p>
+    Every artist in the Pop sector trades as a "stock" with a price driven by three real signals:
+  </p>
+  <ul>
+    <li><strong>Spotify monthly listeners</strong> — the largest weight. Rising listeners means rising market share.</li>
+    <li><strong>YouTube channel reach</strong> — total views plus 30-day trend.</li>
+    <li><strong>Chart positions and cultural momentum</strong> — Billboard data, viral moments, release timing.</li>
+  </ul>
+  <p>
+    Trading activity moves the price within a ±25% band around the streaming-derived "fair value", so demand can lift an artist above their fundamentals — and selling pressure can push them below.
+  </p>
+  <h2>Trading Pop on Muses</h2>
+  <p>
+    Sign up free with $10,000 in virtual credits. Pick from the 25 Pop artists above, build a Pop-heavy portfolio, or diversify across all 105 artists on the exchange. There's no deposit, no withdrawal, no KYC — just paper trading against real streaming data.
+  </p>
+  <h2>Monthly Pop Cup</h2>
+  <p>
+    Every month, the top 10 traders in each genre cup win virtual credits and badges. Hold any Pop artist and you're automatically entered. The cup closes at the end of the month and resets on the 1st — see the <a href="/leaderboard">leaderboard</a> for current standings (sign-in required).
+  </p>
+</section>
+
+<section class="genre-other">
+  <h2>Other genres on Muses</h2>
+  <a class="genre-pill" href="/genres/afropop">Afropop</a><a class="genre-pill" href="/genres/alt">Alt</a><a class="genre-pill" href="/genres/electronic">Electronic</a><a class="genre-pill" href="/genres/hip-hop">Hip-hop</a><a class="genre-pill" href="/genres/indie">Indie</a><a class="genre-pill" href="/genres/k-pop">K-Pop</a><a class="genre-pill" href="/genres/latin">Latin</a><a class="genre-pill" href="/genres/randb">R&amp;B</a>
+</section>
+
+<div id="footer-mount"></div>
+
+<script src="/muse-shared.js?v=20260427a"></script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Indie artists on Muses Exchange — 8 stocks priced by streams</title>
+<meta name="description" content="Browse the 8 Indie artists on Muses, ranked by streaming-driven price. Paper-trade with $10,000 in virtual credits — no deposit, no KYC.">
+<meta property="og:title" content="Indie artists · Muses Exchange">
+<meta property="og:description" content="Browse the 8 Indie artists on Muses, ranked by streaming-driven price. Paper-trade with $10,000 in virtual credits — no deposit, no KYC.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Muses">
+<meta property="og:url" content="https://muses.exchange/genres/indie">
+<meta property="og:image" content="https://muses.exchange/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Muses — a stock market for music, priced by streams.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Indie artists · Muses Exchange">
+<meta name="twitter:description" content="Browse the 8 Indie artists on Muses, ranked by streaming-driven price. Paper-trade with $10,000 in virtual credits — no deposit, no KYC.">
+<meta name="twitter:image" content="https://muses.exchange/og-image.png">
+<meta name="twitter:image:alt" content="Muses — a stock market for music, priced by streams.">
+<meta name="theme-color" content="#0b0910">
+<link rel="canonical" href="https://muses.exchange/genres/indie">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/muse-shared.css?v=20260420b">
+<style>
+  /* Per-genre page styles — scoped to body[data-page="genre-static"]. */
+  body[data-page="genre-static"] .genre-hero {
+    padding: 80px 24px 40px;
+    text-align: center;
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .genre-hero .genre-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(167, 139, 250, 0.14);
+    border: 1px solid rgba(167, 139, 250, 0.32);
+    color: #b98fff;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 13px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 6px 14px; border-radius: 999px;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+  .genre-hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 1.05;
+    margin: 0 0 16px;
+  }
+  .genre-hero h1 em { font-style: italic; color: var(--ink-dim); }
+  .genre-hero .lede {
+    font-family: var(--sans);
+    font-size: 18px; line-height: 1.6;
+    color: var(--ink-dim);
+    max-width: 640px; margin: 0 auto 28px;
+  }
+  .genre-hero .cta-row {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  }
+  .genre-grid-wrap {
+    max-width: 960px; margin: 40px auto;
+    padding: 0 24px;
+  }
+  .genre-grid-wrap h2 {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--ink);
+    margin: 0 0 20px;
+  }
+  .genre-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .genre-artist-card {
+    display: flex; flex-direction: column; gap: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .genre-artist-card:hover {
+    border-color: rgba(167, 139, 250, 0.4);
+    transform: translateY(-1px);
+  }
+  .genre-artist-card .ticker {
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 11px; color: #b98fff;
+  }
+  .genre-artist-card .name {
+    font-family: var(--sans); font-size: 15px;
+    font-weight: 600; color: var(--ink);
+  }
+  .genre-content {
+    max-width: 760px; margin: 60px auto;
+    padding: 0 24px;
+    font-family: var(--sans);
+    font-size: 17px; line-height: 1.7;
+    color: var(--ink-dim);
+  }
+  .genre-content h2 {
+    font-family: var(--serif);
+    font-size: 32px;
+    color: var(--ink);
+    margin: 40px 0 16px;
+  }
+  .genre-content p { margin: 0 0 16px; }
+  .genre-other {
+    max-width: 880px; margin: 60px auto;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .genre-other h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    color: var(--ink);
+    margin: 0 0 16px;
+  }
+  .genre-pill {
+    display: inline-block;
+    margin: 4px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    text-decoration: none;
+    transition: border-color .15s ease;
+  }
+  .genre-pill:hover { border-color: rgba(167, 139, 250, 0.4); }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Indie artists on Muses Exchange",
+  "description": "Browse the 8 Indie artists on Muses, ranked by streaming-driven price. Paper-trade with $10,000 in virtual credits — no deposit, no KYC.",
+  "url": "https://muses.exchange/genres/indie",
+  "mainEntity": {
+    "@type": "ItemList",
+    "numberOfItems": 8,
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Beabadoobee",
+          "url": "https://muses.exchange/artists/beab",
+          "genre": "Indie"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "boygenius",
+          "url": "https://muses.exchange/artists/boyg",
+          "genre": "Indie"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Cigarettes After Sex",
+          "url": "https://muses.exchange/artists/cgas",
+          "genre": "Indie"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Clairo",
+          "url": "https://muses.exchange/artists/clro",
+          "genre": "Indie"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Faye Webster",
+          "url": "https://muses.exchange/artists/faye",
+          "genre": "Indie"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 6,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Mitski",
+          "url": "https://muses.exchange/artists/mtsk",
+          "genre": "Indie"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 7,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "Phoebe Bridgers",
+          "url": "https://muses.exchange/artists/phbe",
+          "genre": "Indie"
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 8,
+        "item": {
+          "@type": "MusicGroup",
+          "name": "The Marías",
+          "url": "https://muses.exchange/artists/mari",
+          "genre": "Indie"
+        }
+      }
+    ]
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Muses",
+      "item": "https://muses.exchange/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Artists",
+      "item": "https://muses.exchange/artists"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Indie",
+      "item": "https://muses.exchange/genres/indie"
+    }
+  ]
+}
+</script>
+</head>
+<body data-page="genre-static">
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  </defs>
+</svg>
+
+<div id="nav-mount"></div>
+
+<section class="genre-hero">
+  <div class="genre-badge">Indie · 8 artists</div>
+  <h1>Indie <em>on Muses.</em></h1>
+  <p class="lede">Indie on Muses is curated bedroom-pop, indie folk, and indie rock — artists who built audiences without a major label push.</p>
+  <div class="cta-row">
+    <a class="btn-primary" href="/exchange/genre/Indie">Browse Indie <svg><use href="#i-arrow-up-right"/></svg></a>
+    <a class="btn-ghost" href="/artists">All artists</a>
+  </div>
+</section>
+
+<section class="genre-grid-wrap">
+  <h2>8 Indie artists on Muses</h2>
+  <div class="genre-grid">
+        <a class="genre-artist-card" href="/artists/beab">
+          <span class="ticker">$BEAB</span>
+          <span class="name">Beabadoobee</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/boyg">
+          <span class="ticker">$BOYG</span>
+          <span class="name">boygenius</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/cgas">
+          <span class="ticker">$CGAS</span>
+          <span class="name">Cigarettes After Sex</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/clro">
+          <span class="ticker">$CLRO</span>
+          <span class="name">Clairo</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/faye">
+          <span class="ticker">$FAYE</span>
+          <span class="name">Faye Webster</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/mtsk">
+          <span class="ticker">$MTSK</span>
+          <span class="name">Mitski</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/phbe">
+          <span class="ticker">$PHBE</span>
+          <span class="name">Phoebe Bridgers</span>
+        </a>
+        <a class="genre-artist-card" href="/artists/mari">
+          <span class="ticker">$MARI</span>
+          <span class="name">The Marías</span>
+        </a>
+  </div>
+</section>
+
+<section class="genre-content">
+  <h2>How Indie prices work on Muses</h2>
+  <p>
+    Every artist in the Indie sector trades as a "stock" with a price driven by three real signals:
+  </p>
+  <ul>
+    <li><strong>Spotify monthly listeners</strong> — the largest weight. Rising listeners means rising market share.</li>
+    <li><strong>YouTube channel reach</strong> — total views plus 30-day trend.</li>
+    <li><strong>Chart positions and cultural momentum</strong> — Billboard data, viral moments, release timing.</li>
+  </ul>
+  <p>
+    Trading activity moves the price within a ±25% band around the streaming-derived "fair value", so demand can lift an artist above their fundamentals — and selling pressure can push them below.
+  </p>
+  <h2>Trading Indie on Muses</h2>
+  <p>
+    Sign up free with $10,000 in virtual credits. Pick from the 8 Indie artists above, build a Indie-heavy portfolio, or diversify across all 105 artists on the exchange. There's no deposit, no withdrawal, no KYC — just paper trading against real streaming data.
+  </p>
+  <h2>Monthly Indie Cup</h2>
+  <p>
+    Every month, the top 10 traders in each genre cup win virtual credits and badges. Hold any Indie artist and you're automatically entered. The cup closes at the end of the month and resets on the 1st — see the <a href="/leaderboard">leaderboard</a> for current standings (sign-in required).
+  </p>
+</section>
+
+<section class="genre-other">
+  <h2>Other genres on Muses</h2>
+  <a class="genre-pill" href="/genres/afropop">Afropop</a><a class="genre-pill" href="/genres/alt">Alt</a><a class="genre-pill" href="/genres/electronic">Electronic</a><a class="genre-pill" href="/genres/hip-hop">Hip-hop</a><a class="genre-pill" href="/genres/k-pop">K-Pop</a><a class="genre-pill" href="/genres/latin">Latin</a><a class="genre-pill" href="/genres/pop">Pop</a><a class="genre-pill" href="/genres/randb">R&amp;B</a>
+</section>
+
+<div id="footer-mount"></div>
+
+<script src="/muse-shared.js?v=20260427a"></script>
+</body>
+</html>
