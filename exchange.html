@@ -18263,20 +18263,9 @@ async function fetchLeagueMembers(leagueId) {
   }
 }
 
-async function createLeagueRPC(name, description) {
-  if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) {
-    return { error: 'not_signed_in' };
-  }
-  try {
-    const { data, error } = await window.SUPABASE.rpc('create_league', {
-      p_name: name,
-      p_description: description || null,
-      p_max_members: 50,
-    });
-    if (error) return { error: error.message || String(error) };
-    return data || {};
-  } catch (e) { return { error: e.message || String(e) }; }
-}
+// (createLeagueRPC removed — was orphan dead code calling the legacy
+// create_league RPC; createLeagueV2RPC is the active path with full
+// cover/theme/genre/ends_at support.)
 
 async function joinLeagueRPC(code) {
   if (!window.SUPABASE || !window.MUSE_USER || !window.MUSE_USER.authed) {

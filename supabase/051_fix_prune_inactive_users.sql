@@ -1,0 +1,13 @@
+-- ════════════════════════════════════════════════════════════════════════════
+-- Migration 051 — Fix prune_inactive_users() column reference
+-- ════════════════════════════════════════════════════════════════════════════
+-- Re-audit pass 2 caught: prune_inactive_users() referenced profiles.id
+-- but the actual PK is profiles.user_id. Function would have thrown on
+-- the first cleanup_tick run (5th of next month). Patched to use
+-- user_id consistently across SELECT, JOIN, and UPDATE clauses.
+--
+-- Verified after deploy: cleanup_tick() now runs end-to-end clean,
+-- alongside all 14 cron functions tested ad-hoc.
+--
+-- APPLIED VIA SUPABASE MCP on 2026-05-04.
+-- ════════════════════════════════════════════════════════════════════════════
