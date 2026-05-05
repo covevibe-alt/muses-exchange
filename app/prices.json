@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-05T17:59:41Z",
+  "updatedAt": "2026-05-05T19:47:50Z",
   "marketIndex": 4.5,
   "rawAveragePrice": 1.49,
   "topGainers": [
@@ -581,7 +581,7 @@
       "fairPrice": 5.12,
       "price": 5.09,
       "chg24h": 0.99,
-      "volatility30d": 0.031,
+      "volatility30d": 0.032,
       "volume": 5693,
       "youtube": {
         "subscribers": 1610000,
@@ -986,7 +986,7 @@
       "youtube": {
         "subscribers": 307000,
         "views": 4658596602,
-        "videos": 1323
+        "videos": 1322
       },
       "youtubeBoost": 0.1846,
       "chartPositions": null,
@@ -1398,7 +1398,7 @@
       "genre": "R&B",
       "spotifyId": "2EMAnMvWE2eb56ToJVfCWs",
       "popularity": 81,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 11014629,
       "monthlyListeners": 20160075,
       "listenersSource": "ratio-calibrated",
@@ -1407,7 +1407,7 @@
       "price": 0.66,
       "chg24h": 1.54,
       "volatility30d": 0.004,
-      "volume": 3584,
+      "volume": 1991,
       "youtube": {
         "subscribers": 28000,
         "views": 966379558,
@@ -2048,7 +2048,7 @@
       "genre": "Afropop",
       "spotifyId": "3wcj11K77LjEY1PkEazffa",
       "popularity": 82,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 16178282,
       "monthlyListeners": 25006770,
       "listenersSource": "ratio-calibrated",
@@ -2057,7 +2057,7 @@
       "price": 0.82,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 4344,
+      "volume": 2413,
       "youtube": {
         "subscribers": 4500,
         "views": 746596828,
@@ -2236,7 +2236,7 @@
       "youtube": {
         "subscribers": 13500,
         "views": 5722651653,
-        "videos": 796
+        "videos": 795
       },
       "youtubeBoost": 0.1691,
       "chartPositions": null,
@@ -2784,7 +2784,7 @@
       "volatility30d": 0.0,
       "volume": 965,
       "youtube": {
-        "subscribers": 468,
+        "subscribers": 469,
         "views": 283166062,
         "videos": 349
       },
