@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-05T16:27:57Z",
+  "updatedAt": "2026-05-05T17:59:41Z",
   "marketIndex": 4.5,
   "rawAveragePrice": 1.49,
   "topGainers": [
@@ -581,7 +581,7 @@
       "fairPrice": 5.12,
       "price": 5.09,
       "chg24h": 0.99,
-      "volatility30d": 0.029,
+      "volatility30d": 0.031,
       "volume": 5693,
       "youtube": {
         "subscribers": 1610000,
@@ -709,8 +709,8 @@
       "volatility30d": 0.0,
       "volume": 1836,
       "youtube": {
-        "subscribers": 831,
-        "views": 508347798,
+        "subscribers": 832,
+        "views": 508839495,
         "videos": 280
       },
       "youtubeBoost": 0.1218,
@@ -1397,8 +1397,8 @@
       "name": "Bryson Tiller",
       "genre": "R&B",
       "spotifyId": "2EMAnMvWE2eb56ToJVfCWs",
-      "popularity": 80,
-      "popularityDelta": 0,
+      "popularity": 81,
+      "popularityDelta": 1,
       "followers": 11014629,
       "monthlyListeners": 20160075,
       "listenersSource": "ratio-calibrated",
@@ -1407,7 +1407,7 @@
       "price": 0.66,
       "chg24h": 1.54,
       "volatility30d": 0.004,
-      "volume": 1991,
+      "volume": 3584,
       "youtube": {
         "subscribers": 28000,
         "views": 966379558,
@@ -2047,8 +2047,8 @@
       "name": "Burna Boy",
       "genre": "Afropop",
       "spotifyId": "3wcj11K77LjEY1PkEazffa",
-      "popularity": 81,
-      "popularityDelta": 0,
+      "popularity": 82,
+      "popularityDelta": 1,
       "followers": 16178282,
       "monthlyListeners": 25006770,
       "listenersSource": "ratio-calibrated",
@@ -2057,7 +2057,7 @@
       "price": 0.82,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2413,
+      "volume": 4344,
       "youtube": {
         "subscribers": 4500,
         "views": 746596828,
