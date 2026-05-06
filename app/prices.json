@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-06T21:13:35Z",
+  "updatedAt": "2026-05-06T22:25:15Z",
   "marketIndex": 4.51,
   "rawAveragePrice": 1.49,
   "topGainers": [
@@ -306,7 +306,7 @@
       "fairPrice": 2.05,
       "price": 2.02,
       "chg24h": 1.0,
-      "volatility30d": 0.011,
+      "volatility30d": 0.012,
       "volume": 4374,
       "youtube": {
         "subscribers": 19200,
@@ -1031,7 +1031,7 @@
       "fairPrice": 1.69,
       "price": 1.66,
       "chg24h": 0.61,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 3535,
       "youtube": {
         "subscribers": 478000,
@@ -1381,7 +1381,7 @@
       "fairPrice": 2.4,
       "price": 2.37,
       "chg24h": 0.42,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 3587,
       "youtube": {
         "subscribers": 49700,
@@ -1756,7 +1756,7 @@
       "fairPrice": 1.38,
       "price": 1.35,
       "chg24h": 0.75,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 2938,
       "youtube": {
         "subscribers": 3690,
@@ -1881,7 +1881,7 @@
       "fairPrice": 0.83,
       "price": 0.8,
       "chg24h": 1.27,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 2991,
       "youtube": {
         "subscribers": 12600,
@@ -2422,8 +2422,8 @@
       "name": "Clairo",
       "genre": "Indie",
       "spotifyId": "3l0CmX0FuQjFxr8SK7Vqag",
-      "popularity": 79,
-      "popularityDelta": 0,
+      "popularity": 80,
+      "popularityDelta": 1,
       "followers": 7080737,
       "monthlyListeners": 16743819,
       "listenersSource": "ratio-calibrated",
@@ -2432,7 +2432,7 @@
       "price": 0.52,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 1597,
+      "volume": 2874,
       "youtube": {
         "subscribers": 1960,
         "views": 191546215,
@@ -2806,7 +2806,7 @@
       "fairPrice": 1.05,
       "price": 1.02,
       "chg24h": 0.99,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 1656,
       "youtube": {
         "subscribers": 234000,
