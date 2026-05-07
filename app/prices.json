@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-07T10:27:44Z",
+  "updatedAt": "2026-05-07T12:18:31Z",
   "marketIndex": 4.51,
   "rawAveragePrice": 1.5,
   "topGainers": [
@@ -16,12 +16,12 @@
       "chg24h": 0.98
     },
     {
-      "ticker": "JBBR",
-      "chg24h": 0.78
-    },
-    {
       "ticker": "KTPR",
       "chg24h": 0.72
+    },
+    {
+      "ticker": "SHMN",
+      "chg24h": 0.61
     }
   ],
   "topLosers": [
@@ -169,7 +169,7 @@
     {
       "sector": "Pop",
       "avgPrice": 2.22,
-      "chg24h": 0.15,
+      "chg24h": 0.14,
       "members": [
         "SABR",
         "TSWF",
@@ -284,7 +284,7 @@
       "volatility30d": 0.0,
       "volume": 1713,
       "youtube": {
-        "subscribers": 977,
+        "subscribers": 978,
         "views": 668046793,
         "videos": 109
       },
@@ -556,7 +556,7 @@
       "fairPrice": 2.81,
       "price": 2.78,
       "chg24h": 0.72,
-      "volatility30d": 0.012,
+      "volatility30d": 0.013,
       "volume": 3810,
       "youtube": {
         "subscribers": 283000,
@@ -580,7 +580,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebaf20f7db5288bce9beede034",
       "fairPrice": 5.18,
       "price": 5.15,
-      "chg24h": 0.78,
+      "chg24h": 0.59,
       "volatility30d": 0.031,
       "volume": 5697,
       "youtube": {
@@ -1910,7 +1910,7 @@
       "volume": 1577,
       "youtube": {
         "subscribers": 718,
-        "views": 747693368,
+        "views": 748279673,
         "videos": 131
       },
       "youtubeBoost": 0.1293,
@@ -1931,7 +1931,7 @@
       "fairPrice": 1.68,
       "price": 1.66,
       "chg24h": 0.61,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3023,
       "youtube": {
         "subscribers": 125000,
@@ -2035,7 +2035,7 @@
       "volume": 1571,
       "youtube": {
         "subscribers": 4510,
-        "views": 206800538,
+        "views": 206867777,
         "videos": 130
       },
       "youtubeBoost": 0.1042,
@@ -2273,7 +2273,7 @@
       "genre": "Alt",
       "spotifyId": "2FXC3k01G6Gw61bmprjgqS",
       "popularity": 84,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 9495420,
       "monthlyListeners": 41889995,
       "listenersSource": "ratio-calibrated",
@@ -2282,7 +2282,7 @@
       "price": 1.41,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3328,
+      "volume": 1849,
       "youtube": {
         "subscribers": 8250,
         "views": 1207508491,
@@ -2784,7 +2784,7 @@
       "volatility30d": 0.0,
       "volume": 966,
       "youtube": {
-        "subscribers": 469,
+        "subscribers": 470,
         "views": 283989969,
         "videos": 353
       },
