@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-08T18:52:27Z",
+  "updatedAt": "2026-05-08T20:07:28Z",
   "marketIndex": 4.52,
   "rawAveragePrice": 1.5,
   "topGainers": [
@@ -260,7 +260,7 @@
       "volume": 7508,
       "youtube": {
         "subscribers": 719000,
-        "views": 9525376233,
+        "views": 9529333350,
         "videos": 2122
       },
       "youtubeBoost": 0.2133,
@@ -285,7 +285,7 @@
       "volume": 1714,
       "youtube": {
         "subscribers": 979,
-        "views": 668586616,
+        "views": 668988042,
         "videos": 109
       },
       "youtubeBoost": 0.1271,
@@ -460,7 +460,7 @@
       "volume": 3653,
       "youtube": {
         "subscribers": 4540,
-        "views": 3633501680,
+        "views": 3634697201,
         "videos": 649
       },
       "youtubeBoost": 0.1602,
@@ -485,7 +485,7 @@
       "volume": 1588,
       "youtube": {
         "subscribers": 10900,
-        "views": 644386797,
+        "views": 644935902,
         "videos": 637
       },
       "youtubeBoost": 0.1264,
@@ -581,12 +581,12 @@
       "fairPrice": 5.21,
       "price": 5.18,
       "chg24h": 0.58,
-      "volatility30d": 0.024,
+      "volatility30d": 0.023,
       "volume": 5699,
       "youtube": {
         "subscribers": 1610000,
         "views": 5019891804,
-        "videos": 2406
+        "videos": 2405
       },
       "youtubeBoost": 0.2148,
       "chartPositions": null,
@@ -610,10 +610,10 @@
       "volume": 5447,
       "youtube": {
         "subscribers": 364000,
-        "views": 4277783756,
+        "views": 4280460799,
         "videos": 292
       },
-      "youtubeBoost": 0.1858,
+      "youtubeBoost": 0.1859,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -635,7 +635,7 @@
       "volume": 4419,
       "youtube": {
         "subscribers": 276000,
-        "views": 1941016090,
+        "views": 1941694656,
         "videos": 1453
       },
       "youtubeBoost": 0.1656,
@@ -647,8 +647,8 @@
       "name": "Lady Gaga",
       "genre": "Pop",
       "spotifyId": "1HY2Jd0NmPuamShAr6KMms",
-      "popularity": 90,
-      "popularityDelta": 0,
+      "popularity": 91,
+      "popularityDelta": 1,
       "followers": 46266765,
       "monthlyListeners": 99464291,
       "listenersSource": "ratio-calibrated",
@@ -657,10 +657,10 @@
       "price": 3.48,
       "chg24h": 0.58,
       "volatility30d": 0.012,
-      "volume": 4081,
+      "volume": 7346,
       "youtube": {
         "subscribers": 146000,
-        "views": 5581425211,
+        "views": 5584032821,
         "videos": 2381
       },
       "youtubeBoost": 0.1752,
@@ -709,7 +709,7 @@
       "volatility30d": 0.0,
       "volume": 1839,
       "youtube": {
-        "subscribers": 838,
+        "subscribers": 837,
         "views": 510146575,
         "videos": 280
       },
@@ -810,7 +810,7 @@
       "volume": 2877,
       "youtube": {
         "subscribers": 17800,
-        "views": 1566967330,
+        "views": 1567456552,
         "videos": 629
       },
       "youtubeBoost": 0.1438,
@@ -885,7 +885,7 @@
       "volume": 3961,
       "youtube": {
         "subscribers": 84500,
-        "views": 3169119193,
+        "views": 3170143707,
         "videos": 243
       },
       "youtubeBoost": 0.1575,
@@ -1010,7 +1010,7 @@
       "volume": 3031,
       "youtube": {
         "subscribers": 51500,
-        "views": 1846024187,
+        "views": 1846458350,
         "videos": 400
       },
       "youtubeBoost": 0.147,
@@ -1036,7 +1036,7 @@
       "youtube": {
         "subscribers": 478000,
         "views": 2056637433,
-        "videos": 1332
+        "videos": 1331
       },
       "youtubeBoost": 0.1763,
       "chartPositions": null,
@@ -1085,7 +1085,7 @@
       "volume": 3192,
       "youtube": {
         "subscribers": 102000,
-        "views": 2529264085,
+        "views": 2530229910,
         "videos": 426
       },
       "youtubeBoost": 0.1535,
@@ -1210,7 +1210,7 @@
       "volume": 1993,
       "youtube": {
         "subscribers": 2970,
-        "views": 557288809,
+        "views": 557599645,
         "videos": 98
       },
       "youtubeBoost": 0.1236,
@@ -1285,7 +1285,7 @@
       "volume": 3101,
       "youtube": {
         "subscribers": 95700,
-        "views": 2632322913,
+        "views": 2633350849,
         "videos": 347
       },
       "youtubeBoost": 0.1539,
@@ -1336,7 +1336,7 @@
       "youtube": {
         "subscribers": 2190,
         "views": 1085236163,
-        "videos": 318
+        "videos": 316
       },
       "youtubeBoost": 0.1366,
       "chartPositions": null,
@@ -1485,10 +1485,10 @@
       "volume": 2024,
       "youtube": {
         "subscribers": 70800,
-        "views": 740632237,
+        "views": 741327708,
         "videos": 283
       },
-      "youtubeBoost": 0.1291,
+      "youtubeBoost": 0.1292,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -1510,7 +1510,7 @@
       "volume": 1457,
       "youtube": {
         "subscribers": 4410,
-        "views": 660165787,
+        "views": 660442267,
         "videos": 139
       },
       "youtubeBoost": 0.1269,
@@ -1635,7 +1635,7 @@
       "volume": 3160,
       "youtube": {
         "subscribers": 153000,
-        "views": 3729354531,
+        "views": 3732747453,
         "videos": 168
       },
       "youtubeBoost": 0.1681,
@@ -1685,7 +1685,7 @@
       "volume": 4818,
       "youtube": {
         "subscribers": 40700,
-        "views": 5229711412,
+        "views": 5231687156,
         "videos": 1793
       },
       "youtubeBoost": 0.1673,
@@ -1886,7 +1886,7 @@
       "youtube": {
         "subscribers": 12600,
         "views": 1710294623,
-        "videos": 1246
+        "videos": 1247
       },
       "youtubeBoost": 0.1455,
       "chartPositions": null,
@@ -1997,8 +1997,8 @@
       "name": "Rema",
       "genre": "Afropop",
       "spotifyId": "46pWGuE3dSwY3bMMXGBvVS",
-      "popularity": 79,
-      "popularityDelta": 0,
+      "popularity": 80,
+      "popularityDelta": 1,
       "followers": 10681623,
       "monthlyListeners": 24582687,
       "listenersSource": "ratio-calibrated",
@@ -2007,10 +2007,10 @@
       "price": 0.8,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 1961,
+      "volume": 3530,
       "youtube": {
         "subscribers": 4810,
-        "views": 780275818,
+        "views": 780519306,
         "videos": 303
       },
       "youtubeBoost": 0.1302,
@@ -2035,7 +2035,7 @@
       "volume": 1572,
       "youtube": {
         "subscribers": 4510,
-        "views": 207016007,
+        "views": 207123959,
         "videos": 130
       },
       "youtubeBoost": 0.1042,
@@ -2110,8 +2110,8 @@
       "volume": 1973,
       "youtube": {
         "subscribers": 14000,
-        "views": 346854115,
-        "videos": 194
+        "views": 346997634,
+        "videos": 193
       },
       "youtubeBoost": 0.1143,
       "chartPositions": null,
@@ -2135,10 +2135,10 @@
       "volume": 1798,
       "youtube": {
         "subscribers": 4400,
-        "views": 221514372,
+        "views": 222090791,
         "videos": 88
       },
-      "youtubeBoost": 0.1055,
+      "youtubeBoost": 0.1056,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -2234,7 +2234,7 @@
       "volatility30d": 0.0,
       "volume": 6740,
       "youtube": {
-        "subscribers": 13600,
+        "subscribers": 13500,
         "views": 5732506890,
         "videos": 795
       },
@@ -2261,7 +2261,7 @@
       "youtube": {
         "subscribers": 459000,
         "views": 3886286649,
-        "videos": 1308
+        "videos": 1307
       },
       "youtubeBoost": 0.188,
       "chartPositions": null,
@@ -2409,7 +2409,7 @@
       "volatility30d": 0.0,
       "volume": 2889,
       "youtube": {
-        "subscribers": 1890,
+        "subscribers": 1880,
         "views": 419751589,
         "videos": 61
       },
@@ -2597,8 +2597,8 @@
       "name": "BTS",
       "genre": "K-Pop",
       "spotifyId": "3kYFawNQVZ00FQbgs4rVBe",
-      "popularity": 40,
-      "popularityDelta": 0,
+      "popularity": 41,
+      "popularityDelta": 1,
       "followers": 133120,
       "monthlyListeners": 248695,
       "listenersSource": "ratio-default",
@@ -2607,7 +2607,7 @@
       "price": 0.01,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 219,
+      "volume": 394,
       "youtube": {
         "subscribers": 445000,
         "views": 8307549629,
@@ -2660,7 +2660,7 @@
       "volume": 2148,
       "youtube": {
         "subscribers": 27900,
-        "views": 2922893092,
+        "views": 2923981228,
         "videos": 41
       },
       "youtubeBoost": 0.156,
@@ -2735,7 +2735,7 @@
       "volume": 3170,
       "youtube": {
         "subscribers": 184000,
-        "views": 3238535678,
+        "views": 3239729384,
         "videos": 1835
       },
       "youtubeBoost": 0.1686,
