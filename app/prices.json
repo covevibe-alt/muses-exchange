@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-10T09:13:35Z",
+  "updatedAt": "2026-05-10T10:45:37Z",
   "marketIndex": 4.53,
   "rawAveragePrice": 1.5,
   "topGainers": [
@@ -231,7 +231,7 @@
       "fairPrice": 2.36,
       "price": 2.34,
       "chg24h": 0.43,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3403,
       "youtube": {
         "subscribers": 17700,
@@ -306,7 +306,7 @@
       "fairPrice": 2.09,
       "price": 2.06,
       "chg24h": 0.49,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 4378,
       "youtube": {
         "subscribers": 19200,
@@ -372,8 +372,8 @@
       "name": "Ariana Grande",
       "genre": "Pop",
       "spotifyId": "66CXWjxzNUsdJxJ2JdwvnR",
-      "popularity": 92,
-      "popularityDelta": 0,
+      "popularity": 93,
+      "popularityDelta": 1,
       "followers": 111571588,
       "monthlyListeners": 84437378,
       "listenersSource": "ratio-calibrated",
@@ -382,7 +382,7 @@
       "price": 2.99,
       "chg24h": 0.0,
       "volatility30d": 0.005,
-      "volume": 6338,
+      "volume": 11408,
       "youtube": {
         "subscribers": 393000,
         "views": 5875656271,
@@ -531,7 +531,7 @@
       "fairPrice": 2.93,
       "price": 2.9,
       "chg24h": 0.35,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 3918,
       "youtube": {
         "subscribers": 126000,
@@ -556,7 +556,7 @@
       "fairPrice": 2.86,
       "price": 2.83,
       "chg24h": 0.71,
-      "volatility30d": 0.012,
+      "volatility30d": 0.013,
       "volume": 3812,
       "youtube": {
         "subscribers": 283000,
@@ -579,9 +579,9 @@
       "listenersSource": "ratio-calibrated",
       "image": "https://i.scdn.co/image/ab6761610000e5ebaf20f7db5288bce9beede034",
       "fairPrice": 5.29,
-      "price": 5.25,
+      "price": 5.26,
       "chg24h": 0.77,
-      "volatility30d": 0.022,
+      "volatility30d": 0.023,
       "volume": 5703,
       "youtube": {
         "subscribers": 1610000,
@@ -709,7 +709,7 @@
       "volatility30d": 0.0,
       "volume": 1841,
       "youtube": {
-        "subscribers": 831,
+        "subscribers": 832,
         "views": 511272558,
         "videos": 280
       },
@@ -822,8 +822,8 @@
       "name": "Madison Beer",
       "genre": "Pop",
       "spotifyId": "2kRfqPViCqYdSGhYSM9R0Q",
-      "popularity": 76,
-      "popularityDelta": 0,
+      "popularity": 77,
+      "popularityDelta": 1,
       "followers": 9473486,
       "monthlyListeners": 18187198,
       "listenersSource": "ratio-calibrated",
@@ -831,8 +831,8 @@
       "fairPrice": 0.61,
       "price": 0.58,
       "chg24h": 1.75,
-      "volatility30d": 0.006,
-      "volume": 1847,
+      "volatility30d": 0.007,
+      "volume": 3324,
       "youtube": {
         "subscribers": 1280,
         "views": 299584806,
@@ -856,7 +856,7 @@
       "fairPrice": 3.29,
       "price": 3.26,
       "chg24h": 0.31,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 6306,
       "youtube": {
         "subscribers": 1130000,
@@ -1081,7 +1081,7 @@
       "fairPrice": 1.32,
       "price": 1.3,
       "chg24h": 0.78,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3192,
       "youtube": {
         "subscribers": 102000,
@@ -1481,7 +1481,7 @@
       "fairPrice": 0.96,
       "price": 0.94,
       "chg24h": 1.08,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2025,
       "youtube": {
         "subscribers": 70800,
@@ -1897,8 +1897,8 @@
       "name": "Quevedo",
       "genre": "Latin",
       "spotifyId": "52iwsT98xCoGgiGntTiR7K",
-      "popularity": 86,
-      "popularityDelta": 0,
+      "popularity": 87,
+      "popularityDelta": 1,
       "followers": 6913918,
       "monthlyListeners": 29370324,
       "listenersSource": "ratio-calibrated",
@@ -1907,7 +1907,7 @@
       "price": 0.97,
       "chg24h": 1.04,
       "volatility30d": 0.003,
-      "volume": 1578,
+      "volume": 2840,
       "youtube": {
         "subscribers": 715,
         "views": 750382326,
@@ -1931,7 +1931,7 @@
       "fairPrice": 1.69,
       "price": 1.67,
       "chg24h": 0.6,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3030,
       "youtube": {
         "subscribers": 136000,
