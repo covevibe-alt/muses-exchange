@@ -44,11 +44,23 @@
   </url>
   <url>
     <loc>https://muses.exchange/blog</loc>
-    <lastmod>2026-05-04</lastmod>
+    <lastmod>2026-05-11</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
+  </url>
+    <url>
+    <loc>https://muses.exchange/blog/what-is-a-stock-market-for-artists</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://muses.exchange/blog/how-spotify-streams-translate-to-artist-value</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+<url>
     <loc>https://muses.exchange/press</loc>
     <lastmod>2026-05-04</lastmod>
     <changefreq>monthly</changefreq>

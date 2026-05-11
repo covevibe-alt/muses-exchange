@@ -1,0 +1,203 @@
+<!doctype html>
+<!--
+=====================================================================
+ARTICLE TEMPLATE — copy this file when writing a new blog post.
+1. Save as /blog/your-article-slug.html
+2. Replace every [[FILL]] placeholder.
+3. Add the new URL to sitemap.xml (priority 0.6, monthly).
+=====================================================================
+SEO checklist for each article:
+  - Title tag: 50-60 chars, primary keyword first
+  - Meta description: 150-160 chars, includes primary keyword + hook
+  - H1: only ONE, matches title intent
+  - Canonical URL with NO trailing /, NO .html
+  - Schema.org BlogPosting JSON-LD with datePublished
+  - Internal links: 3+ minimum (other posts, /how-it-works, /artists/X)
+  - Embed at least one live data widget (artist card or top movers)
+=====================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- [[FILL]] Title tag: 50-60 chars, primary keyword first -->
+<title>[[FILL: Article title — primary keyword first]] | Muses Exchange</title>
+
+<!-- [[FILL]] Meta description: 150-160 chars -->
+<meta name="description" content="[[FILL: Compelling one-sentence summary that includes primary keyword and a hook. 150-160 chars max.]]">
+
+<!-- Open Graph -->
+<meta property="og:title" content="[[FILL: Same as title or shortened]]">
+<meta property="og:description" content="[[FILL: Same as meta description or punchier]]">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Muses">
+<meta property="og:url" content="https://muses.exchange/blog/[[FILL: slug]]">
+<meta property="og:image" content="https://muses.exchange/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Muses — a stock market for music, priced by streams.">
+<meta property="article:published_time" content="[[FILL: 2026-05-11T12:00:00Z]]">
+<meta property="article:section" content="[[FILL: Foundations | Methodology | Market | News]]">
+<meta property="article:tag" content="[[FILL: keyword 1]]">
+<meta property="article:tag" content="[[FILL: keyword 2]]">
+<meta property="article:tag" content="[[FILL: keyword 3]]">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="[[FILL]]">
+<meta name="twitter:description" content="[[FILL]]">
+<meta name="twitter:image" content="https://muses.exchange/og-image.png">
+<meta name="twitter:image:alt" content="Muses — a stock market for music, priced by streams.">
+
+<meta name="theme-color" content="#0b0910">
+
+<!-- [[FILL]] Canonical URL: NO trailing slash, NO .html -->
+<link rel="canonical" href="https://muses.exchange/blog/[[FILL: slug]]">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/muse-shared.css?v=20260420b">
+<link rel="stylesheet" href="/app/blog-embeds.css">
+
+<!-- Schema.org BlogPosting — required for rich snippets -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://muses.exchange/blog/[[FILL: slug]]" },
+  "headline": "[[FILL: Article headline]]",
+  "description": "[[FILL: Meta description]]",
+  "image": "https://muses.exchange/og-image.png",
+  "datePublished": "[[FILL: 2026-05-11T12:00:00Z]]",
+  "dateModified": "[[FILL: 2026-05-11T12:00:00Z]]",
+  "author": { "@type": "Organization", "name": "Muses Exchange", "url": "https://muses.exchange" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Muses Exchange",
+    "url": "https://muses.exchange",
+    "logo": { "@type": "ImageObject", "url": "https://muses.exchange/icon-512.png" }
+  },
+  "articleSection": "[[FILL: section name]]",
+  "keywords": "[[FILL: comma, separated, keywords]]"
+}
+</script>
+
+<style>
+  /* Shared blog-post layout. Lift to a real CSS file later if you write a lot. */
+  body[data-page="blog-post"] .post-hero { max-width: 760px; margin: 0 auto; padding: 60px 24px 30px; text-align: center; }
+  .post-hero .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--sans); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #b98fff; margin-bottom: 18px;
+  }
+  .post-hero .eyebrow::before { content: ""; width: 5px; height: 5px; border-radius: 999px; background: #b98fff; }
+  .post-hero h1 { font-family: var(--serif); font-size: clamp(36px, 6vw, 60px); line-height: 1.08; margin: 0 0 22px; color: var(--ink); }
+  .post-hero .post-lede { font-family: var(--sans); font-size: 19px; line-height: 1.55; color: var(--ink-dim); max-width: 620px; margin: 0 auto 26px; }
+  .post-meta { display: inline-flex; align-items: center; gap: 14px; font-family: var(--sans); font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .post-meta-dot { width: 3px; height: 3px; border-radius: 999px; background: var(--ink-faint); }
+  .post-content { max-width: 720px; margin: 20px auto 60px; padding: 0 24px; font-family: var(--sans); font-size: 17px; line-height: 1.75; color: var(--ink-dim); }
+  .post-content > p:first-of-type { font-size: 19px; color: var(--ink); }
+  .post-content h2 { font-family: var(--serif); font-size: clamp(26px, 4vw, 34px); color: var(--ink); margin: 48px 0 18px; line-height: 1.2; }
+  .post-content h3 { font-family: var(--serif); font-size: 22px; color: var(--ink); margin: 32px 0 12px; line-height: 1.3; }
+  .post-content p { margin: 0 0 18px; }
+  .post-content strong { color: var(--ink); font-weight: 600; }
+  .post-content a { color: #b98fff; text-decoration: none; border-bottom: 1px solid rgba(185,143,255,0.30); transition: border-color .15s ease, color .15s ease; }
+  .post-content a:hover { color: #d4b8ff; border-bottom-color: rgba(185,143,255,0.70); }
+  .post-content ul, .post-content ol { margin: 0 0 18px; padding-left: 24px; }
+  .post-content ul li, .post-content ol li { margin-bottom: 8px; }
+  .post-footer-cta { max-width: 720px; margin: 30px auto 60px; padding: 36px 24px; text-align: center; background: linear-gradient(180deg, rgba(185,143,255,0.06), rgba(185,143,255,0.02)); border: 1px solid rgba(185,143,255,0.15); border-radius: 20px; }
+  .post-footer-cta h3 { font-family: var(--serif); font-size: 26px; margin: 0 0 10px; color: var(--ink); }
+  .post-footer-cta p { font-family: var(--sans); color: var(--ink-dim); margin: 0 0 22px; }
+  .post-related { max-width: 720px; margin: 0 auto 80px; padding: 0 24px; }
+  .post-related-head { font-family: var(--sans); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 16px; }
+  .post-related a { display: block; padding: 18px 22px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; margin-bottom: 12px; text-decoration: none; color: inherit; transition: border-color .15s ease, background .15s ease; }
+  .post-related a:hover { border-color: rgba(185,143,255,0.30); background: rgba(185,143,255,0.04); }
+  .post-related-title { font-family: var(--serif); font-size: 17px; color: var(--ink); margin-bottom: 4px; }
+  .post-related-sub { font-family: var(--sans); font-size: 13px; color: var(--ink-faint); }
+</style>
+</head>
+<body data-page="blog-post">
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  </defs>
+</svg>
+
+<div id="nav-mount"></div>
+
+<article>
+  <header class="post-hero">
+    <div class="eyebrow reveal">[[FILL: Section eyebrow — e.g. Foundations]]</div>
+    <h1 class="reveal">[[FILL: Article title, with <em>italicized last 2 words</em>]]</h1>
+    <p class="post-lede reveal">[[FILL: 1-2 sentence lede summarising the article and what the reader will get out of it]]</p>
+    <div class="post-meta reveal">
+      <span>[[FILL: 11 May 2026]]</span>
+      <span class="post-meta-dot"></span>
+      <span>[[FILL: 7 min read]]</span>
+    </div>
+  </header>
+
+  <div class="post-content">
+
+    <p>[[FILL: Lead paragraph — answer the article's question in 2-3 sentences. This is what readers see above the fold.]]</p>
+
+    <h2>[[FILL: H2 heading]]</h2>
+
+    <p>[[FILL: Body paragraph]]</p>
+
+    <!-- =================================================================
+         EMBED OPTIONS (drop in anywhere in the prose):
+         <div data-artist-card="DRKE"></div>     - shows live price/data card for one artist
+         <div data-top-movers></div>             - shows today's top 5 gainers
+         <div data-market-index></div>           - shows current Muses market index pill
+         Use ticker codes from /app/prices.js (DRKE, SABR, BNNY, etc.)
+         ================================================================= -->
+
+    <div data-top-movers></div>
+
+    <h2>[[FILL: Next H2]]</h2>
+
+    <p>[[FILL: More body. Internal-link liberally — to other posts, /how-it-works, /artists/[slug], /exchange]]</p>
+
+    <p>[[FILL: Closing paragraph — restate the takeaway in one line]]</p>
+
+  </div>
+
+  <div class="post-footer-cta reveal">
+    <h3>[[FILL: Punchy CTA headline]]</h3>
+    <p>[[FILL: One-line value prop]]</p>
+    <a class="btn-primary" href="/signup">Sign up — it's free <svg><use href="#i-arrow-up-right"/></svg></a>
+  </div>
+
+  <aside class="post-related">
+    <div class="post-related-head">Read next</div>
+    <a href="/blog/[[FILL: related-post-slug]]">
+      <div class="post-related-title">[[FILL: Related post title]]</div>
+      <div class="post-related-sub">[[FILL: Section · X min read]]</div>
+    </a>
+    <a href="/how-it-works">
+      <div class="post-related-title">How Muses Exchange works</div>
+      <div class="post-related-sub">The data, the formula, and the mechanics</div>
+    </a>
+  </aside>
+
+</article>
+
+<div id="footer-mount"></div>
+
+<script src="/muse-shared.js?v=20260427a"></script>
+<script src="/app/prices.js" defer onerror="console.warn('app/prices.js not found')"></script>
+<script src="/app/blog-embeds.js" defer></script>
+</body>
+</html>

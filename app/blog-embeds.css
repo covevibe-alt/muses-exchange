@@ -1,0 +1,233 @@
+/* =========================================================
+   Muses — Blog embed styles
+   Drop-in widgets used inside long-form blog articles.
+   Matches the existing dark/violet design language of
+   muse-shared.css; uses --sans, --serif, --ink, --ink-dim,
+   --ink-faint vars when available.
+   ========================================================= */
+
+.muse-embed-loading {
+  padding: 18px 20px;
+  font-family: var(--sans, system-ui, sans-serif);
+  font-size: 14px;
+  color: var(--ink-faint, rgba(255,255,255,0.45));
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+}
+
+/* ---------- Artist card ---------- */
+.muse-embed-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 22px;
+  margin: 28px 0;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  position: relative;
+  overflow: hidden;
+}
+.muse-embed-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(185, 143, 255, 0.35);
+  box-shadow: 0 10px 30px -12px rgba(185, 143, 255, 0.25);
+}
+.muse-embed-card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.muse-embed-card-img {
+  width: 56px; height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.05);
+}
+.muse-embed-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.muse-embed-ticker {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #b98fff;
+}
+.muse-embed-name {
+  font-family: var(--serif, Fraunces, serif);
+  font-size: 22px;
+  color: var(--ink, #fff);
+  line-height: 1.2;
+}
+.muse-embed-genre {
+  font-family: var(--sans, Inter, sans-serif);
+  font-size: 12px;
+  color: var(--ink-faint, rgba(255,255,255,0.45));
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+}
+.muse-embed-card-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 14px;
+}
+.muse-embed-price {
+  font-family: var(--serif, Fraunces, serif);
+  font-size: 36px;
+  font-weight: 500;
+  color: var(--ink, #fff);
+  line-height: 1;
+}
+.muse-embed-change {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+.muse-embed-up    { color: #4ade80; background: rgba(74,222,128,0.10); }
+.muse-embed-down  { color: #f87171; background: rgba(248,113,113,0.10); }
+.muse-embed-flat  { color: var(--ink-dim, rgba(255,255,255,0.7)); background: rgba(255,255,255,0.05); }
+.muse-embed-card-footer {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.muse-embed-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.muse-embed-stat-label {
+  font-family: var(--sans, Inter, sans-serif);
+  font-size: 11px;
+  color: var(--ink-faint, rgba(255,255,255,0.45));
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.muse-embed-stat-value {
+  font-family: var(--sans, Inter, sans-serif);
+  font-size: 15px;
+  color: var(--ink, #fff);
+  font-weight: 500;
+}
+.muse-embed-card-cta {
+  font-family: var(--sans, Inter, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: #b98fff;
+  text-align: right;
+}
+
+/* ---------- Top movers strip ---------- */
+.muse-embed-strip {
+  background: linear-gradient(180deg, rgba(185,143,255,0.06), rgba(185,143,255,0.02));
+  border: 1px solid rgba(185,143,255,0.15);
+  border-radius: 18px;
+  padding: 22px;
+  margin: 28px 0;
+}
+.muse-embed-strip-head {
+  font-family: var(--sans, Inter, sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #b98fff;
+  margin-bottom: 16px;
+}
+.muse-embed-strip-list {
+  display: grid;
+  gap: 6px;
+}
+.muse-embed-mover {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--ink, #fff);
+  background: rgba(255,255,255,0.02);
+  transition: background .15s ease;
+}
+.muse-embed-mover:hover { background: rgba(185,143,255,0.08); }
+.muse-embed-mover-name {
+  font-family: var(--serif, Fraunces, serif);
+  font-size: 16px;
+  color: var(--ink, #fff);
+}
+.muse-embed-mover-ticker {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-faint, rgba(255,255,255,0.45));
+  letter-spacing: 0.06em;
+}
+.muse-embed-mover-change {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  min-width: 70px;
+  text-align: right;
+}
+.muse-embed-strip-cta {
+  display: inline-block;
+  margin-top: 14px;
+  font-family: var(--sans, Inter, sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: #b98fff;
+  text-decoration: none;
+}
+
+/* ---------- Mini market index ---------- */
+.muse-embed-mini {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  font-family: var(--sans, Inter, sans-serif);
+  font-size: 13px;
+}
+.muse-embed-mini-label {
+  color: var(--ink-faint, rgba(255,255,255,0.45));
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+.muse-embed-mini-value {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  color: var(--ink, #fff);
+  font-weight: 600;
+}
+
+/* ---------- Mobile tweaks ---------- */
+@media (max-width: 600px) {
+  .muse-embed-card-head { gap: 12px; }
+  .muse-embed-card-img { width: 48px; height: 48px; }
+  .muse-embed-name { font-size: 19px; }
+  .muse-embed-price { font-size: 30px; }
+  .muse-embed-mover { grid-template-columns: 1fr auto; }
+  .muse-embed-mover-ticker { display: none; }
+}
