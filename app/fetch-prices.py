@@ -986,6 +986,33 @@ def main():
     if not out_artists:
         sys.exit("✗ No artist data returned from Spotify.")
 
+    # ─── Recompute fairPrice + price using market-share model ───
+    # Matches the exchange's computeFairPrice() exactly:
+    #   listener_share × total_cap / shares_outstanding × (1 + boosts)
+    # where total_cap = max($50M, artists × $500K) and shares = 10K.
+    # This gives prices in the $1–$300 range that match /exchange.
+    SHARES_OUTSTANDING_NEW = 10_000
+    BASE_MARKET_CAP_NEW = 50_000_000
+    CAP_PER_ARTIST_NEW = 500_000
+    total_listeners_all = sum(a.get("monthlyListeners", 0) for a in out_artists)
+    artist_count_all = len(out_artists)
+    total_cap_new = max(BASE_MARKET_CAP_NEW, artist_count_all * CAP_PER_ARTIST_NEW)
+    for a in out_artists:
+        listeners_a = a.get("monthlyListeners", 0)
+        if total_listeners_all > 0:
+            market_cap_a = (listeners_a / total_listeners_all) * total_cap_new
+        else:
+            market_cap_a = listeners_a * 0.03  # fallback (very unlikely)
+        base_a = max(0.01, market_cap_a / SHARES_OUTSTANDING_NEW)
+        yt_a = a.get("youtubeBoost", 0) or 0
+        ch_a = a.get("chartBoost", 0) or 0
+        new_fair_a = round(base_a * (1 + yt_a + ch_a), 2)
+        a["fairPrice"] = new_fair_a
+        # blend_price() will snap to fair when previous is >5× away from fair,
+        # so the first run after this change auto-resets. Force-snap here too
+        # to keep prices.json self-consistent.
+        a["price"] = new_fair_a
+
     # ---- Market index: normalize to Muse 1000 baseline ----
     # When the artist roster changes size (e.g. we go from 24 → 105), the old
     # baseline is no longer comparable, so we rebase to 1000 on the new roster.

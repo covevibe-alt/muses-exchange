@@ -421,96 +421,6 @@
   .down { color: var(--down); }
   .hcf-spark { margin-top: 10px; height: 30px; width: 100%; }
 
-  /* ============ Ticker ============ */
-  .ticker-section {
-    position: relative;
-    z-index: 3;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    background: rgba(18, 15, 28, 0.7);
-    overflow: hidden;
-    margin-top: 30px;
-  }
-  /* Fade both edges of the marquee so items aren't hard-cut.
-     We wrap the track in a mask-image gradient on the section. The label sits
-     above this (z-index 2) with its own solid background so it stays legible. */
-  .ticker-section::before,
-  .ticker-section::after {
-    content: "";
-    position: absolute;
-    top: 0; bottom: 0;
-    width: 72px;
-    pointer-events: none;
-    z-index: 2;
-  }
-  .ticker-section::before {
-    left: 0;
-    background: linear-gradient(to right, #0b0910 0%, rgba(11,9,16,0.7) 60%, transparent 100%);
-  }
-  .ticker-section::after {
-    right: 0;
-    background: linear-gradient(to left, #0b0910 0%, rgba(11,9,16,0.7) 60%, transparent 100%);
-  }
-  .ticker-label {
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    display: flex;
-    align-items: center;
-    padding: 0 22px;
-    background: linear-gradient(to right, #0b0910 70%, transparent);
-    z-index: 3;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--ink);
-    gap: 10px;
-  }
-  .ticker-label-dot {
-    width: 8px; height: 8px;
-    border-radius: 999px;
-    background: #6effb8;
-    box-shadow: 0 0 12px #6effb8;
-    animation: pulse 1.6s ease-in-out infinite;
-  }
-  .ticker-track {
-    display: flex;
-    gap: 44px;
-    padding: 18px 0;
-    animation: tickerScroll 60s linear infinite;
-    width: max-content;
-  }
-  @keyframes tickerScroll {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-  .ticker-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 14px;
-    white-space: nowrap;
-  }
-  .ticker-name {
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-  .ticker-ticker {
-    color: var(--ink-faint);
-    font-size: 11px;
-    font-family: ui-monospace, 'SF Mono', monospace;
-    letter-spacing: 0.05em;
-  }
-  .ticker-price {
-    font-family: var(--serif);
-    font-weight: 500;
-    color: var(--ink);
-  }
-  .ticker-chg {
-    font-size: 12px;
-    font-weight: 600;
-  }
-
   /* Section shell (.block) lives in muse-shared.css — do not duplicate here */
   .section-eyebrow {
     font-size: 12px;
@@ -1728,16 +1638,6 @@
   </div>
 </section>
 
-<!-- ============ TICKER ============ -->
-<div class="ticker-section">
-  <div class="ticker-label">
-    <span class="ticker-label-dot"></span> Live markets
-  </div>
-  <div class="ticker-track" id="tickerTrack">
-    <!-- Tickers injected by JS (doubled for seamless loop) -->
-  </div>
-</div>
-
 <!-- ============ HUMANS OF MUSES ============ -->
 <section class="humans-block" id="humans">
   <div class="humans-head">
@@ -2049,34 +1949,6 @@
 
 <script>
 /* ============ TICKER DATA ============ */
-const TICKERS = [
-  { name: "Sabrina Carpenter", t: "SABR", price: 142.80, chg: 8.42, up: true },
-  { name: "Bad Bunny",        t: "BNNY", price: 318.44, chg: 2.17, up: true },
-  { name: "Chappell Roan",    t: "CHPL", price:  96.12, chg: -1.34, up: false },
-  { name: "Taylor Swift",     t: "TSWF", price: 541.20, chg: 0.88, up: true },
-  { name: "The Weeknd",       t: "WKND", price: 287.65, chg: -0.42, up: false },
-  { name: "Tyla",             t: "TYLA", price:  74.30, chg: 5.91, up: true },
-  { name: "Peso Pluma",       t: "PESO", price: 128.77, chg: 3.14, up: true },
-  { name: "Olivia Rodrigo",   t: "OLVR", price: 204.55, chg: -2.08, up: false },
-  { name: "Drake",            t: "DRKE", price: 372.18, chg: 1.02, up: true },
-  { name: "Billie Eilish",    t: "BILL", price: 231.90, chg: 4.67, up: true },
-  { name: "Tate McRae",       t: "TATE", price:  89.40, chg: 6.22, up: true },
-  { name: "Rosalía",          t: "ROSA", price: 176.33, chg: -0.78, up: false },
-];
-
-function renderTicker() {
-  const track = document.getElementById('tickerTrack');
-  const items = [...TICKERS, ...TICKERS]; // duplicate for seamless loop
-  track.innerHTML = items.map(x => `
-    <div class="ticker-item">
-      <span class="ticker-name">${x.name}</span>
-      <span class="ticker-ticker">$${x.t}</span>
-      <span class="ticker-price">$${x.price.toFixed(2)}</span>
-      <span class="ticker-chg ${x.up ? 'up' : 'down'}">${x.up ? '▲' : '▼'} ${Math.abs(x.chg).toFixed(2)}%</span>
-    </div>
-  `).join('');
-}
-renderTicker();
 
 /* ============ LEADERBOARDS ============ */
 const LEAD_GRADIENTS = {
