@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-12T12:24:28Z",
+  "updatedAt": "2026-05-12T15:21:45Z",
   "marketIndex": 4.54,
   "rawAveragePrice": 1.51,
   "topGainers": [
@@ -260,7 +260,7 @@
       "volume": 7514,
       "youtube": {
         "subscribers": 719000,
-        "views": 9547662611,
+        "views": 9550841075,
         "videos": 2122
       },
       "youtubeBoost": 0.2134,
@@ -356,7 +356,7 @@
       "fairPrice": 2.28,
       "price": 2.25,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 4158,
       "youtube": {
         "subscribers": 10100,
@@ -506,7 +506,7 @@
       "fairPrice": 2.13,
       "price": 2.1,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 3165,
       "youtube": {
         "subscribers": 264000,
@@ -709,7 +709,7 @@
       "volatility30d": 0.0,
       "volume": 1843,
       "youtube": {
-        "subscribers": 833,
+        "subscribers": 834,
         "views": 512225670,
         "videos": 280
       },
@@ -831,7 +831,7 @@
       "fairPrice": 0.61,
       "price": 0.58,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 1847,
       "youtube": {
         "subscribers": 1280,
@@ -934,7 +934,7 @@
       "volatility30d": 0.0,
       "volume": 1381,
       "youtube": {
-        "subscribers": 944,
+        "subscribers": 945,
         "views": 138312,
         "videos": 16
       },
@@ -1347,8 +1347,8 @@
       "name": "The Weeknd",
       "genre": "R&B",
       "spotifyId": "1Xyo4u8uXC1ZmMpatF05PJ",
-      "popularity": 95,
-      "popularityDelta": 0,
+      "popularity": 96,
+      "popularityDelta": 1,
       "followers": 122253388,
       "monthlyListeners": 115896212,
       "listenersSource": "ratio-calibrated",
@@ -1357,7 +1357,7 @@
       "price": 4.13,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 6634,
+      "volume": 11941,
       "youtube": {
         "subscribers": 253000,
         "views": 9559449086,
@@ -1381,7 +1381,7 @@
       "fairPrice": 2.41,
       "price": 2.38,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 3590,
       "youtube": {
         "subscribers": 49700,
@@ -1406,7 +1406,7 @@
       "fairPrice": 0.7,
       "price": 0.67,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 1993,
       "youtube": {
         "subscribers": 28000,
@@ -1681,7 +1681,7 @@
       "fairPrice": 1.92,
       "price": 1.89,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 4820,
       "youtube": {
         "subscribers": 40600,
@@ -1906,7 +1906,7 @@
       "fairPrice": 1.0,
       "price": 0.97,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 1578,
       "youtube": {
         "subscribers": 715,
@@ -2234,7 +2234,7 @@
       "volatility30d": 0.005,
       "volume": 6745,
       "youtube": {
-        "subscribers": 13500,
+        "subscribers": 13600,
         "views": 5743789746,
         "videos": 795
       },
