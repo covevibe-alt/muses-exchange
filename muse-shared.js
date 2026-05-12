@@ -71,7 +71,7 @@
           <li><a href="/how-it-works" data-page="how">How it works</a></li>
           <li><a href="/artists" data-page="artists">Artists</a></li>
           <li><a href="/faq" data-page="faq">FAQ</a></li>
-          <li><a href="/waitlist" data-page="waitlist">Waitlist</a></li>
+          <li><a href="/news" data-page="news">News</a></li>
         </ul>
         <div class="nav-cta-wrap">
           <!-- Desktop CTA cluster. Two buttons only: a quiet "Sign in" for
@@ -96,7 +96,7 @@
         <a href="/how-it-works" data-page="how">How it works</a>
         <a href="/artists" data-page="artists">Artists</a>
         <a href="/faq" data-page="faq">FAQ</a>
-        <a href="/waitlist" data-page="waitlist">Waitlist</a>
+        <a href="/news" data-page="news">News</a>
       </nav>
       <div class="md-cta">
         <a class="btn-primary" href="/signup" style="width: 100%; justify-content: center;">

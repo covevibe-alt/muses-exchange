@@ -130,6 +130,27 @@
   to = "/exchange.html"
   status = 200
 
+
+# ── Always-revalidate the shared nav/footer/css ─────────────────────────────
+# These files inject the global nav + footer markup. When we update them,
+# users with cached copies see stale UI (e.g. old footer links) until they
+# hard-refresh. no-cache forces the browser to check freshness before serving
+# the cached copy. Small extra request per page load, big UX win.
+[[headers]]
+  for = "/muse-shared.*"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/app/blog-embeds.*"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/app/news-styles.css"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
 # ── Sensible default headers ────────────────────────────────────────────────
 [[headers]]
   for = "/*"
