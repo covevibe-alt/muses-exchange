@@ -161,97 +161,102 @@
      Replaces the old paper-trading disclaimer banner. Shows top artists
      by monthly listeners + a few biggest movers. Desktop: horizontal
      scroll. Mobile: auto-scrolling marquee. */
+  /* Top-of-page live ticker — same .ticker-tape style as /exchange.
+     Marquee scroll on all screen sizes, pauses on hover. */
   const TICKER_HTML = `
     <style>
-      .muse-ticker {
-        background: linear-gradient(180deg, rgba(11,9,16,0.97), rgba(11,9,16,0.93));
-        border-bottom: 1px solid rgba(255,255,255,0.07);
+      .muse-ticker-tape {
+        display: flex; align-items: center;
+        height: 38px;
+        background: rgba(0,0,0,0.55);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
         overflow: hidden;
         position: relative;
-        height: 44px;
+        flex: 0 0 auto;
       }
-      .muse-ticker-track {
-        display: flex;
-        align-items: center;
+      .muse-ticker-tape .tt-status {
+        display: flex; align-items: center; gap: 8px;
+        flex: 0 0 auto;
+        padding: 0 18px;
         height: 100%;
-        gap: 26px;
-        padding: 0 24px;
-        white-space: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
+        font-size: 10px; font-weight: 800;
+        color: #ff4d6d;
+        letter-spacing: 0.14em;
+        font-family: var(--sans, Inter, sans-serif);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,77,109,0.06);
+      }
+      .muse-ticker-tape .tt-dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #ff4d6d;
+        box-shadow: 0 0 10px #ff4d6d;
+        animation: tt-pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes tt-pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.85); }
+      }
+      .muse-ticker-tape .tt-track-mask {
+        flex: 1; min-width: 0; height: 100%;
+        overflow: hidden; position: relative;
+      }
+      .muse-ticker-tape .tt-track {
+        display: flex; align-items: center; height: 100%;
+        width: max-content;
+        animation: tt-scroll 360s linear infinite;
+        will-change: transform;
+      }
+      .muse-ticker-tape:hover .tt-track { animation-play-state: paused; }
+      @keyframes tt-scroll {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-50%); }
+      }
+      .muse-ticker-tape .tt-item {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 0 22px;
+        height: 100%;
+        border-right: 1px solid rgba(255,255,255,0.04);
+        cursor: pointer;
+        font-size: 12px;
+        text-decoration: none;
+        color: rgba(255,255,255,0.85);
+        transition: background .15s ease, color .15s ease;
         font-family: var(--sans, Inter, sans-serif);
       }
-      .muse-ticker-track::-webkit-scrollbar { display: none; }
-      .muse-ticker-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-        color: rgba(255,255,255,0.78);
-        transition: color .15s ease;
-        flex-shrink: 0;
-      }
-      .muse-ticker-item:hover { color: #fff; }
-      .muse-ticker-item .ticker-dot {
-        width: 5px; height: 5px;
-        border-radius: 999px;
-        background: #b98fff;
-        flex-shrink: 0;
-      }
-      .muse-ticker-item .ticker-name {
-        color: rgba(255,255,255,0.92);
-        font-weight: 600;
-        font-size: 13px;
-      }
-      .muse-ticker-item .ticker-ticker {
-        color: rgba(255,255,255,0.45);
+      .muse-ticker-tape .tt-item:hover { background: rgba(139,92,246,0.08); color: #fff; }
+      .muse-ticker-tape .tt-item .tt-tk {
         font-family: 'JetBrains Mono','SF Mono',monospace;
+        font-weight: 700;
         font-size: 11px;
         letter-spacing: 0.04em;
+        color: rgba(255,255,255,0.95);
       }
-      .muse-ticker-item .ticker-chg {
-        font-family: 'JetBrains Mono','SF Mono',monospace;
+      .muse-ticker-tape .tt-item .tt-pr {
+        font-weight: 700;
+        color: rgba(255,255,255,0.95);
+      }
+      .muse-ticker-tape .tt-item .tt-ch { font-weight: 700; font-size: 11px; }
+      .muse-ticker-tape .tt-item .tt-ch.up   { color: #4ade80; }
+      .muse-ticker-tape .tt-item .tt-ch.down { color: #f87171; }
+      .muse-ticker-tape .tt-item .tt-ch.flat { color: rgba(255,255,255,0.42); }
+      .muse-ticker-tape .tt-loading {
+        display: inline-flex; align-items: center; padding: 0 22px;
+        color: rgba(255,255,255,0.40);
         font-size: 12px;
-        font-weight: 600;
-      }
-      .muse-ticker-item .ticker-chg.up    { color: #4ade80; }
-      .muse-ticker-item .ticker-chg.down  { color: #f87171; }
-      .muse-ticker-item .ticker-chg.flat  { color: rgba(255,255,255,0.42); }
-      .muse-ticker-item .ticker-price {
-        color: rgba(255,255,255,0.55);
-        font-family: 'JetBrains Mono','SF Mono',monospace;
-        font-size: 11px;
-      }
-      .muse-ticker-sep {
-        color: rgba(255,255,255,0.15);
-        flex-shrink: 0;
-        font-size: 13px;
-      }
-      .muse-ticker-loading {
-        color: rgba(255,255,255,0.4);
-        font-size: 12px;
-        font-family: var(--sans, Inter, sans-serif);
       }
       @media (max-width: 768px) {
-        .muse-ticker { height: 40px; }
-        .muse-ticker-track {
-          overflow: hidden;
-        }
-        .muse-ticker-track[data-animate="true"] {
-          animation: muse-ticker-scroll 48s linear infinite;
-        }
-        .muse-ticker:hover .muse-ticker-track { animation-play-state: paused; }
-      }
-      @keyframes muse-ticker-scroll {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
+        .muse-ticker-tape { height: 34px; }
+        .muse-ticker-tape .tt-status { padding: 0 12px; font-size: 9px; }
+        .muse-ticker-tape .tt-item { padding: 0 14px; gap: 7px; }
+        .muse-ticker-tape .tt-track { animation-duration: 180s; }
       }
     </style>
-    <div class="muse-ticker" aria-label="Live artist ticker">
-      <div class="muse-ticker-track" data-ticker-track>
-        <span class="muse-ticker-loading">Loading market data…</span>
+    <div class="muse-ticker-tape" aria-label="Live artist ticker">
+      <div class="tt-status"><span class="tt-dot"></span><span>LIVE</span></div>
+      <div class="tt-track-mask">
+        <div class="tt-track" data-ticker-track>
+          <span class="tt-loading">Loading market data…</span>
+        </div>
       </div>
     </div>
   `;
@@ -273,41 +278,26 @@
     if (!data || !Array.isArray(data.artists) || data.artists.length === 0) return false;
 
     const slugify = (n) => (n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const fmtChg = (c) => {
-      if (c == null || isNaN(c)) return { txt: '0.00%', cls: 'flat' };
-      const sign = c > 0 ? '+' : '';
-      const cls = c > 0.01 ? 'up' : c < -0.01 ? 'down' : 'flat';
-      return { txt: sign + c.toFixed(2) + '%', cls: cls };
-    };
     const fmtPrice = (p) => (p == null || isNaN(p)) ? '—' : '$' + Number(p).toFixed(2);
+    const fmtCh = (c) => {
+      if (c == null || isNaN(c)) return { txt: '0.00%', cls: 'flat' };
+      const cls = c > 0.01 ? 'up' : c < -0.01 ? 'down' : 'flat';
+      const arrow = c > 0.01 ? '▲' : c < -0.01 ? '▼' : '·';
+      return { txt: arrow + ' ' + Math.abs(c).toFixed(2) + '%', cls: cls };
+    };
 
-    const byListeners = data.artists.slice().sort((a,b) => (b.monthlyListeners||0) - (a.monthlyListeners||0)).slice(0, 6);
-    const byChange = data.artists.slice().filter(a => a.chg24h && Math.abs(a.chg24h) > 0.05).sort((a,b) => Math.abs(b.chg24h) - Math.abs(a.chg24h)).slice(0, 4);
-    const seen = new Set();
-    const items = [];
-    [...byListeners, ...byChange].forEach(a => {
-      if (!a || seen.has(a.ticker)) return;
-      seen.add(a.ticker);
-      items.push(a);
-    });
-
+    const items = data.artists.slice();
     const renderItem = (a) => {
-      const c = fmtChg(a.chg24h);
-      return '<a class="muse-ticker-item" href="/artists/' + slugify(a.name) + '">' +
-             '<span class="ticker-dot"></span>' +
-             '<span class="ticker-name">' + (a.name || '') + '</span>' +
-             '<span class="ticker-ticker">$' + (a.ticker || '') + '</span>' +
-             '<span class="ticker-chg ' + c.cls + '">' + c.txt + '</span>' +
-             '<span class="ticker-price">' + fmtPrice(a.price) + '</span>' +
+      const c = fmtCh(a.chg24h);
+      const slug = slugify(a.name);
+      return '<a class="tt-item" href="/artists/' + slug + '" data-tk="' + (a.ticker || '') + '">' +
+             '<span class="tt-tk">' + (a.ticker || '') + '</span>' +
+             '<span class="tt-pr">' + fmtPrice(a.price) + '</span>' +
+             '<span class="tt-ch ' + c.cls + '">' + c.txt + '</span>' +
              '</a>';
     };
-
-    const sep = '<span class="muse-ticker-sep">/</span>';
-    const set1 = items.map(renderItem).join(sep);
-    // Duplicate the list so the mobile auto-scroll loops seamlessly
-    track.innerHTML = set1 + sep + set1;
-    // Enable mobile auto-scroll once content is in place
-    track.setAttribute('data-animate', 'true');
+    const half = items.map(renderItem).join('');
+    track.innerHTML = half + half;
     return true;
   }
 

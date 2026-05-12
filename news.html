@@ -19,7 +19,6 @@
 <meta name="twitter:title" content="Muses Exchange News">
 <meta name="twitter:description" content="Market commentary, data deep-dives, and stories from the exchange for culture.">
 <meta name="twitter:image" content="https://muses.exchange/og-image.png">
-<meta name="twitter:image:alt" content="Muses — a stock market for music, priced by streams.">
 <meta name="theme-color" content="#0b0910">
 <link rel="canonical" href="https://muses.exchange/news">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
@@ -44,6 +43,201 @@
   }
 }
 </script>
+
+<style>
+  /* ---- Filter + Search bar ---- */
+  .news-toolbar {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--news-border);
+  }
+  .news-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .news-filter-pill {
+    background: transparent;
+    border: 1px solid var(--news-border);
+    color: var(--ink-dim);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+    letter-spacing: 0.01em;
+  }
+  .news-filter-pill:hover {
+    border-color: var(--news-accent-border);
+    color: var(--ink);
+  }
+  .news-filter-pill.active {
+    background: var(--news-accent);
+    color: #0b0910;
+    border-color: var(--news-accent);
+  }
+  .news-filter-pill .count {
+    margin-left: 6px;
+    opacity: 0.55;
+    font-weight: 500;
+  }
+  .news-search-wrap {
+    position: relative;
+    min-width: 280px;
+    flex: 0 1 320px;
+  }
+  .news-search-input {
+    width: 100%;
+    background: var(--news-card-bg);
+    border: 1px solid var(--news-border);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    padding: 10px 14px 10px 38px;
+    border-radius: 999px;
+    outline: none;
+    transition: border-color .15s ease;
+  }
+  .news-search-input:focus { border-color: var(--news-accent-border); }
+  .news-search-input::placeholder { color: var(--ink-faint); }
+  .news-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px; height: 14px;
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+  .news-search-clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px; height: 18px;
+    border: 0; background: transparent;
+    color: var(--ink-faint);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+  }
+  .news-search-clear.show { display: inline-flex; }
+  .news-search-clear:hover { color: var(--ink); }
+
+  /* ---- All-articles grid ---- */
+  .news-grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+  }
+  .news-grid-card {
+    display: block;
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+  }
+  .news-grid-card .news-img {
+    aspect-ratio: 16 / 11;
+    margin-bottom: 16px;
+  }
+  .news-grid-card h3 {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 0 0 10px;
+  }
+  .news-grid-card:hover h3 { color: var(--news-accent-strong); }
+  .news-grid-card .news-byline { margin-top: 8px; }
+  .news-grid-card.is-hidden { display: none; }
+
+  .news-no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--ink-faint);
+    font-family: var(--sans);
+    font-size: 14px;
+    display: none;
+  }
+  .news-no-results.show { display: block; }
+  .news-no-results strong { color: var(--ink); }
+
+  /* Artist search results (when search query matches artist names) */
+  .news-search-artists {
+    max-width: 1280px;
+    margin: 0 auto 24px;
+    padding: 0 24px;
+    display: none;
+  }
+  .news-search-artists.show { display: block; }
+  .news-search-artists h4 {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 14px;
+  }
+  .news-search-artists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .news-search-artist {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--news-card-bg);
+    border: 1px solid var(--news-border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .15s ease;
+  }
+  .news-search-artist:hover { border-color: var(--news-accent-border); }
+  .news-search-artist-img {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--news-card-bg-2);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .news-search-artist-img img { width: 100%; height: 100%; object-fit: cover; }
+  .news-search-artist-name {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.2;
+  }
+  .news-search-artist-tk {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+</style>
 </head>
 <body data-page="news">
 
@@ -56,151 +250,345 @@
     <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
     <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
   </defs>
 </svg>
 
 <div id="nav-mount"></div>
 
-<!-- ============ SECTION HEADER ============ -->
-<header class="news-section-head reveal">
+<header class="news-section-head">
   <h1>News from <em>the floor.</em></h1>
-  <span class="news-section-meta" id="todays-date">van vandaag</span>
+  <span class="news-section-meta" id="todays-date">from today</span>
 </header>
 
-<!-- ============ FEATURED ROW (3-column) ============ -->
+<!-- ============ FEATURED ROW ============ -->
 <section class="news-featured-row">
-
-  <!-- Left side: secondary featured -->
   <aside class="news-side-col">
-    <a class="news-side-card reveal" href="/news/how-spotify-streams-translate-to-artist-value">
+    <a class="news-side-card" href="/news/catalog-vs-momentum">
       <div class="news-img">
-        <img src="https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" alt="Drake — featured artist" loading="lazy">
-        <span class="news-cat-badge">Methodology</span>
+        <img src="https://i.scdn.co/image/ab6761610000e5ebe2e8e7ff002a4afda1c7147e" alt="Taylor Swift" loading="lazy">
+        <span class="news-cat-badge">Markets</span>
       </div>
-      <h3>How Spotify streams translate to artist value</h3>
+      <h3>Catalog vs. momentum — the two ways an artist makes money on streaming</h3>
       <div class="news-byline">
         <span>Muses Editorial</span>
         <span class="news-byline-sep">/</span>
-        <span>11 May 2026</span>
+        <span>12 May 2026</span>
       </div>
     </a>
-  </aside>
-
-  <!-- Center: hero feature -->
-  <a class="news-hero-card reveal" href="/news/what-is-a-stock-market-for-artists">
-    <div class="news-img">
-      <img src="https://i.scdn.co/image/ab6761610000e5eb78e45cfa4697ce3c437cb455" alt="Sabrina Carpenter — featured artist" loading="lazy">
-      <span class="news-cat-badge">Foundations</span>
-    </div>
-    <h2>What is a stock market for artists?</h2>
-    <p class="news-lede">A plain-language explainer for the concept Muses is built on — what it means to "invest" in an artist, how the prices work, and what makes it different from real investing.</p>
-    <div class="news-byline">
-      <span>Muses Editorial</span>
-      <span class="news-byline-sep">/</span>
-      <span>11 May 2026</span>
-    </div>
-  </a>
-
-  <!-- Right side: text-only secondary list -->
-  <aside class="news-list-side">
-    <a class="news-list-item reveal coming-soon" href="/news/what-is-a-stock-market-for-artists">
-      <h4>$10,000 in virtual credits — what to actually do with them on day one</h4>
-      <div class="news-byline">
-        <span>Coming soon</span>
-        <span class="news-byline-sep">/</span>
-        <span>Foundations</span>
-      </div>
-    </a>
-    <a class="news-list-item reveal coming-soon" href="/news/how-spotify-streams-translate-to-artist-value">
-      <h4>Why Drake is in a different price scale than everyone else</h4>
-      <div class="news-byline">
-        <span>Coming soon</span>
-        <span class="news-byline-sep">/</span>
-        <span>Methodology</span>
-      </div>
-    </a>
-    <a class="news-list-item reveal coming-soon" href="/news/how-spotify-streams-translate-to-artist-value">
-      <h4>The five signals that move an artist's "stock price" the most</h4>
-      <div class="news-byline">
-        <span>Coming soon</span>
-        <span class="news-byline-sep">/</span>
-        <span>Methodology</span>
-      </div>
-    </a>
-    <a class="news-list-item reveal coming-soon" href="/exchange">
-      <h4>Top movers on the Muses Exchange this week — live</h4>
-      <div class="news-byline">
-        <span>Live data</span>
-        <span class="news-byline-sep">/</span>
-        <span>Markets</span>
-      </div>
-    </a>
-  </aside>
-</section>
-
-<!-- ============ TOP 5 SECTION ============ -->
-<section class="news-top5-section">
-  <div class="news-top5-head">
-    <h2>Most-read this week</h2>
-    <a href="/exchange">See live markets <svg><use href="#i-arrow-right"/></svg></a>
-  </div>
-  <div class="news-top5-grid">
-    <a class="news-top5-card reveal" href="/news/what-is-a-stock-market-for-artists">
-      <div class="news-img">
-        <img src="https://i.scdn.co/image/ab6761610000e5eb78e45cfa4697ce3c437cb455" alt="Sabrina Carpenter" loading="lazy">
-        <span class="news-cat-badge">Foundations</span>
-      </div>
-      <h4>What is a stock market for artists?</h4>
-      <span class="news-top5-num">01</span>
-    </a>
-    <a class="news-top5-card reveal" href="/news/how-spotify-streams-translate-to-artist-value">
+    <a class="news-side-card" href="/news/why-drake-is-in-a-different-price-scale">
       <div class="news-img">
         <img src="https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" alt="Drake" loading="lazy">
         <span class="news-cat-badge">Methodology</span>
       </div>
-      <h4>How Spotify streams translate to artist value</h4>
-      <span class="news-top5-num">02</span>
-    </a>
-    <a class="news-top5-card reveal is-placeholder" href="#">
-      <div class="news-img">
-        <img src="https://i.scdn.co/image/ab6761610000e5ebe2e8e7ff002a4afda1c7147e" alt="Taylor Swift" loading="lazy">
-        <span class="news-cat-badge">Coming soon</span>
+      <h3>Why Drake is in a different price scale than everyone else</h3>
+      <div class="news-byline">
+        <span>Muses Editorial</span>
+        <span class="news-byline-sep">/</span>
+        <span>12 May 2026</span>
       </div>
-      <h4>Catalog vs. momentum — the two ways an artist makes money on streaming</h4>
-      <span class="news-top5-num">03</span>
     </a>
-    <a class="news-top5-card reveal is-placeholder" href="#">
-      <div class="news-img">
-        <img src="https://i.scdn.co/image/ab6761610000e5ebd258ecb0d66244e6300bcf64" alt="Chappell Roan" loading="lazy">
-        <span class="news-cat-badge">Coming soon</span>
-      </div>
-      <h4>Chappell Roan went from $0.20 to $1.10 in 18 months. Here's why.</h4>
-      <span class="news-top5-num">04</span>
-    </a>
-    <a class="news-top5-card reveal is-placeholder" href="#">
-      <div class="news-img">
-        <img src="https://i.scdn.co/image/ab6761610000e5ebe654806251e2661def1f4e65" alt="Olivia Rodrigo" loading="lazy">
-        <span class="news-cat-badge">Coming soon</span>
-      </div>
+  </aside>
+
+  <a class="news-hero-card" href="/news/chappell-roan-price-journey">
+    <div class="news-img">
+      <img src="https://i.scdn.co/image/ab6761610000e5ebd258ecb0d66244e6300bcf64" alt="Chappell Roan" loading="lazy">
+      <span class="news-cat-badge">Artists</span>
+    </div>
+    <h2>Chappell Roan went from $0.20 to $1.10 in 18 months. Here's why.</h2>
+    <p class="news-lede">The textbook viral-artist trajectory, annotated against the streaming data. Five inflection points, one Olivia Rodrigo support slot, and a Tiny Desk performance that changed everything.</p>
+    <div class="news-byline">
+      <span>Muses Editorial</span>
+      <span class="news-byline-sep">/</span>
+      <span>12 May 2026</span>
+    </div>
+  </a>
+
+  <aside class="news-list-side">
+    <a class="news-list-item" href="/news/five-signals-that-move-an-artists-price">
       <h4>The five signals that move an artist's price the most</h4>
-      <span class="news-top5-num">05</span>
+      <div class="news-byline"><span>Methodology</span><span class="news-byline-sep">/</span><span>12 May 2026</span></div>
     </a>
+    <a class="news-list-item" href="/news/ten-thousand-in-virtual-credits-day-one">
+      <h4>$10,000 in virtual credits — what to actually do with them on day one</h4>
+      <div class="news-byline"><span>Liner Notes</span><span class="news-byline-sep">/</span><span>12 May 2026</span></div>
+    </a>
+    <a class="news-list-item" href="/news/what-is-a-stock-market-for-artists">
+      <h4>What is a stock market for artists?</h4>
+      <div class="news-byline"><span>Liner Notes</span><span class="news-byline-sep">/</span><span>11 May 2026</span></div>
+    </a>
+    <a class="news-list-item" href="/news/how-spotify-streams-translate-to-artist-value">
+      <h4>How Spotify streams translate to artist value</h4>
+      <div class="news-byline"><span>Methodology</span><span class="news-byline-sep">/</span><span>11 May 2026</span></div>
+    </a>
+  </aside>
+</section>
+
+<!-- ============ FILTER + SEARCH ============ -->
+<div class="news-toolbar">
+  <div class="news-filters" role="tablist" aria-label="Filter articles by category">
+    <button class="news-filter-pill active" data-filter="all" role="tab" aria-selected="true">All <span class="count" data-count="all"></span></button>
+    <button class="news-filter-pill" data-filter="news" role="tab" aria-selected="false">News <span class="count" data-count="news"></span></button>
+    <button class="news-filter-pill" data-filter="liner-notes" role="tab" aria-selected="false">Liner Notes <span class="count" data-count="liner-notes"></span></button>
+    <button class="news-filter-pill" data-filter="methodology" role="tab" aria-selected="false">Methodology <span class="count" data-count="methodology"></span></button>
+    <button class="news-filter-pill" data-filter="markets" role="tab" aria-selected="false">Markets <span class="count" data-count="markets"></span></button>
+    <button class="news-filter-pill" data-filter="artists" role="tab" aria-selected="false">Artists <span class="count" data-count="artists"></span></button>
   </div>
+  <div class="news-search-wrap">
+    <svg class="news-search-icon"><use href="#i-search"/></svg>
+    <input type="search" class="news-search-input" id="news-search" placeholder="Search articles, artists, topics…" aria-label="Search">
+    <button class="news-search-clear" id="news-search-clear" aria-label="Clear search">&times;</button>
+  </div>
+</div>
+
+<!-- Artist search results (only shows when query matches artist names) -->
+<div class="news-search-artists" id="news-search-artists">
+  <h4>Matching artists</h4>
+  <div class="news-search-artists-grid" data-artists-grid></div>
+</div>
+
+<!-- ============ ARTICLE GRID (filterable) ============ -->
+<section class="news-grid" id="news-grid">
+
+  <a class="news-grid-card" data-category="artists" data-search="chappell roan price journey artists 2024 viral breakthrough good luck babe pink pony club olivia rodrigo tour" href="/news/chappell-roan-price-journey">
+    <div class="news-img">
+      <img src="https://i.scdn.co/image/ab6761610000e5ebd258ecb0d66244e6300bcf64" alt="Chappell Roan" loading="lazy">
+      <span class="news-cat-badge">Artists</span>
+    </div>
+    <h3>Chappell Roan went from $0.20 to $1.10 in 18 months</h3>
+    <div class="news-byline"><span>Muses Editorial</span><span class="news-byline-sep">/</span><span>12 May 2026</span></div>
+  </a>
+
+  <a class="news-grid-card" data-category="markets" data-search="catalog vs momentum streaming economics taylor swift catalog music industry analysis hipgnosis" href="/news/catalog-vs-momentum">
+    <div class="news-img">
+      <img src="https://i.scdn.co/image/ab6761610000e5ebe2e8e7ff002a4afda1c7147e" alt="Taylor Swift" loading="lazy">
+      <span class="news-cat-badge">Markets</span>
+    </div>
+    <h3>Catalog vs. momentum — the two ways artists make money on streaming</h3>
+    <div class="news-byline"><span>Muses Editorial</span><span class="news-byline-sep">/</span><span>12 May 2026</span></div>
+  </a>
+
+  <a class="news-grid-card" data-category="methodology" data-search="five signals that move artist price spotify velocity youtube playlist tiktok cultural momentum olivia rodrigo" href="/news/five-signals-that-move-an-artists-price">
+    <div class="news-img">
+      <img src="https://i.scdn.co/image/ab6761610000e5ebe654806251e2661def1f4e65" alt="Olivia Rodrigo" loading="lazy">
+      <span class="news-cat-badge">Methodology</span>
+    </div>
+    <h3>The five signals that move an artist's price the most</h3>
+    <div class="news-byline"><span>Muses Editorial</span><span class="news-byline-sep">/</span><span>12 May 2026</span></div>
+  </a>
+
+  <a class="news-grid-card" data-category="methodology" data-search="why drake different price scale log compression fat tail distribution artist stock methodology" href="/news/why-drake-is-in-a-different-price-scale">
+    <div class="news-img">
+      <img src="https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" alt="Drake" loading="lazy">
+      <span class="news-cat-badge">Methodology</span>
+    </div>
+    <h3>Why Drake is in a different price scale than everyone else</h3>
+    <div class="news-byline"><span>Muses Editorial</span><span class="news-byline-sep">/</span><span>12 May 2026</span></div>
+  </a>
+
+  <a class="news-grid-card" data-category="liner-notes" data-search="ten thousand virtual credits day one beginner guide paper trading muses portfolio strategy sabrina" href="/news/ten-thousand-in-virtual-credits-day-one">
+    <div class="news-img">
+      <img src="https://i.scdn.co/image/ab6761610000e5eb78e45cfa4697ce3c437cb455" alt="Sabrina Carpenter" loading="lazy">
+      <span class="news-cat-badge">Liner Notes</span>
+    </div>
+    <h3>$10,000 in virtual credits — what to do on day one</h3>
+    <div class="news-byline"><span>Muses Editorial</span><span class="news-byline-sep">/</span><span>12 May 2026</span></div>
+  </a>
+
+  <a class="news-grid-card" data-category="methodology" data-search="how spotify streams translate artist value pricing formula monthly listeners velocity youtube methodology" href="/news/how-spotify-streams-translate-to-artist-value">
+    <div class="news-img">
+      <img src="https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" alt="Drake" loading="lazy">
+      <span class="news-cat-badge">Methodology</span>
+    </div>
+    <h3>How Spotify streams translate to artist value</h3>
+    <div class="news-byline"><span>Muses Editorial</span><span class="news-byline-sep">/</span><span>11 May 2026</span></div>
+  </a>
+
+  <a class="news-grid-card" data-category="liner-notes" data-search="what is stock market for artists beginner foundations explainer paper trading invest sabrina carpenter" href="/news/what-is-a-stock-market-for-artists">
+    <div class="news-img">
+      <img src="https://i.scdn.co/image/ab6761610000e5eb78e45cfa4697ce3c437cb455" alt="Sabrina Carpenter" loading="lazy">
+      <span class="news-cat-badge">Liner Notes</span>
+    </div>
+    <h3>What is a stock market for artists?</h3>
+    <div class="news-byline"><span>Muses Editorial</span><span class="news-byline-sep">/</span><span>11 May 2026</span></div>
+  </a>
+
+  <div class="news-no-results" id="news-no-results">
+    <p>No articles match <strong id="news-no-results-query">that</strong>. Try a different search or reset the filter.</p>
+  </div>
+
 </section>
 
 <div id="footer-mount"></div>
 
-<script src="/muse-shared.js?v=20260427a"></script>
+<script src="/muse-shared.js?v=20260512a"></script>
+<script src="/app/prices.js" defer onerror="console.warn('app/prices.js not found')"></script>
 <script>
-  // Localised date display
+  /* ===== Filter + Search ===== */
+  (function () {
+    const grid = document.getElementById('news-grid');
+    const cards = Array.from(grid.querySelectorAll('.news-grid-card'));
+    const pills = Array.from(document.querySelectorAll('.news-filter-pill'));
+    const searchInput = document.getElementById('news-search');
+    const searchClear = document.getElementById('news-search-clear');
+    const noResults = document.getElementById('news-no-results');
+    const noResultsQuery = document.getElementById('news-no-results-query');
+    const artistsBlock = document.getElementById('news-search-artists');
+    const artistsGrid = artistsBlock.querySelector('[data-artists-grid]');
+
+    let activeFilter = 'all';
+    let activeQuery = '';
+
+    // Count per category
+    const counts = { all: cards.length };
+    cards.forEach(c => {
+      const cat = c.dataset.category;
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+    document.querySelectorAll('[data-count]').forEach(el => {
+      const k = el.dataset.count;
+      el.textContent = counts[k] != null ? counts[k] : 0;
+    });
+
+    function applyFilters() {
+      const q = activeQuery.trim().toLowerCase();
+      let matched = 0;
+      cards.forEach(card => {
+        const catOK = activeFilter === 'all' || card.dataset.category === activeFilter;
+        const searchOK = !q || (card.dataset.search || '').toLowerCase().includes(q) || (card.textContent || '').toLowerCase().includes(q);
+        const show = catOK && searchOK;
+        card.classList.toggle('is-hidden', !show);
+        if (show) matched++;
+      });
+      // Show "no results" only if a query is active and nothing matched articles AND no artist matched
+      const artistMatched = renderArtistMatches(q);
+      const showNoResults = matched === 0 && !artistMatched && (q.length > 0 || activeFilter !== 'all');
+      if (showNoResults) {
+        noResultsQuery.textContent = q ? '"' + q + '"' : 'that category';
+        noResults.classList.add('show');
+      } else {
+        noResults.classList.remove('show');
+      }
+    }
+
+    function renderArtistMatches(q) {
+      if (!q || q.length < 2) {
+        artistsBlock.classList.remove('show');
+        return false;
+      }
+      const data = window.__MUSE_PRICES;
+      if (!data || !Array.isArray(data.artists)) {
+        artistsBlock.classList.remove('show');
+        return false;
+      }
+      const slugify = (n) => (n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const matches = data.artists.filter(a => {
+        const name = (a.name || '').toLowerCase();
+        const ticker = (a.ticker || '').toLowerCase();
+        const genre = (a.genre || '').toLowerCase();
+        return name.includes(q) || ticker.includes(q) || genre.includes(q);
+      }).slice(0, 8);
+      if (!matches.length) {
+        artistsBlock.classList.remove('show');
+        return false;
+      }
+      artistsGrid.innerHTML = matches.map(a => {
+        return '<a class="news-search-artist" href="/artists/' + slugify(a.name) + '">' +
+          '<div class="news-search-artist-img">' + (a.image ? '<img src="' + a.image + '" alt="' + a.name + '" loading="lazy">' : '') + '</div>' +
+          '<div><div class="news-search-artist-name">' + a.name + '</div><div class="news-search-artist-tk">$' + a.ticker + '</div></div>' +
+          '</a>';
+      }).join('');
+      artistsBlock.classList.add('show');
+      return true;
+    }
+
+    // Filter pill click handlers
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => {
+          p.classList.remove('active');
+          p.setAttribute('aria-selected', 'false');
+        });
+        pill.classList.add('active');
+        pill.setAttribute('aria-selected', 'true');
+        activeFilter = pill.dataset.filter;
+        applyFilters();
+        // Update URL without reload
+        try {
+          const u = new URL(window.location);
+          if (activeFilter === 'all') u.searchParams.delete('cat');
+          else u.searchParams.set('cat', activeFilter);
+          history.replaceState(null, '', u.toString());
+        } catch (e) {}
+      });
+    });
+
+    // Search handler (debounced)
+    let searchTimer = null;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        activeQuery = searchInput.value;
+        searchClear.classList.toggle('show', activeQuery.length > 0);
+        applyFilters();
+        // Update URL
+        try {
+          const u = new URL(window.location);
+          if (activeQuery.trim()) u.searchParams.set('q', activeQuery.trim());
+          else u.searchParams.delete('q');
+          history.replaceState(null, '', u.toString());
+        } catch (e) {}
+      }, 120);
+    });
+
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      activeQuery = '';
+      searchClear.classList.remove('show');
+      applyFilters();
+      try {
+        const u = new URL(window.location);
+        u.searchParams.delete('q');
+        history.replaceState(null, '', u.toString());
+      } catch (e) {}
+      searchInput.focus();
+    });
+
+    // Pick up ?cat= and ?q= from URL on load
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const cat = params.get('cat');
+      const q = params.get('q');
+      if (cat) {
+        const pill = document.querySelector('.news-filter-pill[data-filter="' + cat + '"]');
+        if (pill) pill.click();
+      }
+      if (q) {
+        searchInput.value = q;
+        activeQuery = q;
+        searchClear.classList.add('show');
+        applyFilters();
+      }
+    } catch (e) {}
+
+    // Re-run artist matches once prices.js arrives (in case search was active before load)
+    let tries = 0;
+    const waitForPrices = setInterval(() => {
+      tries++;
+      if (window.__MUSE_PRICES || tries > 40) {
+        clearInterval(waitForPrices);
+        if (activeQuery) applyFilters();
+      }
+    }, 250);
+  })();
+
+  /* ===== Date label ===== */
   (function () {
     try {
-      const months = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
-      // Use English version for the international site
-      const monthsEn = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
       const d = new Date();
-      const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-      const txt = "from " + dayNames[d.getDay()] + " " + d.getDate() + " " + monthsEn[d.getMonth()] + " " + d.getFullYear();
+      const txt = "from " + days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
       const el = document.getElementById("todays-date");
       if (el) el.textContent = txt;
     } catch (e) {}
