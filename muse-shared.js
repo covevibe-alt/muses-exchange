@@ -157,45 +157,170 @@
     </footer>
   `;
 
-  const PROTOTYPE_BANNER_HTML = `
-    <div class="proto-banner" role="note">
-      <span class="proto-dot"></span>
-      <b>Prototype.</b>&nbsp;Paper trading only<span class="proto-full"> — prices are real, money is virtual.</span><span class="proto-short"> —</span>
-      <a href="/faq">Learn more</a>
+  /* Top-of-page live ticker — hydrates from window.__MUSE_PRICES.
+     Replaces the old paper-trading disclaimer banner. Shows top artists
+     by monthly listeners + a few biggest movers. Desktop: horizontal
+     scroll. Mobile: auto-scrolling marquee. */
+  const TICKER_HTML = `
+    <style>
+      .muse-ticker {
+        background: linear-gradient(180deg, rgba(11,9,16,0.97), rgba(11,9,16,0.93));
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        overflow: hidden;
+        position: relative;
+        height: 44px;
+      }
+      .muse-ticker-track {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        gap: 26px;
+        padding: 0 24px;
+        white-space: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        font-family: var(--sans, Inter, sans-serif);
+      }
+      .muse-ticker-track::-webkit-scrollbar { display: none; }
+      .muse-ticker-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: rgba(255,255,255,0.78);
+        transition: color .15s ease;
+        flex-shrink: 0;
+      }
+      .muse-ticker-item:hover { color: #fff; }
+      .muse-ticker-item .ticker-dot {
+        width: 5px; height: 5px;
+        border-radius: 999px;
+        background: #b98fff;
+        flex-shrink: 0;
+      }
+      .muse-ticker-item .ticker-name {
+        color: rgba(255,255,255,0.92);
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .muse-ticker-item .ticker-ticker {
+        color: rgba(255,255,255,0.45);
+        font-family: 'JetBrains Mono','SF Mono',monospace;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+      }
+      .muse-ticker-item .ticker-chg {
+        font-family: 'JetBrains Mono','SF Mono',monospace;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .muse-ticker-item .ticker-chg.up    { color: #4ade80; }
+      .muse-ticker-item .ticker-chg.down  { color: #f87171; }
+      .muse-ticker-item .ticker-chg.flat  { color: rgba(255,255,255,0.42); }
+      .muse-ticker-item .ticker-price {
+        color: rgba(255,255,255,0.55);
+        font-family: 'JetBrains Mono','SF Mono',monospace;
+        font-size: 11px;
+      }
+      .muse-ticker-sep {
+        color: rgba(255,255,255,0.15);
+        flex-shrink: 0;
+        font-size: 13px;
+      }
+      .muse-ticker-loading {
+        color: rgba(255,255,255,0.4);
+        font-size: 12px;
+        font-family: var(--sans, Inter, sans-serif);
+      }
+      @media (max-width: 768px) {
+        .muse-ticker { height: 40px; }
+        .muse-ticker-track {
+          overflow: hidden;
+        }
+        .muse-ticker-track[data-animate="true"] {
+          animation: muse-ticker-scroll 48s linear infinite;
+        }
+        .muse-ticker:hover .muse-ticker-track { animation-play-state: paused; }
+      }
+      @keyframes muse-ticker-scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+    </style>
+    <div class="muse-ticker" aria-label="Live artist ticker">
+      <div class="muse-ticker-track" data-ticker-track>
+        <span class="muse-ticker-loading">Loading market data…</span>
+      </div>
     </div>
   `;
 
   const navMount = document.getElementById('nav-mount');
   if (navMount) {
-    navMount.innerHTML = PROTOTYPE_BANNER_HTML + NAV_HTML;
+    navMount.innerHTML = TICKER_HTML + NAV_HTML;
   }
   const footMount = document.getElementById('footer-mount');
   if (footMount) footMount.innerHTML = FOOTER_HTML;
 
-  // Mobile sticky CTA (hidden on waitlist page itself)
-  if (page !== 'waitlist') {
-    const stickyCta = document.createElement('a');
-    stickyCta.className = 'mobile-sticky-cta';
-    stickyCta.href = '/waitlist';
-    stickyCta.setAttribute('aria-label', 'Join the Muses waitlist');
-    stickyCta.textContent = 'Join the waitlist';
-    document.body.appendChild(stickyCta);
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const h = document.documentElement;
-        const scrolled = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
-        // Hide the floating CTA once the user is near the footer so it
-        // doesn't cover the disclaimer / "©" line at the page bottom.
-        const nearBottom = scrolled > 0.92;
-        stickyCta.classList.toggle('show', scrolled > 0.25 && !nearBottom);
-        ticking = false;
-      });
+  /* Hydrate the top-of-page ticker from live prices. Pulls a mix of top
+     artists by monthly listeners and a few biggest movers. Re-runs on
+     prices.js load (gives blog-embeds-style retry behaviour). */
+  function hydrateTicker() {
+    const track = document.querySelector('[data-ticker-track]');
+    const data = window.__MUSE_PRICES;
+    if (!track) return false;
+    if (!data || !Array.isArray(data.artists) || data.artists.length === 0) return false;
+
+    const slugify = (n) => (n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const fmtChg = (c) => {
+      if (c == null || isNaN(c)) return { txt: '0.00%', cls: 'flat' };
+      const sign = c > 0 ? '+' : '';
+      const cls = c > 0.01 ? 'up' : c < -0.01 ? 'down' : 'flat';
+      return { txt: sign + c.toFixed(2) + '%', cls: cls };
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
+    const fmtPrice = (p) => (p == null || isNaN(p)) ? '—' : '$' + Number(p).toFixed(2);
+
+    const byListeners = data.artists.slice().sort((a,b) => (b.monthlyListeners||0) - (a.monthlyListeners||0)).slice(0, 6);
+    const byChange = data.artists.slice().filter(a => a.chg24h && Math.abs(a.chg24h) > 0.05).sort((a,b) => Math.abs(b.chg24h) - Math.abs(a.chg24h)).slice(0, 4);
+    const seen = new Set();
+    const items = [];
+    [...byListeners, ...byChange].forEach(a => {
+      if (!a || seen.has(a.ticker)) return;
+      seen.add(a.ticker);
+      items.push(a);
+    });
+
+    const renderItem = (a) => {
+      const c = fmtChg(a.chg24h);
+      return '<a class="muse-ticker-item" href="/artists/' + slugify(a.name) + '">' +
+             '<span class="ticker-dot"></span>' +
+             '<span class="ticker-name">' + (a.name || '') + '</span>' +
+             '<span class="ticker-ticker">$' + (a.ticker || '') + '</span>' +
+             '<span class="ticker-chg ' + c.cls + '">' + c.txt + '</span>' +
+             '<span class="ticker-price">' + fmtPrice(a.price) + '</span>' +
+             '</a>';
+    };
+
+    const sep = '<span class="muse-ticker-sep">/</span>';
+    const set1 = items.map(renderItem).join(sep);
+    // Duplicate the list so the mobile auto-scroll loops seamlessly
+    track.innerHTML = set1 + sep + set1;
+    // Enable mobile auto-scroll once content is in place
+    track.setAttribute('data-animate', 'true');
+    return true;
   }
+
+  if (!hydrateTicker()) {
+    let tickerTries = 0;
+    const tickerInt = setInterval(() => {
+      tickerTries++;
+      if (hydrateTicker() || tickerTries > 80) clearInterval(tickerInt);
+    }, 250);
+  }
+
+
+  // Mobile sticky waitlist CTA removed per Sander request 2026-05-12.
 
   // Mobile only: hide the sticky nav on scroll-down, show it on scroll-up.
   // Keeps the hamburger reachable without eating vertical space while reading.

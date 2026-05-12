@@ -267,7 +267,7 @@
             <span class="news-side-item-byline">Muses Editorial · 11 May 2026</span>
           </div>
         </a>
-        <a class="news-side-item is-placeholder" href="#">
+        <a class="news-side-item" href="/news">
           <div class="news-side-item-img">
             <img src="https://i.scdn.co/image/ab6761610000e5ebd258ecb0d66244e6300bcf64" alt="Chappell Roan" loading="lazy">
           </div>
@@ -276,7 +276,7 @@
             <span class="news-side-item-byline">Coming soon</span>
           </div>
         </a>
-        <a class="news-side-item is-placeholder" href="#">
+        <a class="news-side-item" href="/news">
           <div class="news-side-item-img">
             <img src="https://i.scdn.co/image/ab6761610000e5ebe2e8e7ff002a4afda1c7147e" alt="Taylor Swift" loading="lazy">
           </div>

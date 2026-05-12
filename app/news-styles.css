@@ -17,8 +17,17 @@
   --news-border-strong: rgba(255,255,255,0.14);
 }
 
-body[data-page="news"] a,
-body[data-page="news-post"] a { color: inherit; text-decoration: none; }
+/* Scoped color/text-decoration reset — applies ONLY to card components,
+   NOT to general <a> tags (so .btn-primary, .nav-cta, inline links etc.
+   keep their own color and underline rules). */
+body[data-page="news"] .news-side-card,
+body[data-page="news"] .news-hero-card,
+body[data-page="news"] .news-list-item,
+body[data-page="news"] .news-top5-card,
+body[data-page="news-post"] .news-side-item {
+  color: inherit;
+  text-decoration: none;
+}
 
 /* ========================================================================
    NEWS INDEX
@@ -456,9 +465,9 @@ body[data-page="news-post"] a { color: inherit; text-decoration: none; }
 
 /* ---------- Sidebar ---------- */
 .news-sidebar {
-  position: sticky;
-  top: 100px;
-  align-self: start;
+  /* No sticky — the sidebar (trust card + Latest + Live data) is taller
+     than many viewports, so sticky behaviour was jumpy. Natural scroll
+     matches the btcm.nl pattern anyway. */
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -648,18 +657,18 @@ body[data-page="news-post"] a { color: inherit; text-decoration: none; }
 /* Coming-soon items styled as not-yet-clickable rather than misleading.
    Apply class="coming-soon" to any link on /news index OR sidebar item
    that doesn't have a real article behind it yet. */
-.news-list-item.coming-soon,
-.news-side-card.coming-soon,
-.news-top5-card.coming-soon,
-.news-side-item.coming-soon {
+.news-list-item.is-placeholder,
+.news-side-card.is-placeholder,
+.news-top5-card.is-placeholder,
+.news-side-item.is-placeholder {
   opacity: 0.55;
   cursor: default;
   pointer-events: none;
 }
-.news-list-item.coming-soon h4::after,
-.news-side-card.coming-soon h3::after,
-.news-top5-card.coming-soon h4::after,
-.news-side-item.coming-soon h5::after {
+.news-list-item.is-placeholder h4::after,
+.news-side-card.is-placeholder h3::after,
+.news-top5-card.is-placeholder h4::after,
+.news-side-item.is-placeholder h5::after {
   content: " (soon)";
   color: var(--news-accent);
   font-weight: 500;
