@@ -1965,13 +1965,29 @@ const LEAD_GRADIENTS = {
   TATE: "linear-gradient(135deg,#ffd7c2,#ff6b8a)",
   ROSA: "linear-gradient(135deg,#ff8a65,#a855f7)",
 };
-// Deterministic pseudo-volume derived from price × abs(chg)
-const LEAD_DATA = TICKERS.map(x => ({
-  ...x,
-  initial: x.name[0],
-  gradient: LEAD_GRADIENTS[x.t] || "linear-gradient(135deg,#c084fc,#6effb8)",
-  vol: (x.price * (Math.abs(x.chg) + 1.2) * 0.11).toFixed(1),
-}));
+// Live LEAD_DATA from window.__MUSE_PRICES (the same source as the rest of
+// the site). Previously this referenced a hardcoded TICKERS array — that was
+// removed when the decorative middle-page ticker was deleted. Now we build
+// LEAD_DATA from real data and re-render once prices.js has loaded.
+function buildLeadData() {
+  const data = window.__MUSE_PRICES;
+  if (!data || !Array.isArray(data.artists)) return null;
+  return data.artists.map(a => {
+    const chg = (a.chg24h != null) ? a.chg24h : 0;
+    const price = (a.price != null) ? a.price : 0;
+    return {
+      name: a.name,
+      t: a.ticker,
+      price: price,
+      chg: chg,
+      up: chg >= 0,
+      initial: ((a.name || '?')[0] || '?').toUpperCase(),
+      gradient: LEAD_GRADIENTS[a.ticker] || "linear-gradient(135deg,#c084fc,#6effb8)",
+      // Deterministic pseudo-volume derived from price × abs(chg) — same as before
+      vol: (price * (Math.abs(chg) + 1.2) * 0.11).toFixed(1),
+    };
+  });
+}
 
 function leadRow(x, i) {
   return `
@@ -2006,14 +2022,27 @@ function volRow(x, i) {
   `;
 }
 function renderLeaderboards() {
+  const LEAD_DATA = buildLeadData();
+  if (!LEAD_DATA) return false;
   const gainers = [...LEAD_DATA].sort((a, b) => b.chg - a.chg).slice(0, 5);
   const losers  = [...LEAD_DATA].sort((a, b) => a.chg - b.chg).slice(0, 5);
   const volume  = [...LEAD_DATA].sort((a, b) => parseFloat(b.vol) - parseFloat(a.vol)).slice(0, 5);
-  document.getElementById('leadGainers').innerHTML = gainers.map(leadRow).join('');
-  document.getElementById('leadLosers').innerHTML  = losers.map(leadRow).join('');
-  document.getElementById('leadVolume').innerHTML  = volume.map(volRow).join('');
+  const g = document.getElementById('leadGainers');
+  const l = document.getElementById('leadLosers');
+  const v = document.getElementById('leadVolume');
+  if (g) g.innerHTML = gainers.map(leadRow).join('');
+  if (l) l.innerHTML = losers.map(leadRow).join('');
+  if (v) v.innerHTML = volume.map(volRow).join('');
+  return true;
 }
-renderLeaderboards();
+// Try immediately; if prices.js hasn't loaded yet, retry on a short interval.
+if (!renderLeaderboards()) {
+  let _leadTries = 0;
+  const _leadT = setInterval(function () {
+    _leadTries++;
+    if (renderLeaderboards() || _leadTries > 60) clearInterval(_leadT);
+  }, 250);
+}
 
 /* ============ FEATURED ARTISTS ============ */
 const FEATURED = [
