@@ -598,3 +598,69 @@ body[data-page="news-post"] a { color: inherit; text-decoration: none; }
   .news-article-title { font-size: clamp(28px, 8vw, 38px); }
   .news-article-wrap { padding: 20px 18px 0; }
 }
+/* =====================================================================
+   PATCH for app/news-styles.css — appends fixes from the audit.
+   Append the contents of this file to news-styles.css OR replace
+   the file via the fix-news-audit.sh script.
+   ===================================================================== */
+
+/* Fix 1+2: SVG icon sizing — the inline <svg><use/></svg> pattern has no
+   intrinsic dimensions, so without explicit width/height it expands.
+   Constraining everywhere icons are used in news context. */
+.news-disclaimer-link svg,
+.news-top5-head a svg,
+.news-section-head svg,
+.news-breadcrumb svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Fix 6: Hero image framing — pin portrait images to the top so faces
+   don't get cropped at the chin. Applies when image is an artist headshot. */
+.news-img img,
+.news-hero-image img,
+.news-side-item-img img {
+  object-position: center 18%;
+}
+
+/* Fix 7: Trust card title — let it use full sidebar width */
+.news-trust-head h4 {
+  max-width: none;
+}
+
+/* Fix 8: Top-5 numbers more visible (was 0.05, now 0.08) */
+.news-top5-num {
+  color: rgba(255, 255, 255, 0.085);
+}
+
+/* Fix 9: Section meta — lighter, smaller, less competing with H1 */
+.news-section-meta {
+  font-size: 12px;
+  opacity: 0.72;
+}
+
+/* Fix 11: Slightly wider article body for fewer line breaks */
+.news-prose {
+  max-width: 760px;
+}
+
+/* Coming-soon items styled as not-yet-clickable rather than misleading.
+   Apply class="coming-soon" to any link on /news index OR sidebar item
+   that doesn't have a real article behind it yet. */
+.news-list-item.coming-soon,
+.news-side-card.coming-soon,
+.news-top5-card.coming-soon,
+.news-side-item.coming-soon {
+  opacity: 0.55;
+  cursor: default;
+  pointer-events: none;
+}
+.news-list-item.coming-soon h4::after,
+.news-side-card.coming-soon h3::after,
+.news-top5-card.coming-soon h4::after,
+.news-side-item.coming-soon h5::after {
+  content: " (soon)";
+  color: var(--news-accent);
+  font-weight: 500;
+}
