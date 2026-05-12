@@ -271,28 +271,62 @@
   /* Hydrate the top-of-page ticker from live prices. Pulls a mix of top
      artists by monthly listeners and a few biggest movers. Re-runs on
      prices.js load (gives blog-embeds-style retry behaviour). */
+  /* Fair-price computation matching the exchange's pricing model.
+     listener-share × dynamic market cap, divided by 10K shares, plus
+     YouTube/popularity/chart boosts. Mirrors computeFairPrice() in
+     exchange.html so the ticker shows the same prices as the live app. */
+  function computeFairPriceMuse(a, totalListeners, totalCap) {
+    const listeners = (a && a.monthlyListeners) || 0;
+    let marketCap;
+    if (totalListeners > 0) {
+      marketCap = (listeners / totalListeners) * totalCap;
+    } else {
+      marketCap = listeners * 0.03; // fallback
+    }
+    const base = Math.max(0.01, marketCap / 10000);
+    const yt  = (a && a.youtubeBoost)     || 0;
+    const pop = (a && a.popularityBoost)  || 0;
+    const ch  = (a && a.chartBoost)       || 0;
+    return base * (1 + yt + pop + ch);
+  }
+
   function hydrateTicker() {
     const track = document.querySelector('[data-ticker-track]');
     const data = window.__MUSE_PRICES;
     if (!track) return false;
     if (!data || !Array.isArray(data.artists) || data.artists.length === 0) return false;
 
-    const slugify = (n) => (n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const fmtPrice = (p) => (p == null || isNaN(p)) ? '—' : '$' + Number(p).toFixed(2);
-    const fmtCh = (c) => {
-      if (c == null || isNaN(c)) return { txt: '0.00%', cls: 'flat' };
+    // Total listeners (use backend hint if present, else sum)
+    const totalListeners = (data.totalMarketListeners
+      || data.artists.reduce(function (s, a) { return s + ((a && a.monthlyListeners) || 0); }, 0));
+    // Dynamic market cap — $50M base, scales with roster ($500K per artist)
+    const totalCap = Math.max(50000000, data.artists.length * 500000);
+
+    const slugify = function (n) {
+      return (n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    };
+    const fmtPrice = function (p) {
+      if (p == null || isNaN(p)) return '—';
+      // Match the exchange formatting: $1.23 for small, $1,234.56 for large
+      const n = Number(p);
+      if (n >= 1000) return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return '$' + n.toFixed(2);
+    };
+    const fmtCh = function (c) {
+      if (c == null || isNaN(c)) return { txt: '· 0.00%', cls: 'flat' };
       const cls = c > 0.01 ? 'up' : c < -0.01 ? 'down' : 'flat';
       const arrow = c > 0.01 ? '▲' : c < -0.01 ? '▼' : '·';
       return { txt: arrow + ' ' + Math.abs(c).toFixed(2) + '%', cls: cls };
     };
 
     const items = data.artists.slice();
-    const renderItem = (a) => {
+    const renderItem = function (a) {
+      const price = computeFairPriceMuse(a, totalListeners, totalCap);
       const c = fmtCh(a.chg24h);
       const slug = slugify(a.name);
       return '<a class="tt-item" href="/artists/' + slug + '" data-tk="' + (a.ticker || '') + '">' +
              '<span class="tt-tk">' + (a.ticker || '') + '</span>' +
-             '<span class="tt-pr">' + fmtPrice(a.price) + '</span>' +
+             '<span class="tt-pr">' + fmtPrice(price) + '</span>' +
              '<span class="tt-ch ' + c.cls + '">' + c.txt + '</span>' +
              '</a>';
     };
