@@ -1,0 +1,239 @@
+<!doctype html>
+<!--
+=====================================================================
+NEWS ARTICLE TEMPLATE — btcm.nl-style layout
+1. Copy this file as /news/your-article-slug.html
+2. Replace every [[FILL]] placeholder
+3. Add the new URL to sitemap.xml (priority 0.6, monthly)
+=====================================================================
+SEO checklist:
+  - Title: primary keyword first, 50-60 chars total
+  - Meta description: 150-160 chars including primary keyword + hook
+  - Canonical URL: no .html, no trailing /
+  - One H1 (the article title)
+  - Schema.org BlogPosting JSON-LD with datePublished + dateModified
+  - 3+ internal links (other articles, /how-it-works, /artists/X, /exchange)
+  - At least one live data widget embed (artist card OR top movers)
+  - Hero image: use an artist's Spotify image URL from app/prices.js
+=====================================================================
+WIDGET EMBEDS available inside .news-prose:
+  <div data-artist-card="DRKE"></div>     ← live price card for one artist
+  <div data-top-movers></div>             ← today's top 5 gainers
+  <div data-market-index></div>           ← inline pill: market index value
+Tickers come from app/prices.js (DRKE, SABR, BNNY, SZA, OLVR, etc.)
+=====================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>[[FILL: Article title — primary keyword first]] | Muses Exchange</title>
+<meta name="description" content="[[FILL: One-sentence summary including primary keyword + hook. 150-160 chars max.]]">
+
+<meta property="og:title" content="[[FILL: Title — short version OK]]">
+<meta property="og:description" content="[[FILL: Same or punchier than meta description]]">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Muses">
+<meta property="og:url" content="https://muses.exchange/news/[[FILL: slug]]">
+<meta property="og:image" content="https://muses.exchange/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Muses — a stock market for music, priced by streams.">
+<meta property="article:published_time" content="[[FILL: 2026-05-11T12:00:00Z]]">
+<meta property="article:section" content="[[FILL: Foundations | Methodology | Market | News]]">
+<meta property="article:tag" content="[[FILL: keyword 1]]">
+<meta property="article:tag" content="[[FILL: keyword 2]]">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="[[FILL]]">
+<meta name="twitter:description" content="[[FILL]]">
+<meta name="twitter:image" content="https://muses.exchange/og-image.png">
+<meta name="twitter:image:alt" content="Muses — a stock market for music, priced by streams.">
+
+<meta name="theme-color" content="#0b0910">
+<link rel="canonical" href="https://muses.exchange/news/[[FILL: slug]]">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b98fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='2,22 7.6,4 12,15 16.4,2 22,22'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/muse-shared.css?v=20260420b">
+<link rel="stylesheet" href="/app/blog-embeds.css">
+<link rel="stylesheet" href="/app/news-styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://muses.exchange/news/[[FILL: slug]]" },
+  "headline": "[[FILL: Headline]]",
+  "description": "[[FILL: Meta description]]",
+  "image": "https://muses.exchange/og-image.png",
+  "datePublished": "[[FILL: 2026-05-11T12:00:00Z]]",
+  "dateModified": "[[FILL: 2026-05-11T12:00:00Z]]",
+  "author": { "@type": "Organization", "name": "Muses Exchange", "url": "https://muses.exchange" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Muses Exchange",
+    "url": "https://muses.exchange",
+    "logo": { "@type": "ImageObject", "url": "https://muses.exchange/icon-512.png" }
+  },
+  "articleSection": "[[FILL: section]]",
+  "keywords": "[[FILL: comma, separated, keywords]]"
+}
+</script>
+
+<style>
+  body[data-page="news-post"] .news-prose ul { list-style: disc; padding-left: 24px; }
+  body[data-page="news-post"] .news-prose ol { list-style: decimal; padding-left: 24px; }
+</style>
+</head>
+<body data-page="news-post">
+
+<div class="ambient"></div>
+<div class="grain"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,22 7.6,4 12,15 16.4,2 22,22"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+  </defs>
+</svg>
+
+<div id="nav-mount"></div>
+
+<div class="news-article-wrap">
+
+  <nav class="news-breadcrumb">
+    <span>
+      <a href="/">Home</a>
+      <span class="sep">/</span>
+      <a href="/news">News</a>
+      <span class="sep">/</span>
+      <span style="color:var(--ink);">[[FILL: Section name]]</span>
+    </span>
+    <a class="news-disclaimer-link" href="/risk">
+      <svg><use href="#i-info"/></svg> Disclaimer
+    </a>
+  </nav>
+
+  <h1 class="news-article-title">[[FILL: Title with <em>italicised emphasis</em> on key phrase]]</h1>
+
+  <div class="news-article-grid">
+
+    <article class="news-article-main">
+
+      <div class="news-hero-image">
+        <img src="[[FILL: image URL — e.g. https://i.scdn.co/image/...]]" alt="[[FILL: descriptive alt text]]" loading="eager">
+        <span class="news-img-credit">[[FILL: Image credit]]</span>
+      </div>
+
+      <div class="news-meta">
+        <span class="news-meta-author">Muses Editorial</span>
+        <span class="news-meta-dot"></span>
+        <span>[[FILL: 11 May 2026]]</span>
+        <span class="news-meta-dot"></span>
+        <span>[[FILL: 7 min read]]</span>
+        <span class="news-meta-share" onclick="if(navigator.share){navigator.share({title:document.title,url:location.href}).catch(()=>{});} else {navigator.clipboard.writeText(location.href);this.querySelector('span').textContent='Copied'}">
+          <svg><use href="#i-share"/></svg>
+          <span>Share</span>
+        </span>
+      </div>
+
+      <div class="news-prose">
+
+        <p>[[FILL: Opening paragraph — answers the article's central question in 2-3 sentences. This is what readers see above the fold. The first letter becomes a drop cap automatically.]]</p>
+
+        <h2>[[FILL: First H2]]</h2>
+
+        <p>[[FILL: Body paragraph]]</p>
+
+        <!-- Drop in a live data widget here -->
+        <div data-top-movers></div>
+
+        <h2>[[FILL: Next H2]]</h2>
+
+        <p>[[FILL: More body. Internal-link liberally — to other articles, /how-it-works, /artists/[slug], /exchange]]</p>
+
+        <p>[[FILL: Closing paragraph — restate takeaway in one line]]</p>
+
+        <div class="news-inline-cta">
+          <h3>[[FILL: CTA headline]]</h3>
+          <p>[[FILL: One-line value prop]]</p>
+          <a class="btn-primary" href="/signup">Sign up — it's free <svg><use href="#i-arrow-up-right"/></svg></a>
+        </div>
+
+      </div>
+
+    </article>
+
+    <aside class="news-sidebar">
+
+      <div class="news-trust-card">
+        <div class="news-trust-head">
+          <h4>Why you can trust Muses</h4>
+          <span class="news-trust-logo"><svg><use href="#i-logo"/></svg></span>
+        </div>
+        <p class="news-trust-body">
+          We maintain a strict editorial policy focused on factual accuracy, relevance, and transparency. Every piece is anchored to public streaming data anyone can verify — no anonymous tips, no insider claims, no paid placements.
+        </p>
+        <div class="news-trust-stats">
+          <div class="news-trust-stat">
+            <span class="news-trust-stat-num" data-listed-count>105</span>
+            <span class="news-trust-stat-lbl">Listed artists</span>
+          </div>
+          <div class="news-trust-stat">
+            <span class="news-trust-stat-num">30 min</span>
+            <span class="news-trust-stat-lbl">Price refresh</span>
+          </div>
+          <div class="news-trust-stat">
+            <span class="news-trust-stat-num">10 yr</span>
+            <span class="news-trust-stat-lbl">Project horizon</span>
+          </div>
+          <div class="news-trust-stat">
+            <span class="news-trust-stat-num">$10K</span>
+            <span class="news-trust-stat-lbl">Free credits</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="news-side-section">
+        <h4>Latest</h4>
+        <a class="news-side-item" href="/news/[[FILL: related-slug]]">
+          <div class="news-side-item-img">
+            <img src="[[FILL: image URL]]" alt="[[FILL: alt]]" loading="lazy">
+          </div>
+          <div class="news-side-item-meta">
+            <h5>[[FILL: Related article title]]</h5>
+            <span class="news-side-item-byline">Muses Editorial · [[FILL: date]]</span>
+          </div>
+        </a>
+        <!-- Repeat 2-3 more news-side-item blocks -->
+      </div>
+
+      <div class="news-side-section">
+        <h4>Live data</h4>
+        <div data-market-index></div>
+        <p style="font-family:var(--sans); font-size:13px; color:var(--ink-dim); margin: 14px 0 0; line-height:1.5;">
+          The Muses Exchange index aggregates every listed artist's price, weighted by monthly listeners. Updated every 30 minutes from Spotify and YouTube data.
+        </p>
+      </div>
+
+    </aside>
+
+  </div>
+
+</div>
+
+<div id="footer-mount"></div>
+
+<script src="/muse-shared.js?v=20260427a"></script>
+<script src="/app/prices.js" defer onerror="console.warn('app/prices.js not found')"></script>
+<script src="/app/blog-embeds.js" defer></script>
+</body>
+</html>
