@@ -745,7 +745,7 @@
   (function initAuthModal() {
     const SUPABASE_URL = 'https://bhyjdvqbfearmrkxvppl.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_rJy9Oi0xt7U2HfiUs1-S9w_klZz82Lh';
-    const TURNSTILE_SITEKEY = '1x00000000000000000000AA'; // ← REPLACE for production
+    const TURNSTILE_SITEKEY = '0x4AAAAAADP-I4plvXT5vlaW'; // Muses Exchange widget (cloudflare)
 
     // Inject CSS once
     if (!document.getElementById('muse-auth-modal-style')) {
@@ -974,10 +974,12 @@
             <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
             Continue with Google
           </button>
-          <button type="button" class="muse-oauth-btn" data-oauth="facebook" aria-label="Continue with Facebook">
-            <svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            Continue with Facebook
-          </button>
+          <!-- Facebook OAuth removed per Sander 2026-05-15. Meta for Developers
+               setup is significantly heavier than Google (legal agreements,
+               phone verification, app review) and Facebook sign-in usage has
+               been declining. Easy to re-add later by restoring the
+               <button data-oauth="facebook"> below and enabling the provider
+               in Supabase Auth → Providers → Facebook. -->
         </div>
 
         <div class="muse-auth-divider">or with email</div>
@@ -1293,5 +1295,442 @@
     }
     openFromHash();
     window.addEventListener('hashchange', openFromHash);
+  })();
+
+  /* =========================================================
+     Interactive layer — Cosmos-style polish
+     =========================================================
+     Five additions that fire automatically on every page:
+       1. Scroll progress bar at top of long content pages
+       2. Scattered floating live-ticker chips around .cta-strip
+       3. Count-up animation for [data-count-up] elements
+       4. 3D hover-tilt for [data-tilt] (auto-applied to many cards)
+       5. Cursor-spotlight on [data-spotlight] / .page-hero / .hero-wrap
+
+     All effects respect prefers-reduced-motion and degrade to static
+     visuals gracefully. CSS is injected once, listeners are passive,
+     and per-element animation work runs inside rAF. */
+  (function initInteractiveLayer() {
+    if (document.getElementById('muse-fx-style')) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const css = document.createElement('style');
+    css.id = 'muse-fx-style';
+    css.textContent = `
+      /* Scroll progress bar */
+      .muse-scroll-progress {
+        position: fixed; top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #c084fc 0%, #ff8a65 60%, #cfff5e 100%);
+        transform-origin: 0 50%;
+        transform: scaleX(var(--p, 0));
+        z-index: 100; pointer-events: none;
+        will-change: transform;
+        box-shadow: 0 0 12px rgba(192, 132, 252, 0.5);
+      }
+
+      /* Hover-tilt cards */
+      [data-tilt] {
+        transform-style: preserve-3d;
+        transition: transform .25s cubic-bezier(.2,.7,.2,1);
+        will-change: transform;
+      }
+
+      /* Cursor spotlight */
+      [data-spotlight] { position: relative; overflow: hidden; isolation: isolate; }
+      [data-spotlight]::after {
+        content: ""; position: absolute; inset: 0;
+        background: radial-gradient(
+          640px circle at var(--sx, 50%) var(--sy, 50%),
+          rgba(192, 132, 252, 0.18) 0%,
+          rgba(192, 132, 252, 0.05) 24%,
+          transparent 50%
+        );
+        pointer-events: none;
+        z-index: 0;
+        opacity: var(--so, 0);
+        transition: opacity .4s ease;
+        mix-blend-mode: screen;
+      }
+      [data-spotlight] > * { position: relative; z-index: 1; }
+
+      /* Scattered live-ticker chips on CTA strips */
+      .cta-strip { position: relative; overflow: visible; }
+      .muse-cta-scatter {
+        position: absolute; inset: -40px -20px;
+        pointer-events: none;
+        z-index: 0;
+        overflow: visible;
+      }
+      .muse-cta-chip {
+        position: absolute;
+        padding: 8px 14px;
+        background: rgba(22, 19, 33, 0.75);
+        border: 1px solid rgba(247, 243, 234, 0.14);
+        border-radius: 999px;
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        font-family: ui-monospace, 'SF Mono', monospace;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: rgba(247, 243, 234, 0.72);
+        white-space: nowrap;
+        display: inline-flex; align-items: center; gap: 8px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        transform: translateY(8px) rotate(var(--r, 0deg)) scale(0.95);
+        transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1);
+        animation: muse-chip-float 9s ease-in-out infinite;
+        animation-delay: var(--d, 0s);
+      }
+      .muse-cta-chip.in {
+        opacity: 1;
+        transform: translateY(0) rotate(var(--r, 0deg)) scale(1);
+      }
+      .muse-cta-chip .chip-tk { color: rgba(247, 243, 234, 0.92); }
+      .muse-cta-chip .chip-up   { color: #6effb8; }
+      .muse-cta-chip .chip-down { color: #ff6b8a; }
+      .muse-cta-chip .chip-flat { color: rgba(247, 243, 234, 0.5); }
+      @keyframes muse-chip-float {
+        0%, 100% { translate: 0 0; }
+        50%      { translate: 0 -6px; }
+      }
+      .cta-card { position: relative; z-index: 1; }
+      .cta-strip > * { position: relative; }
+
+      /* Count-up — visual stability while value is 0 */
+      [data-count-up] { font-variant-numeric: tabular-nums; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .muse-cta-chip { animation: none; opacity: 1; transform: translateY(0) rotate(var(--r, 0deg)); transition: none; }
+        [data-tilt] { transform: none !important; transition: none; }
+        [data-spotlight]::after { display: none; }
+        .muse-scroll-progress { transition: none; }
+      }
+      @media (max-width: 760px) {
+        /* Hover-tilt is awkward on touch — disable */
+        [data-tilt] { transform: none !important; }
+        /* Fewer chips on mobile, smaller */
+        .muse-cta-chip { font-size: 10px; padding: 6px 11px; }
+      }
+    `;
+    document.head.appendChild(css);
+
+    /* -------------------------------------------------------
+       1. Scroll progress bar
+       ------------------------------------------------------- */
+    (function initScrollProgress() {
+      const page = document.body.dataset.page || '';
+      // Only show on long content pages
+      const longPages = ['news-post', 'terms', 'privacy', 'risk', 'cookies', 'licenses', 'faq', 'how', 'about'];
+      if (longPages.indexOf(page) === -1) return;
+
+      const bar = document.createElement('div');
+      bar.className = 'muse-scroll-progress';
+      bar.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(bar);
+
+      let ticking = false;
+      const update = () => {
+        const h = document.documentElement;
+        const max = (h.scrollHeight - h.clientHeight) || 1;
+        const p = Math.max(0, Math.min(1, (h.scrollTop || window.scrollY) / max));
+        bar.style.setProperty('--p', String(p));
+        ticking = false;
+      };
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+      }, { passive: true });
+      update();
+    })();
+
+    /* -------------------------------------------------------
+       2. Scattered live-ticker chips on .cta-strip
+       ------------------------------------------------------- */
+    (function initCtaScatter() {
+      const strips = document.querySelectorAll('.cta-strip');
+      if (!strips.length) return;
+
+      // Wait for prices.js, then mount chips.
+      function mount() {
+        const data = window.__MUSE_PRICES;
+        if (!data || !Array.isArray(data.artists) || !data.artists.length) return false;
+
+        const totalListeners = (data.totalMarketListeners
+          || data.artists.reduce(function (s, a) { return s + ((a && a.monthlyListeners) || 0); }, 0));
+        const totalCap = Math.max(50000000, data.artists.length * 500000);
+        const fairFn = window.computeFairPriceMuse || function (a) {
+          const l = (a && a.monthlyListeners) || 0;
+          const mc = totalListeners > 0 ? (l / totalListeners) * totalCap : l * 0.03;
+          return Math.max(0.01, mc / 10000);
+        };
+
+        // Top movers + a few big names, dedup'd
+        const byChange = data.artists.slice().sort((a, b) => Math.abs(b.chg24h || 0) - Math.abs(a.chg24h || 0));
+        const byListeners = data.artists.slice().sort((a, b) => (b.monthlyListeners || 0) - (a.monthlyListeners || 0));
+        const seen = new Set();
+        const picks = [];
+        function take(arr, n) {
+          for (let i = 0; i < arr.length && picks.length < (picks.length + n) && picks.length < 10; i++) {
+            const a = arr[i];
+            if (!a || !a.ticker || seen.has(a.ticker)) continue;
+            seen.add(a.ticker);
+            picks.push(a);
+            if (picks.length >= (picks.length === 0 ? n : (picks.length))) {/* noop */}
+          }
+        }
+        // Simpler: just take top 5 movers + top 5 by listeners
+        for (let i = 0; i < byChange.length && picks.length < 5; i++) {
+          const a = byChange[i];
+          if (!a || !a.ticker || seen.has(a.ticker)) continue;
+          seen.add(a.ticker); picks.push(a);
+        }
+        for (let i = 0; i < byListeners.length && picks.length < 10; i++) {
+          const a = byListeners[i];
+          if (!a || !a.ticker || seen.has(a.ticker)) continue;
+          seen.add(a.ticker); picks.push(a);
+        }
+
+        function fmtPrice(p) {
+          const n = Number(p);
+          if (n >= 1000) return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          return '$' + n.toFixed(2);
+        }
+        function fmtCh(c) {
+          if (c == null || isNaN(c)) return { txt: '· 0.00%', cls: 'chip-flat' };
+          const cls = c > 0.01 ? 'chip-up' : c < -0.01 ? 'chip-down' : 'chip-flat';
+          const arrow = c > 0.01 ? '▲' : c < -0.01 ? '▼' : '·';
+          return { txt: arrow + ' ' + Math.abs(c).toFixed(2) + '%', cls };
+        }
+
+        // Predefined positions around the gradient card.
+        // Each entry: top%, left%, rotation deg, animation delay s
+        // Designed to NOT cover the title/buttons even on narrow widths.
+        const positions = [
+          { t: -4,  l: 4,   r: -5,   d: 0,   side: 'tl' },
+          { t: -2,  l: 78,  r: 4,    d: 1.5, side: 'tr' },
+          { t: 110, l: 8,   r: 3,    d: 0.8, side: 'bl' },
+          { t: 108, l: 72,  r: -4,   d: 2.3, side: 'br' },
+          { t: 50,  l: -8,  r: -7,   d: 1.0, side: 'l'  },
+          { t: 50,  l: 94,  r: 6,    d: 3.0, side: 'r'  },
+          { t: 22,  l: -12, r: 8,    d: 1.8, side: 'l2' },
+          { t: 80,  l: 96,  r: -3,   d: 2.6, side: 'r2' },
+        ];
+
+        strips.forEach(function (strip) {
+          // Don't double-mount
+          if (strip.querySelector('.muse-cta-scatter')) return;
+          const wrap = document.createElement('div');
+          wrap.className = 'muse-cta-scatter';
+          wrap.setAttribute('aria-hidden', 'true');
+
+          // Use up to N chips depending on viewport
+          const isSmall = window.innerWidth < 760;
+          const isMedium = window.innerWidth < 1100;
+          const count = isSmall ? 3 : isMedium ? 5 : 8;
+
+          for (let i = 0; i < count && i < picks.length && i < positions.length; i++) {
+            const a = picks[i];
+            const pos = positions[i];
+            const price = fairFn(a, totalListeners, totalCap);
+            const c = fmtCh(a.chg24h);
+            const chip = document.createElement('div');
+            chip.className = 'muse-cta-chip';
+            chip.style.setProperty('--r', pos.r + 'deg');
+            chip.style.setProperty('--d', pos.d + 's');
+            chip.style.top = pos.t + '%';
+            chip.style.left = pos.l + '%';
+            chip.innerHTML =
+              '<span class="chip-tk">' + a.ticker + '</span>' +
+              '<span>' + fmtPrice(price) + '</span>' +
+              '<span class="' + c.cls + '">' + c.txt + '</span>';
+            wrap.appendChild(chip);
+          }
+          strip.insertBefore(wrap, strip.firstChild);
+
+          // Stagger reveal
+          const chips = wrap.querySelectorAll('.muse-cta-chip');
+          chips.forEach(function (chip, idx) {
+            setTimeout(function () { chip.classList.add('in'); }, 120 * idx + 100);
+          });
+        });
+        return true;
+      }
+
+      if (!mount()) {
+        let tries = 0;
+        const t = setInterval(function () {
+          tries++;
+          if (mount() || tries > 40) clearInterval(t);
+        }, 250);
+      }
+    })();
+
+    /* -------------------------------------------------------
+       3. Count-up animation for [data-count-up]
+       ------------------------------------------------------- */
+    (function initCountUp() {
+      // Auto-apply to common stat-number classes so we don't have to
+      // mark every page individually. The element's current text becomes
+      // the target value. Skip if already has the attribute.
+      const autoSelectors = [
+        '.hero-stat-num',
+        '.news-trust-stat-num',
+        '.compete-stat-value',
+        '.lead-stat-num'
+      ];
+      document.querySelectorAll(autoSelectors.join(',')).forEach(function (el) {
+        if (!el.hasAttribute('data-count-up') && !el.hasAttribute('data-no-count-up')) {
+          el.setAttribute('data-count-up', el.textContent.trim());
+        }
+      });
+
+      const targets = document.querySelectorAll('[data-count-up]');
+      if (!targets.length) return;
+
+      function parseTarget(el) {
+        const raw = el.dataset.countUp || el.textContent || '0';
+        // Extract numeric portion
+        const m = String(raw).match(/-?[\d,]+(\.\d+)?/);
+        if (!m) return null;
+        const num = Number(m[0].replace(/,/g, ''));
+        if (isNaN(num)) return null;
+        const prefix = raw.slice(0, raw.indexOf(m[0]));
+        const suffix = raw.slice(raw.indexOf(m[0]) + m[0].length);
+        const decimals = (m[0].split('.')[1] || '').length;
+        return { num, prefix, suffix, decimals };
+      }
+
+      function format(val, decimals) {
+        if (decimals > 0) return val.toFixed(decimals);
+        const rounded = Math.round(val);
+        if (Math.abs(rounded) >= 1000) {
+          return rounded.toLocaleString('en-US');
+        }
+        return String(rounded);
+      }
+
+      function animate(el, info) {
+        if (reduced) {
+          el.textContent = info.prefix + format(info.num, info.decimals) + info.suffix;
+          return;
+        }
+        const dur = 1200;
+        const start = performance.now();
+        function step(now) {
+          const t = Math.min(1, (now - start) / dur);
+          // easeOutCubic
+          const eased = 1 - Math.pow(1 - t, 3);
+          const val = info.num * eased;
+          el.textContent = info.prefix + format(val, info.decimals) + info.suffix;
+          if (t < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            io.unobserve(el);
+            const info = parseTarget(el);
+            if (info) animate(el, info);
+          });
+        }, { threshold: 0.4 });
+        targets.forEach(function (t) { io.observe(t); });
+      } else {
+        // Fallback: just set final value
+        targets.forEach(function (el) {
+          const info = parseTarget(el);
+          if (info) el.textContent = info.prefix + format(info.num, info.decimals) + info.suffix;
+        });
+      }
+    })();
+
+    /* -------------------------------------------------------
+       4. 3D hover-tilt for cards
+       ------------------------------------------------------- */
+    (function initTilt() {
+      if (reduced) return;
+      if (window.matchMedia('(max-width: 760px)').matches) return; // skip on touch
+      if (!window.matchMedia('(pointer: fine)').matches) return; // skip on touch
+
+      // Auto-apply tilt to common card-like elements unless opted-out
+      const auto = document.querySelectorAll(
+        '.featured-card, .humans-item, .contact-card, .news-hero-card, ' +
+        '.news-grid-card, .news-side-card, .sec-card, .engine-card'
+      );
+      auto.forEach(function (el) {
+        if (!el.hasAttribute('data-tilt') && !el.hasAttribute('data-no-tilt')) {
+          el.setAttribute('data-tilt', '');
+        }
+      });
+
+      const tilts = document.querySelectorAll('[data-tilt]');
+      const MAX = 5; // degrees
+
+      tilts.forEach(function (el) {
+        let raf = null;
+        el.addEventListener('mouseenter', function () {
+          el.style.transition = 'transform .15s cubic-bezier(.2,.7,.2,1)';
+        });
+        el.addEventListener('mousemove', function (e) {
+          const rect = el.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;  // 0..1
+          const y = (e.clientY - rect.top) / rect.height;  // 0..1
+          const rx = (0.5 - y) * MAX * 2;  // tilt up when mouse is near top
+          const ry = (x - 0.5) * MAX * 2;  // tilt right when mouse is right
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(function () {
+            el.style.transform = 'perspective(900px) rotateX(' + rx.toFixed(2) +
+              'deg) rotateY(' + ry.toFixed(2) + 'deg) translateZ(0)';
+          });
+        });
+        el.addEventListener('mouseleave', function () {
+          if (raf) cancelAnimationFrame(raf);
+          el.style.transition = 'transform .35s cubic-bezier(.2,.7,.2,1)';
+          el.style.transform = '';
+        });
+      });
+    })();
+
+    /* -------------------------------------------------------
+       5. Cursor spotlight on hero sections
+       ------------------------------------------------------- */
+    (function initSpotlight() {
+      if (reduced) return;
+      if (!window.matchMedia('(pointer: fine)').matches) return;
+
+      // Auto-apply to hero-like sections
+      const auto = document.querySelectorAll(
+        'section.hero, .hero-wrap, .page-hero, .news-section-head, .wl-hero, .signup-shell'
+      );
+      auto.forEach(function (el) {
+        if (!el.hasAttribute('data-spotlight') && !el.hasAttribute('data-no-spotlight')) {
+          el.setAttribute('data-spotlight', '');
+        }
+      });
+
+      const targets = document.querySelectorAll('[data-spotlight]');
+      targets.forEach(function (el) {
+        let raf = null;
+        el.addEventListener('mousemove', function (e) {
+          const rect = el.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(function () {
+            el.style.setProperty('--sx', x + '%');
+            el.style.setProperty('--sy', y + '%');
+            el.style.setProperty('--so', '1');
+          });
+        });
+        el.addEventListener('mouseleave', function () {
+          el.style.setProperty('--so', '0');
+        });
+      });
+    })();
   })();
 })();
