@@ -1471,10 +1471,14 @@
       /* Scattered live-ticker chips on CTA strips */
       .cta-strip { position: relative; overflow: visible; }
       .muse-cta-scatter {
-        position: absolute; inset: -40px -20px;
+        position: absolute; inset: -24px -20px -10px;
         pointer-events: none;
         z-index: 0;
         overflow: visible;
+      }
+      /* On mobile, the chip scatter clutters the CTA. Hide it. */
+      @media (max-width: 760px) {
+        .muse-cta-scatter { display: none; }
       }
       .muse-cta-chip {
         position: absolute;
@@ -1845,21 +1849,22 @@
         //   - Bottom row: 3 chips spread across the bottom
         //   - A few chips overlap the card slightly for depth
         const positions = [
-          // Top band
-          { t: -8,  l: 8,   r: -6,  d: 0.0, a: 'A' },
-          { t: -10, l: 44,  r: 4,   d: 0.6, a: 'C' },
-          { t: -6,  l: 78,  r: 5,   d: 1.4, a: 'B' },
+          // Top band — chips sitting on the upper edge of the card
+          { t: -6,  l: 8,   r: -6,  d: 0.0, a: 'A' },
+          { t: -8,  l: 44,  r: 4,   d: 0.6, a: 'C' },
+          { t: -4,  l: 78,  r: 5,   d: 1.4, a: 'B' },
           // Middle band (sides + center for depth)
-          { t: 30,  l: -6,  r: -8,  d: 0.4, a: 'D' },
+          { t: 30,  l: -4,  r: -8,  d: 0.4, a: 'D' },
           { t: 38,  l: 32,  r: 6,   d: 2.1, a: 'A' },
           { t: 32,  l: 92,  r: 7,   d: 1.8, a: 'C' },
-          { t: 60,  l: -10, r: 9,   d: 2.5, a: 'B' },
+          { t: 60,  l: -6,  r: 9,   d: 2.5, a: 'B' },
           { t: 56,  l: 60,  r: -5,  d: 0.9, a: 'D' },
-          { t: 64,  l: 96,  r: -7,  d: 3.0, a: 'A' },
-          // Bottom band
-          { t: 102, l: 12,  r: 4,   d: 1.2, a: 'C' },
-          { t: 106, l: 50,  r: -6,  d: 2.6, a: 'B' },
-          { t: 100, l: 80,  r: 3,   d: 1.6, a: 'D' },
+          { t: 64,  l: 94,  r: -7,  d: 3.0, a: 'A' },
+          // Bottom band — kept tight to the card's lower edge so chips
+          // never spill into the next section / footer
+          { t: 94,  l: 12,  r: 4,   d: 1.2, a: 'C' },
+          { t: 96,  l: 50,  r: -6,  d: 2.6, a: 'B' },
+          { t: 92,  l: 80,  r: 3,   d: 1.6, a: 'D' },
         ];
 
         strips.forEach(function (strip) {

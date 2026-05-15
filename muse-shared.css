@@ -210,7 +210,7 @@ body {
   line-height: 1; letter-spacing: -0.03em;
   font-weight: 400; max-width: 22ch; margin-bottom: 20px;
 }
-.section-title em { font-style: italic; font-weight: 500; }
+.section-title em { font-style: normal; font-weight: 500; }
 .section-lede { font-size: 18px; color: var(--ink-dim); max-width: 58ch; line-height: 1.6; }
 
 section.block, .page-hero {
@@ -226,7 +226,7 @@ section.block, .page-hero {
   font-weight: 400; margin: 24px 0 26px; max-width: 16ch;
 }
 .page-hero-title em {
-  font-style: italic;
+  font-style: normal;
   background: linear-gradient(120deg, #ffd7c2 0%, #c084fc 40%, #a855f7 80%);
   -webkit-background-clip: text; background-clip: text;
   color: transparent; font-weight: 500;
@@ -279,8 +279,8 @@ section.block, .page-hero {
 }
 .image-band-caption h3 {
   font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
+  font-style: normal;
+  font-weight: 500;
   font-size: clamp(28px, 3.2vw, 44px);
   line-height: 1.05;
   letter-spacing: -0.02em;
@@ -315,7 +315,8 @@ section.block, .page-hero {
   left: 22px; right: 22px; bottom: 22px;
   z-index: 2;
   font-family: var(--serif);
-  font-style: italic;
+  font-style: normal;
+  font-weight: 500;
   font-size: clamp(20px, 2vw, 28px);
   color: #fff;
 }
@@ -549,7 +550,7 @@ section.block, .page-hero {
   line-height: 0.98; letter-spacing: -0.03em;
   font-weight: 400; margin-bottom: 16px;
 }
-.cta-title em { font-style: italic; font-weight: 500; color: var(--blush); }
+.cta-title em { font-style: normal; font-weight: 500; color: var(--blush); }
 .cta-sub {
   font-size: 16px; color: rgba(247, 243, 234, 0.78);
   max-width: 46ch; line-height: 1.6;
@@ -850,7 +851,7 @@ footer {
   margin: 0 auto 28px;
 }
 .wl-hero-title em {
-  font-style: italic;
+  font-style: normal;
   background: linear-gradient(120deg, #ffd7c2 0%, #c084fc 40%, #a855f7 80%);
   -webkit-background-clip: text; background-clip: text;
   color: transparent; font-weight: 500;
@@ -1430,7 +1431,13 @@ textarea:focus-visible,
   line-height:1.05; letter-spacing:-.02em; font-weight:500;
   margin:0 0 14px;
 }
-.signup-title em{font-style:italic; color:var(--violet);}
+.signup-title em{
+  font-style: normal;
+  background: linear-gradient(120deg, #ffd7c2 0%, #c084fc 40%, #a855f7 80%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  font-weight: 500;
+}
 .signup-lede{
   font-size:16px; line-height:1.55; color:var(--ink-dim);
   margin:0 0 36px; max-width:520px;

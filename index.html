@@ -465,9 +465,15 @@
 
   @media (max-width: 900px) {
     .hero-scatter { inset: -30px 0 -20px; }
+    /* Shrink tiles + push them to the far edges so they don't compete
+       with the central text on tablet portrait widths. */
+    .hero-mini { width: calc(var(--s, 70px) * 0.7); height: calc(var(--s, 70px) * 0.7); }
   }
-  @media (max-width: 600px) {
-    .hero-mini:nth-child(n+10) { display: none; }
+  @media (max-width: 760px) {
+    /* On mobile, the scattered tiles cover the headline and CTAs.
+       Hide them entirely — the hero reads cleaner without and the
+       live ticker tape at the top already provides ambient motion. */
+    .hero-scatter { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .hero-mini { animation: none; }
@@ -563,7 +569,7 @@
     margin-bottom: 20px;
   }
   .section-title em {
-    font-style: italic;
+    font-style: normal;
     font-weight: 500;
   }
   .section-lede {
@@ -628,8 +634,8 @@
     bottom: 18px;
     z-index: 2;
     font-family: var(--serif);
-    font-style: italic;
-    font-weight: 400;
+    font-style: normal;
+    font-weight: 500;
     font-size: 22px;
     line-height: 1.1;
     letter-spacing: -0.01em;
@@ -833,10 +839,14 @@
     z-index: 3;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 130px 32px 130px;
+    /* Bottom padding trimmed so the section flows naturally into FAQ —
+       previously 130px + 130px from the next section created a 260px
+       dead zone between the device mockup CTAs and "Questions, answered." */
+    padding: 130px 32px 70px;
     text-align: center;
     overflow: hidden;
   }
+  .ps-section .hero-cta-row { margin-top: 40px !important; }
   .ps-head {
     max-width: 720px;
     margin: 0 auto 70px;
@@ -1373,7 +1383,7 @@
     font-weight: 400;
     margin-bottom: 16px;
   }
-  .cta-title em { font-style: italic; font-weight: 500; color: var(--blush); }
+  .cta-title em { font-style: normal; font-weight: 500; color: var(--blush); }
   .cta-sub {
     font-size: 16px;
     color: rgba(247, 243, 234, 0.78);
