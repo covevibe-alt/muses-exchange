@@ -391,21 +391,77 @@
      listener-share × dynamic market cap, divided by 10K shares, plus
      YouTube/popularity/chart boosts. Mirrors computeFairPrice() in
      exchange.html so the ticker shows the same prices as the live app. */
+  /* PRICING CONSTANTS — must stay in lockstep with exchange.html's
+     PRICING object so marketing fair prices match the exchange.
+     If you change one, change the other. */
+  const MUSE_PRICING = {
+    sharesOutstanding: 10000,
+    baseMarketCap:     50000000,
+    capPerArtist:      500000,
+    valuePerListener:  0.03,
+  };
+
   function computeFairPriceMuse(a, totalListeners, totalCap) {
     const listeners = (a && a.monthlyListeners) || 0;
     let marketCap;
     if (totalListeners > 0) {
       marketCap = (listeners / totalListeners) * totalCap;
     } else {
-      marketCap = listeners * 0.03; // fallback
+      marketCap = listeners * MUSE_PRICING.valuePerListener;
     }
-    const base = Math.max(0.01, marketCap / 10000);
+    const base = Math.max(0.01, marketCap / MUSE_PRICING.sharesOutstanding);
     const yt  = (a && a.youtubeBoost)     || 0;
     const pop = (a && a.popularityBoost)  || 0;
     const ch  = (a && a.chartBoost)       || 0;
     return base * (1 + yt + pop + ch);
   }
   window.computeFairPriceMuse = computeFairPriceMuse;
+
+  /* Single source of truth for marketing prices.
+     ===============================================
+     As soon as window.__MUSE_PRICES is available, compute the fair
+     price for every artist exactly once and cache it on
+     `artist.fairPriceMuse`. Every marketing surface — ticker,
+     leaderboard, hero, watchlist, chart, order book, CTA chips,
+     featured cards, big-step demos — reads from this same cached
+     value, so they're guaranteed to display the SAME number.
+
+     This is the same formula the exchange's computeFairPrice uses
+     (modulo a listener-momentum boost ≤±6% that requires history
+     data and an order-flow bias ≤±8% that requires live trading
+     state — neither is available on marketing pages).
+
+     Call ensureFairPrices() before reading prices; it's a no-op if
+     prices are already cached or data isn't loaded yet. */
+  let __pricesCached = false;
+  function ensureFairPrices() {
+    if (__pricesCached) return true;
+    const data = window.__MUSE_PRICES;
+    if (!data || !Array.isArray(data.artists) || !data.artists.length) return false;
+    const totalListeners = data.totalMarketListeners
+      || data.artists.reduce(function (s, a) { return s + ((a && a.monthlyListeners) || 0); }, 0);
+    const totalCap = Math.max(
+      MUSE_PRICING.baseMarketCap,
+      data.artists.length * MUSE_PRICING.capPerArtist
+    );
+    data.artists.forEach(function (a) {
+      a.fairPriceMuse = computeFairPriceMuse(a, totalListeners, totalCap);
+    });
+    // Stash totals so callers don't have to recompute
+    data._marketingTotalListeners = totalListeners;
+    data._marketingTotalCap = totalCap;
+    __pricesCached = true;
+    return true;
+  }
+  window.ensureMarketingFairPrices = ensureFairPrices;
+  // Try immediately; if prices.js hasn't loaded yet, retry on a short interval
+  if (!ensureFairPrices()) {
+    let tries = 0;
+    const t = setInterval(function () {
+      tries++;
+      if (ensureFairPrices() || tries > 80) clearInterval(t);
+    }, 250);
+  }
 
   function hydrateTicker() {
     const track = document.querySelector('[data-ticker-track]');
@@ -436,9 +492,16 @@
       return { txt: arrow + ' ' + Math.abs(c).toFixed(2) + '%', cls: cls };
     };
 
+    // Ensure single source of truth — cache fair prices once before
+    // any UI reads them. Every surface (ticker, leaderboard, hero, CTA
+    // chips, etc.) reads a.fairPriceMuse so the numbers always match.
+    ensureFairPrices();
+
     const items = data.artists.slice();
     const renderItem = function (a) {
-      const price = computeFairPriceMuse(a, totalListeners, totalCap);
+      const price = (a && typeof a.fairPriceMuse === 'number')
+        ? a.fairPriceMuse
+        : computeFairPriceMuse(a, totalListeners, totalCap);
       const c = fmtCh(a.chg24h);
       const slug = slugify(a.name);
       return '<a class="tt-item" href="/artists/' + slug + '" data-tk="' + (a.ticker || '') + '">' +
@@ -480,9 +543,14 @@
     const data = window.__MUSE_PRICES;
     if (!data || !Array.isArray(data.artists) || data.artists.length === 0) return false;
 
-    const totalListeners = (data.totalMarketListeners
-      || data.artists.reduce(function (s, a) { return s + ((a && a.monthlyListeners) || 0); }, 0));
-    const totalCap = Math.max(50000000, data.artists.length * 500000);
+    // Single source of truth — cache fair prices once on a.fairPriceMuse
+    // so every consumer reads the SAME number across all surfaces.
+    ensureFairPrices();
+
+    const totalListeners = data._marketingTotalListeners
+      || data.artists.reduce(function (s, a) { return s + ((a && a.monthlyListeners) || 0); }, 0);
+    const totalCap = data._marketingTotalCap
+      || Math.max(MUSE_PRICING.baseMarketCap, data.artists.length * MUSE_PRICING.capPerArtist);
 
     const byTicker = {};
     data.artists.forEach(function (a) {
@@ -504,7 +572,10 @@
     }
     function priceFor(tk) {
       const a = byTicker[tk];
-      return a ? computeFairPriceMuse(a, totalListeners, totalCap) : null;
+      if (!a) return null;
+      return (typeof a.fairPriceMuse === 'number')
+        ? a.fairPriceMuse
+        : computeFairPriceMuse(a, totalListeners, totalCap);
     }
     function chgFor(tk) {
       const a = byTicker[tk];
@@ -1614,6 +1685,11 @@
             const rotation = ((i * 137) % 30) - 15; // -15..14 deg, deterministic
             const enterDelay = 80 + i * 90; // ms — staggered entrance
 
+            // Single .hero-mini element — image, glow, and animation all
+            // live on the same node so the WHOLE tile (with shadow) floats
+            // together. Previous version had a nested .hero-mini-inner that
+            // animated, which caused the image to drift INSIDE a static
+            // outer box — fixed 2026-05-15.
             const tile = document.createElement('div');
             tile.className = 'hero-mini';
             tile.style.setProperty('--x', pos.l + '%');
@@ -1621,13 +1697,10 @@
             tile.style.setProperty('--s', size + 'px');
             tile.style.setProperty('--r', rotation + 'deg');
             tile.style.setProperty('--enterDelay', (enterDelay / 1000) + 's');
-
-            const inner = document.createElement('div');
-            inner.className = 'hero-mini-inner';
-            inner.style.setProperty('--anim', 'drift' + pos.a);
+            tile.style.setProperty('--anim', 'drift' + pos.a);
             // Vary duration per tile so the patterns desync over time
-            inner.style.setProperty('--dur', (10 + (i % 5) * 1.4) + 's');
-            inner.style.setProperty('--d', ((i % 6) * 0.7) + 's');
+            tile.style.setProperty('--dur', (10 + (i % 5) * 1.4) + 's');
+            tile.style.setProperty('--d', ((i % 6) * 0.7) + 's');
 
             // Real Spotify image; fall back to letter avatar on error
             const img = document.createElement('img');
@@ -1645,17 +1718,16 @@
               fb.textContent = (artist.name || artist.ticker || '?').charAt(0).toUpperCase();
               img.replaceWith(fb);
             };
-            inner.appendChild(img);
+            tile.appendChild(img);
 
-            // Subtle purple→coral overlay so tiles read as a coherent set
+            // Subtle purple→coral overlay
             const glow = document.createElement('div');
             glow.className = 'hero-mini-glow';
-            inner.appendChild(glow);
+            tile.appendChild(glow);
 
-            tile.appendChild(inner);
             container.appendChild(tile);
 
-            // Trigger entrance animation on next frame
+            // Trigger entrance on next frame
             requestAnimationFrame(function () {
               requestAnimationFrame(function () {
                 tile.classList.add('in');
@@ -1806,7 +1878,9 @@
           for (let i = 0; i < count && i < picks.length && i < positions.length; i++) {
             const a = picks[i];
             const pos = positions[i];
-            const price = fairFn(a, totalListeners, totalCap);
+            const price = (typeof a.fairPriceMuse === 'number')
+              ? a.fairPriceMuse
+              : fairFn(a, totalListeners, totalCap);
             const c = fmtCh(a.chg24h);
             const chip = document.createElement('div');
             chip.className = 'muse-cta-chip muse-cta-chip-anim-' + (pos.a || 'A');
