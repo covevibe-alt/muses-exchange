@@ -1972,9 +1972,25 @@ const LEAD_GRADIENTS = {
 function buildLeadData() {
   const data = window.__MUSE_PRICES;
   if (!data || !Array.isArray(data.artists)) return null;
+  const totalListeners = data.totalMarketListeners
+    || data.artists.reduce(function (s, a) { return s + ((a && a.monthlyListeners) || 0); }, 0);
+  const totalCap = Math.max(50000000, data.artists.length * 500000);
+  // Inline fair-price formula (mirrors computeFairPriceMuse in muse-shared.js)
+  // — inlined because muse-shared.js loads after this script block.
+  function fairPrice(a) {
+    var listeners = (a && a.monthlyListeners) || 0;
+    var mCap = totalListeners > 0
+      ? (listeners / totalListeners) * totalCap
+      : listeners * 0.03;
+    var base = Math.max(0.01, mCap / 10000);
+    var yt  = (a && a.youtubeBoost)    || 0;
+    var pop = (a && a.popularityBoost) || 0;
+    var ch  = (a && a.chartBoost)      || 0;
+    return base * (1 + yt + pop + ch);
+  }
   return data.artists.map(a => {
     const chg = (a.chg24h != null) ? a.chg24h : 0;
-    const price = (a.price != null) ? a.price : 0;
+    const price = fairPrice(a);
     return {
       name: a.name,
       t: a.ticker,
@@ -1983,7 +1999,6 @@ function buildLeadData() {
       up: chg >= 0,
       initial: ((a.name || '?')[0] || '?').toUpperCase(),
       gradient: LEAD_GRADIENTS[a.ticker] || "linear-gradient(135deg,#c084fc,#6effb8)",
-      // Deterministic pseudo-volume derived from price × abs(chg) — same as before
       vol: (price * (Math.abs(chg) + 1.2) * 0.11).toFixed(1),
     };
   });

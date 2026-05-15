@@ -289,6 +289,7 @@
     const ch  = (a && a.chartBoost)       || 0;
     return base * (1 + yt + pop + ch);
   }
+  window.computeFairPriceMuse = computeFairPriceMuse;
 
   function hydrateTicker() {
     const track = document.querySelector('[data-ticker-track]');
