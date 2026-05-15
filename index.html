@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="muse-shared.css?v=20260420b">
+<link rel="stylesheet" href="muse-shared.css?v=20260515a">
 <style>
   :root {
     --bg: #0b0910;
@@ -2237,43 +2237,11 @@ renderFAQ();
 })();
 </script>
 
-<script src="muse-shared.js?v=20260427a"></script>
+<script src="muse-shared.js?v=20260515a"></script>
 <script src="muse-artists.js?v=20260419c"></script>
 
-<!-- Hydrate hero floating cards with live prices once data is available.
-     Runs after muse-shared.js so computeFairPriceMuse is available. -->
-<script>
-(function hydrateHeroCards() {
-  var data = window.__MUSE_PRICES;
-  if (!data || !Array.isArray(data.artists)) return;
-  var totalL = data.totalMarketListeners
-    || data.artists.reduce(function (s, a) { return s + ((a && a.monthlyListeners) || 0); }, 0);
-  var totalC = Math.max(50000000, data.artists.length * 500000);
-  var fairFn = window.computeFairPriceMuse || function (a) {
-    var l = (a && a.monthlyListeners) || 0;
-    var mc = totalL > 0 ? (l / totalL) * totalC : l * 0.03;
-    var b = Math.max(0.01, mc / 10000);
-    return b * (1 + ((a&&a.youtubeBoost)||0) + ((a&&a.popularityBoost)||0) + ((a&&a.chartBoost)||0));
-  };
-  document.querySelectorAll('.hero-card-float').forEach(function (card) {
-    var av = card.querySelector('.hcf-avatar');
-    if (!av) return;
-    var tk = av.getAttribute('data-ticker');
-    var artist = data.artists.find(function (a) { return a.ticker === tk; });
-    if (!artist) return;
-    var price = fairFn(artist, totalL, totalC);
-    var chg = (artist.chg24h != null) ? artist.chg24h : 0;
-    var priceEl = card.querySelector('.hcf-price');
-    var chgEl = card.querySelector('.hcf-change');
-    if (priceEl) priceEl.textContent = '$' + price.toFixed(2);
-    if (chgEl) {
-      var arrow = chg > 0.01 ? '▲' : chg < -0.01 ? '▼' : '·';
-      chgEl.textContent = arrow + ' ' + Math.abs(chg).toFixed(2) + '% today';
-      chgEl.className = 'hcf-change ' + (chg > 0.01 ? 'up' : chg < -0.01 ? 'down' : 'flat');
-    }
-  });
-})();
-</script>
+<!-- Hero card / product-showcase / how-it-works price hydration now lives in
+     muse-shared.js → hydrateMarketingSurfaces(). Runs automatically. -->
 
 </body>
 </html>
