@@ -360,10 +360,15 @@
     /* Drop to 2x2 before the cells get cramped. */
     .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 24px 32px; max-width: 480px; }
   }
-  /* ----- Scattered hero tiles (Cosmos-style) ----- */
+  /* ----- Scattered hero tiles (Cosmos-style with real artist photos) -----
+     Layout: tiles drift continuously around the hero, varying sizes,
+     four different drift patterns (driftA/B/C/D) assigned per tile so
+     no two tiles move in lockstep. Each tile combines a parent
+     drift transform with an inner rotate transform so we can animate
+     rotation and translation independently. */
   .hero-scatter {
     position: absolute;
-    inset: 0;
+    inset: -60px 0 -40px;
     pointer-events: none;
     z-index: 1;
     overflow: visible;
@@ -372,40 +377,108 @@
     position: absolute;
     left: var(--x, 50%);
     top: var(--y, 50%);
-    width: var(--s, 64px);
-    height: var(--s, 64px);
-    border-radius: clamp(14px, calc(var(--s) * 0.22), 22px);
+    width: var(--s, 70px);
+    height: var(--s, 70px);
+    border-radius: clamp(14px, calc(var(--s) * 0.2), 22px);
+    overflow: hidden;
+    box-shadow:
+      0 22px 50px rgba(0, 0, 0, 0.55),
+      0 6px 14px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+    will-change: transform, opacity;
+    opacity: 0;
+    transform: scale(0.4);
+    /* Entrance: stagger-in via JS sets --enterDelay */
+    transition:
+      opacity 1.1s cubic-bezier(.2,.7,.2,1) var(--enterDelay, 0s),
+      transform 1.1s cubic-bezier(.2,.7,.2,1) var(--enterDelay, 0s);
+  }
+  .hero-mini.in {
+    opacity: 0.95;
+    transform: scale(1) rotate(var(--r, 0deg));
+  }
+  /* Inner wrapper handles continuous drift (separate from rotate so they
+     compose cleanly). Use a nested element so the rotation on .hero-mini
+     and the translate on .hero-mini-inner don't fight each other. */
+  .hero-mini-inner {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    animation: var(--anim, driftA) var(--dur, 14s) ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  .hero-mini-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    /* Subtle warm-cool tint so they read as a coherent set against
+       the dark hero background. */
+    filter: saturate(1.05) contrast(1.02);
+  }
+  .hero-mini-glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(192, 132, 252, 0.18),
+      transparent 40%,
+      rgba(255, 138, 101, 0.14)
+    );
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+  /* Letter-avatar fallback used when image fails to load or before data
+     loads. Same gradient palette as before. */
+  .hero-mini-fallback {
+    width: 100%;
+    height: 100%;
     display: grid;
     place-items: center;
+    background: var(--fallback-bg, linear-gradient(135deg, #7c3aed, #4c1d95));
     color: rgba(255, 255, 255, 0.92);
     font-family: var(--serif);
     font-weight: 600;
     font-size: calc(var(--s) * 0.42);
-    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45),
-                inset 0 1px 0 rgba(255, 255, 255, 0.12),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-    transform: rotate(var(--r, 0deg));
-    will-change: transform;
-    animation: hero-mini-float 9s ease-in-out infinite;
-    animation-delay: var(--d, 0s);
-    opacity: 0;
-    transition: opacity .9s ease;
   }
-  .hero-cosmos .hero-mini { opacity: 0.9; }
-  @keyframes hero-mini-float {
-    0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }
-    50%      { transform: rotate(var(--r, 0deg)) translateY(-10px); }
+
+  /* Four drift patterns. Each translates AND subtly rotates so the
+     motion feels organic, not mechanical. Numbers chosen so the path
+     is contained within ~24px so tiles never collide with the central
+     text. */
+  @keyframes driftA {
+    0%, 100% { transform: translate(0, 0)   rotate(0deg); }
+    25%      { transform: translate(8px, -14px) rotate(2deg); }
+    50%      { transform: translate(-4px, -22px) rotate(-1deg); }
+    75%      { transform: translate(-10px, -8px) rotate(1.5deg); }
   }
+  @keyframes driftB {
+    0%, 100% { transform: translate(0, 0)    rotate(0deg); }
+    33%      { transform: translate(-14px, 10px) rotate(-3deg); }
+    66%      { transform: translate(10px, 18px)  rotate(2.5deg); }
+  }
+  @keyframes driftC {
+    0%, 100% { transform: translate(0, 0)    rotate(0deg); }
+    20%      { transform: translate(12px, 8px)   rotate(2deg); }
+    50%      { transform: translate(18px, -6px)  rotate(-1deg); }
+    80%      { transform: translate(-6px, -14px) rotate(1deg); }
+  }
+  @keyframes driftD {
+    0%, 100% { transform: translate(0, 0)    rotate(0deg); }
+    50%      { transform: translate(-16px, -16px) rotate(-2.5deg); }
+  }
+
   @media (max-width: 900px) {
-    .hero-mini { transform: rotate(var(--r, 0deg)) scale(0.7); }
+    .hero-scatter { inset: -30px 0 -20px; }
   }
   @media (max-width: 600px) {
-    /* Keep just a few — the rest are decorative and would clutter mobile. */
-    .hero-mini:nth-child(n+9) { display: none; }
-    .hero-mini { transform: rotate(var(--r, 0deg)) scale(0.55); }
+    /* Keep just a few on mobile — the rest cluttered the layout. */
+    .hero-mini:nth-child(n+10) { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .hero-mini { animation: none; }
+    .hero-mini-inner { animation: none; }
   }
   .hero-stat-num {
     font-family: var(--serif);
@@ -1596,28 +1669,14 @@
 <!-- ============ NAV (shared) ============ -->
 <div id="nav-mount"></div>
 
-<!-- ============ HERO (Cosmos-style — centered, scattered tiles) ============ -->
+<!-- ============ HERO (Cosmos-style — centered, scattered artist photos) ============ -->
 <section class="hero hero-cosmos" id="top" data-no-spotlight>
 
-  <!-- Floating scattered artist tiles behind the content. Tiles use
-       --x / --y for position (% of section), --r for rotation, --s for size,
-       --d for animation delay. All are decorative — aria-hidden. -->
-  <div class="hero-scatter" aria-hidden="true">
-    <div class="hero-mini" style="--x:5%;  --y:14%; --r:-9deg; --s:74px; --d:0s;   background:linear-gradient(135deg,#ff8a65,#c084fc);">S</div>
-    <div class="hero-mini" style="--x:88%; --y:8%;  --r:6deg;  --s:88px; --d:1.1s; background:linear-gradient(135deg,#7c3aed,#4c1d95);">B</div>
-    <div class="hero-mini" style="--x:13%; --y:42%; --r:8deg;  --s:64px; --d:2.4s; background:linear-gradient(135deg,#cfff5e,#6effb8);">T</div>
-    <div class="hero-mini" style="--x:78%; --y:48%; --r:-5deg; --s:80px; --d:0.6s; background:linear-gradient(135deg,#a855f7,#ff8a65);">C</div>
-    <div class="hero-mini" style="--x:2%;  --y:70%; --r:11deg; --s:70px; --d:1.7s; background:linear-gradient(135deg,#ff6b8a,#ff8a65);">P</div>
-    <div class="hero-mini" style="--x:92%; --y:72%; --r:-7deg; --s:62px; --d:3.0s; background:linear-gradient(135deg,#6effb8,#c084fc);">B</div>
-    <div class="hero-mini" style="--x:22%; --y:84%; --r:4deg;  --s:58px; --d:1.4s; background:linear-gradient(135deg,#c084fc,#a855f7);">O</div>
-    <div class="hero-mini" style="--x:68%; --y:88%; --r:-9deg; --s:66px; --d:2.1s; background:linear-gradient(135deg,#ffd7c2,#c084fc);">A</div>
-    <div class="hero-mini" style="--x:30%; --y:5%;  --r:-12deg;--s:52px; --d:0.9s; background:linear-gradient(135deg,#4c1d95,#a855f7);">K</div>
-    <div class="hero-mini" style="--x:62%; --y:2%;  --r:10deg; --s:54px; --d:2.7s; background:linear-gradient(135deg,#6effb8,#cfff5e);">D</div>
-    <div class="hero-mini" style="--x:7%;  --y:30%; --r:-3deg; --s:46px; --d:1.8s; background:linear-gradient(135deg,#ff8a65,#ffd7c2);">L</div>
-    <div class="hero-mini" style="--x:91%; --y:32%; --r:9deg;  --s:48px; --d:0.4s; background:linear-gradient(135deg,#7c3aed,#c084fc);">W</div>
-    <div class="hero-mini" style="--x:18%; --y:62%; --r:-6deg; --s:50px; --d:2.3s; background:linear-gradient(135deg,#a855f7,#ff6b8a);">R</div>
-    <div class="hero-mini" style="--x:82%; --y:60%; --r:13deg; --s:52px; --d:1.2s; background:linear-gradient(135deg,#ff6b8a,#c084fc);">G</div>
-  </div>
+  <!-- Floating scattered artist photo tiles behind the content.
+       Populated by muse-shared.js → initHeroScatter() using real
+       artist images from window.__MUSE_PRICES.
+       Falls back to letter avatars if prices data is unavailable. -->
+  <div class="hero-scatter" data-cosmos aria-hidden="true"></div>
 
   <!-- Centered content -->
   <div class="hero-inner">
@@ -1641,25 +1700,6 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
       See how it works
     </a>
-  </div>
-
-  <div class="hero-stats reveal">
-    <div>
-      <div class="hero-stat-num" data-listed-count data-count-up="105">105</div>
-      <div class="hero-stat-label">Artists listed</div>
-    </div>
-    <div>
-      <div class="hero-stat-num" data-count-up="$10K">$10K</div>
-      <div class="hero-stat-label">Virtual starting balance</div>
-    </div>
-    <div>
-      <div class="hero-stat-num" data-count-up="30&nbsp;min">30&nbsp;min</div>
-      <div class="hero-stat-label">Price refresh cadence</div>
-    </div>
-    <div>
-      <div class="hero-stat-num" data-count-up="$0">$0</div>
-      <div class="hero-stat-label">Real money at risk</div>
-    </div>
   </div>
 </section>
 

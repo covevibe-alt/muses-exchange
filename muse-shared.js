@@ -1423,23 +1423,52 @@
         opacity: 0;
         transform: translateY(8px) rotate(var(--r, 0deg)) scale(0.95);
         transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1);
-        animation: muse-chip-float 9s ease-in-out infinite;
-        animation-delay: var(--d, 0s);
       }
       .muse-cta-chip.in {
         opacity: 1;
-        transform: translateY(0) rotate(var(--r, 0deg)) scale(1);
+        /* Once revealed, the per-animation-pattern keyframes take over
+           the transform; we don't override here so they can run. */
       }
       .muse-cta-chip .chip-tk { color: rgba(247, 243, 234, 0.92); }
       .muse-cta-chip .chip-up   { color: #6effb8; }
       .muse-cta-chip .chip-down { color: #ff6b8a; }
       .muse-cta-chip .chip-flat { color: rgba(247, 243, 234, 0.5); }
+      /* Four drift patterns shared by hero tiles and CTA chips.
+         Each is contained within ~24px of motion. */
+      .muse-cta-chip-anim-A { animation: muse-driftA 13s ease-in-out infinite; animation-delay: var(--d, 0s); }
+      .muse-cta-chip-anim-B { animation: muse-driftB 15s ease-in-out infinite; animation-delay: var(--d, 0s); }
+      .muse-cta-chip-anim-C { animation: muse-driftC 11s ease-in-out infinite; animation-delay: var(--d, 0s); }
+      .muse-cta-chip-anim-D { animation: muse-driftD 17s ease-in-out infinite; animation-delay: var(--d, 0s); }
+      @keyframes muse-driftA {
+        0%, 100% { transform: translate(0, 0)   rotate(var(--r, 0deg)); }
+        25%      { transform: translate(8px, -14px) rotate(calc(var(--r, 0deg) + 2deg)); }
+        50%      { transform: translate(-4px, -22px) rotate(calc(var(--r, 0deg) - 1deg)); }
+        75%      { transform: translate(-10px, -8px) rotate(calc(var(--r, 0deg) + 1.5deg)); }
+      }
+      @keyframes muse-driftB {
+        0%, 100% { transform: translate(0, 0)    rotate(var(--r, 0deg)); }
+        33%      { transform: translate(-14px, 10px) rotate(calc(var(--r, 0deg) - 3deg)); }
+        66%      { transform: translate(10px, 18px)  rotate(calc(var(--r, 0deg) + 2.5deg)); }
+      }
+      @keyframes muse-driftC {
+        0%, 100% { transform: translate(0, 0)    rotate(var(--r, 0deg)); }
+        20%      { transform: translate(12px, 8px)   rotate(calc(var(--r, 0deg) + 2deg)); }
+        50%      { transform: translate(18px, -6px)  rotate(calc(var(--r, 0deg) - 1deg)); }
+        80%      { transform: translate(-6px, -14px) rotate(calc(var(--r, 0deg) + 1deg)); }
+      }
+      @keyframes muse-driftD {
+        0%, 100% { transform: translate(0, 0)    rotate(var(--r, 0deg)); }
+        50%      { transform: translate(-16px, -16px) rotate(calc(var(--r, 0deg) - 2.5deg)); }
+      }
+      /* Legacy keyframe kept for any inline-style consumers */
       @keyframes muse-chip-float {
         0%, 100% { translate: 0 0; }
         50%      { translate: 0 -6px; }
       }
       .cta-card { position: relative; z-index: 1; }
-      .cta-strip > * { position: relative; }
+      /* Keep the inner card stacked above the scatter, but DON'T blanket
+         every direct child with position:relative — that was killing the
+         scatter's absolute positioning and collapsing it to 0px height. */
 
       /* Count-up — visual stability while value is 0 */
       [data-count-up] { font-variant-numeric: tabular-nums; }
@@ -1489,6 +1518,192 @@
 
     /* -------------------------------------------------------
        2. Scattered live-ticker chips on .cta-strip
+       ------------------------------------------------------- */
+    /* -------------------------------------------------------
+       Hero scatter — Cosmos-style artist photo tiles
+       -------------------------------------------------------
+       Populates [data-cosmos] container with 14-22 floating artist
+       image tiles. Uses real images from window.__MUSE_PRICES.
+       Cards are positioned with explicit spread points, sized in
+       three buckets (s/m/l), and assigned one of four drift
+       animations so no two tiles move in sync. Tiles fade+scale in
+       with a stagger so the hero "blooms" on load. */
+    (function initHeroScatter() {
+      const containers = document.querySelectorAll('[data-cosmos]');
+      if (!containers.length) return;
+
+      // Position grid — spread tiles across the hero canvas while
+      // keeping a safe corridor through the middle (35%-65% horizontal,
+      // 18%-72% vertical) so they don't cover the central text.
+      // Each entry: top%, left%, size bucket, animation pattern.
+      // 22 tiles total — JS picks the right count for viewport.
+      const POSITIONS = [
+        // Far left column
+        { t: 4,   l: 3,   sz: 'm', a: 'A' },
+        { t: 28,  l: 7,   sz: 's', a: 'B' },
+        { t: 50,  l: 2,   sz: 'm', a: 'C' },
+        { t: 70,  l: 6,   sz: 'l', a: 'A' },
+        { t: 88,  l: 12,  sz: 's', a: 'D' },
+        // Left-middle
+        { t: 10,  l: 22,  sz: 'm', a: 'D' },
+        { t: 38,  l: 18,  sz: 's', a: 'C' },
+        { t: 78,  l: 22,  sz: 'm', a: 'B' },
+        // Top center (just above text)
+        { t: -2,  l: 38,  sz: 's', a: 'B' },
+        { t: -4,  l: 58,  sz: 'm', a: 'A' },
+        // Bottom center (just below text)
+        { t: 95,  l: 40,  sz: 's', a: 'C' },
+        { t: 92,  l: 60,  sz: 'm', a: 'D' },
+        // Right-middle
+        { t: 12,  l: 76,  sz: 'l', a: 'C' },
+        { t: 40,  l: 80,  sz: 's', a: 'A' },
+        { t: 76,  l: 76,  sz: 'm', a: 'B' },
+        // Far right column
+        { t: 4,   l: 92,  sz: 'm', a: 'D' },
+        { t: 30,  l: 95,  sz: 's', a: 'B' },
+        { t: 54,  l: 93,  sz: 'm', a: 'A' },
+        { t: 72,  l: 90,  sz: 's', a: 'C' },
+        { t: 92,  l: 86,  sz: 'l', a: 'D' },
+        // Extra accents
+        { t: 60,  l: 14,  sz: 's', a: 'B' },
+        { t: 22,  l: 88,  sz: 's', a: 'A' },
+      ];
+
+      // Size buckets in pixels — varied for visual depth
+      const SIZES = { s: 54, m: 76, l: 104 };
+
+      // Pre-defined gradient fallbacks (for letter-avatar mode when
+      // image fails to load)
+      const FALLBACK_GRADIENTS = [
+        'linear-gradient(135deg,#ff8a65,#c084fc)',
+        'linear-gradient(135deg,#7c3aed,#4c1d95)',
+        'linear-gradient(135deg,#cfff5e,#6effb8)',
+        'linear-gradient(135deg,#a855f7,#ff8a65)',
+        'linear-gradient(135deg,#ff6b8a,#ff8a65)',
+        'linear-gradient(135deg,#6effb8,#c084fc)',
+        'linear-gradient(135deg,#c084fc,#a855f7)',
+        'linear-gradient(135deg,#ffd7c2,#c084fc)',
+      ];
+
+      function mount() {
+        const data = window.__MUSE_PRICES;
+        if (!data || !Array.isArray(data.artists) || !data.artists.length) return false;
+
+        containers.forEach(function (container) {
+          // Don't double-mount
+          if (container.children.length) return;
+
+          // Pick top artists by monthly listeners — these have the
+          // most recognizable photos.
+          const byListeners = data.artists
+            .slice()
+            .filter(function (a) { return a && a.image; })
+            .sort(function (a, b) { return (b.monthlyListeners || 0) - (a.monthlyListeners || 0); });
+          if (!byListeners.length) return;
+
+          // Tile count for viewport
+          const w = window.innerWidth;
+          const count = w < 600 ? 9 : w < 900 ? 14 : w < 1280 ? 18 : POSITIONS.length;
+
+          const picks = byListeners.slice(0, count);
+
+          picks.forEach(function (artist, i) {
+            const pos = POSITIONS[i];
+            if (!pos) return;
+            const size = SIZES[pos.sz] || SIZES.m;
+            const rotation = ((i * 137) % 30) - 15; // -15..14 deg, deterministic
+            const enterDelay = 80 + i * 90; // ms — staggered entrance
+
+            const tile = document.createElement('div');
+            tile.className = 'hero-mini';
+            tile.style.setProperty('--x', pos.l + '%');
+            tile.style.setProperty('--y', pos.t + '%');
+            tile.style.setProperty('--s', size + 'px');
+            tile.style.setProperty('--r', rotation + 'deg');
+            tile.style.setProperty('--enterDelay', (enterDelay / 1000) + 's');
+
+            const inner = document.createElement('div');
+            inner.className = 'hero-mini-inner';
+            inner.style.setProperty('--anim', 'drift' + pos.a);
+            // Vary duration per tile so the patterns desync over time
+            inner.style.setProperty('--dur', (10 + (i % 5) * 1.4) + 's');
+            inner.style.setProperty('--d', ((i % 6) * 0.7) + 's');
+
+            // Real Spotify image; fall back to letter avatar on error
+            const img = document.createElement('img');
+            img.className = 'hero-mini-img';
+            img.src = artist.image;
+            img.alt = ''; // decorative — name is in the hero text below
+            img.loading = i < 8 ? 'eager' : 'lazy';
+            img.decoding = 'async';
+            img.referrerPolicy = 'no-referrer';
+            img.onerror = function () {
+              // Image failed — replace with gradient + letter
+              const fb = document.createElement('div');
+              fb.className = 'hero-mini-fallback';
+              fb.style.background = FALLBACK_GRADIENTS[i % FALLBACK_GRADIENTS.length];
+              fb.textContent = (artist.name || artist.ticker || '?').charAt(0).toUpperCase();
+              img.replaceWith(fb);
+            };
+            inner.appendChild(img);
+
+            // Subtle purple→coral overlay so tiles read as a coherent set
+            const glow = document.createElement('div');
+            glow.className = 'hero-mini-glow';
+            inner.appendChild(glow);
+
+            tile.appendChild(inner);
+            container.appendChild(tile);
+
+            // Trigger entrance animation on next frame
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () {
+                tile.classList.add('in');
+              });
+            });
+          });
+        });
+        return true;
+      }
+
+      if (!mount()) {
+        let tries = 0;
+        const t = setInterval(function () {
+          tries++;
+          if (mount() || tries > 80) clearInterval(t);
+        }, 250);
+      }
+
+      /* Subtle cursor parallax — applied at the CONTAINER level so it
+         composes cleanly with the per-tile drift animations. The whole
+         scatter layer drifts ~12px toward the cursor, giving the scene
+         a sense of depth without fighting the individual transforms. */
+      if (!reduced && window.matchMedia('(pointer: fine)').matches) {
+        containers.forEach(function (container) {
+          const hero = container.closest('.hero');
+          if (!hero) return;
+          container.style.transition = 'transform .8s cubic-bezier(.2,.7,.2,1)';
+          let raf = null;
+          hero.addEventListener('mousemove', function (e) {
+            const rect = hero.getBoundingClientRect();
+            const cx = (e.clientX - rect.left) / rect.width  - 0.5;
+            const cy = (e.clientY - rect.top)  / rect.height - 0.5;
+            if (raf) cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(function () {
+              container.style.transform =
+                'translate(' + (cx * -14).toFixed(1) + 'px, ' +
+                (cy * -10).toFixed(1) + 'px)';
+            });
+          });
+          hero.addEventListener('mouseleave', function () {
+            container.style.transform = 'translate(0, 0)';
+          });
+        });
+      }
+    })();
+
+    /* -------------------------------------------------------
+       CTA scatter — same engine, ticker-chip flavor
        ------------------------------------------------------- */
     (function initCtaScatter() {
       const strips = document.querySelectorAll('.cta-strip');
@@ -1546,18 +1761,33 @@
           return { txt: arrow + ' ' + Math.abs(c).toFixed(2) + '%', cls };
         }
 
-        // Predefined positions around the gradient card.
-        // Each entry: top%, left%, rotation deg, animation delay s
-        // Designed to NOT cover the title/buttons even on narrow widths.
+        // Chip positions spread across the FULL strip area, including
+        // the middle (overlapping the CTA card edges). Each entry:
+        //   t/l = top/left % within the strip's inset area
+        //   r   = initial rotation in deg
+        //   d   = animation delay in seconds
+        //   a   = drift animation pattern ('A' | 'B' | 'C' | 'D')
+        // Layout choices:
+        //   - Top row: 3 chips spread across the top
+        //   - Middle: chips on both sides AND across the middle
+        //   - Bottom row: 3 chips spread across the bottom
+        //   - A few chips overlap the card slightly for depth
         const positions = [
-          { t: -4,  l: 4,   r: -5,   d: 0,   side: 'tl' },
-          { t: -2,  l: 78,  r: 4,    d: 1.5, side: 'tr' },
-          { t: 110, l: 8,   r: 3,    d: 0.8, side: 'bl' },
-          { t: 108, l: 72,  r: -4,   d: 2.3, side: 'br' },
-          { t: 50,  l: -8,  r: -7,   d: 1.0, side: 'l'  },
-          { t: 50,  l: 94,  r: 6,    d: 3.0, side: 'r'  },
-          { t: 22,  l: -12, r: 8,    d: 1.8, side: 'l2' },
-          { t: 80,  l: 96,  r: -3,   d: 2.6, side: 'r2' },
+          // Top band
+          { t: -8,  l: 8,   r: -6,  d: 0.0, a: 'A' },
+          { t: -10, l: 44,  r: 4,   d: 0.6, a: 'C' },
+          { t: -6,  l: 78,  r: 5,   d: 1.4, a: 'B' },
+          // Middle band (sides + center for depth)
+          { t: 30,  l: -6,  r: -8,  d: 0.4, a: 'D' },
+          { t: 38,  l: 32,  r: 6,   d: 2.1, a: 'A' },
+          { t: 32,  l: 92,  r: 7,   d: 1.8, a: 'C' },
+          { t: 60,  l: -10, r: 9,   d: 2.5, a: 'B' },
+          { t: 56,  l: 60,  r: -5,  d: 0.9, a: 'D' },
+          { t: 64,  l: 96,  r: -7,  d: 3.0, a: 'A' },
+          // Bottom band
+          { t: 102, l: 12,  r: 4,   d: 1.2, a: 'C' },
+          { t: 106, l: 50,  r: -6,  d: 2.6, a: 'B' },
+          { t: 100, l: 80,  r: 3,   d: 1.6, a: 'D' },
         ];
 
         strips.forEach(function (strip) {
@@ -1567,10 +1797,11 @@
           wrap.className = 'muse-cta-scatter';
           wrap.setAttribute('aria-hidden', 'true');
 
-          // Use up to N chips depending on viewport
-          const isSmall = window.innerWidth < 760;
-          const isMedium = window.innerWidth < 1100;
-          const count = isSmall ? 3 : isMedium ? 5 : 8;
+          // Tile count varies with viewport: bigger screens get the
+          // full spread; mobile keeps just a handful so the layout
+          // doesn't clutter the CTA.
+          const w = window.innerWidth;
+          const count = w < 600 ? 4 : w < 900 ? 7 : w < 1280 ? 10 : 12;
 
           for (let i = 0; i < count && i < picks.length && i < positions.length; i++) {
             const a = picks[i];
@@ -1578,7 +1809,7 @@
             const price = fairFn(a, totalListeners, totalCap);
             const c = fmtCh(a.chg24h);
             const chip = document.createElement('div');
-            chip.className = 'muse-cta-chip';
+            chip.className = 'muse-cta-chip muse-cta-chip-anim-' + (pos.a || 'A');
             chip.style.setProperty('--r', pos.r + 'deg');
             chip.style.setProperty('--d', pos.d + 's');
             chip.style.top = pos.t + '%';
