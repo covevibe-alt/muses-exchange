@@ -2060,35 +2060,57 @@ if (!renderLeaderboards()) {
 }
 
 /* ============ FEATURED ARTISTS ============ */
-const FEATURED = [
-  {
-    name: "Sabrina Carpenter", t: "SABR", price: 142.80, chg: 8.42, up: true,
-    gradient: "linear-gradient(135deg, #ff8a65, #c084fc)",
-    initial: "S", tag: "Trending",
-    streams: "2.4B", genre: "Pop",
-    points: "M0 44 L30 48 L60 38 L90 42 L120 28 L150 32 L180 20 L210 18 L240 12 L270 8 L300 6"
-  },
-  {
-    name: "Bad Bunny", t: "BNNY", price: 318.44, chg: 2.17, up: true,
-    gradient: "linear-gradient(135deg, #7c3aed, #4c1d95)",
-    initial: "B", tag: "Blue chip",
-    streams: "8.1B", genre: "Latin",
-    points: "M0 36 L30 32 L60 40 L90 28 L120 32 L150 24 L180 28 L210 18 L240 22 L270 14 L300 16"
-  },
-  {
-    name: "Chappell Roan", t: "CHPL", price: 96.12, chg: -1.34, up: false,
-    gradient: "linear-gradient(135deg, #a855f7, #ff8a65)",
-    initial: "C", tag: "Volatile",
-    streams: "980M", genre: "Pop",
-    points: "M0 20 L30 24 L60 18 L90 28 L120 24 L150 34 L180 30 L210 40 L240 36 L270 44 L300 42"
-  },
-  {
-    name: "Tyla", t: "TYLA", price: 74.30, chg: 5.91, up: true,
-    gradient: "linear-gradient(135deg, #cfff5e, #6effb8)",
-    initial: "T", tag: "Rising",
-    streams: "612M", genre: "Afropop",
-    points: "M0 48 L30 42 L60 44 L90 36 L120 30 L150 34 L180 22 L210 26 L240 14 L270 18 L300 8"
-  },
+// Featured cards pull live data from window.__MUSE_PRICES when available.
+// Layout meta (gradient, tag, sparkline points) is static — only prices
+// and listener counts hydrate from real data.
+var FEATURED_META = {
+  SABR: { gradient: "linear-gradient(135deg, #ff8a65, #c084fc)", tag: "Trending",
+           points: "M0 44 L30 48 L60 38 L90 42 L120 28 L150 32 L180 20 L210 18 L240 12 L270 8 L300 6" },
+  BNNY: { gradient: "linear-gradient(135deg, #7c3aed, #4c1d95)", tag: "Blue chip",
+           points: "M0 36 L30 32 L60 40 L90 28 L120 32 L150 24 L180 28 L210 18 L240 22 L270 14 L300 16" },
+  CHPL: { gradient: "linear-gradient(135deg, #a855f7, #ff8a65)", tag: "Volatile",
+           points: "M0 20 L30 24 L60 18 L90 28 L120 24 L150 34 L180 30 L210 40 L240 36 L270 44 L300 42" },
+  TYLA: { gradient: "linear-gradient(135deg, #cfff5e, #6effb8)", tag: "Rising",
+           points: "M0 48 L30 42 L60 44 L90 36 L120 30 L150 34 L180 22 L210 26 L240 14 L270 18 L300 8" },
+};
+var FEATURED_TICKERS = ["SABR", "BNNY", "CHPL", "TYLA"];
+function buildFeatured() {
+  var data = window.__MUSE_PRICES;
+  if (!data || !Array.isArray(data.artists)) return null;
+  var totalL = data.totalMarketListeners
+    || data.artists.reduce(function (s, a) { return s + ((a && a.monthlyListeners) || 0); }, 0);
+  var totalC = Math.max(50000000, data.artists.length * 500000);
+  function fmtListeners(n) {
+    if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+    if (n >= 1e6) return (n / 1e6).toFixed(0) + 'M';
+    return String(n);
+  }
+  return FEATURED_TICKERS.map(function (tk) {
+    var a = data.artists.find(function (x) { return x.ticker === tk; });
+    if (!a) return null;
+    var meta = FEATURED_META[tk] || {};
+    var listeners = (a.monthlyListeners) || 0;
+    var mCap = totalL > 0 ? (listeners / totalL) * totalC : listeners * 0.03;
+    var base = Math.max(0.01, mCap / 10000);
+    var price = base * (1 + ((a.youtubeBoost)||0) + ((a.popularityBoost)||0) + ((a.chartBoost)||0));
+    var chg = (a.chg24h != null) ? a.chg24h : 0;
+    return {
+      name: a.name, t: tk, price: price, chg: chg, up: chg >= 0,
+      gradient: meta.gradient || "linear-gradient(135deg,#c084fc,#6effb8)",
+      initial: (a.name || '?')[0].toUpperCase(),
+      tag: meta.tag || "Listed",
+      streams: fmtListeners(listeners),
+      genre: a.genre || "Pop",
+      points: meta.points || "M0 30 L300 30"
+    };
+  }).filter(Boolean);
+}
+var FEATURED = buildFeatured() || [
+  // Static fallback if prices.js hasn't loaded yet
+  { name: "Sabrina Carpenter", t: "SABR", price: 142.80, chg: 8.42, up: true,
+    gradient: "linear-gradient(135deg, #ff8a65, #c084fc)", initial: "S", tag: "Trending",
+    streams: "68M", genre: "Pop",
+    points: "M0 44 L30 48 L60 38 L90 42 L120 28 L150 32 L180 20 L210 18 L240 12 L270 8 L300 6" },
 ];
 
 function renderFeatured() {
@@ -2218,7 +2240,40 @@ renderFAQ();
 <script src="muse-shared.js?v=20260427a"></script>
 <script src="muse-artists.js?v=20260419c"></script>
 
-<!-- Compete slider script moved to exchange.html. -->
+<!-- Hydrate hero floating cards with live prices once data is available.
+     Runs after muse-shared.js so computeFairPriceMuse is available. -->
+<script>
+(function hydrateHeroCards() {
+  var data = window.__MUSE_PRICES;
+  if (!data || !Array.isArray(data.artists)) return;
+  var totalL = data.totalMarketListeners
+    || data.artists.reduce(function (s, a) { return s + ((a && a.monthlyListeners) || 0); }, 0);
+  var totalC = Math.max(50000000, data.artists.length * 500000);
+  var fairFn = window.computeFairPriceMuse || function (a) {
+    var l = (a && a.monthlyListeners) || 0;
+    var mc = totalL > 0 ? (l / totalL) * totalC : l * 0.03;
+    var b = Math.max(0.01, mc / 10000);
+    return b * (1 + ((a&&a.youtubeBoost)||0) + ((a&&a.popularityBoost)||0) + ((a&&a.chartBoost)||0));
+  };
+  document.querySelectorAll('.hero-card-float').forEach(function (card) {
+    var av = card.querySelector('.hcf-avatar');
+    if (!av) return;
+    var tk = av.getAttribute('data-ticker');
+    var artist = data.artists.find(function (a) { return a.ticker === tk; });
+    if (!artist) return;
+    var price = fairFn(artist, totalL, totalC);
+    var chg = (artist.chg24h != null) ? artist.chg24h : 0;
+    var priceEl = card.querySelector('.hcf-price');
+    var chgEl = card.querySelector('.hcf-change');
+    if (priceEl) priceEl.textContent = '$' + price.toFixed(2);
+    if (chgEl) {
+      var arrow = chg > 0.01 ? '▲' : chg < -0.01 ? '▼' : '·';
+      chgEl.textContent = arrow + ' ' + Math.abs(chg).toFixed(2) + '% today';
+      chgEl.className = 'hcf-change ' + (chg > 0.01 ? 'up' : chg < -0.01 ? 'down' : 'flat');
+    }
+  });
+})();
 </script>
+
 </body>
 </html>
