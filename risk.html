@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="muse-shared.css?v=20260422a">
+<link rel="stylesheet" href="muse-shared.css?v=20260515a">
 </head>
 <body data-page="risk">
 
@@ -116,8 +116,32 @@
   </div>
 </section>
 
+<!-- ============ CTA ============ -->
+<div class="cta-strip">
+  <div class="cta-card">
+    <div class="cta-inner">
+      <div>
+        <h2 class="cta-title reveal">Understand the risks —<br><em>then try it free.</em></h2>
+        <p class="cta-sub reveal">No real money, no deposits, no KYC. Sign up free with $10,000 in virtual credits and paper-trade <span data-listed-count>105</span> artists.</p>
+      </div>
+      <div class="cta-actions reveal">
+        <a class="btn-primary" href="/signup">Sign up — it's free <svg><use href="#i-arrow-up-right"/></svg></a>
+        <a class="btn-ghost" href="/faq">Read the FAQ</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="footer-mount"></div>
 
-<script src="muse-shared.js?v=20260427a"></script>
+<script src="muse-shared.js?v=20260515a"></script>
+<script src="app/prices.js" defer onerror="console.warn('app/prices.js not found')"></script>
+<script>
+(function(){
+  var apply = function(n){ if(!n||n<1)return; document.querySelectorAll('[data-listed-count]').forEach(function(el){el.textContent=n;}); };
+  var check = function(){ if(window.__MUSE_PRICES&&window.__MUSE_PRICES.artists){apply(window.__MUSE_PRICES.artists.length);return true;} return false; };
+  if(!check()){var tries=0;var t=setInterval(function(){tries++;if(check()||tries>40)clearInterval(t);},250);}
+})();
+</script>
 </body>
 </html>
