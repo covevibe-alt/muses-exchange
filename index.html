@@ -189,13 +189,21 @@
   /* .nav-signin / .nav-cta-wrap / responsive hide rules live in muse-shared.css */
   .nav-menu-btn { display: none; }
 
-  /* ============ Hero ============ */
-  .hero {
+  /* ============ Hero (Cosmos-style centered layout) ============ */
+  .hero.hero-cosmos {
     position: relative;
     z-index: 2;
     max-width: var(--container);
     margin: 0 auto;
-    padding: 70px 32px 50px;
+    padding: 100px 32px 90px;
+    text-align: center;
+    overflow: visible;
+  }
+  .hero.hero-cosmos .hero-inner {
+    position: relative;
+    z-index: 3;
+    max-width: 880px;
+    margin: 0 auto;
   }
   .hero-eyebrow {
     display: inline-flex;
@@ -211,6 +219,7 @@
     margin-bottom: 32px;
     color: var(--violet);
   }
+  .hero.hero-cosmos .hero-eyebrow { margin-bottom: 28px; }
   .hero-eyebrow-dot {
     width: 22px; height: 22px;
     border-radius: 999px;
@@ -242,14 +251,18 @@
     margin-bottom: 28px;
     max-width: 16ch;
   }
+  .hero.hero-cosmos .hero-title {
+    margin: 0 auto 26px;
+    max-width: 14ch;
+  }
   .hero-title em {
-    font-style: italic;
     font-variation-settings: "opsz" 144;
     background: linear-gradient(120deg, #ffd7c2 0%, #c084fc 40%, #a855f7 80%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     font-weight: 500;
+    /* italic removed sitewide — see muse-shared.js header-em override */
   }
   .hero-sub {
     font-size: clamp(16px, 1.4vw, 19px);
@@ -258,6 +271,7 @@
     margin-bottom: 40px;
     line-height: 1.65;
   }
+  .hero.hero-cosmos .hero-sub { margin: 0 auto 36px; max-width: 60ch; }
   .hero-cta-row {
     display: flex;
     align-items: center;
@@ -265,6 +279,23 @@
     flex-wrap: wrap;
     margin-bottom: 60px;
   }
+  .hero.hero-cosmos .hero-cta-row { justify-content: center; margin-bottom: 26px; }
+  /* "See how it works" tertiary link below the buttons */
+  .hero-watch {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-dim);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 999px;
+    transition: color .15s, background .15s;
+  }
+  .hero-watch:hover { color: var(--ink); background: rgba(247,243,234,0.04); }
+  .hero-watch svg { color: var(--violet); }
   .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -319,9 +350,62 @@
     border-top: 1px solid var(--line);
     max-width: 760px;
   }
+  .hero.hero-cosmos .hero-stats {
+    position: relative;
+    z-index: 3;
+    margin: 64px auto 0;
+    text-align: center;
+  }
   @media (max-width: 900px){
     /* Drop to 2x2 before the cells get cramped. */
     .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 24px 32px; max-width: 480px; }
+  }
+  /* ----- Scattered hero tiles (Cosmos-style) ----- */
+  .hero-scatter {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: visible;
+  }
+  .hero-mini {
+    position: absolute;
+    left: var(--x, 50%);
+    top: var(--y, 50%);
+    width: var(--s, 64px);
+    height: var(--s, 64px);
+    border-radius: clamp(14px, calc(var(--s) * 0.22), 22px);
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.92);
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: calc(var(--s) * 0.42);
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    transform: rotate(var(--r, 0deg));
+    will-change: transform;
+    animation: hero-mini-float 9s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+    opacity: 0;
+    transition: opacity .9s ease;
+  }
+  .hero-cosmos .hero-mini { opacity: 0.9; }
+  @keyframes hero-mini-float {
+    0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }
+    50%      { transform: rotate(var(--r, 0deg)) translateY(-10px); }
+  }
+  @media (max-width: 900px) {
+    .hero-mini { transform: rotate(var(--r, 0deg)) scale(0.7); }
+  }
+  @media (max-width: 600px) {
+    /* Keep just a few — the rest are decorative and would clutter mobile. */
+    .hero-mini:nth-child(n+9) { display: none; }
+    .hero-mini { transform: rotate(var(--r, 0deg)) scale(0.55); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-mini { animation: none; }
   }
   .hero-stat-num {
     font-family: var(--serif);
@@ -338,42 +422,8 @@
     letter-spacing: 0.14em;
   }
 
-  /* Floating hero artwork */
-  .hero-artwork {
-    position: absolute;
-    right: 32px;
-    top: 90px;
-    width: 440px;
-    pointer-events: none;
-  }
-  .hero-card-float {
-    position: absolute;
-    background: var(--card);
-    border: 1px solid var(--line-strong);
-    border-radius: 20px;
-    padding: 18px;
-    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 2px 10px rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
-    animation: float 6s ease-in-out infinite;
-  }
-  .hero-card-float:nth-child(1) {
-    top: 0; right: 0;
-    width: 270px;
-    animation-delay: 0s;
-    transform: rotate(3deg);
-  }
-  .hero-card-float:nth-child(2) {
-    top: 170px; right: 130px;
-    width: 240px;
-    animation-delay: 1.2s;
-    transform: rotate(-4deg);
-  }
-  .hero-card-float:nth-child(3) {
-    top: 340px; right: -20px;
-    width: 260px;
-    animation-delay: 2.4s;
-    transform: rotate(2deg);
-  }
+  /* Legacy floating hero artwork — replaced by .hero-scatter / .hero-mini.
+     CSS removed 2026-05-15 (Cosmos-style hero redesign). */
   @keyframes float {
     0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
     50% { transform: translateY(-10px) rotate(var(--r, 0deg)); }
@@ -1390,7 +1440,6 @@
 
   /* ============ Responsive ============ */
   @media (max-width: 1100px) {
-    .hero-artwork { display: none; }
     .how-wrap { grid-template-columns: repeat(2, 1fr); gap: 50px 30px; }
     .how-wrap::before { display: none; }
     .feat-scroll { grid-template-columns: repeat(2, 1fr); }
@@ -1547,22 +1596,50 @@
 <!-- ============ NAV (shared) ============ -->
 <div id="nav-mount"></div>
 
-<!-- ============ HERO ============ -->
-<section class="hero" id="top">
-  <div class="hero-eyebrow reveal">
-    <span class="hero-eyebrow-dot"></span>
-    Prototype · <span data-listed-count>105</span> artists
+<!-- ============ HERO (Cosmos-style — centered, scattered tiles) ============ -->
+<section class="hero hero-cosmos" id="top" data-no-spotlight>
+
+  <!-- Floating scattered artist tiles behind the content. Tiles use
+       --x / --y for position (% of section), --r for rotation, --s for size,
+       --d for animation delay. All are decorative — aria-hidden. -->
+  <div class="hero-scatter" aria-hidden="true">
+    <div class="hero-mini" style="--x:5%;  --y:14%; --r:-9deg; --s:74px; --d:0s;   background:linear-gradient(135deg,#ff8a65,#c084fc);">S</div>
+    <div class="hero-mini" style="--x:88%; --y:8%;  --r:6deg;  --s:88px; --d:1.1s; background:linear-gradient(135deg,#7c3aed,#4c1d95);">B</div>
+    <div class="hero-mini" style="--x:13%; --y:42%; --r:8deg;  --s:64px; --d:2.4s; background:linear-gradient(135deg,#cfff5e,#6effb8);">T</div>
+    <div class="hero-mini" style="--x:78%; --y:48%; --r:-5deg; --s:80px; --d:0.6s; background:linear-gradient(135deg,#a855f7,#ff8a65);">C</div>
+    <div class="hero-mini" style="--x:2%;  --y:70%; --r:11deg; --s:70px; --d:1.7s; background:linear-gradient(135deg,#ff6b8a,#ff8a65);">P</div>
+    <div class="hero-mini" style="--x:92%; --y:72%; --r:-7deg; --s:62px; --d:3.0s; background:linear-gradient(135deg,#6effb8,#c084fc);">B</div>
+    <div class="hero-mini" style="--x:22%; --y:84%; --r:4deg;  --s:58px; --d:1.4s; background:linear-gradient(135deg,#c084fc,#a855f7);">O</div>
+    <div class="hero-mini" style="--x:68%; --y:88%; --r:-9deg; --s:66px; --d:2.1s; background:linear-gradient(135deg,#ffd7c2,#c084fc);">A</div>
+    <div class="hero-mini" style="--x:30%; --y:5%;  --r:-12deg;--s:52px; --d:0.9s; background:linear-gradient(135deg,#4c1d95,#a855f7);">K</div>
+    <div class="hero-mini" style="--x:62%; --y:2%;  --r:10deg; --s:54px; --d:2.7s; background:linear-gradient(135deg,#6effb8,#cfff5e);">D</div>
+    <div class="hero-mini" style="--x:7%;  --y:30%; --r:-3deg; --s:46px; --d:1.8s; background:linear-gradient(135deg,#ff8a65,#ffd7c2);">L</div>
+    <div class="hero-mini" style="--x:91%; --y:32%; --r:9deg;  --s:48px; --d:0.4s; background:linear-gradient(135deg,#7c3aed,#c084fc);">W</div>
+    <div class="hero-mini" style="--x:18%; --y:62%; --r:-6deg; --s:50px; --d:2.3s; background:linear-gradient(135deg,#a855f7,#ff6b8a);">R</div>
+    <div class="hero-mini" style="--x:82%; --y:60%; --r:13deg; --s:52px; --d:1.2s; background:linear-gradient(135deg,#ff6b8a,#c084fc);">G</div>
   </div>
-  <h1 class="hero-title reveal">A stock market<br><em>for music.</em></h1>
-  <p class="hero-sub reveal">
-    Muses is a paper-trading prototype where artists trade like stocks. Prices come from real Spotify and YouTube data — so your virtual portfolio rises and falls with the taste of an audience. Free account, no deposit, $10,000 in virtual credits to start.
-  </p>
-  <div class="hero-cta-row reveal">
-    <a class="btn-primary" href="/signup">
-      Sign up — it's free <svg><use href="#i-arrow-up-right"/></svg>
-    </a>
-    <a class="btn-ghost" href="#how">
-      <svg><use href="#i-play"/></svg> See how it works
+
+  <!-- Centered content -->
+  <div class="hero-inner">
+    <div class="hero-eyebrow reveal">
+      <span class="hero-eyebrow-dot"></span>
+      Prototype · <span data-listed-count>105</span> artists
+    </div>
+    <h1 class="hero-title reveal">A stock market<br><em>for music.</em></h1>
+    <p class="hero-sub reveal">
+      Muses is a paper-trading prototype where artists trade like stocks. Prices come from real Spotify and YouTube data — so your virtual portfolio rises and falls with the taste of an audience.
+    </p>
+    <div class="hero-cta-row reveal">
+      <a class="btn-primary" href="/signup">
+        Sign up <svg><use href="#i-arrow-up-right"/></svg>
+      </a>
+      <a class="btn-ghost" href="/exchange">
+        Launch app
+      </a>
+    </div>
+    <a class="hero-watch reveal" href="#how">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+      See how it works
     </a>
   </div>
 
@@ -1582,58 +1659,6 @@
     <div>
       <div class="hero-stat-num" data-count-up="$0">$0</div>
       <div class="hero-stat-label">Real money at risk</div>
-    </div>
-  </div>
-
-  <!-- Floating artwork -->
-  <div class="hero-artwork" aria-hidden="true">
-    <div class="hero-card-float" style="--r: 3deg;">
-      <div class="hcf-head">
-        <div class="hcf-avatar" data-ticker="SABR" style="background: linear-gradient(135deg, #ff8a65, #c084fc);">S</div>
-        <div>
-          <div class="hcf-name">Sabrina Carpenter</div>
-          <div class="hcf-ticker">$SABR</div>
-        </div>
-      </div>
-      <div class="hcf-price">$142.80</div>
-      <div class="hcf-change up">▲ 8.42% today</div>
-      <svg class="hcf-spark" viewBox="0 0 200 40" preserveAspectRatio="none">
-        <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6effb8" stop-opacity="0.6"/><stop offset="1" stop-color="#6effb8" stop-opacity="0"/></linearGradient></defs>
-        <path d="M0 28 L20 30 L40 24 L60 26 L80 18 L100 20 L120 14 L140 12 L160 10 L180 6 L200 4 L200 40 L0 40 Z" fill="url(#g1)"/>
-        <path d="M0 28 L20 30 L40 24 L60 26 L80 18 L100 20 L120 14 L140 12 L160 10 L180 6 L200 4" fill="none" stroke="#6effb8" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="hero-card-float" style="--r: -4deg;">
-      <div class="hcf-head">
-        <div class="hcf-avatar" data-ticker="BNNY" style="background: linear-gradient(135deg, #7c3aed, #4c1d95);">B</div>
-        <div>
-          <div class="hcf-name">Bad Bunny</div>
-          <div class="hcf-ticker">$BNNY</div>
-        </div>
-      </div>
-      <div class="hcf-price">$318.44</div>
-      <div class="hcf-change up">▲ 2.17% today</div>
-      <svg class="hcf-spark" viewBox="0 0 200 40" preserveAspectRatio="none">
-        <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6effb8" stop-opacity="0.6"/><stop offset="1" stop-color="#6effb8" stop-opacity="0"/></linearGradient></defs>
-        <path d="M0 24 L20 22 L40 26 L60 20 L80 22 L100 18 L120 20 L140 14 L160 16 L180 10 L200 12 L200 40 L0 40 Z" fill="url(#g2)"/>
-        <path d="M0 24 L20 22 L40 26 L60 20 L80 22 L100 18 L120 20 L140 14 L160 16 L180 10 L200 12" fill="none" stroke="#6effb8" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="hero-card-float" style="--r: 2deg;">
-      <div class="hcf-head">
-        <div class="hcf-avatar" data-ticker="CHPL" style="background: linear-gradient(135deg, #a855f7, #ff8a65);">C</div>
-        <div>
-          <div class="hcf-name">Chappell Roan</div>
-          <div class="hcf-ticker">$CHPL</div>
-        </div>
-      </div>
-      <div class="hcf-price">$96.12</div>
-      <div class="hcf-change down">▼ 1.34% today</div>
-      <svg class="hcf-spark" viewBox="0 0 200 40" preserveAspectRatio="none">
-        <defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6b8a" stop-opacity="0.5"/><stop offset="1" stop-color="#ff6b8a" stop-opacity="0"/></linearGradient></defs>
-        <path d="M0 14 L20 16 L40 12 L60 18 L80 16 L100 22 L120 20 L140 26 L160 24 L180 30 L200 28 L200 40 L0 40 Z" fill="url(#g3)"/>
-        <path d="M0 14 L20 16 L40 12 L60 18 L80 16 L100 22 L120 20 L140 26 L160 24 L180 30 L200 28" fill="none" stroke="#ff6b8a" stroke-width="2" stroke-linecap="round"/>
-      </svg>
     </div>
   </div>
 </section>

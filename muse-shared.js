@@ -1318,6 +1318,48 @@
     const css = document.createElement('style');
     css.id = 'muse-fx-style';
     css.textContent = `
+      /* =========================================================
+         Global header-em override (per Sander 2026-05-15)
+         =========================================================
+         Removes italic styling from <em> inside headers across the
+         entire site while preserving the violet→coral gradient
+         used to color the "second part" of headlines. Combines
+         many existing selectors (.hero-title em, .page-hero-title em,
+         .section-title em, .cta-title em, news article titles, FAQ
+         titles, big-step h3 em, etc.) so we don't have to edit each
+         page individually. Uses a generic selector reaching any em
+         inside h1/h2/h3/h4 plus the most common compound classes. */
+      h1 em, h2 em, h3 em, h4 em,
+      .hero-title em, .page-hero-title em, .section-title em,
+      .cta-title em, .news-article-title em, .news-side-card h5 em,
+      .news-grid-card h3 em, .bs-body h3 em, .humans-item figcaption em,
+      .signup-title em, .faq-cat h3 em, .faq-q em,
+      .image-band-caption h3 em, .image-split figcaption em,
+      .wl-hero-title em, .wl-tier h3 em, .legal-doc h2 em,
+      .news-section-head h1 em, .about-wrap p em {
+        font-style: normal !important;
+      }
+      /* Keep the violet→coral gradient for the inline accent — same
+         palette as before but without the italic slant. */
+      .hero-title em, .page-hero-title em, .section-title em,
+      .cta-title em, .news-article-title em, .signup-title em,
+      .image-band-caption h3 em, .image-split figcaption em,
+      .wl-hero-title em, .news-section-head h1 em {
+        background: linear-gradient(120deg, #ffd7c2 0%, #c084fc 40%, #a855f7 80%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-weight: 500;
+      }
+      /* CTA card em uses the warmer blush color for contrast against
+         the violet gradient background of the .cta-card. */
+      .cta-title em {
+        background: linear-gradient(120deg, #ffd7c2 0%, #ffcaae 50%, #ffaa7a 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
       /* Scroll progress bar */
       .muse-scroll-progress {
         position: fixed; top: 0; left: 0; right: 0;
@@ -1703,9 +1745,11 @@
       if (reduced) return;
       if (!window.matchMedia('(pointer: fine)').matches) return;
 
-      // Auto-apply to hero-like sections
+      // Auto-apply to sub-hero surfaces only. Homepage section.hero is
+      // intentionally excluded per Sander — the cursor-following gradient
+      // was too busy ATF.
       const auto = document.querySelectorAll(
-        'section.hero, .hero-wrap, .page-hero, .news-section-head, .wl-hero, .signup-shell'
+        '.hero-wrap, .page-hero, .news-section-head, .wl-hero, .signup-shell'
       );
       auto.forEach(function (el) {
         if (!el.hasAttribute('data-spotlight') && !el.hasAttribute('data-no-spotlight')) {
