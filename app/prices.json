@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-16T14:23:04Z",
+  "updatedAt": "2026-05-16T15:34:27Z",
   "marketIndex": 175.49,
   "rawAveragePrice": 58.21,
   "topGainers": [
@@ -284,7 +284,7 @@
       "volatility30d": 0.0,
       "volume": 1716,
       "youtube": {
-        "subscribers": 983,
+        "subscribers": 982,
         "views": 673443927,
         "videos": 109
       },
@@ -306,10 +306,10 @@
       "fairPrice": 82.45,
       "price": 82.45,
       "chg24h": 0.47,
-      "volatility30d": 0.009,
+      "volatility30d": 0.008,
       "volume": 4384,
       "youtube": {
-        "subscribers": 19300,
+        "subscribers": 19200,
         "views": 2155577949,
         "videos": 597
       },
@@ -472,8 +472,8 @@
       "name": "Charli XCX",
       "genre": "Pop",
       "spotifyId": "25uiPmTg16RbhZWAqwLBy5",
-      "popularity": 85,
-      "popularityDelta": 0,
+      "popularity": 84,
+      "popularityDelta": -1,
       "followers": 7033955,
       "monthlyListeners": 32510940,
       "listenersSource": "ratio-calibrated",
@@ -482,7 +482,7 @@
       "price": 42.0,
       "chg24h": 0.0,
       "volatility30d": 0.002,
-      "volume": 1591,
+      "volume": 2864,
       "youtube": {
         "subscribers": 10900,
         "views": 651230364,
@@ -581,7 +581,7 @@
       "fairPrice": 203.24,
       "price": 203.24,
       "chg24h": -0.19,
-      "volatility30d": 0.011,
+      "volatility30d": 0.01,
       "volume": 5715,
       "youtube": {
         "subscribers": 1610000,
@@ -597,8 +597,8 @@
       "name": "Bruno Mars",
       "genre": "Pop",
       "spotifyId": "0du5cEVh5yTK9QJze8zA0C",
-      "popularity": 96,
-      "popularityDelta": 0,
+      "popularity": 95,
+      "popularityDelta": -1,
       "followers": 82776039,
       "monthlyListeners": 138211152,
       "listenersSource": "ratio-calibrated",
@@ -607,7 +607,7 @@
       "price": 187.99,
       "chg24h": 0.0,
       "volatility30d": 0.005,
-      "volume": 5459,
+      "volume": 9826,
       "youtube": {
         "subscribers": 364000,
         "views": 4307447688,
@@ -647,8 +647,8 @@
       "name": "Lady Gaga",
       "genre": "Pop",
       "spotifyId": "1HY2Jd0NmPuamShAr6KMms",
-      "popularity": 91,
-      "popularityDelta": 0,
+      "popularity": 90,
+      "popularityDelta": -1,
       "followers": 46445497,
       "monthlyListeners": 102207961,
       "listenersSource": "ratio-calibrated",
@@ -657,7 +657,7 @@
       "price": 137.76,
       "chg24h": 0.28,
       "volatility30d": 0.009,
-      "volume": 4089,
+      "volume": 7360,
       "youtube": {
         "subscribers": 146000,
         "views": 5611448119,
@@ -735,7 +735,7 @@
       "volume": 3622,
       "youtube": {
         "subscribers": 14100,
-        "views": 1308749387,
+        "views": 1309002080,
         "videos": 184
       },
       "youtubeBoost": 0.1403,
@@ -981,7 +981,7 @@
       "fairPrice": 72.96,
       "price": 72.96,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 2958,
       "youtube": {
         "subscribers": 307000,
@@ -1206,7 +1206,7 @@
       "fairPrice": 32.18,
       "price": 32.18,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 1998,
       "youtube": {
         "subscribers": 2970,
@@ -1509,7 +1509,7 @@
       "volatility30d": 0.005,
       "volume": 1462,
       "youtube": {
-        "subscribers": 4410,
+        "subscribers": 4400,
         "views": 663510202,
         "videos": 158
       },
@@ -1710,7 +1710,7 @@
       "volume": 2696,
       "youtube": {
         "subscribers": 2700,
-        "views": 2886142544,
+        "views": 2887246032,
         "videos": 1211
       },
       "youtubeBoost": 0.1557,
@@ -1909,7 +1909,7 @@
       "volatility30d": 0.0,
       "volume": 1579,
       "youtube": {
-        "subscribers": 718,
+        "subscribers": 717,
         "views": 754110112,
         "videos": 131
       },
@@ -1972,8 +1972,8 @@
       "name": "Tyla",
       "genre": "Afropop",
       "spotifyId": "25uiPmTg16RbhZWAqwLBy5",
-      "popularity": 85,
-      "popularityDelta": 0,
+      "popularity": 84,
+      "popularityDelta": -1,
       "followers": 7033955,
       "monthlyListeners": 32510940,
       "listenersSource": "ratio-calibrated",
@@ -1982,7 +1982,7 @@
       "price": 45.64,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 1591,
+      "volume": 2864,
       "youtube": {
         "subscribers": 5860000,
         "views": 2563015216,
@@ -2756,7 +2756,7 @@
       "fairPrice": 103.11,
       "price": 103.11,
       "chg24h": 1.12,
-      "volatility30d": 0.012,
+      "volatility30d": 0.013,
       "volume": 2912,
       "youtube": {
         "subscribers": 92600,
