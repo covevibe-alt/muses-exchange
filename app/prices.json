@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-18T21:46:56Z",
+  "updatedAt": "2026-05-18T23:05:46Z",
   "marketIndex": 175.5,
   "rawAveragePrice": 58.21,
   "topGainers": [
@@ -581,7 +581,7 @@
       "fairPrice": 201.1,
       "price": 201.1,
       "chg24h": -0.38,
-      "volatility30d": 0.014,
+      "volatility30d": 0.015,
       "volume": 5719,
       "youtube": {
         "subscribers": 1610000,
@@ -648,7 +648,7 @@
       "genre": "Pop",
       "spotifyId": "1HY2Jd0NmPuamShAr6KMms",
       "popularity": 89,
-      "popularityDelta": -1,
+      "popularityDelta": 0,
       "followers": 46497289,
       "monthlyListeners": 102833404,
       "listenersSource": "ratio-calibrated",
@@ -657,7 +657,7 @@
       "price": 138.21,
       "chg24h": 0.28,
       "volatility30d": 0.011,
-      "volume": 7364,
+      "volume": 4091,
       "youtube": {
         "subscribers": 146000,
         "views": 5620164306,
@@ -856,7 +856,7 @@
       "fairPrice": 130.53,
       "price": 130.53,
       "chg24h": 1.18,
-      "volatility30d": 0.047,
+      "volatility30d": 0.046,
       "volume": 6329,
       "youtube": {
         "subscribers": 1130000,
@@ -1209,7 +1209,7 @@
       "volatility30d": 0.016,
       "volume": 2000,
       "youtube": {
-        "subscribers": 2960,
+        "subscribers": 2970,
         "views": 562057620,
         "videos": 98
       },
@@ -1236,7 +1236,7 @@
       "youtube": {
         "subscribers": 2700000,
         "views": 1552252618,
-        "videos": 534
+        "videos": 535
       },
       "youtubeBoost": 0.2008,
       "chartPositions": null,
@@ -1481,7 +1481,7 @@
       "fairPrice": 38.35,
       "price": 38.35,
       "chg24h": 2.02,
-      "volatility30d": 0.014,
+      "volatility30d": 0.015,
       "volume": 2032,
       "youtube": {
         "subscribers": 70800,
@@ -1573,7 +1573,7 @@
       "genre": "R&B",
       "spotifyId": "20wkVLutqVOYrc0kxFs7rA",
       "popularity": 86,
-      "popularityDelta": -1,
+      "popularityDelta": 0,
       "followers": 14091787,
       "monthlyListeners": 44177752,
       "listenersSource": "ratio-calibrated",
@@ -1582,7 +1582,7 @@
       "price": 56.76,
       "chg24h": 0.0,
       "volatility30d": 0.005,
-      "volume": 4054,
+      "volume": 2252,
       "youtube": {
         "subscribers": 13700,
         "views": 558101553,
@@ -2322,8 +2322,8 @@
       "name": "Lorde",
       "genre": "Alt",
       "spotifyId": "163tK9Wjr9P9DmM0AVK7lm",
-      "popularity": 80,
-      "popularityDelta": 0,
+      "popularity": 79,
+      "popularityDelta": -1,
       "followers": 10846150,
       "monthlyListeners": 27514513,
       "listenersSource": "ratio-calibrated",
@@ -2332,7 +2332,7 @@
       "price": 35.39,
       "chg24h": 0.0,
       "volatility30d": 0.005,
-      "volume": 1976,
+      "volume": 3557,
       "youtube": {
         "subscribers": 22000,
         "views": 593066878,
