@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-19T23:05:47Z",
+  "updatedAt": "2026-05-20T01:31:13Z",
   "marketIndex": 175.5,
   "rawAveragePrice": 58.21,
   "topGainers": [
@@ -284,7 +284,7 @@
       "volatility30d": 0.005,
       "volume": 1717,
       "youtube": {
-        "subscribers": 985,
+        "subscribers": 986,
         "views": 675498040,
         "videos": 109
       },
@@ -306,7 +306,7 @@
       "fairPrice": 81.01,
       "price": 81.01,
       "chg24h": -0.47,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 4388,
       "youtube": {
         "subscribers": 19300,
@@ -356,7 +356,7 @@
       "fairPrice": 87.83,
       "price": 87.83,
       "chg24h": 0.43,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 4160,
       "youtube": {
         "subscribers": 10100,
@@ -831,7 +831,7 @@
       "fairPrice": 24.26,
       "price": 24.26,
       "chg24h": 1.59,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 1849,
       "youtube": {
         "subscribers": 1280,
@@ -856,7 +856,7 @@
       "fairPrice": 131.61,
       "price": 131.61,
       "chg24h": 0.88,
-      "volatility30d": 0.03,
+      "volatility30d": 0.031,
       "volume": 6330,
       "youtube": {
         "subscribers": 1130000,
@@ -897,8 +897,8 @@
       "name": "Kendrick Lamar",
       "genre": "Hip-hop",
       "spotifyId": "2YZyLoL8N0Wb9xBt1NhZWg",
-      "popularity": 90,
-      "popularityDelta": 0,
+      "popularity": 89,
+      "popularityDelta": -1,
       "followers": 47849409,
       "monthlyListeners": 72027715,
       "listenersSource": "ratio-calibrated",
@@ -907,7 +907,7 @@
       "price": 99.68,
       "chg24h": 0.38,
       "volatility30d": 0.005,
-      "volume": 4150,
+      "volume": 7471,
       "youtube": {
         "subscribers": 1120000,
         "views": 5630159723,
@@ -1222,8 +1222,8 @@
       "name": "Latto",
       "genre": "Hip-hop",
       "spotifyId": "3MdXrJWsbVzdn6fe5JYkSQ",
-      "popularity": 78,
-      "popularityDelta": 0,
+      "popularity": 77,
+      "popularityDelta": -1,
       "followers": 2739688,
       "monthlyListeners": 16448539,
       "listenersSource": "ratio-calibrated",
@@ -1232,7 +1232,7 @@
       "price": 22.58,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 993,
+      "volume": 1788,
       "youtube": {
         "subscribers": 2700000,
         "views": 1554670083,
@@ -1331,7 +1331,7 @@
       "fairPrice": 61.47,
       "price": 61.47,
       "chg24h": -0.62,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 1788,
       "youtube": {
         "subscribers": 2180,
@@ -1422,8 +1422,8 @@
       "name": "Summer Walker",
       "genre": "R&B",
       "spotifyId": "57LYzLEk2LcFghVwuWbcuS",
-      "popularity": 77,
-      "popularityDelta": 0,
+      "popularity": 76,
+      "popularityDelta": -1,
       "followers": 8548549,
       "monthlyListeners": 18982908,
       "listenersSource": "ratio-calibrated",
@@ -1431,8 +1431,8 @@
       "fairPrice": 24.6,
       "price": 24.6,
       "chg24h": 1.56,
-      "volatility30d": 0.004,
-      "volume": 1754,
+      "volatility30d": 0.005,
+      "volume": 3158,
       "youtube": {
         "subscribers": 1770,
         "views": 944780783,
@@ -1806,7 +1806,7 @@
       "fairPrice": 96.88,
       "price": 96.88,
       "chg24h": -0.39,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 3841,
       "youtube": {
         "subscribers": 90200,
@@ -2186,7 +2186,7 @@
       "youtube": {
         "subscribers": 1890,
         "views": 442957403,
-        "videos": 68
+        "videos": 67
       },
       "youtubeBoost": 0.1191,
       "chartPositions": null,
@@ -2686,7 +2686,7 @@
       "youtube": {
         "subscribers": 68600,
         "views": 2957855226,
-        "videos": 757
+        "videos": 756
       },
       "youtubeBoost": 0.1562,
       "chartPositions": null,
@@ -2773,7 +2773,7 @@
       "genre": "Electronic",
       "spotifyId": "4oLeXFyACqeem2VImYeBFe",
       "popularity": 78,
-      "popularityDelta": -1,
+      "popularityDelta": 0,
       "followers": 2608353,
       "monthlyListeners": 18304900,
       "listenersSource": "ratio-calibrated",
@@ -2782,7 +2782,7 @@
       "price": 23.24,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 1744,
+      "volume": 969,
       "youtube": {
         "subscribers": 470,
         "views": 289715463,
