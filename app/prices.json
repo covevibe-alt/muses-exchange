@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-21T18:06:32Z",
+  "updatedAt": "2026-05-21T20:20:20Z",
   "marketIndex": 175.5,
   "rawAveragePrice": 58.21,
   "topGainers": [
@@ -306,7 +306,7 @@
       "fairPrice": 80.18,
       "price": 80.18,
       "chg24h": -0.47,
-      "volatility30d": 0.014,
+      "volatility30d": 0.015,
       "volume": 4390,
       "youtube": {
         "subscribers": 19200,
@@ -556,7 +556,7 @@
       "fairPrice": 113.99,
       "price": 113.99,
       "chg24h": 0.34,
-      "volatility30d": 0.01,
+      "volatility30d": 0.011,
       "volume": 3821,
       "youtube": {
         "subscribers": 283000,
@@ -856,7 +856,7 @@
       "fairPrice": 133.26,
       "price": 133.26,
       "chg24h": 0.57,
-      "volatility30d": 0.028,
+      "volatility30d": 0.029,
       "volume": 6333,
       "youtube": {
         "subscribers": 1130000,
@@ -934,7 +934,7 @@
       "volatility30d": 0.005,
       "volume": 1382,
       "youtube": {
-        "subscribers": 946,
+        "subscribers": 947,
         "views": 138720,
         "videos": 16
       },
@@ -1006,7 +1006,7 @@
       "fairPrice": 56.72,
       "price": 56.72,
       "chg24h": 0.68,
-      "volatility30d": 0.01,
+      "volatility30d": 0.011,
       "volume": 3038,
       "youtube": {
         "subscribers": 51500,
@@ -1156,7 +1156,7 @@
       "fairPrice": 45.51,
       "price": 45.51,
       "chg24h": -0.83,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 2053,
       "youtube": {
         "subscribers": 1420,
@@ -1347,8 +1347,8 @@
       "name": "The Weeknd",
       "genre": "R&B",
       "spotifyId": "1Xyo4u8uXC1ZmMpatF05PJ",
-      "popularity": 94,
-      "popularityDelta": 0,
+      "popularity": 93,
+      "popularityDelta": -1,
       "followers": 122708137,
       "monthlyListeners": 115640148,
       "listenersSource": "ratio-calibrated",
@@ -1357,7 +1357,7 @@
       "price": 157.99,
       "chg24h": 0.0,
       "volatility30d": 0.004,
-      "volume": 6646,
+      "volume": 11964,
       "youtube": {
         "subscribers": 253000,
         "views": 9609921742,
@@ -1381,7 +1381,7 @@
       "fairPrice": 91.85,
       "price": 91.85,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 3595,
       "youtube": {
         "subscribers": 49600,
@@ -1606,7 +1606,7 @@
       "fairPrice": 136.14,
       "price": 136.14,
       "chg24h": -0.28,
-      "volatility30d": 0.007,
+      "volatility30d": 0.008,
       "volume": 6480,
       "youtube": {
         "subscribers": 161000,
@@ -1998,7 +1998,7 @@
       "genre": "Afropop",
       "spotifyId": "46pWGuE3dSwY3bMMXGBvVS",
       "popularity": 77,
-      "popularityDelta": -1,
+      "popularityDelta": 0,
       "followers": 10807242,
       "monthlyListeners": 25479154,
       "listenersSource": "ratio-calibrated",
@@ -2007,7 +2007,7 @@
       "price": 32.92,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3550,
+      "volume": 1972,
       "youtube": {
         "subscribers": 4810,
         "views": 785551745,
@@ -2056,7 +2056,7 @@
       "fairPrice": 34.69,
       "price": 34.69,
       "chg24h": 1.11,
-      "volatility30d": 0.01,
+      "volatility30d": 0.011,
       "volume": 2427,
       "youtube": {
         "subscribers": 4500,
@@ -2797,8 +2797,8 @@
       "name": "Skrillex",
       "genre": "Electronic",
       "spotifyId": "5he5w2lnU9x7JFhnwcekXX",
-      "popularity": 77,
-      "popularityDelta": 0,
+      "popularity": 76,
+      "popularityDelta": -1,
       "followers": 7628752,
       "monthlyListeners": 27309406,
       "listenersSource": "ratio-calibrated",
@@ -2807,7 +2807,7 @@
       "price": 35.59,
       "chg24h": -2.11,
       "volatility30d": 0.018,
-      "volume": 1657,
+      "volume": 2983,
       "youtube": {
         "subscribers": 234000,
         "views": 615961712,
