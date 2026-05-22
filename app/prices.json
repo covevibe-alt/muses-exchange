@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-22T21:14:39Z",
+  "updatedAt": "2026-05-22T22:34:50Z",
   "marketIndex": 175.5,
   "rawAveragePrice": 58.21,
   "topGainers": [
@@ -306,7 +306,7 @@
       "fairPrice": 79.85,
       "price": 79.85,
       "chg24h": 0.0,
-      "volatility30d": 0.012,
+      "volatility30d": 0.011,
       "volume": 4391,
       "youtube": {
         "subscribers": 19200,
@@ -556,11 +556,11 @@
       "fairPrice": 114.25,
       "price": 114.25,
       "chg24h": 0.33,
-      "volatility30d": 0.011,
+      "volatility30d": 0.01,
       "volume": 3821,
       "youtube": {
         "subscribers": 283000,
-        "views": 2964680015,
+        "views": 2965953743,
         "videos": 1930
       },
       "youtubeBoost": 0.1743,
@@ -709,7 +709,7 @@
       "volatility30d": 0.008,
       "volume": 1851,
       "youtube": {
-        "subscribers": 831,
+        "subscribers": 832,
         "views": 519319398,
         "videos": 277
       },
@@ -1006,7 +1006,7 @@
       "fairPrice": 57.02,
       "price": 57.02,
       "chg24h": 0.67,
-      "volatility30d": 0.011,
+      "volatility30d": 0.01,
       "volume": 3039,
       "youtube": {
         "subscribers": 51500,
@@ -1172,8 +1172,8 @@
       "name": "Lil Baby",
       "genre": "Hip-hop",
       "spotifyId": "5f7VJjfbwm532GiveGC0ZK",
-      "popularity": 86,
-      "popularityDelta": 0,
+      "popularity": 85,
+      "popularityDelta": -1,
       "followers": 23180534,
       "monthlyListeners": 31840782,
       "listenersSource": "ratio-calibrated",
@@ -1182,7 +1182,7 @@
       "price": 42.85,
       "chg24h": -0.88,
       "volatility30d": 0.004,
-      "volume": 2889,
+      "volume": 5200,
       "youtube": {
         "subscribers": 265000,
         "views": 3730695266,
@@ -2535,7 +2535,7 @@
       "volume": 640,
       "youtube": {
         "subscribers": 449,
-        "views": 35159589,
+        "views": 35170746,
         "videos": 31
       },
       "youtubeBoost": 0.0696,
@@ -2581,7 +2581,7 @@
       "fairPrice": 41.01,
       "price": 41.01,
       "chg24h": 0.93,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 2620,
       "youtube": {
         "subscribers": 4270000,
