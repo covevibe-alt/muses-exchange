@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-23T14:09:18Z",
+  "updatedAt": "2026-05-23T15:42:25Z",
   "marketIndex": 175.5,
   "rawAveragePrice": 58.22,
   "topGainers": [
@@ -322,8 +322,8 @@
       "name": "Tate McRae",
       "genre": "Pop",
       "spotifyId": "45dkTj5sMRSjrmBSBeiHym",
-      "popularity": 86,
-      "popularityDelta": 0,
+      "popularity": 85,
+      "popularityDelta": -1,
       "followers": 10865409,
       "monthlyListeners": 45526064,
       "listenersSource": "ratio-calibrated",
@@ -332,7 +332,7 @@
       "price": 64.07,
       "chg24h": 0.0,
       "volatility30d": 0.002,
-      "volume": 1978,
+      "volume": 3560,
       "youtube": {
         "subscribers": 6660000,
         "views": 3260603622,
@@ -934,7 +934,7 @@
       "volatility30d": 0.0,
       "volume": 1383,
       "youtube": {
-        "subscribers": 947,
+        "subscribers": 946,
         "views": 138805,
         "videos": 16
       },
@@ -1722,8 +1722,8 @@
       "name": "Rauw Alejandro",
       "genre": "Latin",
       "spotifyId": "1mcTU81TzQhprhouKaTkpq",
-      "popularity": 88,
-      "popularityDelta": 0,
+      "popularity": 87,
+      "popularityDelta": -1,
       "followers": 33924275,
       "monthlyListeners": 53254327,
       "listenersSource": "ratio-calibrated",
@@ -1732,7 +1732,7 @@
       "price": 70.77,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3495,
+      "volume": 6290,
       "youtube": {
         "subscribers": 9140,
         "views": 4073984590,
@@ -1831,7 +1831,7 @@
       "fairPrice": 65.34,
       "price": 65.34,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 3826,
       "youtube": {
         "subscribers": 162000,
