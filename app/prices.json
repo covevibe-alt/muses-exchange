@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-23T15:42:25Z",
+  "updatedAt": "2026-05-23T17:03:26Z",
   "marketIndex": 175.5,
   "rawAveragePrice": 58.22,
   "topGainers": [
@@ -323,7 +323,7 @@
       "genre": "Pop",
       "spotifyId": "45dkTj5sMRSjrmBSBeiHym",
       "popularity": 85,
-      "popularityDelta": -1,
+      "popularityDelta": 0,
       "followers": 10865409,
       "monthlyListeners": 45526064,
       "listenersSource": "ratio-calibrated",
@@ -332,7 +332,7 @@
       "price": 64.07,
       "chg24h": 0.0,
       "volatility30d": 0.002,
-      "volume": 3560,
+      "volume": 1978,
       "youtube": {
         "subscribers": 6660000,
         "views": 3260603622,
@@ -435,7 +435,7 @@
       "volume": 3570,
       "youtube": {
         "subscribers": 30900,
-        "views": 2140796326,
+        "views": 2141424901,
         "videos": 61
       },
       "youtubeBoost": 0.1499,
@@ -456,7 +456,7 @@
       "fairPrice": 75.06,
       "price": 75.06,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 3662,
       "youtube": {
         "subscribers": 4520,
@@ -531,11 +531,11 @@
       "fairPrice": 114.08,
       "price": 114.08,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 3929,
       "youtube": {
         "subscribers": 126000,
-        "views": 3211468517,
+        "views": 3213129433,
         "videos": 866
       },
       "youtubeBoost": 0.1618,
@@ -660,7 +660,7 @@
       "volume": 4096,
       "youtube": {
         "subscribers": 146000,
-        "views": 5637283437,
+        "views": 5639132258,
         "videos": 2364
       },
       "youtubeBoost": 0.1754,
@@ -735,7 +735,7 @@
       "volume": 3624,
       "youtube": {
         "subscribers": 14000,
-        "views": 1312270994,
+        "views": 1312500821,
         "videos": 184
       },
       "youtubeBoost": 0.1403,
@@ -756,7 +756,7 @@
       "fairPrice": 67.99,
       "price": 67.99,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 4105,
       "youtube": {
         "subscribers": 78800,
@@ -856,7 +856,7 @@
       "fairPrice": 134.95,
       "price": 134.95,
       "chg24h": 0.57,
-      "volatility30d": 0.021,
+      "volatility30d": 0.02,
       "volume": 6336,
       "youtube": {
         "subscribers": 1130000,
@@ -1006,11 +1006,11 @@
       "fairPrice": 57.17,
       "price": 57.17,
       "chg24h": 0.0,
-      "volatility30d": 0.008,
+      "volatility30d": 0.007,
       "volume": 3039,
       "youtube": {
         "subscribers": 51500,
-        "views": 1855345155,
+        "views": 1855681183,
         "videos": 400
       },
       "youtubeBoost": 0.1471,
@@ -1331,7 +1331,7 @@
       "fairPrice": 60.78,
       "price": 60.78,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 1791,
       "youtube": {
         "subscribers": 2180,
@@ -1723,7 +1723,7 @@
       "genre": "Latin",
       "spotifyId": "1mcTU81TzQhprhouKaTkpq",
       "popularity": 87,
-      "popularityDelta": -1,
+      "popularityDelta": 0,
       "followers": 33924275,
       "monthlyListeners": 53254327,
       "listenersSource": "ratio-calibrated",
@@ -1732,7 +1732,7 @@
       "price": 70.77,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 6290,
+      "volume": 3495,
       "youtube": {
         "subscribers": 9140,
         "views": 4073984590,
@@ -2081,7 +2081,7 @@
       "fairPrice": 22.15,
       "price": 22.15,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 2036,
       "youtube": {
         "subscribers": 25500,
@@ -2335,7 +2335,7 @@
       "volume": 1977,
       "youtube": {
         "subscribers": 22000,
-        "views": 594585162,
+        "views": 594753661,
         "videos": 748
       },
       "youtubeBoost": 0.1248,
@@ -2356,7 +2356,7 @@
       "fairPrice": 82.94,
       "price": 82.94,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 1992,
       "youtube": {
         "subscribers": 28800,
@@ -2560,7 +2560,7 @@
       "volume": 938,
       "youtube": {
         "subscribers": 442,
-        "views": 180384432,
+        "views": 180464882,
         "videos": 50
       },
       "youtubeBoost": 0.1015,
