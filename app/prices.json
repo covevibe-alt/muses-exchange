@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-08T16:34:59Z",
+  "updatedAt": "2026-06-08T19:22:26Z",
   "marketIndex": 175.53,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -472,8 +472,8 @@
       "name": "Charli XCX",
       "genre": "Pop",
       "spotifyId": "25uiPmTg16RbhZWAqwLBy5",
-      "popularity": 82,
-      "popularityDelta": 0,
+      "popularity": 83,
+      "popularityDelta": 1,
       "followers": 7104043,
       "monthlyListeners": 32915162,
       "listenersSource": "ratio-calibrated",
@@ -482,7 +482,7 @@
       "price": 42.49,
       "chg24h": -0.89,
       "volatility30d": 0.007,
-      "volume": 1599,
+      "volume": 2879,
       "youtube": {
         "subscribers": 10900,
         "views": 669087164,
@@ -1236,7 +1236,7 @@
       "youtube": {
         "subscribers": 2720000,
         "views": 1577215368,
-        "videos": 574
+        "videos": 575
       },
       "youtubeBoost": 0.2013,
       "chartPositions": null,
@@ -1734,7 +1734,7 @@
       "volatility30d": 0.0,
       "volume": 3503,
       "youtube": {
-        "subscribers": 9140,
+        "subscribers": 9150,
         "views": 4111390105,
         "videos": 216
       },
@@ -1972,8 +1972,8 @@
       "name": "Tyla",
       "genre": "Afropop",
       "spotifyId": "25uiPmTg16RbhZWAqwLBy5",
-      "popularity": 82,
-      "popularityDelta": 0,
+      "popularity": 83,
+      "popularityDelta": 1,
       "followers": 7104043,
       "monthlyListeners": 32915162,
       "listenersSource": "ratio-calibrated",
@@ -1982,7 +1982,7 @@
       "price": 46.16,
       "chg24h": 0.0,
       "volatility30d": 0.01,
-      "volume": 1599,
+      "volume": 2879,
       "youtube": {
         "subscribers": 5880000,
         "views": 2588895073,
@@ -2047,8 +2047,8 @@
       "name": "Burna Boy",
       "genre": "Afropop",
       "spotifyId": "3wcj11K77LjEY1PkEazffa",
-      "popularity": 80,
-      "popularityDelta": 0,
+      "popularity": 81,
+      "popularityDelta": 1,
       "followers": 16553642,
       "monthlyListeners": 35385065,
       "listenersSource": "ratio-calibrated",
@@ -2057,7 +2057,7 @@
       "price": 45.78,
       "chg24h": 1.69,
       "volatility30d": 0.013,
-      "volume": 2441,
+      "volume": 4394,
       "youtube": {
         "subscribers": 4520,
         "views": 760521847,
@@ -2181,7 +2181,7 @@
       "fairPrice": 52.95,
       "price": 52.95,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 1283,
       "youtube": {
         "subscribers": 1890,
@@ -2460,7 +2460,7 @@
       "volume": 1637,
       "youtube": {
         "subscribers": 1130,
-        "views": 271412359,
+        "views": 271584993,
         "videos": 147
       },
       "youtubeBoost": 0.1095,
@@ -2535,7 +2535,7 @@
       "volume": 642,
       "youtube": {
         "subscribers": 449,
-        "views": 35547027,
+        "views": 35557607,
         "videos": 31
       },
       "youtubeBoost": 0.0698,
@@ -2684,7 +2684,7 @@
       "volatility30d": 0.0,
       "volume": 2909,
       "youtube": {
-        "subscribers": 68800,
+        "subscribers": 68900,
         "views": 2997009125,
         "videos": 756
       },
@@ -2756,7 +2756,7 @@
       "fairPrice": 106.27,
       "price": 106.27,
       "chg24h": -0.36,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 2917,
       "youtube": {
         "subscribers": 92500,
