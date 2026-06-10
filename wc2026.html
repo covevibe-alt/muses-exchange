@@ -474,6 +474,8 @@ function playerTotals() {
   const today = todayKey();
   const champ = championWinner();
   const goalsSoFar = state.matches.reduce((n, m) => n + (m.completed ? (m.hs ?? 0) + (m.as ?? 0) : 0), 0);
+  // total-goals tiebreak only counts once every match is in the books
+  const allDone = state.matches.length > 0 && state.matches.every((m) => m.completed);
   const rows = state.players.map((pl) => {
     let total = 0, exacts = 0, todayPts = 0, predicted = 0;
     for (const m of state.matches) {
@@ -492,7 +494,7 @@ function playerTotals() {
     if (champ && fin && fin.champion && fin.champion.trim().toLowerCase() === champ.trim().toLowerCase()) {
       total += SCORING.champion; champHit = true;
     }
-    const dist = fin?.total_goals != null ? Math.abs(fin.total_goals - goalsSoFar) : null;
+    const dist = (allDone && fin?.total_goals != null) ? Math.abs(fin.total_goals - goalsSoFar) : null;
     return { ...pl, total, exacts, todayPts, predicted, fin, champHit, dist };
   });
   rows.sort((a, b) => b.total - a.total || b.exacts - a.exacts
@@ -576,7 +578,7 @@ function parseEspnEvent(ev) {
 }
 
 async function espnFetch(rangeParam) {
-  const r = await fetch(`${ESPN}?dates=${rangeParam}&limit=400`);
+  const r = await fetch(`${ESPN}?dates=${rangeParam}&limit=400`, { cache: 'no-store' });
   if (!r.ok) throw new Error(`espn ${r.status}`);
   const json = await r.json();
   const parsed = (json.events || []).map((e) => { try { return parseEspnEvent(e); } catch { return null; } }).filter(Boolean);
@@ -613,10 +615,13 @@ async function initSb() {
   state.sb = mod.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
 }
 
-async function fetchAll(table, cols) {
+async function fetchAll(table, cols, orderCols) {
+  // unique ordering so >1000-row pagination can't skip/duplicate rows
   const out = [];
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await state.sb.from(table).select(cols).range(from, from + 999);
+    let q = state.sb.from(table).select(cols);
+    for (const c of orderCols) q = q.order(c);
+    const { data, error } = await q.range(from, from + 999);
     if (error) throw error;
     out.push(...(data || []));
     if (!data || data.length < 1000) break;
@@ -628,10 +633,10 @@ async function loadDb() {
   if (!state.sb) return;
   try {
     const [matches, players, preds, finals] = await Promise.all([
-      fetchAll('wc_matches', 'id,kickoff,stage,group_name'),
-      fetchAll('wc_players', 'id,name,is_admin,created_at'),
-      fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals'),
-      fetchAll('wc_finals', 'player_id,champion,total_goals'),
+      fetchAll('wc_matches', 'id,kickoff,stage,group_name', ['id']),
+      fetchAll('wc_players', 'id,name,is_admin,created_at', ['id']),
+      fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals', ['match_id', 'player_id']),
+      fetchAll('wc_finals', 'player_id,champion,total_goals', ['player_id']),
     ]);
     state.dbMatches = new Map(matches.map((m) => [m.id, m]));
     state.players = players.sort((a, b) => a.name.localeCompare(b.name));
@@ -736,7 +741,7 @@ async function saveFinal(champion, totalGoals) {
   const { error } = await state.sb.rpc('wc_save_final', { p_token: state.auth.token, p_champion: champion, p_total_goals: totalGoals });
   if (error) {
     const m = String(error.message || '');
-    if (m.includes('LOCKED')) throw new Error('Tournament has started — champion picks are locked.');
+    if (m.includes('LOCKED')) throw new Error('Champion picks locked 30 min before the opening match.');
     throw new Error('Couldn\'t save your pick.');
   }
   state.myFinal = { champion, total_goals: totalGoals };
