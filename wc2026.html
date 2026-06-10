@@ -379,7 +379,7 @@
   <div class="modal">
     <h2>Save your tip?</h2>
     <p class="sub" id="saveModalMatch" style="font-size:16px;font-weight:800;color:var(--text)"></p>
-    <p class="sub">You can still change it with the Edit button until 30 min before kickoff.</p>
+    <p class="sub">From now on tips save automatically as you type. You can change them with the Edit button until 30 min before kickoff.</p>
     <button class="btn" id="saveModalGo">✓ Save tip</button>
     <button class="skip" id="saveModalCancel">Cancel</button>
   </div>
@@ -785,38 +785,56 @@ async function join(name, pin) {
 }
 
 /* ── writes ── */
-/* Saving a tip: fill both scores -> Save button -> confirmation popup ->
-   stored. The card then shows the tip with an Edit button until lock. */
-function requestSave(matchId) {
+/* Tips autosave as soon as both scores are filled in. The very first save
+   shows a one-time confirmation popup explaining the rules; after that
+   saves are silent (inline ✓). Saved tips collapse to a value + Edit. */
+const SAVE_FLAG = 'wc26_save_confirmed';
+const saveTimers = new Map();
+
+function readTip(matchId) {
   const card = document.querySelector(`[data-mid="${matchId}"]`);
-  if (!card) return;
-  const h = parseInt(card.querySelector('.pin.h')?.value, 10);
-  const a = parseInt(card.querySelector('.pin.a')?.value, 10);
-  if (!Number.isInteger(h) || !Number.isInteger(a) || h < 0 || a < 0 || h > 30 || a > 30) {
-    toast('Fill in both scores first'); return;
-  }
-  if (!state.auth) { openJoin(); return; }
-  const m = state.matches.find((x) => x.id === matchId);
-  state.pendingSave = { matchId, h, a };
-  $('#saveModalMatch').textContent = m ? `${m.home.name}  ${h} – ${a}  ${m.away.name}` : `${h} – ${a}`;
-  $('#saveModal').classList.add('open');
+  const h = parseInt(card?.querySelector('.pin.h')?.value, 10);
+  const a = parseInt(card?.querySelector('.pin.a')?.value, 10);
+  if (!Number.isInteger(h) || !Number.isInteger(a) || h < 0 || a < 0 || h > 30 || a > 30) return null;
+  return { matchId, h, a };
 }
 
-async function commitSave() {
-  const ps = state.pendingSave;
-  $('#saveModal').classList.remove('open');
-  if (!ps) return;
+function maybeSave(matchId, immediate = false) {
+  clearTimeout(saveTimers.get(matchId));
+  const run = () => {
+    const tip = readTip(matchId);
+    if (!tip) { if (immediate) toast('Fill in both scores first'); return; }
+    const saved = state.mine.get(matchId);
+    if (saved && saved.h === tip.h && saved.a === tip.a) return; // unchanged
+    if (!state.auth) { openJoin(); return; }
+    if (!localStorage.getItem(SAVE_FLAG)) {
+      const m = state.matches.find((x) => x.id === matchId);
+      state.pendingSave = tip;
+      $('#saveModalMatch').textContent = m ? `${m.home.name}  ${tip.h} – ${tip.a}  ${m.away.name}` : `${tip.h} – ${tip.a}`;
+      $('#saveModal').classList.add('open');
+      return;
+    }
+    commitSave(tip);
+  };
+  if (immediate) run();
+  else saveTimers.set(matchId, setTimeout(run, 900));
+}
+
+async function commitSave(tip) {
+  if (!tip) return;
+  const span = document.querySelector(`[data-mid="${tip.matchId}"] .savestate`);
+  if (span) { span.textContent = 'Saving…'; span.className = 'savestate'; }
   try {
-    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: ps.matchId, p_home: ps.h, p_away: ps.a });
+    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: tip.matchId, p_home: tip.h, p_away: tip.a });
     if (error) throw error;
-    state.mine.set(ps.matchId, { h: ps.h, a: ps.a });
-    state.editing.delete(ps.matchId);
-    state.pendingSave = null;
-    toast('Tip saved ✓');
-    renderMatches();
+    state.mine.set(tip.matchId, { h: tip.h, a: tip.a });
+    state.editing.delete(tip.matchId);
+    if (span?.isConnected) { span.textContent = '✓ Saved'; span.className = 'savestate ok'; }
+    renderMatches(); // collapses to tip + Edit unless the user is mid-typing
     renderHero();
   } catch (e) {
     const m = String(e?.message || '');
+    if (span?.isConnected) { span.textContent = 'Failed'; span.className = 'savestate err'; }
     if (m.includes('LOCKED')) { toast('Too late — predictions close 30 min before kickoff.'); render(); }
     else if (m.includes('BAD_TOKEN')) { signOut(); openJoin(); }
     else if (m.includes('NO_MATCH')) toast('This match isn\'t open for predictions yet — try again in a bit.');
@@ -985,7 +1003,7 @@ function matchCard(m) {
         <input class="pin h" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.h : ''}" placeholder="–" aria-label="${esc(m.home.name)} goals">
         <span class="muted">:</span>
         <input class="pin a" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.a : ''}" placeholder="–" aria-label="${esc(m.away.name)} goals">
-        <button class="savebtn" data-save="${esc(m.id)}">Save</button>
+        <span class="savestate"></span>
       </div>`;
     }
   } else if (!locked) {
@@ -1223,8 +1241,6 @@ $('#filters').addEventListener('click', (e) => {
 });
 
 $('#matchList').addEventListener('click', (e) => {
-  const save = e.target.closest('[data-save]');
-  if (save) { requestSave(save.dataset.save); return; }
   const edit = e.target.closest('[data-edit]');
   if (edit) { state.editing.add(edit.dataset.edit); renderMatches(); return; }
   const row = e.target.closest('[data-pid]');
@@ -1235,13 +1251,30 @@ $('#matchList').addEventListener('click', (e) => {
   state.openOthers.has(id) ? state.openOthers.delete(id) : state.openOthers.add(id);
   renderMatches();
 });
+$('#matchList').addEventListener('input', (e) => {
+  if (!e.target.classList.contains('pin')) return;
+  const card = e.target.closest('[data-mid]');
+  if (!card) return;
+  const span = card.querySelector('.savestate');
+  if (span) { span.textContent = ''; span.className = 'savestate'; }
+  if (!state.auth) { if (!$('#joinModal').classList.contains('open')) openJoin(); return; }
+  maybeSave(card.dataset.mid);
+});
 $('#matchList').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && e.target.classList.contains('pin')) {
     const card = e.target.closest('[data-mid]');
-    if (card) requestSave(card.dataset.mid);
+    if (card) maybeSave(card.dataset.mid, true);
+    e.target.blur();
   }
 });
-$('#saveModalGo').onclick = commitSave;
+$('#matchList').addEventListener('focusout', () => setTimeout(renderMatches, 350));
+$('#saveModalGo').onclick = () => {
+  localStorage.setItem(SAVE_FLAG, '1');
+  const ps = state.pendingSave;
+  state.pendingSave = null;
+  $('#saveModal').classList.remove('open');
+  if (ps) { commitSave(ps); toast('Tip saved ✓ — autosaving from now on'); }
+};
 $('#saveModalCancel').onclick = () => { state.pendingSave = null; $('#saveModal').classList.remove('open'); };
 
 /* join modal */
