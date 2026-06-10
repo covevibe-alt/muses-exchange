@@ -31,8 +31,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: wc2026-results
@@ -44,7 +42,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 1
 
@@ -70,18 +68,20 @@ jobs:
           fi
 
   deploy-pages:
+    # Publish the pool to GitHub Pages via a gh-pages branch. Pushing the
+    # branch only needs contents:write (which GITHUB_TOKEN has); the
+    # actions/deploy-pages route was rejected because creating the Pages
+    # site requires repo-admin, which workflow tokens never get. GitHub
+    # auto-enables Pages for a gh-pages branch.
     # Only publish from main — feature-branch runs still fetch (for testing)
     # but must not overwrite the production Pages site.
     if: github.ref == 'refs/heads/main'
     needs: fetch
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Check out latest main (includes any data commit from fetch)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 1
@@ -92,17 +92,16 @@ jobs:
           cp wc2026.html _site/index.html
           cp app/wc2026-data.json app/wc2026-data.js _site/app/
           cp icon-32.png icon-180.png _site/
+          touch _site/.nojekyll
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Push to gh-pages
+        run: |
+          cd _site
+          git init -b gh-pages -q
+          git config user.name "WC2026 Results Bot"
+          git config user.email "bot@muses.exchange"
+          git add -A
+          git commit -m "deploy WC2026 pool $(date -u +%Y-%m-%dT%H:%MZ)" -q
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" gh-pages
+        env:
+          GH_TOKEN: ${{ github.token }}

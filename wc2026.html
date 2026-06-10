@@ -140,10 +140,13 @@
   .others-toggle { width: 100%; text-align: center; margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--dim); padding: 4px; }
   .others { margin-top: 8px; border-top: 1px dashed var(--line2); padding-top: 8px; display: none; }
   .others.open { display: block; }
-  .others .orow { display: flex; align-items: center; gap: 8px; padding: 3px 2px; font-size: 13px; }
-  .others .orow .onm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mut); font-weight: 600; }
-  .others .orow.me .onm { color: var(--text); }
-  .others .osc { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .orow { display: flex; align-items: center; gap: 8px; padding: 4px 2px; font-size: 13px; }
+  .orow .onm { flex: 1; overflow: hidden; text-overflow: ellipsis; color: var(--mut); font-weight: 600; }
+  .orow.me .onm { color: var(--text); }
+  .orow .osc { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .predict .tipval { font-size: 17px; font-weight: 900; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+  .savebtn { background: var(--green); color: #07120b; font-weight: 800; border-radius: 9px; padding: 9px 16px; font-size: 13px; }
+  .editbtn { border: 1px solid var(--line2); color: var(--mut); font-weight: 700; border-radius: 9px; padding: 8px 14px; font-size: 13px; }
 
   /* ── Groups ── */
   .ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
@@ -273,6 +276,7 @@
   <button data-v="matches" class="on"><span class="ico">📅</span>Matches</button>
   <button data-v="groups"><span class="ico">🏟️</span>Groups</button>
   <button data-v="board"><span class="ico">🏆</span>Leaderboard</button>
+  <button data-v="bonus"><span class="ico">🎯</span>Bonus</button>
   <button data-v="rules"><span class="ico">📖</span>Rules</button>
 </nav>
 
@@ -295,8 +299,13 @@
   </section>
 
   <section class="view" id="view-board">
-    <div id="finalsBox"></div>
     <div id="boardBox"></div>
+  </section>
+
+  <section class="view" id="view-bonus">
+    <div id="finalsBox"></div>
+    <div id="bootRace"></div>
+    <div id="bonusList"></div>
   </section>
 
   <section class="view" id="view-rules">
@@ -311,17 +320,18 @@
         <li><b>3 points</b> — right winner and right goal difference (you said 2–1, it ended 3–2) — or a correctly predicted draw with the wrong score</li>
         <li><b>2 points</b> — right winner only</li>
         <li><b>0 points</b> — wrong result</li>
-        <li><b>+15 points</b> — your champion pick wins the World Cup</li>
+        <li><b>+15 points</b> — your champion pick wins the World Cup (Bonus tab)</li>
+        <li><b>+10 points</b> — your top-scorer pick wins the Golden Boot (Bonus tab; a tie for most goals counts, own goals and shootout kicks don't)</li>
       </ul>
     </div>
     <div class="rules-card">
       <h3>The fine print</h3>
       <ul>
-        <li>Predictions <b>lock 30 minutes before kickoff</b> (enforced server-side). Until then you can add or change them as often as you like.</li>
-        <li>Other people's predictions stay <b>hidden until the lock</b> (30 min before kickoff), then everyone's picks are revealed on the match card.</li>
+        <li>Tips save with a confirmation popup and <b>lock 30 minutes before kickoff</b> (enforced server-side). Until then, use <b>Edit</b> to change them as often as you like.</li>
+        <li>Other people's tips stay <b>hidden until the lock</b> (30 min before kickoff). After that they show on the match card — and you can tap any player on the leaderboard to see everything they filled in.</li>
         <li>Knockout matches count the score <b>after extra time</b>; penalty shootouts don't add goals. Predicting a draw in a knockout match is allowed.</li>
-        <li>Champion pick + total-goals guess lock 30 minutes before the opening match.</li>
-        <li>Tiebreakers: most exact scores, then whoever is closest to the <b>total goals scored in the tournament</b>.</li>
+        <li>Bonus picks (champion + top scorer) lock 30 minutes before the opening match.</li>
+        <li>Tiebreakers: most exact scores, then most correct results.</li>
         <li>Results come from ESPN automatically: live scores roughly every minute while you have the page open, final results within ~30 minutes.</li>
       </ul>
     </div>
@@ -355,11 +365,33 @@
     <p class="sub" id="menuSub"></p>
     <div class="menu-list">
       <button id="mInvite">📲 Invite friends (WhatsApp-ready)</button>
-      <button id="mPicks">🏆 My champion pick</button>
+      <button id="mPicks">🎯 My bonus picks</button>
       <button id="mResetPin" style="display:none">🛠️ Admin: reset a player's PIN</button>
+      <button id="mSetScorer" style="display:none">🛠️ Admin: set official top scorer</button>
       <button id="mLogout" class="danger">🚪 Sign out on this device</button>
     </div>
     <button class="skip" id="menuClose">Close</button>
+  </div>
+</div>
+
+<!-- Save-confirmation popup -->
+<div class="backdrop" id="saveModal">
+  <div class="modal">
+    <h2>Save your tip?</h2>
+    <p class="sub" id="saveModalMatch" style="font-size:16px;font-weight:800;color:var(--text)"></p>
+    <p class="sub">You can still change it with the Edit button until 30 min before kickoff.</p>
+    <button class="btn" id="saveModalGo">✓ Save tip</button>
+    <button class="skip" id="saveModalCancel">Cancel</button>
+  </div>
+</div>
+
+<!-- Player detail: everything they filled in (revealed picks only) -->
+<div class="backdrop" id="playerModal">
+  <div class="modal" style="max-height:80vh;overflow-y:auto">
+    <h2 id="pmName"></h2>
+    <p class="sub" id="pmStats"></p>
+    <div id="pmBody"></div>
+    <button class="skip" id="pmClose">Close</button>
   </div>
 </div>
 
@@ -378,8 +410,10 @@
 
 const SUPABASE_URL = 'https://bhyjdvqbfearmrkxvppl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_rJy9Oi0xt7U2HfiUs1-S9w_klZz82Lh';
-const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15 };
+const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15, topScorer: 10 };
 const LOCK_MS = 30 * 60e3; // predictions stay open until 30 min before kickoff
+// diacritic/case-insensitive name compare ("mbappe" matches "Mbappé")
+const normName = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
 const STAGE_LABEL = { GROUP: 'Group', R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-final', SF: 'Semi-final', THIRD: 'Third place', FINAL: 'Final' };
 // invite links point at wherever the page is currently served from
@@ -414,7 +448,7 @@ const state = {
   dbMatches: new Map(),   // id -> {kickoff, stage}
   players: [],
   preds: new Map(),       // matchId -> [{player_id, h, a}]
-  finals: new Map(),      // player_id -> {champion, total_goals}
+  finals: new Map(),      // player_id -> {champion, top_scorer}
   mine: new Map(),        // matchId -> {h, a}
   myFinal: null,
   auth: null,             // {token, player_id, name, is_admin}
@@ -422,6 +456,10 @@ const state = {
   filter: 'all',
   view: 'matches',
   openOthers: new Set(),
+  editing: new Set(),     // matchIds whose saved tip is being edited
+  pendingSave: null,      // {matchId, h, a} awaiting popup confirmation
+  settings: new Map(),    // wc_settings key -> value (e.g. official top_scorer)
+  topScorers: [],         // golden-boot tally from the data feed
   fetchedAt: null,
   scrolled: false,
 };
@@ -472,14 +510,40 @@ function championWinner() {
   return null;
 }
 
+// Golden-boot tally: prefer the feed's aggregate, else count match scorers.
+function topScorerTally() {
+  if (state.topScorers.length) return state.topScorers;
+  const map = new Map();
+  for (const m of state.matches) {
+    for (const s of m.scorers || []) {
+      const k = normName(s.n);
+      if (!k) continue;
+      const e = map.get(k) || { name: s.n, goals: 0 };
+      e.goals += 1;
+      map.set(k, e);
+    }
+  }
+  return [...map.values()].sort((a, b) => b.goals - a.goals || a.name.localeCompare(b.name));
+}
+
+// Who wins the +10: the admin-set official answer if present, otherwise —
+// once every match is final — everyone tied for most goals.
+function officialTopScorers() {
+  const override = state.settings.get('top_scorer');
+  if (override) return new Set(override.split(',').map(normName).filter(Boolean));
+  if (!state.matches.length || !state.matches.every((m) => m.completed)) return new Set();
+  const tally = topScorerTally();
+  if (!tally.length) return new Set();
+  const max = tally[0].goals;
+  return new Set(tally.filter((t) => t.goals === max).map((t) => normName(t.name)));
+}
+
 function playerTotals() {
   const today = todayKey();
   const champ = championWinner();
-  const goalsSoFar = state.matches.reduce((n, m) => n + (m.completed ? (m.hs ?? 0) + (m.as ?? 0) : 0), 0);
-  // total-goals tiebreak only counts once every match is in the books
-  const allDone = state.matches.length > 0 && state.matches.every((m) => m.completed);
+  const scorers = officialTopScorers();
   const rows = state.players.map((pl) => {
-    let total = 0, exacts = 0, todayPts = 0, predicted = 0;
+    let total = 0, exacts = 0, correct = 0, todayPts = 0, predicted = 0;
     for (const m of state.matches) {
       const list = state.preds.get(m.id);
       const p = list?.find((x) => x.player_id === pl.id);
@@ -489,19 +553,22 @@ function playerTotals() {
       if (pts == null) continue;
       total += pts;
       if (pts === SCORING.exact) exacts++;
+      if (pts > 0) correct++;
       if (dayKey(m.date) === today) todayPts += pts;
     }
     const fin = state.finals.get(pl.id);
-    let champHit = false;
-    if (champ && fin && fin.champion && fin.champion.trim().toLowerCase() === champ.trim().toLowerCase()) {
+    let champHit = false, scorerHit = false;
+    if (champ && fin?.champion && normName(fin.champion) === normName(champ)) {
       total += SCORING.champion; champHit = true;
     }
-    const dist = (allDone && fin?.total_goals != null) ? Math.abs(fin.total_goals - goalsSoFar) : null;
-    return { ...pl, total, exacts, todayPts, predicted, fin, champHit, dist };
+    if (scorers.size && fin?.top_scorer && scorers.has(normName(fin.top_scorer))) {
+      total += SCORING.topScorer; scorerHit = true;
+    }
+    return { ...pl, total, exacts, correct, todayPts, predicted, fin, champHit, scorerHit };
   });
   rows.sort((a, b) => b.total - a.total || b.exacts - a.exacts
-    || (a.dist ?? 1e9) - (b.dist ?? 1e9) || a.name.localeCompare(b.name));
-  return { rows, goalsSoFar };
+    || b.correct - a.correct || a.name.localeCompare(b.name));
+  return { rows };
 }
 
 /* ════════════════ data loading ════════════════ */
@@ -509,9 +576,14 @@ function playerTotals() {
 function normalizeBaseline(data) {
   if (!data?.matches?.length) return false;
   const map = new Map(state.matches.map((m) => [m.id, m]));
-  for (const m of data.matches) map.set(m.id, m);
+  for (const m of data.matches) {
+    const old = map.get(m.id);
+    if (old && !m.scorers && old.scorers) m.scorers = old.scorers;
+    map.set(m.id, m);
+  }
   state.matches = [...map.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   state.fetchedAt = data.fetchedAt || state.fetchedAt;
+  if (data.topScorers?.length) state.topScorers = data.topScorers;
   return true;
 }
 
@@ -566,6 +638,11 @@ function parseEspnEvent(ev) {
       && TEAM_GROUPS[home.name] && TEAM_GROUPS[home.name] === TEAM_GROUPS[away.name]) {
     group = TEAM_GROUPS[home.name];
   }
+  const goalScorers = (comp.details || [])
+    .filter((d) => d?.scoringPlay && !d.ownGoal)
+    .map((d) => ({ n: d.athletesInvolved?.[0]?.displayName }))
+    .filter((s) => s.n)
+    .slice(0, 30);
   return {
     id: String(ev.id), date: iso,
     stage: stageGuess, group,
@@ -576,6 +653,7 @@ function parseEspnEvent(ev) {
     detail: ty.shortDetail || ty.detail || '', clock: st.displayClock || '',
     hs, as, so: (soH != null || soA != null) ? { h: soH, a: soA } : null,
     winner, advances,
+    scorers: goalScorers.length ? goalScorers : null,
   };
 }
 
@@ -588,8 +666,8 @@ async function espnFetch(rangeParam) {
   const map = new Map(state.matches.map((m) => [m.id, m]));
   for (const p of parsed) {
     const old = map.get(p.id);
-    // Keep baseline stage/group when known — live payloads sometimes omit notes.
-    if (old) map.set(p.id, { ...old, ...p, stage: old.stage || p.stage, group: old.group ?? p.group });
+    // Keep baseline stage/group/scorers when known — live payloads can be thin.
+    if (old) map.set(p.id, { ...old, ...p, stage: old.stage || p.stage, group: old.group ?? p.group, scorers: p.scorers ?? old.scorers });
     else map.set(p.id, p);
   }
   state.matches = [...map.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
@@ -634,11 +712,12 @@ async function fetchAll(table, cols, orderCols) {
 async function loadDb() {
   if (!state.sb) return;
   try {
-    const [matches, players, preds, finals] = await Promise.all([
+    const [matches, players, preds, finals, settings] = await Promise.all([
       fetchAll('wc_matches', 'id,kickoff,stage,group_name', ['id']),
       fetchAll('wc_players', 'id,name,is_admin,created_at', ['id']),
       fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals', ['match_id', 'player_id']),
-      fetchAll('wc_finals', 'player_id,champion,total_goals', ['player_id']),
+      fetchAll('wc_finals', 'player_id,champion,top_scorer', ['player_id']),
+      fetchAll('wc_settings', 'key,value', ['key']),
     ]);
     state.dbMatches = new Map(matches.map((m) => [m.id, m]));
     state.players = players.sort((a, b) => a.name.localeCompare(b.name));
@@ -648,6 +727,7 @@ async function loadDb() {
       state.preds.get(p.match_id).push({ player_id: p.player_id, h: p.home_goals, a: p.away_goals });
     }
     state.finals = new Map(finals.map((f) => [f.player_id, f]));
+    state.settings = new Map(settings.map((s) => [s.key, s.value]));
   } catch (e) {
     console.warn('db load failed', e);
   }
@@ -705,33 +785,38 @@ async function join(name, pin) {
 }
 
 /* ── writes ── */
-const saveTimers = new Map();
-function queueSave(matchId) {
-  clearTimeout(saveTimers.get(matchId));
-  saveTimers.set(matchId, setTimeout(() => savePrediction(matchId), 650));
-}
-
-async function savePrediction(matchId) {
+/* Saving a tip: fill both scores -> Save button -> confirmation popup ->
+   stored. The card then shows the tip with an Edit button until lock. */
+function requestSave(matchId) {
   const card = document.querySelector(`[data-mid="${matchId}"]`);
   if (!card) return;
-  const h = parseInt(card.querySelector('.pin.h').value, 10);
-  const a = parseInt(card.querySelector('.pin.a').value, 10);
-  const stateEl = card.querySelector('.savestate');
+  const h = parseInt(card.querySelector('.pin.h')?.value, 10);
+  const a = parseInt(card.querySelector('.pin.a')?.value, 10);
   if (!Number.isInteger(h) || !Number.isInteger(a) || h < 0 || a < 0 || h > 30 || a > 30) {
-    stateEl.textContent = ''; return;
+    toast('Fill in both scores first'); return;
   }
   if (!state.auth) { openJoin(); return; }
-  stateEl.textContent = 'Saving…'; stateEl.className = 'savestate';
+  const m = state.matches.find((x) => x.id === matchId);
+  state.pendingSave = { matchId, h, a };
+  $('#saveModalMatch').textContent = m ? `${m.home.name}  ${h} – ${a}  ${m.away.name}` : `${h} – ${a}`;
+  $('#saveModal').classList.add('open');
+}
+
+async function commitSave() {
+  const ps = state.pendingSave;
+  $('#saveModal').classList.remove('open');
+  if (!ps) return;
   try {
-    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: matchId, p_home: h, p_away: a });
+    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: ps.matchId, p_home: ps.h, p_away: ps.a });
     if (error) throw error;
-    state.mine.set(matchId, { h, a });
-    if (stateEl.isConnected) { stateEl.textContent = '✓ Saved'; stateEl.className = 'savestate ok'; }
-    else if (!document.activeElement?.classList?.contains('pin')) renderMatches();
+    state.mine.set(ps.matchId, { h: ps.h, a: ps.a });
+    state.editing.delete(ps.matchId);
+    state.pendingSave = null;
+    toast('Tip saved ✓');
+    renderMatches();
     renderHero();
   } catch (e) {
     const m = String(e?.message || '');
-    stateEl.textContent = 'Failed'; stateEl.className = 'savestate err';
     if (m.includes('LOCKED')) { toast('Too late — predictions close 30 min before kickoff.'); render(); }
     else if (m.includes('BAD_TOKEN')) { signOut(); openJoin(); }
     else if (m.includes('NO_MATCH')) toast('This match isn\'t open for predictions yet — try again in a bit.');
@@ -739,14 +824,15 @@ async function savePrediction(matchId) {
   }
 }
 
-async function saveFinal(champion, totalGoals) {
-  const { error } = await state.sb.rpc('wc_save_final', { p_token: state.auth.token, p_champion: champion, p_total_goals: totalGoals });
+async function saveFinal(champion, topScorer) {
+  const { error } = await state.sb.rpc('wc_save_final', { p_token: state.auth.token, p_champion: champion, p_top_scorer: topScorer || null });
   if (error) {
     const m = String(error.message || '');
-    if (m.includes('LOCKED')) throw new Error('Champion picks locked 30 min before the opening match.');
-    throw new Error('Couldn\'t save your pick.');
+    if (m.includes('LOCKED')) throw new Error('Bonus picks locked 30 min before the opening match.');
+    if (m.includes('SCORER_INVALID')) throw new Error('Top scorer name looks too short/long.');
+    throw new Error('Couldn\'t save your picks.');
   }
-  state.myFinal = { champion, total_goals: totalGoals };
+  state.myFinal = { champion, top_scorer: topScorer || null };
 }
 
 /* ════════════════ rendering ════════════════ */
@@ -821,6 +907,12 @@ function renderMatches() {
   const list = $('#matchList');
   const typing = document.activeElement?.classList?.contains('pin');
   if (typing) return; // don't yank the keyboard out from under the user
+  // preserve typed-but-unsaved scores across rerenders (e.g. the 60s poll)
+  const drafts = new Map();
+  for (const card of list.querySelectorAll('[data-mid]')) {
+    const h = card.querySelector('.pin.h'), a = card.querySelector('.pin.a');
+    if (h && a && (h.value !== '' || a.value !== '')) drafts.set(card.dataset.mid, { h: h.value, a: a.value });
+  }
   const visible = state.matches.filter(matchVisible);
   if (!visible.length) {
     list.innerHTML = `<div class="empty">${state.matches.length ? 'Nothing here with this filter.' : 'Schedule loading…'}</div>`;
@@ -838,6 +930,12 @@ function renderMatches() {
     html += matchCard(m);
   }
   list.innerHTML = html;
+  for (const [mid, d] of drafts) {
+    const card = list.querySelector(`[data-mid="${mid}"]`);
+    const h = card?.querySelector('.pin.h'), a = card?.querySelector('.pin.a');
+    if (h && d.h !== '') h.value = d.h;
+    if (a && d.a !== '') a.value = d.a;
+  }
   $('#srcNote').textContent = state.fetchedAt
     ? `Results auto-update · feed refreshed ${new Date(state.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · source: ESPN`
     : 'Results auto-update · source: ESPN';
@@ -874,13 +972,22 @@ function matchCard(m) {
 
   let predictBlock = '';
   if (!locked && !tbdH && !tbdA) {
-    predictBlock = `<div class="predict">
-      <span class="lbl">My tip</span>
-      <input class="pin h" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.h : ''}" placeholder="–" aria-label="${esc(m.home.name)} goals">
-      <span class="muted">:</span>
-      <input class="pin a" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.a : ''}" placeholder="–" aria-label="${esc(m.away.name)} goals">
-      <span class="savestate ${mine ? 'ok' : ''}">${mine ? '✓ Saved' : ''}</span>
-    </div>`;
+    if (mine && !state.editing.has(m.id)) {
+      predictBlock = `<div class="predict">
+        <span class="lbl">My tip</span>
+        <span class="tipval">${mine.h} – ${mine.a}</span>
+        <span class="savestate ok">✓ Saved</span>
+        <button class="editbtn" data-edit="${esc(m.id)}">Edit</button>
+      </div>`;
+    } else {
+      predictBlock = `<div class="predict">
+        <span class="lbl">My tip</span>
+        <input class="pin h" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.h : ''}" placeholder="–" aria-label="${esc(m.home.name)} goals">
+        <span class="muted">:</span>
+        <input class="pin a" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.a : ''}" placeholder="–" aria-label="${esc(m.away.name)} goals">
+        <button class="savebtn" data-save="${esc(m.id)}">Save</button>
+      </div>`;
+    }
   } else if (!locked) {
     predictBlock = `<div class="mypick">Predictions open once both teams are known.</div>`;
   } else {
@@ -898,7 +1005,7 @@ function matchCard(m) {
       list.sort((x, y) => (matchPoints(y, m) ?? -1) - (matchPoints(x, m) ?? -1));
       const rows = list.map((p) => {
         const pts = matchPoints(p, m);
-        return `<div class="orow ${p.player_id === state.auth?.player_id ? 'me' : ''}">
+        return `<div class="orow ${p.player_id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(p.player_id)}" style="cursor:pointer">
           <span class="onm">${esc(byId.get(p.player_id) || '?')}</span>
           <span class="osc">${p.h}–${p.a}</span>
           ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
@@ -970,32 +1077,91 @@ function renderFinals() {
     const teams = allTeams();
     const opts = teams.map((t) => `<option ${state.myFinal?.champion === t.name ? 'selected' : ''}>${esc(t.name)}</option>`).join('');
     box.innerHTML = `<div class="finals-card">
-      <h3>🏆 Champion pick — worth ${SCORING.champion} points</h3>
-      <div class="muted small">Plus your total-goals guess (the tiebreaker). Locks 30 min before the opening match${h != null ? ` — in ~${h}h` : ''}.</div>
+      <h3>🎯 Your bonus picks</h3>
+      <div class="muted small">World champion = <b>+${SCORING.champion}</b> · top scorer = <b>+${SCORING.topScorer}</b>. Lock 30 min before the opening match${h != null ? ` — in ~${h}h` : ''}.</div>
       <div class="row">
-        <select id="champSel"><option value="" disabled ${state.myFinal ? '' : 'selected'}>Who wins it all?</option>${opts}</select>
-        <input id="goalsIn" type="number" inputmode="numeric" min="0" max="1000" placeholder="Total goals" value="${state.myFinal?.total_goals ?? ''}">
+        <select id="champSel" style="flex:1 1 100%"><option value="" disabled ${state.myFinal?.champion ? '' : 'selected'}>🏆 Who wins it all?</option>${opts}</select>
+      </div>
+      <div class="row">
+        <input id="scorerIn" type="text" maxlength="60" placeholder="⚽ Top scorer (e.g. Mbappé)" value="${esc(state.myFinal?.top_scorer ?? '')}" style="flex:2 1 150px">
         <button class="btn" id="finalsSave">Save</button>
       </div>
-      ${state.myFinal ? `<div class="small" style="color:var(--green);margin-top:8px">✓ Saved: ${esc(state.myFinal.champion)}${state.myFinal.total_goals != null ? ` · ${state.myFinal.total_goals} goals` : ''}</div>` : ''}
+      ${state.myFinal ? `<div class="small" style="color:var(--green);margin-top:8px">✓ Saved: ${esc(state.myFinal.champion)}${state.myFinal.top_scorer ? ` · ⚽ ${esc(state.myFinal.top_scorer)}` : ''}</div>` : ''}
     </div>`;
     $('#finalsSave').onclick = async () => {
       if (!state.auth) return openJoin();
       const champ = $('#champSel').value;
-      const goals = $('#goalsIn').value === '' ? null : parseInt($('#goalsIn').value, 10);
+      const scorer = $('#scorerIn').value.trim();
       if (!champ) return toast('Pick a champion first');
-      try { await saveFinal(champ, goals); toast('Champion pick saved 🏆'); renderFinals(); }
+      try { await saveFinal(champ, scorer); toast('Bonus picks saved 🎯'); renderBonus(); }
       catch (e) { toast(e.message); }
     };
   } else {
-    const { goalsSoFar } = playerTotals();
-    box.innerHTML = `<div class="finals-card"><h3>🏆 Champion picks are locked</h3>
-      <div class="muted small">Everyone's pick shows on the leaderboard. Goals scored so far: <b style="color:var(--text)">${goalsSoFar}</b> (tiebreaker target).</div></div>`;
+    box.innerHTML = `<div class="finals-card"><h3>🎯 Bonus picks are locked</h3>
+      <div class="muted small">Champion <b>+${SCORING.champion}</b> · top scorer <b>+${SCORING.topScorer}</b> (a tie for most goals counts). Everyone's picks are below.</div></div>`;
   }
 }
 
-function renderBoard() {
+function renderBonus() {
   renderFinals();
+
+  const tally = topScorerTally().slice(0, 8);
+  $('#bootRace').innerHTML = tally.length ? `<div class="rules-card" style="margin-top:12px">
+    <h3>⚽ Golden Boot race</h3>
+    ${tally.map((t, i) => `<div class="orow"><span class="onm">${i + 1}. ${esc(t.name)}</span><span class="osc">${t.goals}</span></div>`).join('')}
+  </div>` : '';
+
+  const box = $('#bonusList');
+  if (!finalsLocked()) {
+    box.innerHTML = `<p class="muted small" style="margin:10px 2px">Everyone's bonus picks appear here once picks lock — until then they're secret.</p>`;
+    return;
+  }
+  const { rows } = playerTotals();
+  const withFin = rows.filter((r) => r.fin);
+  box.innerHTML = `<div class="rules-card" style="margin-top:12px"><h3>Everyone's picks</h3>
+    ${withFin.length ? withFin.map((r) => `<div class="orow" data-pid="${esc(r.id)}" style="cursor:pointer">
+      <span class="onm">${esc(r.name)}</span>
+      <span class="small" style="text-align:right">🏆 ${esc(r.fin.champion)}${r.champHit ? ` <b style="color:var(--gold)">+${SCORING.champion}</b>` : ''}${r.fin.top_scorer ? `<br>⚽ ${esc(r.fin.top_scorer)}` : ''}${r.scorerHit ? ` <b style="color:var(--gold)">+${SCORING.topScorer}</b>` : ''}</span>
+    </div>`).join('') : '<p class="muted small">Nobody made bonus picks in time.</p>'}
+  </div>`;
+}
+
+/* Everything one player filled in (only what the lock rule has revealed). */
+function openPlayer(pid) {
+  const pl = state.players.find((p) => p.id === pid);
+  if (!pl) return;
+  const { rows } = playerTotals();
+  const r = rows.find((x) => x.id === pid) || { total: 0, exacts: 0, predicted: 0 };
+  $('#pmName').textContent = pl.name;
+  $('#pmStats').textContent = `${r.total} points · ${r.exacts} exact · ${r.predicted} tips revealed`;
+  let html = '';
+  if (finalsLocked() && r.fin) {
+    html += `<div class="rules-card" style="padding:10px 12px;margin-bottom:10px">
+      🏆 ${esc(r.fin.champion)}${r.champHit ? ` <b style="color:var(--gold)">+${SCORING.champion}</b>` : ''}<br>
+      ⚽ ${r.fin.top_scorer ? esc(r.fin.top_scorer) : '<span class="muted">no top-scorer pick</span>'}${r.scorerHit ? ` <b style="color:var(--gold)">+${SCORING.topScorer}</b>` : ''}
+    </div>`;
+  }
+  const revealed = state.matches.filter((m) =>
+    (state.preds.get(m.id) || []).some((p) => p.player_id === pid));
+  if (!revealed.length) {
+    html += `<p class="muted small">No revealed tips yet — tips stay secret until 30 min before each kickoff.</p>`;
+  } else {
+    html += revealed.slice().reverse().map((m) => {
+      const p = (state.preds.get(m.id) || []).find((x) => x.player_id === pid);
+      const pts = matchPoints(p, m);
+      const res = m.hs != null ? `${m.hs}–${m.as}` : '⏳';
+      return `<div class="orow">
+        <span class="onm">${esc(m.home.name)} <b>${res}</b> ${esc(m.away.name)}</span>
+        <span class="osc">${p.h}–${p.a}</span>
+        ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
+    }).join('');
+    html += `<p class="muted small" style="margin-top:10px">Their tip on the right · tips stay secret until 30 min before each kickoff.</p>`;
+  }
+  $('#pmBody').innerHTML = html;
+  $('#playerModal').classList.add('open');
+}
+
+function renderBoard() {
   const box = $('#boardBox');
   if (!state.players.length) {
     box.innerHTML = `<div class="empty">Nobody has joined yet.<br><br><button class="btn" id="bJoin">Be the first — join now</button>
@@ -1005,20 +1171,19 @@ function renderBoard() {
     return;
   }
   const { rows } = playerTotals();
-  const started = finalsLocked();
   const anyToday = rows.some((r) => r.todayPts > 0);
   box.innerHTML = `<table class="lb">
     <thead><tr><th></th><th class="nm">Player</th><th>Pts</th>${anyToday ? '<th>Today</th>' : ''}<th>Exact</th><th>Tips</th></tr></thead>
-    <tbody>${rows.map((r, i) => `<tr class="${r.id === state.auth?.player_id ? 'me' : ''}">
+    <tbody>${rows.map((r, i) => `<tr class="${r.id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(r.id)}" style="cursor:pointer">
       <td class="rk">${i + 1}</td>
-      <td class="nm">${esc(r.name)}${started && r.fin ? `<span class="champ">🏆 ${esc(r.fin.champion)}${r.champHit ? ` <b style="color:var(--gold)">+${SCORING.champion}</b>` : ''}${r.fin.total_goals != null ? ` · ${r.fin.total_goals} goals` : ''}</span>` : ''}</td>
+      <td class="nm">${esc(r.name)}</td>
       <td class="tot">${r.total}</td>
       ${anyToday ? `<td>${r.todayPts ? `+${r.todayPts}` : '·'}</td>` : ''}
       <td>${r.exacts}</td>
       <td class="muted">${r.predicted}</td>
     </tr>`).join('')}</tbody>
   </table>
-  <div class="src-note">Points: exact ${SCORING.exact} · goal difference ${SCORING.diff} · winner ${SCORING.outcome} · champion +${SCORING.champion}. Ties: exacts, then total-goals guess.</div>`;
+  <div class="src-note">Tap a player to see all their tips. Points: exact ${SCORING.exact} · goal difference ${SCORING.diff} · winner ${SCORING.outcome} · bonus picks +${SCORING.champion}/+${SCORING.topScorer} (Bonus tab). Ties: exact scores, then correct results.</div>`;
 }
 
 function render() {
@@ -1027,7 +1192,17 @@ function render() {
   if (state.view === 'matches') renderMatches();
   if (state.view === 'groups') renderGroups();
   if (state.view === 'board') renderBoard();
+  if (state.view === 'bonus') renderBonus();
 }
+$('#boardBox').addEventListener('click', (e) => {
+  const row = e.target.closest('[data-pid]');
+  if (row) openPlayer(row.dataset.pid);
+});
+$('#bonusList').addEventListener('click', (e) => {
+  const row = e.target.closest('[data-pid]');
+  if (row) openPlayer(row.dataset.pid);
+});
+$('#pmClose').onclick = () => $('#playerModal').classList.remove('open');
 
 /* ════════════════ UI wiring ════════════════ */
 
@@ -1047,20 +1222,27 @@ $('#filters').addEventListener('click', (e) => {
   renderMatches();
 });
 
-$('#matchList').addEventListener('input', (e) => {
-  if (!e.target.classList.contains('pin')) return;
-  if (!state.auth) { openJoin(); return; }
-  const card = e.target.closest('[data-mid]');
-  if (card) queueSave(card.dataset.mid);
-});
-$('#matchList').addEventListener('focusout', () => setTimeout(renderMatches, 700));
 $('#matchList').addEventListener('click', (e) => {
+  const save = e.target.closest('[data-save]');
+  if (save) { requestSave(save.dataset.save); return; }
+  const edit = e.target.closest('[data-edit]');
+  if (edit) { state.editing.add(edit.dataset.edit); renderMatches(); return; }
+  const row = e.target.closest('[data-pid]');
+  if (row) { openPlayer(row.dataset.pid); return; }
   const t = e.target.closest('[data-toggle]');
   if (!t) return;
   const id = t.dataset.toggle;
   state.openOthers.has(id) ? state.openOthers.delete(id) : state.openOthers.add(id);
   renderMatches();
 });
+$('#matchList').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.classList.contains('pin')) {
+    const card = e.target.closest('[data-mid]');
+    if (card) requestSave(card.dataset.mid);
+  }
+});
+$('#saveModalGo').onclick = commitSave;
+$('#saveModalCancel').onclick = () => { state.pendingSave = null; $('#saveModal').classList.remove('open'); };
 
 /* join modal */
 function openJoin() { $('#joinModal').classList.add('open'); setTimeout(() => $('#jName').focus(), 50); }
@@ -1085,17 +1267,25 @@ $('#userBtn').onclick = () => {
   $('#menuName').textContent = state.auth.name;
   $('#menuSub').textContent = state.auth.is_admin ? 'Pool admin' : 'Pool member';
   $('#mResetPin').style.display = state.auth.is_admin ? '' : 'none';
+  $('#mSetScorer').style.display = state.auth.is_admin ? '' : 'none';
   $('#menuModal').classList.add('open');
 };
 $('#menuClose').onclick = () => $('#menuModal').classList.remove('open');
 $('#mLogout').onclick = () => { $('#menuModal').classList.remove('open'); signOut(); toast('Signed out on this device'); };
-$('#mPicks').onclick = () => { $('#menuModal').classList.remove('open'); switchView('board'); };
+$('#mPicks').onclick = () => { $('#menuModal').classList.remove('open'); switchView('bonus'); };
 $('#mInvite').onclick = () => { $('#menuModal').classList.remove('open'); invite(); };
 $('#mResetPin').onclick = async () => {
   const who = prompt('Player name to reset:'); if (!who) return;
   const pin = prompt(`New PIN for ${who} (4–8 digits):`); if (!pin) return;
   const { error } = await state.sb.rpc('wc_admin_reset_pin', { p_token: state.auth.token, p_player_name: who, p_new_pin: pin });
   toast(error ? `Failed: ${error.message}` : `PIN reset for ${who}`);
+};
+$('#mSetScorer').onclick = async () => {
+  const name = prompt('Official top scorer (only needed if the automatic result is wrong/missing; comma-separate ties):');
+  if (name == null) return;
+  const { error } = await state.sb.rpc('wc_admin_set_setting', { p_token: state.auth.token, p_key: 'top_scorer', p_value: name.trim() || null });
+  toast(error ? `Failed: ${error.message}` : 'Official top scorer saved');
+  loadDb().then(render);
 };
 
 function invite() {
@@ -1106,7 +1296,7 @@ function invite() {
 $('#inviteBtn2').onclick = invite;
 
 /* clicking modal backdrops closes them */
-for (const id of ['joinModal', 'menuModal']) {
+for (const id of ['joinModal', 'menuModal', 'saveModal', 'playerModal']) {
   document.getElementById(id).addEventListener('click', (e) => { if (e.target.id === id) e.target.classList.remove('open'); });
 }
 
