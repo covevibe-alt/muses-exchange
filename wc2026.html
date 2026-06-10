@@ -9,7 +9,7 @@
 <meta property="og:title" content="⚽ World Cup 2026 — Predictions Pool">
 <meta property="og:description" content="Predict every match, beat your friends. Scores update live, points count themselves.">
 <meta property="og:url" content="https://muses.exchange/wc2026">
-<link rel="icon" href="/icon-32.png">
+<link rel="icon" href="icon-32.png">
 <style>
   :root {
     --bg: #0a0f0c; --bg2: #0f1610; --card: #131c15; --card2: #18241a;
@@ -365,7 +365,8 @@
 
 <div id="toast"></div>
 
-<script src="/app/wc2026-data.js"></script>
+<!-- relative path: works at muses.exchange/wc2026 AND on the GitHub Pages mirror -->
+<script src="app/wc2026-data.js"></script>
 <script type="module">
 /* ════════════════════════════════════════════════════════════════════════
    WC2026 predictions pool.
@@ -381,7 +382,8 @@ const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15 };
 const LOCK_MS = 30 * 60e3; // predictions stay open until 30 min before kickoff
 const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
 const STAGE_LABEL = { GROUP: 'Group', R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-final', SF: 'Semi-final', THIRD: 'Third place', FINAL: 'Final' };
-const POOL_URL = 'https://muses.exchange/wc2026';
+// invite links point at wherever the page is currently served from
+const POOL_URL = location.origin + location.pathname;
 // Final-draw groups (ESPN team names) — fallback when the feed lacks letters.
 const TEAM_GROUPS = (() => {
   const g = {
@@ -516,7 +518,7 @@ function normalizeBaseline(data) {
 async function loadBaseline() {
   if (window.WC2026_DATA) normalizeBaseline(window.WC2026_DATA);
   try {
-    const r = await fetch('/app/wc2026-data.json', { cache: 'no-store' });
+    const r = await fetch('app/wc2026-data.json', { cache: 'no-store' });
     if (r.ok) normalizeBaseline(await r.json());
   } catch { /* offline or file:// — committed copy / ESPN bootstrap covers us */ }
 }
