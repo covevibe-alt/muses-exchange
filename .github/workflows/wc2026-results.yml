@@ -26,6 +26,7 @@ on:
   push:
     paths:
       - 'app/wc2026-fetch.py'
+      - 'app/build-es.py'
       - 'wc2026.html'
       - '.github/workflows/wc2026-results.yml'
 
@@ -55,11 +56,15 @@ jobs:
         working-directory: app
         run: python wc2026-fetch.py
 
+      - name: Rebuild Spanish page
+        working-directory: app
+        run: python build-es.py
+
       - name: Commit updated data
         run: |
           git config user.name "WC2026 Results Bot"
           git config user.email "bot@muses.exchange"
-          git add app/wc2026-data.json app/wc2026-data.js
+          git add app/wc2026-data.json app/wc2026-data.js mundial2026.html
           if git diff --staged --quiet; then
             echo "No result changes — skipping commit."
           else
@@ -90,6 +95,7 @@ jobs:
         run: |
           mkdir -p _site/app
           cp wc2026.html _site/index.html
+          cp mundial2026.html _site/es.html
           cp app/wc2026-data.json app/wc2026-data.js _site/app/
           cp icon-32.png icon-180.png _site/
           touch _site/.nojekyll
