@@ -1,0 +1,60 @@
+name: Fetch WC2026 results
+
+# Keeps app/wc2026-data.json (+ .js) fresh for the /wc2026 predictions pool.
+# Pulls the full FIFA World Cup 2026 schedule, live scores and final results
+# from ESPN's public scoreboard API (no key needed) and commits changes back
+# to the repo — the static host then serves them, and the pool page scores
+# everyone's predictions client-side. Zero secrets, zero infrastructure.
+#
+# Cron only fires in June/July (the tournament window, Jun 11 – Jul 19 2026).
+# Minutes are offset from fetch-prices.yml to avoid push races; the push
+# retry below handles the rest.
+
+on:
+  schedule:
+    - cron: '10,40 * * 6,7 *'
+  workflow_dispatch:
+  # Also refetch whenever the fetcher itself changes — bootstraps the data
+  # file on first merge and self-heals after parser fixes.
+  push:
+    paths:
+      - 'app/wc2026-fetch.py'
+      - '.github/workflows/wc2026-results.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wc2026-results
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch fixtures and results
+        working-directory: app
+        run: python wc2026-fetch.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "WC2026 Results Bot"
+          git config user.email "bot@muses.exchange"
+          git add app/wc2026-data.json app/wc2026-data.js
+          if git diff --staged --quiet; then
+            echo "No result changes — skipping commit."
+          else
+            git commit -m "chore: update WC2026 results $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push || (git pull --rebase -X theirs && git push)
+          fi

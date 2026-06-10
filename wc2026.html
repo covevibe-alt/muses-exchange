@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a0f0c">
+<title>WC 2026 · Predictions Pool</title>
+<meta property="og:title" content="⚽ World Cup 2026 — Predictions Pool">
+<meta property="og:description" content="Predict every match, beat your friends. Scores update live, points count themselves.">
+<meta property="og:url" content="https://muses.exchange/wc2026">
+<link rel="icon" href="/icon-32.png">
+<style>
+  :root {
+    --bg: #0a0f0c; --bg2: #0f1610; --card: #131c15; --card2: #18241a;
+    --line: #233226; --line2: #2e4233;
+    --text: #e9f2ea; --mut: #93a896; --dim: #5f7263;
+    --green: #34d399; --green-dim: #34d39922;
+    --gold: #fbbf24; --red: #f87171; --blue: #7dd3fc;
+    --r: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-padding-top: 120px; }
+  body {
+    background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+  button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+  input, select { font: inherit; color: var(--text); }
+  img { display: block; }
+
+  /* ── Header ── */
+  .top {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px calc(10px);
+    background: linear-gradient(180deg, rgba(10,15,12,.97), rgba(10,15,12,.92));
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .top .ball { font-size: 22px; }
+  .top h1 { font-size: 17px; font-weight: 800; letter-spacing: .2px; }
+  .top h1 small { display: block; font-size: 11px; font-weight: 600; color: var(--mut); letter-spacing: .6px; text-transform: uppercase; }
+  .top .spacer { flex: 1; }
+  .userchip {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 12px 6px 6px; font-weight: 700; font-size: 13px;
+  }
+  .userchip .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--green-dim); color: var(--green);
+    display: grid; place-items: center; font-size: 12px; font-weight: 800;
+  }
+  .userchip.ghost { padding: 8px 14px; color: var(--green); border-color: var(--green); }
+
+  /* ── Hero strip ── */
+  .hero { padding: 14px 16px 4px; max-width: 980px; margin: 0 auto; width: 100%; }
+  .hero-card {
+    background: linear-gradient(135deg, var(--card2), var(--card));
+    border: 1px solid var(--line2); border-radius: var(--r);
+    padding: 12px 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  .hero-card .big { font-size: 16px; font-weight: 800; }
+  .hero-card .sub { font-size: 12.5px; color: var(--mut); }
+  .live-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--red); margin-right: 6px; animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+  .chip {
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--line2); color: var(--mut); background: var(--bg2);
+  }
+  .chip.warn { color: var(--gold); border-color: #fbbf2444; }
+  .chip.btnish { color: var(--green); border-color: #34d39944; cursor: pointer; }
+
+  /* ── Layout / views ── */
+  main { max-width: 980px; margin: 0 auto; padding: 12px 16px 32px; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .muted { color: var(--mut); }
+  .small { font-size: 12.5px; }
+
+  /* ── Filters ── */
+  .filters { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 12px; scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .fchip {
+    flex: 0 0 auto; font-size: 13px; font-weight: 700; padding: 7px 14px;
+    border-radius: 999px; border: 1px solid var(--line); color: var(--mut); background: var(--card);
+  }
+  .fchip.on { color: #07120b; background: var(--green); border-color: var(--green); }
+  .fchip .n { opacity: .75; font-weight: 600; }
+
+  /* ── Day sections & match cards ── */
+  .day-h {
+    position: sticky; top: 58px; z-index: 10;
+    font-size: 12.5px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
+    color: var(--mut); padding: 14px 2px 8px;
+    background: linear-gradient(180deg, var(--bg) 75%, transparent);
+  }
+  .day-h .today { color: var(--green); }
+  .mcard {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .mcard.live { border-color: #f8717155; }
+  .m-meta { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--dim); margin-bottom: 10px; flex-wrap: wrap; }
+  .m-meta .stagechip { color: var(--mut); font-weight: 700; }
+  .m-meta .statebadge { margin-left: auto; font-weight: 800; font-size: 11.5px; }
+  .statebadge.live { color: var(--red); }
+  .statebadge.ft { color: var(--mut); }
+  .statebadge.soon { color: var(--blue); }
+  .m-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
+  .team { display: flex; align-items: center; gap: 8px; min-width: 0; font-weight: 700; font-size: 14.5px; }
+  .team.away { flex-direction: row-reverse; text-align: right; }
+  .team .flag { width: 24px; height: 18px; object-fit: cover; border-radius: 3px; flex: 0 0 auto; background: var(--bg2); }
+  .team .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .team.tbd { color: var(--dim); font-weight: 600; }
+  .score-mid { text-align: center; min-width: 86px; }
+  .score-mid .res { font-size: 21px; font-weight: 900; letter-spacing: 1px; }
+  .score-mid .res .pen { display: block; font-size: 10.5px; color: var(--mut); font-weight: 600; letter-spacing: 0; }
+  .score-mid .ko { font-size: 13px; color: var(--mut); font-weight: 700; }
+  .predict { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; }
+  .predict .lbl { font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--dim); }
+  .pin {
+    width: 52px; height: 40px; text-align: center; font-size: 17px; font-weight: 800;
+    background: var(--bg2); border: 1px solid var(--line2); border-radius: 10px; outline: none;
+    -moz-appearance: textfield; appearance: textfield;
+  }
+  .pin::-webkit-outer-spin-button, .pin::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .pin:focus { border-color: var(--green); }
+  .savestate { font-size: 11.5px; font-weight: 700; min-width: 52px; }
+  .savestate.ok { color: var(--green); }
+  .savestate.err { color: var(--red); }
+  .mypick { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; font-size: 12.5px; color: var(--mut); flex-wrap: wrap; }
+  .pts { font-weight: 900; font-size: 12px; border-radius: 7px; padding: 2px 8px; }
+  .pts.p5 { background: #fbbf2426; color: var(--gold); }
+  .pts.p3 { background: #34d39926; color: var(--green); }
+  .pts.p2 { background: #7dd3fc22; color: var(--blue); }
+  .pts.p0 { background: #ffffff10; color: var(--dim); }
+  .others-toggle { width: 100%; text-align: center; margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--dim); padding: 4px; }
+  .others { margin-top: 8px; border-top: 1px dashed var(--line2); padding-top: 8px; display: none; }
+  .others.open { display: block; }
+  .others .orow { display: flex; align-items: center; gap: 8px; padding: 3px 2px; font-size: 13px; }
+  .others .orow .onm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mut); font-weight: 600; }
+  .others .orow.me .onm { color: var(--text); }
+  .others .osc { font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  /* ── Groups ── */
+  .ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .gcard { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; }
+  .gcard h3 { font-size: 13px; letter-spacing: .8px; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+  .gtable { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .gtable th { font-size: 10.5px; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; text-align: center; padding: 2px 4px; font-weight: 700; }
+  .gtable th:first-child { text-align: left; }
+  .gtable td { padding: 5px 4px; text-align: center; font-variant-numeric: tabular-nums; border-top: 1px solid var(--line); }
+  .gtable td.tm { text-align: left; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+  .gtable td.tm img { width: 20px; height: 15px; object-fit: cover; border-radius: 2px; }
+  .gtable tr.q td:first-child { box-shadow: inset 3px 0 0 var(--green); }
+  .gtable td.p { font-weight: 900; }
+
+  /* ── Leaderboard ── */
+  .finals-card { background: linear-gradient(135deg, #1a2317, var(--card)); border: 1px solid #fbbf2433; border-radius: var(--r); padding: 14px 16px; margin-bottom: 14px; }
+  .finals-card h3 { font-size: 14px; margin-bottom: 4px; }
+  .finals-card .row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+  .finals-card select, .finals-card input {
+    background: var(--bg2); border: 1px solid var(--line2); border-radius: 10px;
+    padding: 9px 10px; outline: none; min-width: 0;
+  }
+  .finals-card select { flex: 2 1 150px; }
+  .finals-card input { flex: 1 1 90px; width: 90px; }
+  .btn {
+    background: var(--green); color: #07120b; font-weight: 800; border-radius: 10px;
+    padding: 9px 16px; font-size: 14px;
+  }
+  .btn:disabled { opacity: .5; }
+  .btn.ghost { background: none; border: 1px solid var(--line2); color: var(--text); }
+  .lb { width: 100%; border-collapse: collapse; }
+  .lb td, .lb th { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+  .lb th { font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--dim); font-weight: 700; }
+  .lb td.nm, .lb th.nm { text-align: left; }
+  .lb td.rk { color: var(--dim); font-weight: 800; width: 30px; text-align: left; }
+  .lb tr.me td { background: #34d39910; }
+  .lb td.nm { font-weight: 700; }
+  .lb td.nm .champ { display: block; font-size: 11px; color: var(--mut); font-weight: 600; }
+  .lb td.tot { font-weight: 900; font-size: 16px; color: var(--gold); }
+  .lb tbody tr:nth-child(1) td.rk::before { content: "🥇"; }
+  .lb tbody tr:nth-child(2) td.rk::before { content: "🥈"; }
+  .lb tbody tr:nth-child(3) td.rk::before { content: "🥉"; }
+  .lb tbody tr:nth-child(-n+3) td.rk { font-size: 0; }
+  .lb tbody tr:nth-child(-n+3) td.rk::before { font-size: 15px; }
+
+  /* ── Rules ── */
+  .rules-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; margin-bottom: 12px; }
+  .rules-card h3 { font-size: 14px; margin-bottom: 8px; color: var(--green); }
+  .rules-card p, .rules-card li { color: var(--mut); font-size: 14px; margin-bottom: 6px; }
+  .rules-card ul { padding-left: 18px; }
+  .rules-card b { color: var(--text); }
+
+  /* ── Bottom nav / tabs ── */
+  .tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    display: flex; justify-content: space-around;
+    background: rgba(13,19,15,.97); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+  }
+  .tabs button {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 10.5px; font-weight: 700; color: var(--dim); letter-spacing: .3px;
+  }
+  .tabs button .ico { font-size: 19px; }
+  .tabs button.on { color: var(--green); }
+  @media (min-width: 760px) {
+    body { padding-bottom: 32px; }
+    .tabs { position: sticky; top: 0; bottom: auto; order: -1; border-top: 0; }
+    .tabs { position: static; background: none; backdrop-filter: none; border: 0; max-width: 980px; margin: 4px auto 0; justify-content: flex-start; gap: 6px; padding: 0 16px; }
+    .tabs button { flex: 0 0 auto; flex-direction: row; gap: 7px; font-size: 13.5px; padding: 8px 14px; border-radius: 999px; border: 1px solid transparent; }
+    .tabs button.on { background: var(--card); border-color: var(--line2); }
+  }
+
+  /* ── Modal / toast ── */
+  .backdrop {
+    position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.72);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: none; place-items: center; padding: 20px;
+  }
+  .backdrop.open { display: grid; }
+  .modal {
+    width: 100%; max-width: 400px; background: var(--bg2);
+    border: 1px solid var(--line2); border-radius: 18px; padding: 22px;
+  }
+  .modal h2 { font-size: 19px; margin-bottom: 6px; }
+  .modal .sub { color: var(--mut); font-size: 13.5px; margin-bottom: 16px; }
+  .modal label { display: block; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--dim); margin: 12px 0 6px; }
+  .modal input {
+    width: 100%; background: var(--card); border: 1px solid var(--line2);
+    border-radius: 10px; padding: 12px; font-size: 16px; outline: none;
+  }
+  .modal input:focus { border-color: var(--green); }
+  .modal .err { color: var(--red); font-size: 13px; min-height: 18px; margin-top: 10px; font-weight: 600; }
+  .modal .btn { width: 100%; margin-top: 6px; padding: 13px; font-size: 15px; }
+  .modal .skip { width: 100%; text-align: center; color: var(--dim); font-size: 13px; margin-top: 12px; }
+  .menu-list { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
+  .menu-list button { text-align: left; padding: 12px 10px; border-radius: 10px; font-weight: 600; font-size: 14.5px; display: flex; gap: 10px; align-items: center; }
+  .menu-list button:active { background: var(--card); }
+  .menu-list .danger { color: var(--red); }
+  #toast {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(86px + env(safe-area-inset-bottom)); z-index: 200;
+    background: #1c2a1f; border: 1px solid var(--line2); color: var(--text);
+    border-radius: 12px; padding: 11px 18px; font-size: 13.5px; font-weight: 600;
+    opacity: 0; pointer-events: none; transition: opacity .25s; max-width: 90vw; text-align: center;
+  }
+  #toast.show { opacity: 1; }
+  .src-note { text-align: center; color: var(--dim); font-size: 11.5px; padding: 18px 0 4px; }
+  .empty { text-align: center; color: var(--mut); padding: 36px 12px; font-size: 14px; }
+  .skel { height: 86px; border-radius: var(--r); background: linear-gradient(110deg, var(--card) 8%, var(--card2) 18%, var(--card) 33%); background-size: 200% 100%; animation: sh 1.2s linear infinite; margin-bottom: 10px; }
+  @keyframes sh { to { background-position-x: -200% } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="ball">⚽</span>
+  <h1>World Cup 2026<small>Predictions Pool</small></h1>
+  <span class="spacer"></span>
+  <button class="userchip ghost" id="userBtn">Join</button>
+</header>
+
+<div class="hero"><div class="hero-card" id="heroCard"><span class="sub">Loading schedule…</span></div></div>
+
+<nav class="tabs" id="tabs">
+  <button data-v="matches" class="on"><span class="ico">📅</span>Matches</button>
+  <button data-v="groups"><span class="ico">🏟️</span>Groups</button>
+  <button data-v="board"><span class="ico">🏆</span>Leaderboard</button>
+  <button data-v="rules"><span class="ico">📖</span>Rules</button>
+</nav>
+
+<main>
+  <section class="view active" id="view-matches">
+    <div class="filters" id="filters">
+      <button class="fchip on" data-f="all">All</button>
+      <button class="fchip" data-f="today">Today</button>
+      <button class="fchip" data-f="open">To predict <span class="n" id="openCount"></span></button>
+      <button class="fchip" data-f="live">Live</button>
+      <button class="fchip" data-f="done">Finished</button>
+    </div>
+    <div id="matchList"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+    <div class="src-note" id="srcNote"></div>
+  </section>
+
+  <section class="view" id="view-groups">
+    <p class="muted small" style="margin:4px 2px 12px">Standings update automatically from results. Top 2 of each group advance, plus the 8 best third-placed teams.</p>
+    <div class="ggrid" id="groupGrid"></div>
+  </section>
+
+  <section class="view" id="view-board">
+    <div id="finalsBox"></div>
+    <div id="boardBox"></div>
+  </section>
+
+  <section class="view" id="view-rules">
+    <div class="rules-card">
+      <h3>How it works</h3>
+      <p>Predict the score of every World Cup match before kickoff. Points are awarded automatically when matches finish — no admin, no spreadsheets.</p>
+    </div>
+    <div class="rules-card">
+      <h3>Scoring</h3>
+      <ul>
+        <li><b>5 points</b> — exact score (you said 2–1, it ended 2–1)</li>
+        <li><b>3 points</b> — right winner and right goal difference (you said 2–1, it ended 3–2) — or a correctly predicted draw with the wrong score</li>
+        <li><b>2 points</b> — right winner only</li>
+        <li><b>0 points</b> — wrong result</li>
+        <li><b>+15 points</b> — your champion pick wins the World Cup</li>
+      </ul>
+    </div>
+    <div class="rules-card">
+      <h3>The fine print</h3>
+      <ul>
+        <li>Predictions <b>lock 30 minutes before kickoff</b> (enforced server-side). Until then you can add or change them as often as you like.</li>
+        <li>Other people's predictions stay <b>hidden until the lock</b> (30 min before kickoff), then everyone's picks are revealed on the match card.</li>
+        <li>Knockout matches count the score <b>after extra time</b>; penalty shootouts don't add goals. Predicting a draw in a knockout match is allowed.</li>
+        <li>Champion pick + total-goals guess lock 30 minutes before the opening match.</li>
+        <li>Tiebreakers: most exact scores, then whoever is closest to the <b>total goals scored in the tournament</b>.</li>
+        <li>Results come from ESPN automatically: live scores roughly every minute while you have the page open, final results within ~30 minutes.</li>
+      </ul>
+    </div>
+    <div class="rules-card">
+      <h3>Invite friends</h3>
+      <p>Anyone with the link can join with just a name and a PIN:</p>
+      <div style="margin-top:10px"><button class="btn" id="inviteBtn2">Share invite link</button></div>
+    </div>
+  </section>
+</main>
+
+<!-- Join / sign-in modal -->
+<div class="backdrop" id="joinModal">
+  <div class="modal">
+    <h2>Join the pool ⚽</h2>
+    <p class="sub">Pick a name and a PIN. Same name + PIN signs you back in on any device.</p>
+    <label>Your name</label>
+    <input id="jName" maxlength="24" autocomplete="nickname" placeholder="e.g. Sander">
+    <label>PIN (4–8 digits)</label>
+    <input id="jPin" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="••••" type="password">
+    <div class="err" id="jErr"></div>
+    <button class="btn" id="jGo">Join / Sign in</button>
+    <button class="skip" id="jSkip">Just browsing for now</button>
+  </div>
+</div>
+
+<!-- User menu modal -->
+<div class="backdrop" id="menuModal">
+  <div class="modal">
+    <h2 id="menuName"></h2>
+    <p class="sub" id="menuSub"></p>
+    <div class="menu-list">
+      <button id="mInvite">📲 Invite friends (WhatsApp-ready)</button>
+      <button id="mPicks">🏆 My champion pick</button>
+      <button id="mResetPin" style="display:none">🛠️ Admin: reset a player's PIN</button>
+      <button id="mLogout" class="danger">🚪 Sign out on this device</button>
+    </div>
+    <button class="skip" id="menuClose">Close</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="/app/wc2026-data.js"></script>
+<script type="module">
+/* ════════════════════════════════════════════════════════════════════════
+   WC2026 predictions pool.
+   Data flow:
+     schedule/results  -> committed JSON (GitHub Action) + direct ESPN polls
+     players/picks     -> Supabase (RPC writes, RLS-filtered reads)
+     points            -> pure client-side function of (predictions × results)
+   ════════════════════════════════════════════════════════════════════════ */
+
+const SUPABASE_URL = 'https://bhyjdvqbfearmrkxvppl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_rJy9Oi0xt7U2HfiUs1-S9w_klZz82Lh';
+const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15 };
+const LOCK_MS = 30 * 60e3; // predictions stay open until 30 min before kickoff
+const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
+const STAGE_LABEL = { GROUP: 'Group', R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-final', SF: 'Semi-final', THIRD: 'Third place', FINAL: 'Final' };
+const POOL_URL = 'https://muses.exchange/wc2026';
+// Final-draw groups (ESPN team names) — fallback when the feed lacks letters.
+const TEAM_GROUPS = (() => {
+  const g = {
+    A: ['Mexico', 'South Africa', 'South Korea', 'Czechia'],
+    B: ['Canada', 'Bosnia-Herzegovina', 'Qatar', 'Switzerland'],
+    C: ['Brazil', 'Morocco', 'Haiti', 'Scotland'],
+    D: ['United States', 'Paraguay', 'Australia', 'Türkiye'],
+    E: ['Germany', 'Curaçao', 'Ivory Coast', 'Ecuador'],
+    F: ['Netherlands', 'Japan', 'Sweden', 'Tunisia'],
+    G: ['Belgium', 'Egypt', 'Iran', 'New Zealand'],
+    H: ['Spain', 'Cape Verde', 'Saudi Arabia', 'Uruguay'],
+    I: ['France', 'Senegal', 'Iraq', 'Norway'],
+    J: ['Argentina', 'Algeria', 'Austria', 'Jordan'],
+    K: ['Portugal', 'Congo DR', 'Uzbekistan', 'Colombia'],
+    L: ['England', 'Croatia', 'Ghana', 'Panama'],
+  };
+  const map = {};
+  for (const [letter, teams] of Object.entries(g)) for (const t of teams) map[t] = letter;
+  return map;
+})();
+const isTbdTeam = (t) => !!t?.tbd || !t?.name || t.name === 'TBD' || /(1st|2nd|3rd)\s+place|winner|runner|loser|\btbd\b/i.test(t.name);
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const state = {
+  matches: [],            // normalized matches, sorted by date
+  dbMatches: new Map(),   // id -> {kickoff, stage}
+  players: [],
+  preds: new Map(),       // matchId -> [{player_id, h, a}]
+  finals: new Map(),      // player_id -> {champion, total_goals}
+  mine: new Map(),        // matchId -> {h, a}
+  myFinal: null,
+  auth: null,             // {token, player_id, name, is_admin}
+  sb: null,
+  filter: 'all',
+  view: 'matches',
+  openOthers: new Set(),
+  fetchedAt: null,
+  scrolled: false,
+};
+
+/* ── tiny utils ── */
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove('show'), 2600);
+}
+const fmtTime = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
+const fmtDay = new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+const dayKey = (iso) => { const d = new Date(iso); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const todayKey = () => dayKey(new Date().toISOString());
+
+function kickoffOf(m) {
+  const db = state.dbMatches.get(m.id);
+  return new Date(db?.kickoff || m.date);
+}
+const isLocked = (m) => Date.now() >= kickoffOf(m).getTime() - LOCK_MS;
+const isLive = (m) => m.state === 'in';
+const firstKickoff = () => {
+  let min = null;
+  for (const m of state.matches) { const k = kickoffOf(m).getTime(); if (min === null || k < min) min = k; }
+  for (const r of state.dbMatches.values()) { const k = new Date(r.kickoff).getTime(); if (min === null || k < min) min = k; }
+  return min;
+};
+const finalsLocked = () => { const f = firstKickoff(); return f !== null && Date.now() >= f - LOCK_MS; };
+
+/* ── scoring: the one true function ── */
+function matchPoints(p, m) {
+  if (!m.completed || m.hs == null || m.as == null || !p) return null;
+  if (p.h === m.hs && p.a === m.as) return SCORING.exact;
+  const ps = Math.sign(p.h - p.a), as = Math.sign(m.hs - m.as);
+  if (ps !== as) return 0;
+  if ((p.h - p.a) === (m.hs - m.as)) return SCORING.diff;
+  return SCORING.outcome;
+}
+
+function championWinner() {
+  const fin = state.matches.find((m) => m.stage === 'FINAL' && m.completed);
+  if (!fin) return null;
+  const side = fin.advances || fin.winner;
+  if (side === 'home') return fin.home.name;
+  if (side === 'away') return fin.away.name;
+  return null;
+}
+
+function playerTotals() {
+  const today = todayKey();
+  const champ = championWinner();
+  const goalsSoFar = state.matches.reduce((n, m) => n + (m.completed ? (m.hs ?? 0) + (m.as ?? 0) : 0), 0);
+  // total-goals tiebreak only counts once every match is in the books
+  const allDone = state.matches.length > 0 && state.matches.every((m) => m.completed);
+  const rows = state.players.map((pl) => {
+    let total = 0, exacts = 0, todayPts = 0, predicted = 0;
+    for (const m of state.matches) {
+      const list = state.preds.get(m.id);
+      const p = list?.find((x) => x.player_id === pl.id);
+      if (!p) continue;
+      predicted++;
+      const pts = matchPoints(p, m);
+      if (pts == null) continue;
+      total += pts;
+      if (pts === SCORING.exact) exacts++;
+      if (dayKey(m.date) === today) todayPts += pts;
+    }
+    const fin = state.finals.get(pl.id);
+    let champHit = false;
+    if (champ && fin && fin.champion && fin.champion.trim().toLowerCase() === champ.trim().toLowerCase()) {
+      total += SCORING.champion; champHit = true;
+    }
+    const dist = (allDone && fin?.total_goals != null) ? Math.abs(fin.total_goals - goalsSoFar) : null;
+    return { ...pl, total, exacts, todayPts, predicted, fin, champHit, dist };
+  });
+  rows.sort((a, b) => b.total - a.total || b.exacts - a.exacts
+    || (a.dist ?? 1e9) - (b.dist ?? 1e9) || a.name.localeCompare(b.name));
+  return { rows, goalsSoFar };
+}
+
+/* ════════════════ data loading ════════════════ */
+
+function normalizeBaseline(data) {
+  if (!data?.matches?.length) return false;
+  const map = new Map(state.matches.map((m) => [m.id, m]));
+  for (const m of data.matches) map.set(m.id, m);
+  state.matches = [...map.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  state.fetchedAt = data.fetchedAt || state.fetchedAt;
+  return true;
+}
+
+async function loadBaseline() {
+  if (window.WC2026_DATA) normalizeBaseline(window.WC2026_DATA);
+  try {
+    const r = await fetch('/app/wc2026-data.json', { cache: 'no-store' });
+    if (r.ok) normalizeBaseline(await r.json());
+  } catch { /* offline or file:// — committed copy / ESPN bootstrap covers us */ }
+}
+
+/* Direct ESPN poll — live scores between Action commits, and full bootstrap
+   if the committed feed doesn't exist yet. Mirrors app/wc2026-fetch.py. */
+function parseEspnEvent(ev) {
+  const comp = (ev.competitions || [])[0] || {};
+  const rawDate = ev.date || comp.date;
+  const dt = rawDate ? new Date(rawDate) : null;
+  if (!ev.id || !dt || isNaN(dt)) return null;
+  const iso = dt.toISOString().replace('.000Z', 'Z');
+  const notes = (comp.notes || ev.notes || []).map((n) => n.headline || '').join(' ');
+  const team = (c) => {
+    const t = c?.team || {};
+    const out = { id: String(t.id || ''), name: t.displayName || t.name || 'TBD', abbr: t.abbreviation || '', logo: t.logo || t.logos?.[0]?.href || '' };
+    if (isTbdTeam(out)) out.tbd = true;
+    return out;
+  };
+  const num = (v) => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : null; };
+  let home = null, away = null, hW = false, aW = false, hs = null, as = null, soH = null, soA = null;
+  for (const c of comp.competitors || []) {
+    const t = team(c);
+    if (c.homeAway === 'home') { home = t; hs = num(c.score); soH = num(c.shootoutScore); hW = !!c.winner; }
+    if (c.homeAway === 'away') { away = t; as = num(c.score); soA = num(c.shootoutScore); aW = !!c.winner; }
+  }
+  const st = comp.status || ev.status || {}; const ty = st.type || {};
+  const completed = !!ty.completed;
+  let winner = null, advances = null;
+  if (completed && hs != null && as != null) {
+    winner = hs > as ? 'home' : as > hs ? 'away' : 'draw';
+    advances = hW ? 'home' : aW ? 'away' : (winner !== 'draw' ? winner : null);
+  }
+  // Calendar fallback boundaries are US-Eastern days; shift -4h so late
+  // kickoffs that spill past midnight UTC stay on the right matchday.
+  const day = new Date(dt.getTime() - 4 * 3600e3).toISOString().slice(0, 10);
+  const stageGuess = /round of 32/i.test(notes) ? 'R32' : /round of 16/i.test(notes) ? 'R16'
+    : /quarter/i.test(notes) ? 'QF' : /semi/i.test(notes) ? 'SF' : /third/i.test(notes) ? 'THIRD'
+    : /\bfinal\b/i.test(notes) ? 'FINAL' : /group/i.test(notes) ? 'GROUP'
+    : day <= '2026-06-27' ? 'GROUP' : day <= '2026-07-03' ? 'R32' : day <= '2026-07-07' ? 'R16'
+    : day <= '2026-07-12' ? 'QF' : day <= '2026-07-16' ? 'SF' : day <= '2026-07-18' ? 'THIRD' : 'FINAL';
+  const g = notes.match(/group\s+([A-L])\b/i);
+  let group = g ? g[1].toUpperCase() : null;
+  if (!group && stageGuess === 'GROUP' && home && away
+      && TEAM_GROUPS[home.name] && TEAM_GROUPS[home.name] === TEAM_GROUPS[away.name]) {
+    group = TEAM_GROUPS[home.name];
+  }
+  return {
+    id: String(ev.id), date: iso,
+    stage: stageGuess, group,
+    venue: comp.venue?.fullName || '', city: comp.venue?.address?.city || '',
+    home: home || { id: '', name: 'TBD', abbr: '', logo: '' },
+    away: away || { id: '', name: 'TBD', abbr: '', logo: '' },
+    state: ty.state || 'pre', completed,
+    detail: ty.shortDetail || ty.detail || '', clock: st.displayClock || '',
+    hs, as, so: (soH != null || soA != null) ? { h: soH, a: soA } : null,
+    winner, advances,
+  };
+}
+
+async function espnFetch(rangeParam) {
+  const r = await fetch(`${ESPN}?dates=${rangeParam}&limit=400`, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`espn ${r.status}`);
+  const json = await r.json();
+  const parsed = (json.events || []).map((e) => { try { return parseEspnEvent(e); } catch { return null; } }).filter(Boolean);
+  if (!parsed.length) return false;
+  const map = new Map(state.matches.map((m) => [m.id, m]));
+  for (const p of parsed) {
+    const old = map.get(p.id);
+    // Keep baseline stage/group when known — live payloads sometimes omit notes.
+    if (old) map.set(p.id, { ...old, ...p, stage: old.stage || p.stage, group: old.group ?? p.group });
+    else map.set(p.id, p);
+  }
+  state.matches = [...map.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  return true;
+}
+
+const espnBootstrap = () => espnFetch('20260608-20260722').catch(() => false);
+
+async function espnLiveTick() {
+  if (document.hidden) return;
+  const now = Date.now();
+  const need = state.matches.some((m) => {
+    const k = kickoffOf(m).getTime();
+    return isLive(m) || (now >= k - 10 * 60e3 && now <= k + 3 * 3600e3 && !m.completed);
+  });
+  if (!need) return;
+  const d = new Date(); const fmt = (x) => x.toISOString().slice(0, 10).replaceAll('-', '');
+  const a = new Date(d.getTime() - 36e5 * 24), b = new Date(d.getTime() + 36e5 * 24);
+  if (await espnFetch(`${fmt(a)}-${fmt(b)}`).catch(() => false)) render();
+}
+
+/* ── Supabase ── */
+async function initSb() {
+  const mod = await import('https://esm.sh/@supabase/supabase-js@2');
+  state.sb = mod.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
+}
+
+async function fetchAll(table, cols, orderCols) {
+  // unique ordering so >1000-row pagination can't skip/duplicate rows
+  const out = [];
+  for (let from = 0; ; from += 1000) {
+    let q = state.sb.from(table).select(cols);
+    for (const c of orderCols) q = q.order(c);
+    const { data, error } = await q.range(from, from + 999);
+    if (error) throw error;
+    out.push(...(data || []));
+    if (!data || data.length < 1000) break;
+  }
+  return out;
+}
+
+async function loadDb() {
+  if (!state.sb) return;
+  try {
+    const [matches, players, preds, finals] = await Promise.all([
+      fetchAll('wc_matches', 'id,kickoff,stage,group_name', ['id']),
+      fetchAll('wc_players', 'id,name,is_admin,created_at', ['id']),
+      fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals', ['match_id', 'player_id']),
+      fetchAll('wc_finals', 'player_id,champion,total_goals', ['player_id']),
+    ]);
+    state.dbMatches = new Map(matches.map((m) => [m.id, m]));
+    state.players = players.sort((a, b) => a.name.localeCompare(b.name));
+    state.preds = new Map();
+    for (const p of preds) {
+      if (!state.preds.has(p.match_id)) state.preds.set(p.match_id, []);
+      state.preds.get(p.match_id).push({ player_id: p.player_id, h: p.home_goals, a: p.away_goals });
+    }
+    state.finals = new Map(finals.map((f) => [f.player_id, f]));
+  } catch (e) {
+    console.warn('db load failed', e);
+  }
+}
+
+async function loadMine() {
+  if (!state.sb || !state.auth) return;
+  try {
+    const { data, error } = await state.sb.rpc('wc_get_mine', { p_token: state.auth.token });
+    if (error) throw error;
+    state.mine = new Map((data.predictions || []).map((p) => [p.match_id, { h: p.h, a: p.a }]));
+    state.myFinal = data.final || null;
+    state.auth = { ...state.auth, name: data.player.name, is_admin: data.player.is_admin, player_id: data.player.id };
+    saveAuth();
+  } catch (e) {
+    if (String(e?.message).includes('BAD_TOKEN')) { signOut(); toast('Session expired — join again'); }
+  }
+}
+
+/* Knockout fixtures appear in the feed days before kickoff; make sure the
+   server knows them so predictions can be saved + locked. Insert-only, and
+   kickoff corrections may only move EARLIER — both enforced server-side. */
+async function syncMatchesToDb() {
+  if (!state.sb) return;
+  for (const m of state.matches) {
+    const db = state.dbMatches.get(m.id);
+    const ko = new Date(m.date).toISOString();
+    if (db && new Date(db.kickoff).toISOString() <= ko) continue;
+    if (!db && new Date(m.date).getTime() < Date.now() + 11 * 60e3) continue;
+    try {
+      await state.sb.rpc('wc_sync_match', { p_id: m.id, p_kickoff: ko, p_stage: m.stage, p_group: m.group });
+      state.dbMatches.set(m.id, { id: m.id, kickoff: ko, stage: m.stage, group_name: m.group });
+    } catch { /* best effort */ }
+  }
+}
+
+/* ── auth ── */
+function saveAuth() { localStorage.setItem('wc26_auth', JSON.stringify(state.auth)); }
+function loadAuth() { try { state.auth = JSON.parse(localStorage.getItem('wc26_auth')) || null; } catch { state.auth = null; } }
+function signOut() { state.auth = null; state.mine = new Map(); state.myFinal = null; localStorage.removeItem('wc26_auth'); renderUserChip(); render(); }
+
+async function join(name, pin) {
+  const { data, error } = await state.sb.rpc('wc_join', { p_name: name, p_pin: pin });
+  if (error) {
+    const m = String(error.message || '');
+    if (m.includes('WRONG_PIN')) throw new Error('That name already exists — and the PIN doesn\'t match.');
+    if (m.includes('NAME_INVALID')) throw new Error('Name must be 2–24 characters.');
+    if (m.includes('PIN_INVALID')) throw new Error('PIN must be 4–8 digits.');
+    if (m.includes('POOL_FULL')) throw new Error('The pool is full.');
+    throw new Error('Could not join — try again.');
+  }
+  state.auth = { token: data.token, player_id: data.player_id, name: data.name, is_admin: data.is_admin };
+  saveAuth();
+  return data;
+}
+
+/* ── writes ── */
+const saveTimers = new Map();
+function queueSave(matchId) {
+  clearTimeout(saveTimers.get(matchId));
+  saveTimers.set(matchId, setTimeout(() => savePrediction(matchId), 650));
+}
+
+async function savePrediction(matchId) {
+  const card = document.querySelector(`[data-mid="${matchId}"]`);
+  if (!card) return;
+  const h = parseInt(card.querySelector('.pin.h').value, 10);
+  const a = parseInt(card.querySelector('.pin.a').value, 10);
+  const stateEl = card.querySelector('.savestate');
+  if (!Number.isInteger(h) || !Number.isInteger(a) || h < 0 || a < 0 || h > 30 || a > 30) {
+    stateEl.textContent = ''; return;
+  }
+  if (!state.auth) { openJoin(); return; }
+  stateEl.textContent = 'Saving…'; stateEl.className = 'savestate';
+  try {
+    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: matchId, p_home: h, p_away: a });
+    if (error) throw error;
+    state.mine.set(matchId, { h, a });
+    if (stateEl.isConnected) { stateEl.textContent = '✓ Saved'; stateEl.className = 'savestate ok'; }
+    else if (!document.activeElement?.classList?.contains('pin')) renderMatches();
+    renderHero();
+  } catch (e) {
+    const m = String(e?.message || '');
+    stateEl.textContent = 'Failed'; stateEl.className = 'savestate err';
+    if (m.includes('LOCKED')) { toast('Too late — predictions close 30 min before kickoff.'); render(); }
+    else if (m.includes('BAD_TOKEN')) { signOut(); openJoin(); }
+    else if (m.includes('NO_MATCH')) toast('This match isn\'t open for predictions yet — try again in a bit.');
+    else toast('Couldn\'t save — check your connection.');
+  }
+}
+
+async function saveFinal(champion, totalGoals) {
+  const { error } = await state.sb.rpc('wc_save_final', { p_token: state.auth.token, p_champion: champion, p_total_goals: totalGoals });
+  if (error) {
+    const m = String(error.message || '');
+    if (m.includes('LOCKED')) throw new Error('Champion picks locked 30 min before the opening match.');
+    throw new Error('Couldn\'t save your pick.');
+  }
+  state.myFinal = { champion, total_goals: totalGoals };
+}
+
+/* ════════════════ rendering ════════════════ */
+
+function flagImg(t, cls = 'flag') {
+  if (!t?.logo) return `<span class="${cls}" style="display:grid;place-items:center;font-size:10px;color:var(--dim)">${esc(t?.abbr || '?')}</span>`;
+  return `<img class="${cls}" src="${esc(t.logo)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`;
+}
+
+function renderUserChip() {
+  const b = $('#userBtn');
+  if (state.auth) {
+    b.className = 'userchip';
+    b.innerHTML = `<span class="avatar">${esc(state.auth.name.slice(0, 2).toUpperCase())}</span>${esc(state.auth.name)}`;
+  } else {
+    b.className = 'userchip ghost';
+    b.textContent = 'Join';
+  }
+}
+
+function renderHero() {
+  const el = $('#heroCard');
+  if (!state.matches.length) {
+    el.innerHTML = `<span class="sub">Schedule is loading… if this persists, results will appear automatically once the feed updates.</span>`;
+    return;
+  }
+  const live = state.matches.filter(isLive);
+  const open = state.matches.filter((m) => !isLocked(m));
+  const unpredicted = open.filter((m) => !state.mine.has(m.id)).length;
+  const chips = [];
+  if (state.auth && unpredicted > 0) chips.push(`<span class="chip warn" id="chipOpen">⚠️ ${unpredicted} still to predict</span>`);
+  if (!state.auth) chips.push(`<span class="chip btnish" id="chipJoin">👋 Join to play</span>`);
+
+  if (live.length) {
+    const m = live[0];
+    const more = live.length > 1 ? ` <span class="sub">+${live.length - 1} more live</span>` : '';
+    el.innerHTML = `<div><div class="big"><span class="live-dot"></span>${esc(m.home.name)} ${m.hs ?? 0}–${m.as ?? 0} ${esc(m.away.name)}</div>
+      <div class="sub">${esc(m.clock || m.detail || 'Live')}${more}</div></div>${chips.join('')}`;
+  } else {
+    const next = state.matches.filter((m) => !m.completed && m.state === 'pre' && kickoffOf(m).getTime() > Date.now())
+      .sort((a, b) => kickoffOf(a) - kickoffOf(b))[0];
+    if (next) {
+      const ms = kickoffOf(next).getTime() - Date.now();
+      const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, mi = Math.floor(ms / 6e4) % 60;
+      const cd = d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${mi}m` : `${mi}m`;
+      el.innerHTML = `<div><div class="big">${esc(next.home.name)} vs ${esc(next.away.name)}</div>
+        <div class="sub">Next match · kicks off in <b>${cd}</b> · ${esc(fmtTime.format(kickoffOf(next)))} your time</div></div>${chips.join('')}`;
+    } else {
+      const champ = championWinner();
+      el.innerHTML = champ
+        ? `<div><div class="big">🏆 ${esc(champ)} are world champions!</div><div class="sub">Final standings on the leaderboard.</div></div>`
+        : `<div><div class="sub">No upcoming matches found.</div></div>${chips.join('')}`;
+    }
+  }
+  $('#chipJoin')?.addEventListener('click', openJoin);
+  $('#chipOpen')?.addEventListener('click', () => { state.filter = 'open'; switchView('matches'); });
+  const openChip = $('#openCount');
+  if (openChip) openChip.textContent = state.auth ? `(${unpredicted})` : '';
+}
+
+function matchVisible(m) {
+  switch (state.filter) {
+    case 'today': return dayKey(m.date) === todayKey();
+    case 'open': return !isLocked(m) && !state.mine.has(m.id);
+    case 'live': return isLive(m);
+    case 'done': return m.completed;
+    default: return true;
+  }
+}
+
+function renderMatches() {
+  const list = $('#matchList');
+  const typing = document.activeElement?.classList?.contains('pin');
+  if (typing) return; // don't yank the keyboard out from under the user
+  const visible = state.matches.filter(matchVisible);
+  if (!visible.length) {
+    list.innerHTML = `<div class="empty">${state.matches.length ? 'Nothing here with this filter.' : 'Schedule loading…'}</div>`;
+    return;
+  }
+  const today = todayKey();
+  let html = '', lastDay = '';
+  for (const m of visible) {
+    const dk = dayKey(m.date);
+    if (dk !== lastDay) {
+      lastDay = dk;
+      const label = fmtDay.format(new Date(m.date));
+      html += `<div class="day-h" ${dk === today ? 'data-today="1"' : ''}>${dk === today ? `<span class="today">Today · </span>` : ''}${esc(label)}</div>`;
+    }
+    html += matchCard(m);
+  }
+  list.innerHTML = html;
+  $('#srcNote').textContent = state.fetchedAt
+    ? `Results auto-update · feed refreshed ${new Date(state.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · source: ESPN`
+    : 'Results auto-update · source: ESPN';
+
+  if (!state.scrolled && state.filter === 'all') {
+    state.scrolled = true;
+    const t = list.querySelector('[data-today="1"]');
+    if (t) setTimeout(() => t.scrollIntoView({ block: 'start' }), 60);
+  }
+}
+
+function matchCard(m) {
+  const locked = isLocked(m);
+  const live = isLive(m);
+  const mine = state.mine.get(m.id);
+  const ko = kickoffOf(m);
+  const stage = m.stage === 'GROUP' ? `Group ${m.group || '?'}` : (STAGE_LABEL[m.stage] || m.stage);
+  const place = [m.venue, m.city].filter(Boolean).join(' · ');
+
+  let badge;
+  if (live) badge = `<span class="statebadge live"><span class="live-dot"></span>${esc(m.clock || 'LIVE')}</span>`;
+  else if (m.completed) badge = `<span class="statebadge ft">FT</span>`;
+  else badge = `<span class="statebadge soon">${esc(fmtTime.format(ko))}</span>`;
+
+  let mid;
+  if (m.hs != null && (live || m.completed)) {
+    const pen = m.so ? `<span class="pen">pens ${m.so.h ?? '–'}–${m.so.a ?? '–'}</span>` : '';
+    mid = `<div class="res">${m.hs}–${m.as}${pen}</div>`;
+  } else {
+    mid = `<div class="ko">vs</div>`;
+  }
+
+  const tbdH = isTbdTeam(m.home), tbdA = isTbdTeam(m.away);
+
+  let predictBlock = '';
+  if (!locked && !tbdH && !tbdA) {
+    predictBlock = `<div class="predict">
+      <span class="lbl">My tip</span>
+      <input class="pin h" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.h : ''}" placeholder="–" aria-label="${esc(m.home.name)} goals">
+      <span class="muted">:</span>
+      <input class="pin a" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.a : ''}" placeholder="–" aria-label="${esc(m.away.name)} goals">
+      <span class="savestate ${mine ? 'ok' : ''}">${mine ? '✓ Saved' : ''}</span>
+    </div>`;
+  } else if (!locked) {
+    predictBlock = `<div class="mypick">Predictions open once both teams are known.</div>`;
+  } else {
+    const pts = matchPoints(mine, m);
+    const ptsChip = pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'} pts</span>`;
+    predictBlock = `<div class="mypick">${mine ? `Your tip: <b>${mine.h}–${mine.a}</b> ${ptsChip}` : `<span class="muted">You didn't predict this one</span>`}</div>`;
+  }
+
+  let othersBlock = '';
+  if (locked) {
+    const list = (state.preds.get(m.id) || []).slice();
+    const open = state.openOthers.has(m.id);
+    if (list.length) {
+      const byId = new Map(state.players.map((p) => [p.id, p.name]));
+      list.sort((x, y) => (matchPoints(y, m) ?? -1) - (matchPoints(x, m) ?? -1));
+      const rows = list.map((p) => {
+        const pts = matchPoints(p, m);
+        return `<div class="orow ${p.player_id === state.auth?.player_id ? 'me' : ''}">
+          <span class="onm">${esc(byId.get(p.player_id) || '?')}</span>
+          <span class="osc">${p.h}–${p.a}</span>
+          ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
+      }).join('');
+      othersBlock = `<button class="others-toggle" data-toggle="${m.id}">${open ? '▲ Hide' : `▼ Everyone's tips (${list.length})`}</button>
+        <div class="others ${open ? 'open' : ''}">${rows}</div>`;
+    }
+  }
+
+  return `<div class="mcard ${live ? 'live' : ''}" data-mid="${esc(m.id)}">
+    <div class="m-meta"><span class="stagechip">${esc(stage)}</span>${place ? `<span>· ${esc(place)}</span>` : ''}${badge}</div>
+    <div class="m-row">
+      <div class="team home ${tbdH ? 'tbd' : ''}">${flagImg(m.home)}<span class="nm">${esc(m.home.name)}</span></div>
+      <div class="score-mid">${mid}</div>
+      <div class="team away ${tbdA ? 'tbd' : ''}">${flagImg(m.away)}<span class="nm">${esc(m.away.name)}</span></div>
+    </div>
+    ${predictBlock}${othersBlock}
+  </div>`;
+}
+
+function renderGroups() {
+  const grid = $('#groupGrid');
+  const groups = new Map();
+  for (const m of state.matches) {
+    if (m.stage !== 'GROUP' || !m.group) continue;
+    if (!groups.has(m.group)) groups.set(m.group, new Map());
+    const g = groups.get(m.group);
+    for (const t of [m.home, m.away]) {
+      if (!isTbdTeam(t) && !g.has(t.name)) g.set(t.name, { team: t, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 });
+    }
+    if (m.completed && m.hs != null) {
+      const H = g.get(m.home.name), A = g.get(m.away.name);
+      if (H && A) {
+        H.p++; A.p++; H.gf += m.hs; H.ga += m.as; A.gf += m.as; A.ga += m.hs;
+        if (m.hs > m.as) { H.w++; H.pts += 3; A.l++; }
+        else if (m.hs < m.as) { A.w++; A.pts += 3; H.l++; }
+        else { H.d++; A.d++; H.pts++; A.pts++; }
+      }
+    }
+  }
+  if (!groups.size) { grid.innerHTML = '<div class="empty">Group tables appear once the schedule loads.</div>'; return; }
+  grid.innerHTML = [...groups.keys()].sort().map((letter) => {
+    const rows = [...groups.get(letter).values()]
+      .sort((a, b) => b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf || a.team.name.localeCompare(b.team.name));
+    return `<div class="gcard"><h3>Group ${letter}</h3><table class="gtable">
+      <tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>+/−</th><th>Pts</th></tr>
+      ${rows.map((r, i) => `<tr class="${i < 2 ? 'q' : ''}">
+        <td class="tm">${flagImg(r.team, '')}<span>${esc(r.team.name)}</span></td>
+        <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf - r.ga > 0 ? '+' : ''}${r.gf - r.ga}</td><td class="p">${r.pts}</td></tr>`).join('')}
+    </table></div>`;
+  }).join('');
+}
+
+function allTeams() {
+  const seen = new Map();
+  for (const m of state.matches) {
+    if (m.stage !== 'GROUP') continue;
+    for (const t of [m.home, m.away]) if (!isTbdTeam(t)) seen.set(t.name, t);
+  }
+  return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function renderFinals() {
+  const box = $('#finalsBox');
+  if (!finalsLocked()) {
+    const fk = firstKickoff();
+    const cd = fk ? Math.max(0, fk - LOCK_MS - Date.now()) : null;
+    const h = cd != null ? Math.floor(cd / 36e5) : null;
+    const teams = allTeams();
+    const opts = teams.map((t) => `<option ${state.myFinal?.champion === t.name ? 'selected' : ''}>${esc(t.name)}</option>`).join('');
+    box.innerHTML = `<div class="finals-card">
+      <h3>🏆 Champion pick — worth ${SCORING.champion} points</h3>
+      <div class="muted small">Plus your total-goals guess (the tiebreaker). Locks 30 min before the opening match${h != null ? ` — in ~${h}h` : ''}.</div>
+      <div class="row">
+        <select id="champSel"><option value="" disabled ${state.myFinal ? '' : 'selected'}>Who wins it all?</option>${opts}</select>
+        <input id="goalsIn" type="number" inputmode="numeric" min="0" max="1000" placeholder="Total goals" value="${state.myFinal?.total_goals ?? ''}">
+        <button class="btn" id="finalsSave">Save</button>
+      </div>
+      ${state.myFinal ? `<div class="small" style="color:var(--green);margin-top:8px">✓ Saved: ${esc(state.myFinal.champion)}${state.myFinal.total_goals != null ? ` · ${state.myFinal.total_goals} goals` : ''}</div>` : ''}
+    </div>`;
+    $('#finalsSave').onclick = async () => {
+      if (!state.auth) return openJoin();
+      const champ = $('#champSel').value;
+      const goals = $('#goalsIn').value === '' ? null : parseInt($('#goalsIn').value, 10);
+      if (!champ) return toast('Pick a champion first');
+      try { await saveFinal(champ, goals); toast('Champion pick saved 🏆'); renderFinals(); }
+      catch (e) { toast(e.message); }
+    };
+  } else {
+    const { goalsSoFar } = playerTotals();
+    box.innerHTML = `<div class="finals-card"><h3>🏆 Champion picks are locked</h3>
+      <div class="muted small">Everyone's pick shows on the leaderboard. Goals scored so far: <b style="color:var(--text)">${goalsSoFar}</b> (tiebreaker target).</div></div>`;
+  }
+}
+
+function renderBoard() {
+  renderFinals();
+  const box = $('#boardBox');
+  if (!state.players.length) {
+    box.innerHTML = `<div class="empty">Nobody has joined yet.<br><br><button class="btn" id="bJoin">Be the first — join now</button>
+      <div style="margin-top:14px"><button class="btn ghost" id="bInvite">📲 Invite your friends</button></div></div>`;
+    $('#bJoin')?.addEventListener('click', openJoin);
+    $('#bInvite')?.addEventListener('click', invite);
+    return;
+  }
+  const { rows } = playerTotals();
+  const started = finalsLocked();
+  const anyToday = rows.some((r) => r.todayPts > 0);
+  box.innerHTML = `<table class="lb">
+    <thead><tr><th></th><th class="nm">Player</th><th>Pts</th>${anyToday ? '<th>Today</th>' : ''}<th>Exact</th><th>Tips</th></tr></thead>
+    <tbody>${rows.map((r, i) => `<tr class="${r.id === state.auth?.player_id ? 'me' : ''}">
+      <td class="rk">${i + 1}</td>
+      <td class="nm">${esc(r.name)}${started && r.fin ? `<span class="champ">🏆 ${esc(r.fin.champion)}${r.champHit ? ` <b style="color:var(--gold)">+${SCORING.champion}</b>` : ''}${r.fin.total_goals != null ? ` · ${r.fin.total_goals} goals` : ''}</span>` : ''}</td>
+      <td class="tot">${r.total}</td>
+      ${anyToday ? `<td>${r.todayPts ? `+${r.todayPts}` : '·'}</td>` : ''}
+      <td>${r.exacts}</td>
+      <td class="muted">${r.predicted}</td>
+    </tr>`).join('')}</tbody>
+  </table>
+  <div class="src-note">Points: exact ${SCORING.exact} · goal difference ${SCORING.diff} · winner ${SCORING.outcome} · champion +${SCORING.champion}. Ties: exacts, then total-goals guess.</div>`;
+}
+
+function render() {
+  renderUserChip();
+  renderHero();
+  if (state.view === 'matches') renderMatches();
+  if (state.view === 'groups') renderGroups();
+  if (state.view === 'board') renderBoard();
+}
+
+/* ════════════════ UI wiring ════════════════ */
+
+function switchView(v) {
+  state.view = v;
+  document.querySelectorAll('.view').forEach((el) => el.classList.toggle('active', el.id === `view-${v}`));
+  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  render();
+  window.scrollTo({ top: 0 });
+}
+$('#tabs').addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b) switchView(b.dataset.v); });
+
+$('#filters').addEventListener('click', (e) => {
+  const b = e.target.closest('.fchip'); if (!b) return;
+  state.filter = b.dataset.f;
+  document.querySelectorAll('.fchip').forEach((c) => c.classList.toggle('on', c === b));
+  renderMatches();
+});
+
+$('#matchList').addEventListener('input', (e) => {
+  if (!e.target.classList.contains('pin')) return;
+  if (!state.auth) { openJoin(); return; }
+  const card = e.target.closest('[data-mid]');
+  if (card) queueSave(card.dataset.mid);
+});
+$('#matchList').addEventListener('focusout', () => setTimeout(renderMatches, 700));
+$('#matchList').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-toggle]');
+  if (!t) return;
+  const id = t.dataset.toggle;
+  state.openOthers.has(id) ? state.openOthers.delete(id) : state.openOthers.add(id);
+  renderMatches();
+});
+
+/* join modal */
+function openJoin() { $('#joinModal').classList.add('open'); setTimeout(() => $('#jName').focus(), 50); }
+function closeJoin() { $('#joinModal').classList.remove('open'); $('#jErr').textContent = ''; }
+$('#jSkip').onclick = closeJoin;
+$('#jGo').onclick = async () => {
+  const name = $('#jName').value.trim(), pin = $('#jPin').value.trim();
+  $('#jErr').textContent = '';
+  try {
+    const r = await join(name, pin);
+    closeJoin();
+    toast(r.existing ? `Welcome back, ${r.name}!` : `You're in, ${r.name}! 🎉`);
+    await loadMine();
+    render();
+  } catch (e) { $('#jErr').textContent = e.message; }
+};
+$('#jPin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#jGo').click(); });
+
+/* user menu */
+$('#userBtn').onclick = () => {
+  if (!state.auth) return openJoin();
+  $('#menuName').textContent = state.auth.name;
+  $('#menuSub').textContent = state.auth.is_admin ? 'Pool admin' : 'Pool member';
+  $('#mResetPin').style.display = state.auth.is_admin ? '' : 'none';
+  $('#menuModal').classList.add('open');
+};
+$('#menuClose').onclick = () => $('#menuModal').classList.remove('open');
+$('#mLogout').onclick = () => { $('#menuModal').classList.remove('open'); signOut(); toast('Signed out on this device'); };
+$('#mPicks').onclick = () => { $('#menuModal').classList.remove('open'); switchView('board'); };
+$('#mInvite').onclick = () => { $('#menuModal').classList.remove('open'); invite(); };
+$('#mResetPin').onclick = async () => {
+  const who = prompt('Player name to reset:'); if (!who) return;
+  const pin = prompt(`New PIN for ${who} (4–8 digits):`); if (!pin) return;
+  const { error } = await state.sb.rpc('wc_admin_reset_pin', { p_token: state.auth.token, p_player_name: who, p_new_pin: pin });
+  toast(error ? `Failed: ${error.message}` : `PIN reset for ${who}`);
+};
+
+function invite() {
+  const text = `⚽ World Cup 2026 predictions pool — predict every match, live leaderboard, winner takes the glory. Join here: ${POOL_URL}`;
+  if (navigator.share) { navigator.share({ text }).catch(() => {}); return; }
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+}
+$('#inviteBtn2').onclick = invite;
+
+/* clicking modal backdrops closes them */
+for (const id of ['joinModal', 'menuModal']) {
+  document.getElementById(id).addEventListener('click', (e) => { if (e.target.id === id) e.target.classList.remove('open'); });
+}
+
+/* ════════════════ boot & loops ════════════════ */
+
+async function boot() {
+  loadAuth();
+  renderUserChip();
+  await loadBaseline();
+  render();
+
+  await initSb().catch(() => toast('Server unreachable — predictions disabled, scores still live.'));
+  if (state.sb) {
+    await Promise.all([loadDb(), loadMine()]);
+    render();
+    syncMatchesToDb();
+  }
+
+  if (!state.matches.length) { await espnBootstrap(); render(); }
+  espnLiveTick();
+
+  if (!state.auth) setTimeout(() => { if (!state.auth) openJoin(); }, 900);
+
+  setInterval(espnLiveTick, 60e3);
+  setInterval(async () => { if (document.hidden || !state.sb) return; await loadDb(); render(); }, 60e3);
+  setInterval(async () => { if (document.hidden) return; await loadBaseline(); syncMatchesToDb(); render(); }, 300e3);
+  setInterval(() => { if (!document.hidden && state.view === 'matches') renderHero(); }, 30e3);
+  document.addEventListener('visibilitychange', async () => {
+    if (document.hidden) return;
+    await Promise.all([loadBaseline(), state.sb ? loadDb() : null, state.sb ? loadMine() : null]);
+    espnLiveTick();
+    render();
+  });
+}
+
+boot();
+</script>
+</body>
+</html>
