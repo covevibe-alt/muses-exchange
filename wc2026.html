@@ -327,8 +327,8 @@
     <div class="rules-card">
       <h3>The fine print</h3>
       <ul>
-        <li>Tips save with a confirmation popup and <b>lock 30 minutes before kickoff</b> (enforced server-side). Until then, use <b>Edit</b> to change them as often as you like.</li>
-        <li>Other people's tips stay <b>hidden until the lock</b> (30 min before kickoff). After that they show on the match card — and you can tap any player on the leaderboard to see everything they filled in.</li>
+        <li>Predictions save automatically and <b>lock 30 minutes before kickoff</b> (enforced server-side). Until then, use <b>Edit</b> to change them as often as you like.</li>
+        <li>Other people's predictions stay <b>hidden until the lock</b> (30 min before kickoff). After that they show on the match card — and you can tap any player on the leaderboard to see everything they filled in.</li>
         <li>Knockout matches count the score <b>after extra time</b>; penalty shootouts don't add goals. Predicting a draw in a knockout match is allowed.</li>
         <li>Bonus picks (champion + top scorer) lock 30 minutes before the opening match.</li>
         <li>Tiebreakers: most exact scores, then most correct results.</li>
@@ -377,10 +377,10 @@
 <!-- Save-confirmation popup -->
 <div class="backdrop" id="saveModal">
   <div class="modal">
-    <h2>Save your tip?</h2>
+    <h2>Save your prediction?</h2>
     <p class="sub" id="saveModalMatch" style="font-size:16px;font-weight:800;color:var(--text)"></p>
-    <p class="sub">From now on tips save automatically as you type. You can change them with the Edit button until 30 min before kickoff.</p>
-    <button class="btn" id="saveModalGo">✓ Save tip</button>
+    <p class="sub">From now on predictions save automatically as you type. You can change them with the Edit button until 30 min before kickoff.</p>
+    <button class="btn" id="saveModalGo">✓ Save prediction</button>
     <button class="skip" id="saveModalCancel">Cancel</button>
   </div>
 </div>
@@ -992,14 +992,14 @@ function matchCard(m) {
   if (!locked && !tbdH && !tbdA) {
     if (mine && !state.editing.has(m.id)) {
       predictBlock = `<div class="predict">
-        <span class="lbl">My tip</span>
+        <span class="lbl">My prediction</span>
         <span class="tipval">${mine.h} – ${mine.a}</span>
         <span class="savestate ok">✓ Saved</span>
         <button class="editbtn" data-edit="${esc(m.id)}">Edit</button>
       </div>`;
     } else {
       predictBlock = `<div class="predict">
-        <span class="lbl">My tip</span>
+        <span class="lbl">My prediction</span>
         <input class="pin h" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.h : ''}" placeholder="–" aria-label="${esc(m.home.name)} goals">
         <span class="muted">:</span>
         <input class="pin a" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.a : ''}" placeholder="–" aria-label="${esc(m.away.name)} goals">
@@ -1011,7 +1011,7 @@ function matchCard(m) {
   } else {
     const pts = matchPoints(mine, m);
     const ptsChip = pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'} pts</span>`;
-    predictBlock = `<div class="mypick">${mine ? `Your tip: <b>${mine.h}–${mine.a}</b> ${ptsChip}` : `<span class="muted">You didn't predict this one</span>`}</div>`;
+    predictBlock = `<div class="mypick">${mine ? `Your prediction: <b>${mine.h}–${mine.a}</b> ${ptsChip}` : `<span class="muted">You didn't predict this one</span>`}</div>`;
   }
 
   let othersBlock = '';
@@ -1028,7 +1028,7 @@ function matchCard(m) {
           <span class="osc">${p.h}–${p.a}</span>
           ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
       }).join('');
-      othersBlock = `<button class="others-toggle" data-toggle="${m.id}">${open ? '▲ Hide' : `▼ Everyone's tips (${list.length})`}</button>
+      othersBlock = `<button class="others-toggle" data-toggle="${m.id}">${open ? '▲ Hide' : `▼ Everyone's predictions (${list.length})`}</button>
         <div class="others ${open ? 'open' : ''}">${rows}</div>`;
     }
   }
@@ -1151,7 +1151,7 @@ function openPlayer(pid) {
   const { rows } = playerTotals();
   const r = rows.find((x) => x.id === pid) || { total: 0, exacts: 0, predicted: 0 };
   $('#pmName').textContent = pl.name;
-  $('#pmStats').textContent = `${r.total} points · ${r.exacts} exact · ${r.predicted} tips revealed`;
+  $('#pmStats').textContent = `${r.total} points · ${r.exacts} exact · ${r.predicted} predictions revealed`;
   let html = '';
   if (finalsLocked() && r.fin) {
     html += `<div class="rules-card" style="padding:10px 12px;margin-bottom:10px">
@@ -1162,7 +1162,7 @@ function openPlayer(pid) {
   const revealed = state.matches.filter((m) =>
     (state.preds.get(m.id) || []).some((p) => p.player_id === pid));
   if (!revealed.length) {
-    html += `<p class="muted small">No revealed tips yet — tips stay secret until 30 min before each kickoff.</p>`;
+    html += `<p class="muted small">No revealed predictions yet — predictions stay hidden until 30 min before each kickoff.</p>`;
   } else {
     html += revealed.slice().reverse().map((m) => {
       const p = (state.preds.get(m.id) || []).find((x) => x.player_id === pid);
@@ -1173,7 +1173,7 @@ function openPlayer(pid) {
         <span class="osc">${p.h}–${p.a}</span>
         ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
     }).join('');
-    html += `<p class="muted small" style="margin-top:10px">Their tip on the right · tips stay secret until 30 min before each kickoff.</p>`;
+    html += `<p class="muted small" style="margin-top:10px">Their prediction on the right · predictions stay hidden until 30 min before each kickoff.</p>`;
   }
   $('#pmBody').innerHTML = html;
   $('#playerModal').classList.add('open');
@@ -1191,7 +1191,7 @@ function renderBoard() {
   const { rows } = playerTotals();
   const anyToday = rows.some((r) => r.todayPts > 0);
   box.innerHTML = `<table class="lb">
-    <thead><tr><th></th><th class="nm">Player</th><th>Pts</th>${anyToday ? '<th>Today</th>' : ''}<th>Exact</th><th>Tips</th></tr></thead>
+    <thead><tr><th></th><th class="nm">Player</th><th>Pts</th>${anyToday ? '<th>Today</th>' : ''}<th>Exact</th><th>Preds</th></tr></thead>
     <tbody>${rows.map((r, i) => `<tr class="${r.id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(r.id)}" style="cursor:pointer">
       <td class="rk">${i + 1}</td>
       <td class="nm">${esc(r.name)}</td>
@@ -1201,7 +1201,7 @@ function renderBoard() {
       <td class="muted">${r.predicted}</td>
     </tr>`).join('')}</tbody>
   </table>
-  <div class="src-note">Tap a player to see all their tips. Points: exact ${SCORING.exact} · goal difference ${SCORING.diff} · winner ${SCORING.outcome} · bonus picks +${SCORING.champion}/+${SCORING.topScorer} (Bonus tab). Ties: exact scores, then correct results.</div>`;
+  <div class="src-note">Tap a player to see all their predictions. Points: exact ${SCORING.exact} · goal difference ${SCORING.diff} · winner ${SCORING.outcome} · bonus picks +${SCORING.champion}/+${SCORING.topScorer} (Bonus tab). Ties: exact scores, then correct results.</div>`;
 }
 
 function render() {
@@ -1273,7 +1273,7 @@ $('#saveModalGo').onclick = () => {
   const ps = state.pendingSave;
   state.pendingSave = null;
   $('#saveModal').classList.remove('open');
-  if (ps) { commitSave(ps); toast('Tip saved ✓ — autosaving from now on'); }
+  if (ps) { commitSave(ps); toast('Prediction saved ✓ — autosaving from now on'); }
 };
 $('#saveModalCancel').onclick = () => { state.pendingSave = null; $('#saveModal').classList.remove('open'); };
 
