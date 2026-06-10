@@ -14,6 +14,12 @@ on:
   schedule:
     - cron: '10,40 * * 6,7 *'
   workflow_dispatch:
+  # Also refetch whenever the fetcher itself changes — bootstraps the data
+  # file on first merge and self-heals after parser fixes.
+  push:
+    paths:
+      - 'app/wc2026-fetch.py'
+      - '.github/workflows/wc2026-results.yml'
 
 permissions:
   contents: write
