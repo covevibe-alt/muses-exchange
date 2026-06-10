@@ -6,6 +6,13 @@ name: Fetch WC2026 results
 # to the repo — the static host then serves them, and the pool page scores
 # everyone's predictions client-side. Zero secrets, zero infrastructure.
 #
+# The deploy-pages job also publishes the pool (page + data feed) to GitHub
+# Pages at https://covevibe-alt.github.io/muses-exchange/ — an always-working
+# mirror that doesn't depend on Netlify. It runs after every fetch, so the
+# Pages copy of the data feed stays fresh too. (Commits made with
+# GITHUB_TOKEN never trigger other workflows, so the deploy must live in
+# this workflow rather than react to the bot's data commits.)
+#
 # Cron only fires in June/July (the tournament window, Jun 11 – Jul 19 2026).
 # Minutes are offset from fetch-prices.yml to avoid push races; the push
 # retry below handles the rest.
@@ -14,15 +21,18 @@ on:
   schedule:
     - cron: '10,40 * * 6,7 *'
   workflow_dispatch:
-  # Also refetch whenever the fetcher itself changes — bootstraps the data
-  # file on first merge and self-heals after parser fixes.
+  # Also run when the fetcher or the page itself changes — bootstraps data
+  # and redeploys the Pages mirror immediately after a fix lands.
   push:
     paths:
       - 'app/wc2026-fetch.py'
+      - 'wc2026.html'
       - '.github/workflows/wc2026-results.yml'
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: wc2026-results
@@ -58,3 +68,41 @@ jobs:
             git commit -m "chore: update WC2026 results $(date -u +%Y-%m-%dT%H:%MZ)"
             git push || (git pull --rebase -X theirs && git push)
           fi
+
+  deploy-pages:
+    # Only publish from main — feature-branch runs still fetch (for testing)
+    # but must not overwrite the production Pages site.
+    if: github.ref == 'refs/heads/main'
+    needs: fetch
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out latest main (includes any data commit from fetch)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site/app
+          cp wc2026.html _site/index.html
+          cp app/wc2026-data.json app/wc2026-data.js _site/app/
+          cp icon-32.png icon-180.png _site/
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
