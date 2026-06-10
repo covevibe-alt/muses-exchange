@@ -54,7 +54,6 @@
     display: grid; place-items: center; font-size: 12px; font-weight: 800;
   }
   .userchip.ghost { padding: 8px 14px; color: var(--green); border-color: var(--green); }
-  .langlink { font-size: 12px; font-weight: 800; color: var(--mut); padding: 8px 11px; border-radius: 999px; border: 1px solid var(--line); text-decoration: none; flex: 0 0 auto; }
 
   /* ── Hero strip ── */
   .hero { padding: 14px 16px 4px; max-width: 980px; margin: 0 auto; width: 100%; }
@@ -268,7 +267,6 @@
   <span class="ball">⚽</span>
   <h1>Mundial 2026<small>Predicciones</small></h1>
   <span class="spacer"></span>
-  <a class="langlink" id="langLink" href="#">🌐 EN</a>
   <button class="userchip ghost" id="userBtn">Join</button>
 </header>
 
@@ -1343,13 +1341,6 @@ for (const id of ['joinModal', 'menuModal', 'saveModal', 'playerModal']) {
 /* ════════════════ boot & loops ════════════════ */
 
 async function boot() {
-  (function initLangLink() {
-    const es = document.documentElement.lang === 'es';
-    const p = location.pathname;
-    const link = $('#langLink');
-    if (es) link.href = p.includes('es.html') ? p.replace('es.html', '') : p.replace(/mundial2026(\.html)?/, 'wc2026$1');
-    else link.href = /\/(index\.html)?$/.test(p) ? p.replace(/index\.html$/, '') + 'es.html' : p.replace(/wc2026(\.html)?/, 'mundial2026$1');
-  })();
   loadAuth();
   renderUserChip();
   await loadBaseline();

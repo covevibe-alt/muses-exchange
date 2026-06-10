@@ -32,7 +32,6 @@ TRANSLATIONS = [
     # ── header / tabs / hero shell ──
     ('<h1>World Cup 2026<small>Predictions Pool</small></h1>',
      '<h1>Mundial 2026<small>Predicciones</small></h1>'),
-    ('🌐 ES</a>', '🌐 EN</a>'),
     ('<span class="sub">Loading schedule…</span>', '<span class="sub">Cargando calendario…</span>'),
     ('<span class="ico">📅</span>Matches', '<span class="ico">📅</span>Partidos'),
     ('<span class="ico">🏟️</span>Groups', '<span class="ico">🏟️</span>Grupos'),
