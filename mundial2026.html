@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0a0f0c">
-<title>WC 2026 · Predictions Pool</title>
-<meta property="og:title" content="⚽ World Cup 2026 — Predictions Pool">
-<meta property="og:description" content="Predict every match, beat your friends. Scores update live, points count themselves.">
-<meta property="og:url" content="https://muses.exchange/wc2026">
+<title>Mundial 2026 · Predicciones</title>
+<meta property="og:title" content="⚽ Mundial 2026 — Quiniela de predicciones">
+<meta property="og:description" content="Predice cada partido y gana a tus amigos. Marcadores en vivo, puntos automáticos.">
+<meta property="og:url" content="https://muses.exchange/mundial2026">
 <link rel="icon" href="icon-32.png">
 <style>
   :root {
@@ -266,37 +266,37 @@
 
 <header class="top">
   <span class="ball">⚽</span>
-  <h1>World Cup 2026<small>Predictions Pool</small></h1>
+  <h1>Mundial 2026<small>Predicciones</small></h1>
   <span class="spacer"></span>
-  <a class="langlink" id="langLink" href="#">🌐 ES</a>
+  <a class="langlink" id="langLink" href="#">🌐 EN</a>
   <button class="userchip ghost" id="userBtn">Join</button>
 </header>
 
-<div class="hero"><div class="hero-card" id="heroCard"><span class="sub">Loading schedule…</span></div></div>
+<div class="hero"><div class="hero-card" id="heroCard"><span class="sub">Cargando calendario…</span></div></div>
 
 <nav class="tabs" id="tabs">
-  <button data-v="matches" class="on"><span class="ico">📅</span>Matches</button>
-  <button data-v="groups"><span class="ico">🏟️</span>Groups</button>
-  <button data-v="board"><span class="ico">🏆</span>Leaderboard</button>
+  <button data-v="matches" class="on"><span class="ico">📅</span>Partidos</button>
+  <button data-v="groups"><span class="ico">🏟️</span>Grupos</button>
+  <button data-v="board"><span class="ico">🏆</span>Tabla</button>
   <button data-v="bonus"><span class="ico">🎯</span>Bonus</button>
-  <button data-v="rules"><span class="ico">📖</span>Rules</button>
+  <button data-v="rules"><span class="ico">📖</span>Reglas</button>
 </nav>
 
 <main>
   <section class="view active" id="view-matches">
     <div class="filters" id="filters">
-      <button class="fchip on" data-f="all">All</button>
-      <button class="fchip" data-f="today">Today</button>
-      <button class="fchip" data-f="open">To predict <span class="n" id="openCount"></span></button>
-      <button class="fchip" data-f="live">Live</button>
-      <button class="fchip" data-f="done">Finished</button>
+      <button class="fchip on" data-f="all">Todos</button>
+      <button class="fchip" data-f="today">Hoy</button>
+      <button class="fchip" data-f="open">Por predecir <span class="n" id="openCount"></span></button>
+      <button class="fchip" data-f="live">En vivo</button>
+      <button class="fchip" data-f="done">Terminados</button>
     </div>
     <div id="matchList"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
     <div class="src-note" id="srcNote"></div>
   </section>
 
   <section class="view" id="view-groups">
-    <p class="muted small" style="margin:4px 2px 12px">Standings update automatically from results. Top 2 of each group advance, plus the 8 best third-placed teams.</p>
+    <p class="muted small" style="margin:4px 2px 12px">La clasificación se actualiza sola con los resultados. Avanzan los 2 primeros de cada grupo y los 8 mejores terceros.</p>
     <div class="ggrid" id="groupGrid"></div>
   </section>
 
@@ -312,35 +312,35 @@
 
   <section class="view" id="view-rules">
     <div class="rules-card">
-      <h3>How it works</h3>
-      <p>Predict the score of every World Cup match before kickoff. Points are awarded automatically when matches finish — no admin, no spreadsheets.</p>
+      <h3>Cómo funciona</h3>
+      <p>Predice el marcador de cada partido del Mundial antes del inicio. Los puntos se asignan automáticamente al terminar cada partido: sin admin y sin hojas de cálculo.</p>
     </div>
     <div class="rules-card">
-      <h3>Scoring</h3>
+      <h3>Puntuación</h3>
       <ul>
-        <li><b>5 points</b> — exact score (you said 2–1, it ended 2–1)</li>
-        <li><b>3 points</b> — right winner and right goal difference (you said 2–1, it ended 3–2) — or a correctly predicted draw with the wrong score</li>
-        <li><b>2 points</b> — right winner only</li>
-        <li><b>0 points</b> — wrong result</li>
-        <li><b>+15 points</b> — your champion pick wins the World Cup (Bonus tab)</li>
-        <li><b>+10 points</b> — your top-scorer pick wins the Golden Boot (Bonus tab; a tie for most goals counts, own goals and shootout kicks don't)</li>
+        <li><b>5 puntos</b> — marcador exacto (dijiste 2–1 y terminó 2–1)</li>
+        <li><b>3 puntos</b> — ganador y diferencia de goles correctos (dijiste 2–1 y terminó 3–2), o un empate acertado con otro marcador</li>
+        <li><b>2 puntos</b> — solo el ganador correcto</li>
+        <li><b>0 puntos</b> — resultado equivocado</li>
+        <li><b>+15 puntos</b> — tu campeón gana el Mundial (pestaña Bonus)</li>
+        <li><b>+10 puntos</b> — tu máximo goleador gana la Bota de Oro (pestaña Bonus; un empate a goles cuenta, no cuentan autogoles ni penales de tanda)</li>
       </ul>
     </div>
     <div class="rules-card">
-      <h3>The fine print</h3>
+      <h3>La letra pequeña</h3>
       <ul>
-        <li>Predictions save automatically and <b>lock 30 minutes before kickoff</b> (enforced server-side). Until then, use <b>Edit</b> to change them as often as you like.</li>
-        <li>Other people's predictions stay <b>hidden until the lock</b> (30 min before kickoff). After that they show on the match card — and you can tap any player on the leaderboard to see everything they filled in.</li>
-        <li>Knockout matches count the score <b>after extra time</b>; penalty shootouts don't add goals. Predicting a draw in a knockout match is allowed.</li>
-        <li>Bonus picks (champion + top scorer) lock 30 minutes before the opening match.</li>
-        <li>Tiebreakers: most exact scores, then most correct results.</li>
-        <li>Results come from ESPN automatically: live scores roughly every minute while you have the page open, final results within ~30 minutes.</li>
+        <li>Las predicciones se guardan automáticamente y <b>se cierran 30 minutos antes del inicio</b> (verificado en el servidor). Hasta entonces puedes cambiarlas con <b>Editar</b> cuantas veces quieras.</li>
+        <li>Las predicciones de los demás permanecen <b>ocultas hasta el cierre</b> (30 min antes del inicio). Después aparecen en la tarjeta del partido, y puedes tocar a cualquier jugador en la tabla para ver todo lo que rellenó.</li>
+        <li>En eliminatorias cuenta el marcador <b>tras la prórroga</b>; la tanda de penales no suma goles. Se permite predecir empate en eliminatorias.</li>
+        <li>Los picks bonus (campeón + máximo goleador) se cierran 30 minutos antes del partido inaugural.</li>
+        <li>Desempates: más marcadores exactos, luego más aciertos.</li>
+        <li>Los resultados llegan de ESPN automáticamente: marcadores en vivo aprox. cada minuto con la página abierta, resultados finales en ~30 minutos.</li>
       </ul>
     </div>
     <div class="rules-card">
-      <h3>Invite friends</h3>
-      <p>Anyone with the link can join with just a name and a PIN:</p>
-      <div style="margin-top:10px"><button class="btn" id="inviteBtn2">Share invite link</button></div>
+      <h3>Invita a tus amigos</h3>
+      <p>Cualquiera con el enlace puede unirse solo con un nombre y un PIN:</p>
+      <div style="margin-top:10px"><button class="btn" id="inviteBtn2">Compartir enlace</button></div>
     </div>
   </section>
 </main>
@@ -348,15 +348,15 @@
 <!-- Join / sign-in modal -->
 <div class="backdrop" id="joinModal">
   <div class="modal">
-    <h2>Join the pool ⚽</h2>
-    <p class="sub">Pick a name and a PIN. Same name + PIN signs you back in on any device.</p>
-    <label>Your name</label>
-    <input id="jName" maxlength="24" autocomplete="nickname" placeholder="e.g. Sander">
-    <label>PIN (4–8 digits)</label>
+    <h2>Únete a la quiniela ⚽</h2>
+    <p class="sub">Elige un nombre y un PIN. El mismo nombre + PIN te conecta en cualquier dispositivo.</p>
+    <label>Tu nombre</label>
+    <input id="jName" maxlength="24" autocomplete="nickname" placeholder="p. ej. Sander">
+    <label>PIN (4–8 dígitos)</label>
     <input id="jPin" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="••••" type="password">
     <div class="err" id="jErr"></div>
-    <button class="btn" id="jGo">Join / Sign in</button>
-    <button class="skip" id="jSkip">Just browsing for now</button>
+    <button class="btn" id="jGo">Entrar / Registrarse</button>
+    <button class="skip" id="jSkip">Solo mirar por ahora</button>
   </div>
 </div>
 
@@ -366,24 +366,24 @@
     <h2 id="menuName"></h2>
     <p class="sub" id="menuSub"></p>
     <div class="menu-list">
-      <button id="mInvite">📲 Invite friends (WhatsApp-ready)</button>
-      <button id="mPicks">🎯 My bonus picks</button>
-      <button id="mResetPin" style="display:none">🛠️ Admin: reset a player's PIN</button>
-      <button id="mSetScorer" style="display:none">🛠️ Admin: set official top scorer</button>
-      <button id="mLogout" class="danger">🚪 Sign out on this device</button>
+      <button id="mInvite">📲 Invitar amigos (listo para WhatsApp)</button>
+      <button id="mPicks">🎯 Mis picks bonus</button>
+      <button id="mResetPin" style="display:none">🛠️ Admin: restablecer el PIN de un jugador</button>
+      <button id="mSetScorer" style="display:none">🛠️ Admin: fijar máximo goleador oficial</button>
+      <button id="mLogout" class="danger">🚪 Cerrar sesión en este dispositivo</button>
     </div>
-    <button class="skip" id="menuClose">Close</button>
+    <button class="skip" id="menuClose">Cerrar</button>
   </div>
 </div>
 
 <!-- Save-confirmation popup -->
 <div class="backdrop" id="saveModal">
   <div class="modal">
-    <h2>Save your prediction?</h2>
+    <h2>¿Guardar tu predicción?</h2>
     <p class="sub" id="saveModalMatch" style="font-size:16px;font-weight:800;color:var(--text)"></p>
-    <p class="sub">From now on predictions save automatically as you type. You can change them with the Edit button until 30 min before kickoff.</p>
-    <button class="btn" id="saveModalGo">✓ Save prediction</button>
-    <button class="skip" id="saveModalCancel">Cancel</button>
+    <p class="sub">A partir de ahora las predicciones se guardan automáticamente al escribir. Puedes cambiarlas con el botón Editar hasta 30 min antes del inicio.</p>
+    <button class="btn" id="saveModalGo">✓ Guardar predicción</button>
+    <button class="skip" id="saveModalCancel">Cancelar</button>
   </div>
 </div>
 
@@ -393,7 +393,7 @@
     <h2 id="pmName"></h2>
     <p class="sub" id="pmStats"></p>
     <div id="pmBody"></div>
-    <button class="skip" id="pmClose">Close</button>
+    <button class="skip" id="pmClose">Cerrar</button>
   </div>
 </div>
 
@@ -416,9 +416,9 @@ const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15, topScorer: 10 };
 const LOCK_MS = 30 * 60e3; // predictions stay open until 30 min before kickoff
 // diacritic/case-insensitive name compare ("mbappe" matches "Mbappé")
 const normName = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
-const POOL = 'main'; // each pool has its own players, predictions & leaderboard
+const POOL = 'es'; // each pool has its own players, predictions & leaderboard
 const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
-const STAGE_LABEL = { GROUP: 'Group', R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-final', SF: 'Semi-final', THIRD: 'Third place', FINAL: 'Final' };
+const STAGE_LABEL = { GROUP: 'Grupo', R32: 'Dieciseisavos', R16: 'Octavos', QF: 'Cuartos de final', SF: 'Semifinal', THIRD: 'Tercer puesto', FINAL: 'Final' };
 // invite links point at wherever the page is currently served from
 const POOL_URL = location.origin + location.pathname;
 // Final-draw groups (ESPN team names) — fallback when the feed lacks letters.
@@ -475,8 +475,8 @@ function toast(msg) {
   clearTimeout(t._h);
   t._h = setTimeout(() => t.classList.remove('show'), 2600);
 }
-const fmtTime = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
-const fmtDay = new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+const fmtTime = new Intl.DateTimeFormat('es', { hour: '2-digit', minute: '2-digit' });
+const fmtDay = new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long' });
 const dayKey = (iso) => { const d = new Date(iso); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const todayKey = () => dayKey(new Date().toISOString());
 
@@ -749,7 +749,7 @@ async function loadMine() {
     state.auth = { ...state.auth, name: data.player.name, is_admin: data.player.is_admin, player_id: data.player.id };
     saveAuth();
   } catch (e) {
-    if (String(e?.message).includes('BAD_TOKEN')) { signOut(); toast('Session expired — join again'); }
+    if (String(e?.message).includes('BAD_TOKEN')) { signOut(); toast('Sesión caducada; únete de nuevo'); }
   }
 }
 
@@ -780,11 +780,11 @@ async function join(name, pin) {
   const { data, error } = await state.sb.rpc('wc_join', { p_name: name, p_pin: pin, p_pool: POOL });
   if (error) {
     const m = String(error.message || '');
-    if (m.includes('WRONG_PIN')) throw new Error('That name already exists — and the PIN doesn\'t match.');
-    if (m.includes('NAME_INVALID')) throw new Error('Name must be 2–24 characters.');
-    if (m.includes('PIN_INVALID')) throw new Error('PIN must be 4–8 digits.');
-    if (m.includes('POOL_FULL')) throw new Error('The pool is full.');
-    throw new Error('Could not join — try again.');
+    if (m.includes('WRONG_PIN')) throw new Error('Ese nombre ya existe y el PIN no coincide.');
+    if (m.includes('NAME_INVALID')) throw new Error('El nombre debe tener 2–24 caracteres.');
+    if (m.includes('PIN_INVALID')) throw new Error('El PIN debe tener 4–8 dígitos.');
+    if (m.includes('POOL_FULL')) throw new Error('La quiniela está llena.');
+    throw new Error('No se pudo entrar; inténtalo de nuevo.');
   }
   state.auth = { token: data.token, player_id: data.player_id, name: data.name, is_admin: data.is_admin };
   saveAuth();
@@ -810,7 +810,7 @@ function maybeSave(matchId, immediate = false) {
   clearTimeout(saveTimers.get(matchId));
   const run = () => {
     const tip = readTip(matchId);
-    if (!tip) { if (immediate) toast('Fill in both scores first'); return; }
+    if (!tip) { if (immediate) toast('Primero rellena ambos marcadores'); return; }
     const saved = state.mine.get(matchId);
     if (saved && saved.h === tip.h && saved.a === tip.a) return; // unchanged
     if (!state.auth) { openJoin(); return; }
@@ -830,22 +830,22 @@ function maybeSave(matchId, immediate = false) {
 async function commitSave(tip) {
   if (!tip) return;
   const span = document.querySelector(`[data-mid="${tip.matchId}"] .savestate`);
-  if (span) { span.textContent = 'Saving…'; span.className = 'savestate'; }
+  if (span) { span.textContent = 'Guardando…'; span.className = 'savestate'; }
   try {
     const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: tip.matchId, p_home: tip.h, p_away: tip.a });
     if (error) throw error;
     state.mine.set(tip.matchId, { h: tip.h, a: tip.a });
     state.editing.delete(tip.matchId);
-    if (span?.isConnected) { span.textContent = '✓ Saved'; span.className = 'savestate ok'; }
+    if (span?.isConnected) { span.textContent = '✓ Guardado'; span.className = 'savestate ok'; }
     renderMatches(); // collapses to tip + Edit unless the user is mid-typing
     renderHero();
   } catch (e) {
     const m = String(e?.message || '');
-    if (span?.isConnected) { span.textContent = 'Failed'; span.className = 'savestate err'; }
-    if (m.includes('LOCKED')) { toast('Too late — predictions close 30 min before kickoff.'); render(); }
+    if (span?.isConnected) { span.textContent = 'Falló'; span.className = 'savestate err'; }
+    if (m.includes('LOCKED')) { toast('Demasiado tarde: las predicciones se cierran 30 min antes del inicio.'); render(); }
     else if (m.includes('BAD_TOKEN')) { signOut(); openJoin(); }
-    else if (m.includes('NO_MATCH')) toast('This match isn\'t open for predictions yet — try again in a bit.');
-    else toast('Couldn\'t save — check your connection.');
+    else if (m.includes('NO_MATCH')) toast('Este partido aún no está abierto a predicciones; inténtalo en un momento.');
+    else toast('No se pudo guardar; revisa tu conexión.');
   }
 }
 
@@ -853,9 +853,9 @@ async function saveFinal(champion, topScorer) {
   const { error } = await state.sb.rpc('wc_save_final', { p_token: state.auth.token, p_champion: champion, p_top_scorer: topScorer || null });
   if (error) {
     const m = String(error.message || '');
-    if (m.includes('LOCKED')) throw new Error('Bonus picks locked 30 min before the opening match.');
-    if (m.includes('SCORER_INVALID')) throw new Error('Top scorer name looks too short/long.');
-    throw new Error('Couldn\'t save your picks.');
+    if (m.includes('LOCKED')) throw new Error('Los picks bonus se cierran 30 min antes del partido inaugural.');
+    if (m.includes('SCORER_INVALID')) throw new Error('El nombre del goleador parece demasiado corto/largo.');
+    throw new Error('No se pudieron guardar tus picks.');
   }
   state.myFinal = { champion, top_scorer: topScorer || null };
 }
@@ -874,26 +874,26 @@ function renderUserChip() {
     b.innerHTML = `<span class="avatar">${esc(state.auth.name.slice(0, 2).toUpperCase())}</span>${esc(state.auth.name)}`;
   } else {
     b.className = 'userchip ghost';
-    b.textContent = 'Join';
+    b.textContent = 'Únete';
   }
 }
 
 function renderHero() {
   const el = $('#heroCard');
   if (!state.matches.length) {
-    el.innerHTML = `<span class="sub">Schedule is loading… if this persists, results will appear automatically once the feed updates.</span>`;
+    el.innerHTML = `<span class="sub">El calendario se está cargando… si esto persiste, los resultados aparecerán automáticamente cuando se actualice el feed.</span>`;
     return;
   }
   const live = state.matches.filter(isLive);
   const open = state.matches.filter((m) => !isLocked(m));
   const unpredicted = open.filter((m) => !state.mine.has(m.id)).length;
   const chips = [];
-  if (state.auth && unpredicted > 0) chips.push(`<span class="chip warn" id="chipOpen">⚠️ ${unpredicted} still to predict</span>`);
-  if (!state.auth) chips.push(`<span class="chip btnish" id="chipJoin">👋 Join to play</span>`);
+  if (state.auth && unpredicted > 0) chips.push(`<span class="chip warn" id="chipOpen">⚠️ ${unpredicted} por predecir</span>`);
+  if (!state.auth) chips.push(`<span class="chip btnish" id="chipJoin">👋 Únete para jugar</span>`);
 
   if (live.length) {
     const m = live[0];
-    const more = live.length > 1 ? ` <span class="sub">+${live.length - 1} more live</span>` : '';
+    const more = live.length > 1 ? ` <span class="sub">+${live.length - 1} más en vivo</span>` : '';
     el.innerHTML = `<div><div class="big"><span class="live-dot"></span>${esc(m.home.name)} ${m.hs ?? 0}–${m.as ?? 0} ${esc(m.away.name)}</div>
       <div class="sub">${esc(m.clock || m.detail || 'Live')}${more}</div></div>${chips.join('')}`;
   } else {
@@ -904,12 +904,12 @@ function renderHero() {
       const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, mi = Math.floor(ms / 6e4) % 60;
       const cd = d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${mi}m` : `${mi}m`;
       el.innerHTML = `<div><div class="big">${esc(next.home.name)} vs ${esc(next.away.name)}</div>
-        <div class="sub">Next match · kicks off in <b>${cd}</b> · ${esc(fmtTime.format(kickoffOf(next)))} your time</div></div>${chips.join('')}`;
+        <div class="sub">Próximo partido · empieza en <b>${cd}</b> · ${esc(fmtTime.format(kickoffOf(next)))} tu hora</div></div>${chips.join('')}`;
     } else {
       const champ = championWinner();
       el.innerHTML = champ
-        ? `<div><div class="big">🏆 ${esc(champ)} are world champions!</div><div class="sub">Final standings on the leaderboard.</div></div>`
-        : `<div><div class="sub">No upcoming matches found.</div></div>${chips.join('')}`;
+        ? `<div><div class="big">🏆 ¡${esc(champ)} es campeón del mundo!</div><div class="sub">Clasificación final en la pestaña Tabla.</div></div>`
+        : `<div><div class="sub">No hay próximos partidos.</div></div>${chips.join('')}`;
     }
   }
   $('#chipJoin')?.addEventListener('click', openJoin);
@@ -940,7 +940,7 @@ function renderMatches() {
   }
   const visible = state.matches.filter(matchVisible);
   if (!visible.length) {
-    list.innerHTML = `<div class="empty">${state.matches.length ? 'Nothing here with this filter.' : 'Schedule loading…'}</div>`;
+    list.innerHTML = `<div class="empty">${state.matches.length ? 'Nada aquí con este filtro.' : 'Cargando calendario…'}</div>`;
     return;
   }
   const today = todayKey();
@@ -950,7 +950,7 @@ function renderMatches() {
     if (dk !== lastDay) {
       lastDay = dk;
       const label = fmtDay.format(new Date(m.date));
-      html += `<div class="day-h" ${dk === today ? 'data-today="1"' : ''}>${dk === today ? `<span class="today">Today · </span>` : ''}${esc(label)}</div>`;
+      html += `<div class="day-h" ${dk === today ? 'data-today="1"' : ''}>${dk === today ? `<span class="today">Hoy · </span>` : ''}${esc(label)}</div>`;
     }
     html += matchCard(m);
   }
@@ -962,8 +962,8 @@ function renderMatches() {
     if (a && d.a !== '') a.value = d.a;
   }
   $('#srcNote').textContent = state.fetchedAt
-    ? `Results auto-update · feed refreshed ${new Date(state.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · source: ESPN`
-    : 'Results auto-update · source: ESPN';
+    ? `Resultados automáticos · feed actualizado ${new Date(state.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · fuente: ESPN`
+    : 'Resultados automáticos · fuente: ESPN';
 
   if (!state.scrolled && state.filter === 'all') {
     state.scrolled = true;
@@ -977,7 +977,7 @@ function matchCard(m) {
   const live = isLive(m);
   const mine = state.mine.get(m.id);
   const ko = kickoffOf(m);
-  const stage = m.stage === 'GROUP' ? `Group ${m.group || '?'}` : (STAGE_LABEL[m.stage] || m.stage);
+  const stage = m.stage === 'GROUP' ? `Grupo ${m.group || '?'}` : (STAGE_LABEL[m.stage] || m.stage);
   const place = [m.venue, m.city].filter(Boolean).join(' · ');
 
   let badge;
@@ -999,14 +999,14 @@ function matchCard(m) {
   if (!locked && !tbdH && !tbdA) {
     if (mine && !state.editing.has(m.id)) {
       predictBlock = `<div class="predict">
-        <span class="lbl">My prediction</span>
+        <span class="lbl">Mi predicción</span>
         <span class="tipval">${mine.h} – ${mine.a}</span>
         <span class="savestate ok">✓ Saved</span>
-        <button class="editbtn" data-edit="${esc(m.id)}">Edit</button>
+        <button class="editbtn" data-edit="${esc(m.id)}">Editar</button>
       </div>`;
     } else {
       predictBlock = `<div class="predict">
-        <span class="lbl">My prediction</span>
+        <span class="lbl">Mi predicción</span>
         <input class="pin h" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.h : ''}" placeholder="–" aria-label="${esc(m.home.name)} goals">
         <span class="muted">:</span>
         <input class="pin a" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.a : ''}" placeholder="–" aria-label="${esc(m.away.name)} goals">
@@ -1014,11 +1014,11 @@ function matchCard(m) {
       </div>`;
     }
   } else if (!locked) {
-    predictBlock = `<div class="mypick">Predictions open once both teams are known.</div>`;
+    predictBlock = `<div class="mypick">Las predicciones se abren cuando se conozcan ambos equipos.</div>`;
   } else {
     const pts = matchPoints(mine, m);
     const ptsChip = pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'} pts</span>`;
-    predictBlock = `<div class="mypick">${mine ? `Your prediction: <b>${mine.h}–${mine.a}</b> ${ptsChip}` : `<span class="muted">You didn't predict this one</span>`}</div>`;
+    predictBlock = `<div class="mypick">${mine ? `Tu predicción: <b>${mine.h}–${mine.a}</b> ${ptsChip}` : `<span class="muted">No predijiste este partido</span>`}</div>`;
   }
 
   let othersBlock = '';
@@ -1035,7 +1035,7 @@ function matchCard(m) {
           <span class="osc">${p.h}–${p.a}</span>
           ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
       }).join('');
-      othersBlock = `<button class="others-toggle" data-toggle="${m.id}">${open ? '▲ Hide' : `▼ Everyone's predictions (${list.length})`}</button>
+      othersBlock = `<button class="others-toggle" data-toggle="${m.id}">${open ? '▲ Ocultar' : `▼ Predicciones de todos (${list.length})`}</button>
         <div class="others ${open ? 'open' : ''}">${rows}</div>`;
     }
   }
@@ -1071,12 +1071,12 @@ function renderGroups() {
       }
     }
   }
-  if (!groups.size) { grid.innerHTML = '<div class="empty">Group tables appear once the schedule loads.</div>'; return; }
+  if (!groups.size) { grid.innerHTML = '<div class="empty">Los grupos aparecen cuando cargue el calendario.</div>'; return; }
   grid.innerHTML = [...groups.keys()].sort().map((letter) => {
     const rows = [...groups.get(letter).values()]
       .sort((a, b) => b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf || a.team.name.localeCompare(b.team.name));
-    return `<div class="gcard"><h3>Group ${letter}</h3><table class="gtable">
-      <tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>+/−</th><th>Pts</th></tr>
+    return `<div class="gcard"><h3>Grupo ${letter}</h3><table class="gtable">
+      <tr><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>+/−</th><th>Pts</th></tr>
       ${rows.map((r, i) => `<tr class="${i < 2 ? 'q' : ''}">
         <td class="tm">${flagImg(r.team, '')}<span>${esc(r.team.name)}</span></td>
         <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf - r.ga > 0 ? '+' : ''}${r.gf - r.ga}</td><td class="p">${r.pts}</td></tr>`).join('')}
@@ -1102,28 +1102,28 @@ function renderFinals() {
     const teams = allTeams();
     const opts = teams.map((t) => `<option ${state.myFinal?.champion === t.name ? 'selected' : ''}>${esc(t.name)}</option>`).join('');
     box.innerHTML = `<div class="finals-card">
-      <h3>🎯 Your bonus picks</h3>
-      <div class="muted small">World champion = <b>+${SCORING.champion}</b> · top scorer = <b>+${SCORING.topScorer}</b>. Lock 30 min before the opening match${h != null ? ` — in ~${h}h` : ''}.</div>
+      <h3>🎯 Tus picks bonus</h3>
+      <div class="muted small">Campeón del mundo = <b>+${SCORING.champion}</b> · máximo goleador = <b>+${SCORING.topScorer}</b>. Se cierran 30 min antes del partido inaugural${h != null ? ` — en ~${h}h` : ''}.</div>
       <div class="row">
-        <select id="champSel" style="flex:1 1 100%"><option value="" disabled ${state.myFinal?.champion ? '' : 'selected'}>🏆 Who wins it all?</option>${opts}</select>
+        <select id="champSel" style="flex:1 1 100%"><option value="" disabled ${state.myFinal?.champion ? '' : 'selected'}>🏆 ¿Quién gana el Mundial?</option>${opts}</select>
       </div>
       <div class="row">
-        <input id="scorerIn" type="text" maxlength="60" placeholder="⚽ Top scorer (e.g. Mbappé)" value="${esc(state.myFinal?.top_scorer ?? '')}" style="flex:2 1 150px">
-        <button class="btn" id="finalsSave">Save</button>
+        <input id="scorerIn" type="text" maxlength="60" placeholder="⚽ Máximo goleador (p. ej. Mbappé)" value="${esc(state.myFinal?.top_scorer ?? '')}" style="flex:2 1 150px">
+        <button class="btn" id="finalsSave">Guardar</button>
       </div>
-      ${state.myFinal ? `<div class="small" style="color:var(--green);margin-top:8px">✓ Saved: ${esc(state.myFinal.champion)}${state.myFinal.top_scorer ? ` · ⚽ ${esc(state.myFinal.top_scorer)}` : ''}</div>` : ''}
+      ${state.myFinal ? `<div class="small" style="color:var(--green);margin-top:8px">✓ Guardado: ${esc(state.myFinal.champion)}${state.myFinal.top_scorer ? ` · ⚽ ${esc(state.myFinal.top_scorer)}` : ''}</div>` : ''}
     </div>`;
     $('#finalsSave').onclick = async () => {
       if (!state.auth) return openJoin();
       const champ = $('#champSel').value;
       const scorer = $('#scorerIn').value.trim();
-      if (!champ) return toast('Pick a champion first');
-      try { await saveFinal(champ, scorer); toast('Bonus picks saved 🎯'); renderBonus(); }
+      if (!champ) return toast('Primero elige un campeón');
+      try { await saveFinal(champ, scorer); toast('Picks bonus guardados 🎯'); renderBonus(); }
       catch (e) { toast(e.message); }
     };
   } else {
-    box.innerHTML = `<div class="finals-card"><h3>🎯 Bonus picks are locked</h3>
-      <div class="muted small">Champion <b>+${SCORING.champion}</b> · top scorer <b>+${SCORING.topScorer}</b> (a tie for most goals counts). Everyone's picks are below.</div></div>`;
+    box.innerHTML = `<div class="finals-card"><h3>🎯 Los picks bonus están cerrados</h3>
+      <div class="muted small">Campeón <b>+${SCORING.champion}</b> · máximo goleador <b>+${SCORING.topScorer}</b> (un empate a goles cuenta). Los picks de todos están abajo.</div></div>`;
   }
 }
 
@@ -1132,22 +1132,22 @@ function renderBonus() {
 
   const tally = topScorerTally().slice(0, 8);
   $('#bootRace').innerHTML = tally.length ? `<div class="rules-card" style="margin-top:12px">
-    <h3>⚽ Golden Boot race</h3>
+    <h3>⚽ Carrera por la Bota de Oro</h3>
     ${tally.map((t, i) => `<div class="orow"><span class="onm">${i + 1}. ${esc(t.name)}</span><span class="osc">${t.goals}</span></div>`).join('')}
   </div>` : '';
 
   const box = $('#bonusList');
   if (!finalsLocked()) {
-    box.innerHTML = `<p class="muted small" style="margin:10px 2px">Everyone's bonus picks appear here once picks lock — until then they're secret.</p>`;
+    box.innerHTML = `<p class="muted small" style="margin:10px 2px">Los picks bonus de todos aparecen aquí cuando se cierren; hasta entonces son secretos.</p>`;
     return;
   }
   const { rows } = playerTotals();
   const withFin = rows.filter((r) => r.fin);
-  box.innerHTML = `<div class="rules-card" style="margin-top:12px"><h3>Everyone's picks</h3>
+  box.innerHTML = `<div class="rules-card" style="margin-top:12px"><h3>Picks de todos</h3>
     ${withFin.length ? withFin.map((r) => `<div class="orow" data-pid="${esc(r.id)}" style="cursor:pointer">
       <span class="onm">${esc(r.name)}</span>
       <span class="small" style="text-align:right">🏆 ${esc(r.fin.champion)}${r.champHit ? ` <b style="color:var(--gold)">+${SCORING.champion}</b>` : ''}${r.fin.top_scorer ? `<br>⚽ ${esc(r.fin.top_scorer)}` : ''}${r.scorerHit ? ` <b style="color:var(--gold)">+${SCORING.topScorer}</b>` : ''}</span>
-    </div>`).join('') : '<p class="muted small">Nobody made bonus picks in time.</p>'}
+    </div>`).join('') : '<p class="muted small">Nadie hizo picks bonus a tiempo.</p>'}
   </div>`;
 }
 
@@ -1158,18 +1158,18 @@ function openPlayer(pid) {
   const { rows } = playerTotals();
   const r = rows.find((x) => x.id === pid) || { total: 0, exacts: 0, predicted: 0 };
   $('#pmName').textContent = pl.name;
-  $('#pmStats').textContent = `${r.total} points · ${r.exacts} exact · ${r.predicted} predictions revealed`;
+  $('#pmStats').textContent = `${r.total} puntos · ${r.exacts} exactos · ${r.predicted} predicciones reveladas`;
   let html = '';
   if (finalsLocked() && r.fin) {
     html += `<div class="rules-card" style="padding:10px 12px;margin-bottom:10px">
       🏆 ${esc(r.fin.champion)}${r.champHit ? ` <b style="color:var(--gold)">+${SCORING.champion}</b>` : ''}<br>
-      ⚽ ${r.fin.top_scorer ? esc(r.fin.top_scorer) : '<span class="muted">no top-scorer pick</span>'}${r.scorerHit ? ` <b style="color:var(--gold)">+${SCORING.topScorer}</b>` : ''}
+      ⚽ ${r.fin.top_scorer ? esc(r.fin.top_scorer) : '<span class="muted">sin pick de goleador</span>'}${r.scorerHit ? ` <b style="color:var(--gold)">+${SCORING.topScorer}</b>` : ''}
     </div>`;
   }
   const revealed = state.matches.filter((m) =>
     (state.preds.get(m.id) || []).some((p) => p.player_id === pid));
   if (!revealed.length) {
-    html += `<p class="muted small">No revealed predictions yet — predictions stay hidden until 30 min before each kickoff.</p>`;
+    html += `<p class="muted small">Aún no hay predicciones reveladas: permanecen ocultas hasta 30 min antes de cada partido.</p>`;
   } else {
     html += revealed.slice().reverse().map((m) => {
       const p = (state.preds.get(m.id) || []).find((x) => x.player_id === pid);
@@ -1180,7 +1180,7 @@ function openPlayer(pid) {
         <span class="osc">${p.h}–${p.a}</span>
         ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
     }).join('');
-    html += `<p class="muted small" style="margin-top:10px">Their prediction on the right · predictions stay hidden until 30 min before each kickoff.</p>`;
+    html += `<p class="muted small" style="margin-top:10px">Su predicción a la derecha · las predicciones permanecen ocultas hasta 30 min antes de cada partido.</p>`;
   }
   $('#pmBody').innerHTML = html;
   $('#playerModal').classList.add('open');
@@ -1189,8 +1189,8 @@ function openPlayer(pid) {
 function renderBoard() {
   const box = $('#boardBox');
   if (!state.players.length) {
-    box.innerHTML = `<div class="empty">Nobody has joined yet.<br><br><button class="btn" id="bJoin">Be the first — join now</button>
-      <div style="margin-top:14px"><button class="btn ghost" id="bInvite">📲 Invite your friends</button></div></div>`;
+    box.innerHTML = `<div class="empty">Aún no se ha unido nadie.<br><br><button class="btn" id="bJoin">Sé el primero — únete ya</button>
+      <div style="margin-top:14px"><button class="btn ghost" id="bInvite">📲 Invita a tus amigos</button></div></div>`;
     $('#bJoin')?.addEventListener('click', openJoin);
     $('#bInvite')?.addEventListener('click', invite);
     return;
@@ -1198,7 +1198,7 @@ function renderBoard() {
   const { rows } = playerTotals();
   const anyToday = rows.some((r) => r.todayPts > 0);
   box.innerHTML = `<table class="lb">
-    <thead><tr><th></th><th class="nm">Player</th><th>Pts</th>${anyToday ? '<th>Today</th>' : ''}<th>Exact</th><th>Preds</th></tr></thead>
+    <thead><tr><th></th><th class="nm">Jugador</th><th>Pts</th>${anyToday ? '<th>Hoy</th>' : ''}<th>Exactos</th><th>Preds</th></tr></thead>
     <tbody>${rows.map((r, i) => `<tr class="${r.id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(r.id)}" style="cursor:pointer">
       <td class="rk">${i + 1}</td>
       <td class="nm">${esc(r.name)}</td>
@@ -1208,7 +1208,7 @@ function renderBoard() {
       <td class="muted">${r.predicted}</td>
     </tr>`).join('')}</tbody>
   </table>
-  <div class="src-note">Tap a player to see all their predictions. Points: exact ${SCORING.exact} · goal difference ${SCORING.diff} · winner ${SCORING.outcome} · bonus picks +${SCORING.champion}/+${SCORING.topScorer} (Bonus tab). Ties: exact scores, then correct results.</div>`;
+  <div class="src-note">Toca un jugador para ver todas sus predicciones. Puntos: exacto ${SCORING.exact} · diferencia de goles ${SCORING.diff} · ganador ${SCORING.outcome} · picks bonus +${SCORING.champion}/+${SCORING.topScorer} (pestaña Bonus). Desempates: exactos, luego aciertos.</div>`;
 }
 
 function render() {
@@ -1280,7 +1280,7 @@ $('#saveModalGo').onclick = () => {
   const ps = state.pendingSave;
   state.pendingSave = null;
   $('#saveModal').classList.remove('open');
-  if (ps) { commitSave(ps); toast('Prediction saved ✓ — autosaving from now on'); }
+  if (ps) { commitSave(ps); toast('Predicción guardada ✓ — autoguardado a partir de ahora'); }
 };
 $('#saveModalCancel').onclick = () => { state.pendingSave = null; $('#saveModal').classList.remove('open'); };
 
@@ -1294,7 +1294,7 @@ $('#jGo').onclick = async () => {
   try {
     const r = await join(name, pin);
     closeJoin();
-    toast(r.existing ? `Welcome back, ${r.name}!` : `You're in, ${r.name}! 🎉`);
+    toast(r.existing ? `¡Hola de nuevo, ${r.name}!` : `¡Dentro, ${r.name}! 🎉`);
     await loadMine();
     render();
   } catch (e) { $('#jErr').textContent = e.message; }
@@ -1305,31 +1305,31 @@ $('#jPin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#jGo')
 $('#userBtn').onclick = () => {
   if (!state.auth) return openJoin();
   $('#menuName').textContent = state.auth.name;
-  $('#menuSub').textContent = state.auth.is_admin ? 'Pool admin' : 'Pool member';
+  $('#menuSub').textContent = state.auth.is_admin ? 'Admin de la quiniela' : 'Miembro de la quiniela';
   $('#mResetPin').style.display = state.auth.is_admin ? '' : 'none';
   $('#mSetScorer').style.display = state.auth.is_admin ? '' : 'none';
   $('#menuModal').classList.add('open');
 };
 $('#menuClose').onclick = () => $('#menuModal').classList.remove('open');
-$('#mLogout').onclick = () => { $('#menuModal').classList.remove('open'); signOut(); toast('Signed out on this device'); };
+$('#mLogout').onclick = () => { $('#menuModal').classList.remove('open'); signOut(); toast('Sesión cerrada en este dispositivo'); };
 $('#mPicks').onclick = () => { $('#menuModal').classList.remove('open'); switchView('bonus'); };
 $('#mInvite').onclick = () => { $('#menuModal').classList.remove('open'); invite(); };
 $('#mResetPin').onclick = async () => {
-  const who = prompt('Player name to reset:'); if (!who) return;
-  const pin = prompt(`New PIN for ${who} (4–8 digits):`); if (!pin) return;
+  const who = prompt('Nombre del jugador a restablecer:'); if (!who) return;
+  const pin = prompt(`Nuevo PIN para ${who} (4–8 dígitos):`); if (!pin) return;
   const { error } = await state.sb.rpc('wc_admin_reset_pin', { p_token: state.auth.token, p_player_name: who, p_new_pin: pin });
-  toast(error ? `Failed: ${error.message}` : `PIN reset for ${who}`);
+  toast(error ? `Failed: ${error.message}` : `PIN restablecido para ${who}`);
 };
 $('#mSetScorer').onclick = async () => {
-  const name = prompt('Official top scorer (only needed if the automatic result is wrong/missing; comma-separate ties):');
+  const name = prompt('Máximo goleador oficial (solo si el resultado automático falta o es erróneo; separa empates con comas):');
   if (name == null) return;
   const { error } = await state.sb.rpc('wc_admin_set_setting', { p_token: state.auth.token, p_key: 'top_scorer', p_value: name.trim() || null });
-  toast(error ? `Failed: ${error.message}` : 'Official top scorer saved');
+  toast(error ? `Failed: ${error.message}` : 'Máximo goleador oficial guardado');
   loadDb().then(render);
 };
 
 function invite() {
-  const text = `⚽ World Cup 2026 predictions pool — predict every match, live leaderboard, winner takes the glory. Join here: ${POOL_URL}`;
+  const text = `⚽ Quiniela del Mundial 2026 — predice cada partido, tabla en vivo, el ganador se lleva la gloria. Únete aquí: ${POOL_URL}`;
   if (navigator.share) { navigator.share({ text }).catch(() => {}); return; }
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 }
@@ -1355,7 +1355,7 @@ async function boot() {
   await loadBaseline();
   render();
 
-  await initSb().catch(() => toast('Server unreachable — predictions disabled, scores still live.'));
+  await initSb().catch(() => toast('Servidor no disponible: predicciones desactivadas, los marcadores siguen en vivo.'));
   if (state.sb) {
     await Promise.all([loadDb(), loadMine()]);
     render();
