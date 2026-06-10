@@ -16,6 +16,7 @@ Run by .github/workflows/wc2026-results.yml on a schedule during June/July
 import json
 import re
 import sys
+import unicodedata
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -144,6 +145,29 @@ def parse_team(competitor):
     return out
 
 
+def parse_scorers(comp):
+    """Goalscorers from ESPN match details (feeds the golden-boot race).
+    Own goals don't count toward the award; shootout kicks aren't in details."""
+    out = []
+    for d in comp.get("details") or []:
+        try:
+            if not d.get("scoringPlay") or d.get("ownGoal"):
+                continue
+            athletes = d.get("athletesInvolved") or []
+            name = (athletes[0] or {}).get("displayName") if athletes else None
+            if name:
+                out.append({"n": name})
+        except Exception:  # noqa: BLE001
+            continue
+    return out or None
+
+
+def norm_name(name):
+    decomposed = unicodedata.normalize("NFD", name or "")
+    stripped = "".join(c for c in decomposed if not unicodedata.combining(c))
+    return " ".join(stripped.lower().split())
+
+
 def parse_event(event):
     comp = (event.get("competitions") or [{}])[0]
     iso_date = parse_date(event.get("date") or comp.get("date"))
@@ -216,6 +240,7 @@ def parse_event(event):
         "so": {"h": so_h, "a": so_a} if (so_h is not None or so_a is not None) else None,
         "winner": winner,
         "advances": advances,
+        "scorers": parse_scorers(comp),
     }
 
 
@@ -250,13 +275,30 @@ def main():
         return 0
 
     merged = load_existing()
-    merged.update({m["id"]: m for m in parsed})
+    for m in parsed:
+        old = merged.get(m["id"])
+        if old and not m.get("scorers") and old.get("scorers"):
+            m["scorers"] = old["scorers"]  # don't lose scorers to a thin payload
+        merged[m["id"]] = m
     matches = sorted(merged.values(), key=lambda m: (m["date"], m["id"]))
+
+    # Golden-boot tally across the whole tournament.
+    tally, display = {}, {}
+    for m in matches:
+        for s in m.get("scorers") or []:
+            key = norm_name(s.get("n"))
+            if not key:
+                continue
+            tally[key] = tally.get(key, 0) + 1
+            display.setdefault(key, s["n"])
+    top_scorers = [{"name": display[k], "goals": v}
+                   for k, v in sorted(tally.items(), key=lambda kv: (-kv[1], kv[0]))[:20]]
 
     data = {
         "fetchedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "source": "espn",
         "matchCount": len(matches),
+        "topScorers": top_scorers,
         "matches": matches,
     }
 
