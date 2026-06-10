@@ -382,6 +382,27 @@ const LOCK_MS = 30 * 60e3; // predictions stay open until 30 min before kickoff
 const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
 const STAGE_LABEL = { GROUP: 'Group', R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-final', SF: 'Semi-final', THIRD: 'Third place', FINAL: 'Final' };
 const POOL_URL = 'https://muses.exchange/wc2026';
+// Final-draw groups (ESPN team names) — fallback when the feed lacks letters.
+const TEAM_GROUPS = (() => {
+  const g = {
+    A: ['Mexico', 'South Africa', 'South Korea', 'Czechia'],
+    B: ['Canada', 'Bosnia-Herzegovina', 'Qatar', 'Switzerland'],
+    C: ['Brazil', 'Morocco', 'Haiti', 'Scotland'],
+    D: ['United States', 'Paraguay', 'Australia', 'Türkiye'],
+    E: ['Germany', 'Curaçao', 'Ivory Coast', 'Ecuador'],
+    F: ['Netherlands', 'Japan', 'Sweden', 'Tunisia'],
+    G: ['Belgium', 'Egypt', 'Iran', 'New Zealand'],
+    H: ['Spain', 'Cape Verde', 'Saudi Arabia', 'Uruguay'],
+    I: ['France', 'Senegal', 'Iraq', 'Norway'],
+    J: ['Argentina', 'Algeria', 'Austria', 'Jordan'],
+    K: ['Portugal', 'Congo DR', 'Uzbekistan', 'Colombia'],
+    L: ['England', 'Croatia', 'Ghana', 'Panama'],
+  };
+  const map = {};
+  for (const [letter, teams] of Object.entries(g)) for (const t of teams) map[t] = letter;
+  return map;
+})();
+const isTbdTeam = (t) => !!t?.tbd || !t?.name || t.name === 'TBD' || /(1st|2nd|3rd)\s+place|winner|runner|loser|\btbd\b/i.test(t.name);
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -509,7 +530,9 @@ function parseEspnEvent(ev) {
   const notes = (comp.notes || ev.notes || []).map((n) => n.headline || '').join(' ');
   const team = (c) => {
     const t = c?.team || {};
-    return { id: String(t.id || ''), name: t.displayName || t.name || 'TBD', abbr: t.abbreviation || '', logo: t.logo || t.logos?.[0]?.href || '' };
+    const out = { id: String(t.id || ''), name: t.displayName || t.name || 'TBD', abbr: t.abbreviation || '', logo: t.logo || t.logos?.[0]?.href || '' };
+    if (isTbdTeam(out)) out.tbd = true;
+    return out;
   };
   const num = (v) => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : null; };
   let home = null, away = null, hW = false, aW = false, hs = null, as = null, soH = null, soA = null;
@@ -525,16 +548,23 @@ function parseEspnEvent(ev) {
     winner = hs > as ? 'home' : as > hs ? 'away' : 'draw';
     advances = hW ? 'home' : aW ? 'away' : (winner !== 'draw' ? winner : null);
   }
-  const day = iso.slice(0, 10);
+  // Calendar fallback boundaries are US-Eastern days; shift -4h so late
+  // kickoffs that spill past midnight UTC stay on the right matchday.
+  const day = new Date(dt.getTime() - 4 * 3600e3).toISOString().slice(0, 10);
   const stageGuess = /round of 32/i.test(notes) ? 'R32' : /round of 16/i.test(notes) ? 'R16'
     : /quarter/i.test(notes) ? 'QF' : /semi/i.test(notes) ? 'SF' : /third/i.test(notes) ? 'THIRD'
     : /\bfinal\b/i.test(notes) ? 'FINAL' : /group/i.test(notes) ? 'GROUP'
     : day <= '2026-06-27' ? 'GROUP' : day <= '2026-07-03' ? 'R32' : day <= '2026-07-07' ? 'R16'
     : day <= '2026-07-12' ? 'QF' : day <= '2026-07-16' ? 'SF' : day <= '2026-07-18' ? 'THIRD' : 'FINAL';
   const g = notes.match(/group\s+([A-L])\b/i);
+  let group = g ? g[1].toUpperCase() : null;
+  if (!group && stageGuess === 'GROUP' && home && away
+      && TEAM_GROUPS[home.name] && TEAM_GROUPS[home.name] === TEAM_GROUPS[away.name]) {
+    group = TEAM_GROUPS[home.name];
+  }
   return {
     id: String(ev.id), date: iso,
-    stage: stageGuess, group: g ? g[1].toUpperCase() : null,
+    stage: stageGuess, group,
     venue: comp.venue?.fullName || '', city: comp.venue?.address?.city || '',
     home: home || { id: '', name: 'TBD', abbr: '', logo: '' },
     away: away || { id: '', name: 'TBD', abbr: '', logo: '' },
@@ -833,7 +863,7 @@ function matchCard(m) {
     mid = `<div class="ko">vs</div>`;
   }
 
-  const tbdH = !m.home.name || m.home.name === 'TBD', tbdA = !m.away.name || m.away.name === 'TBD';
+  const tbdH = isTbdTeam(m.home), tbdA = isTbdTeam(m.away);
 
   let predictBlock = '';
   if (!locked && !tbdH && !tbdA) {
@@ -845,7 +875,7 @@ function matchCard(m) {
       <span class="savestate ${mine ? 'ok' : ''}">${mine ? '✓ Saved' : ''}</span>
     </div>`;
   } else if (!locked) {
-    predictBlock = `<div class="mypick">Teams TBD — prediction opens once both teams are known.</div>`;
+    predictBlock = `<div class="mypick">Predictions open once both teams are known.</div>`;
   } else {
     const pts = matchPoints(mine, m);
     const ptsChip = pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'} pts</span>`;
@@ -890,7 +920,7 @@ function renderGroups() {
     if (!groups.has(m.group)) groups.set(m.group, new Map());
     const g = groups.get(m.group);
     for (const t of [m.home, m.away]) {
-      if (t.name && t.name !== 'TBD' && !g.has(t.name)) g.set(t.name, { team: t, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 });
+      if (!isTbdTeam(t) && !g.has(t.name)) g.set(t.name, { team: t, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 });
     }
     if (m.completed && m.hs != null) {
       const H = g.get(m.home.name), A = g.get(m.away.name);
@@ -919,7 +949,7 @@ function allTeams() {
   const seen = new Map();
   for (const m of state.matches) {
     if (m.stage !== 'GROUP') continue;
-    for (const t of [m.home, m.away]) if (t.name && t.name !== 'TBD') seen.set(t.name, t);
+    for (const t of [m.home, m.away]) if (!isTbdTeam(t)) seen.set(t.name, t);
   }
   return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
 }

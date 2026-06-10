@@ -17,7 +17,7 @@ import json
 import re
 import sys
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -42,6 +42,30 @@ STAGE_PATTERNS = [
     (re.compile(r"group", re.I), "GROUP"),
 ]
 GROUP_RE = re.compile(r"group\s+([A-L])\b", re.I)
+
+# ESPN's scoreboard doesn't expose group letters, so map them from the final
+# draw (Washington D.C., Dec 5 2025). Names are ESPN displayNames verbatim.
+TEAM_GROUPS = {}
+for _letter, _teams in {
+    "A": ["Mexico", "South Africa", "South Korea", "Czechia"],
+    "B": ["Canada", "Bosnia-Herzegovina", "Qatar", "Switzerland"],
+    "C": ["Brazil", "Morocco", "Haiti", "Scotland"],
+    "D": ["United States", "Paraguay", "Australia", "Türkiye"],
+    "E": ["Germany", "Curaçao", "Ivory Coast", "Ecuador"],
+    "F": ["Netherlands", "Japan", "Sweden", "Tunisia"],
+    "G": ["Belgium", "Egypt", "Iran", "New Zealand"],
+    "H": ["Spain", "Cape Verde", "Saudi Arabia", "Uruguay"],
+    "I": ["France", "Senegal", "Iraq", "Norway"],
+    "J": ["Argentina", "Algeria", "Austria", "Jordan"],
+    "K": ["Portugal", "Congo DR", "Uzbekistan", "Colombia"],
+    "L": ["England", "Croatia", "Ghana", "Panama"],
+}.items():
+    for _t in _teams:
+        TEAM_GROUPS[_t] = _letter
+
+# Knockout slots are published with placeholder "teams" until decided.
+PLACEHOLDER_RE = re.compile(
+    r"(1st|2nd|3rd)\s+place|winner|runner|loser|\btbd\b|to be determined", re.I)
 
 
 def fetch_scoreboard():
@@ -69,8 +93,15 @@ def stage_from_event(notes_text, iso_date):
             # "Final" also matches semi-final/quarterfinal headlines, but those
             # patterns are checked first, so reaching FINAL here is safe.
             return stage
-    # Fallback: derive from the fixed tournament calendar.
-    day = iso_date[:10] if iso_date else ""
+    # Fallback: derive from the fixed tournament calendar. Boundaries are
+    # local (US Eastern) days — late kickoffs spill past midnight UTC, so
+    # shift by -4h before comparing (e.g. 02:00Z Jun 28 = 22:00 EDT Jun 27,
+    # still a group-stage day).
+    try:
+        dt = datetime.strptime(iso_date, "%Y-%m-%dT%H:%M:%SZ")
+        day = (dt - timedelta(hours=4)).strftime("%Y-%m-%d")
+    except (TypeError, ValueError):
+        day = iso_date[:10] if iso_date else ""
     if day <= "2026-06-27":
         return "GROUP"
     if day <= "2026-07-03":
@@ -99,12 +130,18 @@ def parse_team(competitor):
     if not logo:
         logos = team.get("logos") or [{}]
         logo = logos[0].get("href")
-    return {
+    name = team.get("displayName") or team.get("name") or "TBD"
+    out = {
         "id": str(team.get("id") or ""),
-        "name": team.get("displayName") or team.get("name") or "TBD",
+        "name": name,
         "abbr": team.get("abbreviation") or "",
         "logo": logo or "",
     }
+    # Undecided knockout slots ("Group A 2nd Place", "Winner Match 74", …):
+    # keep the name for display, flag so the UI doesn't open predictions yet.
+    if name == "TBD" or PLACEHOLDER_RE.search(name):
+        out["tbd"] = True
+    return out
 
 
 def parse_event(event):
@@ -134,7 +171,14 @@ def parse_event(event):
     completed = bool(stype.get("completed"))
 
     venue = comp.get("venue") or {}
+    stage = stage_from_event(notes_text, iso_date)
     group_match = GROUP_RE.search(notes_text)
+    group = group_match.group(1).upper() if group_match else None
+    if group is None and stage == "GROUP":
+        gh = TEAM_GROUPS.get(home.get("name", ""))
+        ga = TEAM_GROUPS.get(away.get("name", ""))
+        if gh and gh == ga:
+            group = gh
 
     hs = home.pop("_score", None)
     as_ = away.pop("_score", None)
@@ -157,8 +201,8 @@ def parse_event(event):
     return {
         "id": str(event["id"]),
         "date": iso_date,
-        "stage": stage_from_event(notes_text, iso_date),
-        "group": group_match.group(1).upper() if group_match else None,
+        "stage": stage,
+        "group": group,
         "venue": venue.get("fullName") or "",
         "city": ((venue.get("address") or {}).get("city")) or "",
         "home": home or {"id": "", "name": "TBD", "abbr": "", "logo": ""},
