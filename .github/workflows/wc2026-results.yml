@@ -68,7 +68,11 @@ jobs:
           if git diff --staged --quiet; then
             echo "No result changes — skipping commit."
           else
-            git commit -m "chore: update WC2026 results $(date -u +%Y-%m-%dT%H:%MZ)"
+            # [skip netlify]: results data must not burn build credits. The
+            # pool page reads the feed from raw.githubusercontent.com (always
+            # current) and live scores from ESPN; the deployed copy just
+            # piggybacks on the next regular deploy.
+            git commit -m "chore: update WC2026 results $(date -u +%Y-%m-%dT%H:%MZ) [skip netlify]"
             git push || (git pull --rebase -X theirs && git push)
           fi
 
