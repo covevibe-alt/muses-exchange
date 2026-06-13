@@ -72,8 +72,8 @@ TRANSLATIONS = [
      'Las predicciones de los demás permanecen <b>ocultas hasta el cierre</b> (30 min antes del inicio). Después aparecen en la tarjeta del partido, y puedes tocar a cualquier jugador en la tabla para ver todo lo que rellenó.'),
     ("Knockout matches count the score <b>after extra time</b>; penalty shootouts don't add goals. Predicting a draw in a knockout match is allowed.",
      'En eliminatorias cuenta el marcador <b>tras la prórroga</b>; la tanda de penales no suma goles. Se permite predecir empate en eliminatorias.'),
-    ('Bonus picks (champion + top scorer) lock 30 minutes before the opening match.',
-     'Los picks bonus (campeón + máximo goleador) se cierran 30 minutos antes del partido inaugural.'),
+    ('Bonus picks (champion + top scorer) stay open until the deadline shown on the Bonus tab.',
+     'Los picks bonus (campeón + máximo goleador) están abiertos hasta la fecha límite que se muestra en la pestaña Bonus.'),
     ('Tiebreakers: most exact scores, then most correct results.',
      'Desempates: más marcadores exactos, luego más aciertos.'),
     ('Results come from ESPN automatically: live scores roughly every minute while you have the page open, final results within ~30 minutes.',
@@ -116,6 +116,8 @@ TRANSLATIONS = [
      "new Intl.DateTimeFormat('es', { hour: '2-digit', minute: '2-digit' })"),
     ("new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'long' })",
      "new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long' })"),
+    ("new Intl.DateTimeFormat(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })",
+     "new Intl.DateTimeFormat('es', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })"),
 
     # ── JS: stage labels ──
     ("{ GROUP: 'Group', R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-final', SF: 'Semi-final', THIRD: 'Third place', FINAL: 'Final' }",
@@ -161,8 +163,10 @@ TRANSLATIONS = [
 
     # ── JS: bonus tab ──
     ('🎯 Your bonus picks', '🎯 Tus picks bonus'),
-    ('World champion = <b>+${SCORING.champion}</b> · top scorer = <b>+${SCORING.topScorer}</b>. Lock 30 min before the opening match${h != null ? ` — in ~${h}h` : \'\'}.',
-     'Campeón del mundo = <b>+${SCORING.champion}</b> · máximo goleador = <b>+${SCORING.topScorer}</b>. Se cierran 30 min antes del partido inaugural${h != null ? ` — en ~${h}h` : \'\'}.'),
+    ('World champion = <b>+${SCORING.champion}</b> · top scorer = <b>+${SCORING.topScorer}</b>.',
+     'Campeón del mundo = <b>+${SCORING.champion}</b> · máximo goleador = <b>+${SCORING.topScorer}</b>.'),
+    ("⏳ Open until <b>${when}</b> — everyone's picks stay hidden until then.",
+     '⏳ Abierto hasta <b>${when}</b> — los picks de todos permanecen ocultos hasta entonces.'),
     ('🏆 Who wins it all?', '🏆 ¿Quién gana el Mundial?'),
     ('⚽ Top scorer (e.g. Mbappé)', '⚽ Máximo goleador (p. ej. Mbappé)'),
     ('id="finalsSave">Save</button>', 'id="finalsSave">Guardar</button>'),
@@ -212,7 +216,7 @@ TRANSLATIONS = [
     ('`Welcome back, ${r.name}!`', '`¡Hola de nuevo, ${r.name}!`'),
     ("`You're in, ${r.name}! 🎉`", '`¡Dentro, ${r.name}! 🎉`'),
     ("'Signed out on this device'", "'Sesión cerrada en este dispositivo'"),
-    ("'Bonus picks locked 30 min before the opening match.'", "'Los picks bonus se cierran 30 min antes del partido inaugural.'"),
+    ("'Bonus picks are closed now.'", "'Los picks bonus ya están cerrados.'"),
     ("'Top scorer name looks too short/long.'", "'El nombre del goleador parece demasiado corto/largo.'"),
     ("'Couldn\\'t save your picks.'", "'No se pudieron guardar tus picks.'"),
     ("'Server unreachable — predictions disabled, scores still live.'",

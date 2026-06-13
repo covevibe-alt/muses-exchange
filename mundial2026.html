@@ -330,7 +330,7 @@
         <li>Las predicciones se guardan automáticamente y <b>se cierran 30 minutos antes del inicio</b> (verificado en el servidor). Hasta entonces puedes cambiarlas con <b>Editar</b> cuantas veces quieras.</li>
         <li>Las predicciones de los demás permanecen <b>ocultas hasta el cierre</b> (30 min antes del inicio). Después aparecen en la tarjeta del partido, y puedes tocar a cualquier jugador en la tabla para ver todo lo que rellenó.</li>
         <li>En eliminatorias cuenta el marcador <b>tras la prórroga</b>; la tanda de penales no suma goles. Se permite predecir empate en eliminatorias.</li>
-        <li>Los picks bonus (campeón + máximo goleador) se cierran 30 minutos antes del partido inaugural.</li>
+        <li>Los picks bonus (campeón + máximo goleador) están abiertos hasta la fecha límite que se muestra en la pestaña Bonus.</li>
         <li>Desempates: más marcadores exactos, luego más aciertos.</li>
         <li>Los resultados llegan de ESPN automáticamente: marcadores en vivo aprox. cada minuto con la página abierta, resultados finales en ~30 minutos.</li>
       </ul>
@@ -475,6 +475,7 @@ function toast(msg) {
 }
 const fmtTime = new Intl.DateTimeFormat('es', { hour: '2-digit', minute: '2-digit' });
 const fmtDay = new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long' });
+const fmtDateTime = new Intl.DateTimeFormat('es', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 const dayKey = (iso) => { const d = new Date(iso); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const todayKey = () => dayKey(new Date().toISOString());
 
@@ -490,7 +491,15 @@ const firstKickoff = () => {
   for (const r of state.dbMatches.values()) { const k = new Date(r.kickoff).getTime(); if (min === null || k < min) min = k; }
   return min;
 };
-const finalsLocked = () => { const f = firstKickoff(); return f !== null && Date.now() >= f - LOCK_MS; };
+// Bonus picks close at the admin-set deadline (wc_settings.bonus_deadline)
+// if present, otherwise the default rule (30 min before the opening match).
+function bonusDeadlineMs() {
+  const v = state.settings.get('bonus_deadline');
+  if (v) { const t = new Date(v).getTime(); if (!isNaN(t)) return t; }
+  const f = firstKickoff();
+  return f !== null ? f - LOCK_MS : null;
+}
+const finalsLocked = () => { const d = bonusDeadlineMs(); return d !== null && Date.now() >= d; };
 
 /* ── scoring: the one true function ── */
 function matchPoints(p, m) {
@@ -860,7 +869,7 @@ async function saveFinal(champion, topScorer) {
   const { error } = await state.sb.rpc('wc_save_final', { p_token: state.auth.token, p_champion: champion, p_top_scorer: topScorer || null });
   if (error) {
     const m = String(error.message || '');
-    if (m.includes('LOCKED')) throw new Error('Los picks bonus se cierran 30 min antes del partido inaugural.');
+    if (m.includes('LOCKED')) throw new Error('Los picks bonus ya están cerrados.');
     if (m.includes('SCORER_INVALID')) throw new Error('El nombre del goleador parece demasiado corto/largo.');
     throw new Error('No se pudieron guardar tus picks.');
   }
@@ -1103,14 +1112,14 @@ function allTeams() {
 function renderFinals() {
   const box = $('#finalsBox');
   if (!finalsLocked()) {
-    const fk = firstKickoff();
-    const cd = fk ? Math.max(0, fk - LOCK_MS - Date.now()) : null;
-    const h = cd != null ? Math.floor(cd / 36e5) : null;
+    const dl = bonusDeadlineMs();
+    const when = dl ? esc(fmtDateTime.format(new Date(dl))) : '';
     const teams = allTeams();
     const opts = teams.map((t) => `<option ${state.myFinal?.champion === t.name ? 'selected' : ''}>${esc(t.name)}</option>`).join('');
     box.innerHTML = `<div class="finals-card">
       <h3>🎯 Tus picks bonus</h3>
-      <div class="muted small">Campeón del mundo = <b>+${SCORING.champion}</b> · máximo goleador = <b>+${SCORING.topScorer}</b>. Se cierran 30 min antes del partido inaugural${h != null ? ` — en ~${h}h` : ''}.</div>
+      <div class="muted small">Campeón del mundo = <b>+${SCORING.champion}</b> · máximo goleador = <b>+${SCORING.topScorer}</b>.</div>
+      ${when ? `<div class="muted small" style="margin-top:4px">⏳ Abierto hasta <b>${when}</b> — los picks de todos permanecen ocultos hasta entonces.</div>` : ''}
       <div class="row">
         <select id="champSel" style="flex:1 1 100%"><option value="" disabled ${state.myFinal?.champion ? '' : 'selected'}>🏆 ¿Quién gana el Mundial?</option>${opts}</select>
       </div>
