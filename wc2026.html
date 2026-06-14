@@ -483,7 +483,14 @@ function kickoffOf(m) {
   const db = state.dbMatches.get(m.id);
   return new Date(db?.kickoff || m.date);
 }
-const isLocked = (m) => Date.now() >= kickoffOf(m).getTime() - LOCK_MS;
+// When does this match stop accepting predictions? Normally 30 min before
+// kickoff, but an admin can override a single match via predict_until.
+function lockAt(m) {
+  const db = state.dbMatches.get(m.id);
+  if (db && db.predict_until) return new Date(db.predict_until).getTime();
+  return kickoffOf(m).getTime() - LOCK_MS;
+}
+const isLocked = (m) => Date.now() >= lockAt(m);
 const isLive = (m) => m.state === 'in';
 const firstKickoff = () => {
   let min = null;
@@ -733,7 +740,7 @@ async function loadDb() {
   if (!state.sb) return;
   try {
     const [matches, players, preds, finals, settings] = await Promise.all([
-      fetchAll('wc_matches', 'id,kickoff,stage,group_name', ['id']),
+      fetchAll('wc_matches', 'id,kickoff,stage,group_name,predict_until', ['id']),
       fetchAll('wc_players', 'id,name,is_admin,created_at', ['id'], ['pool', POOL]),
       fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals', ['match_id', 'player_id']),
       fetchAll('wc_finals', 'player_id,champion,top_scorer', ['player_id']),
@@ -781,7 +788,7 @@ async function syncMatchesToDb() {
     if (!db && new Date(m.date).getTime() < Date.now() + 11 * 60e3) continue;
     try {
       await state.sb.rpc('wc_sync_match', { p_id: m.id, p_kickoff: ko, p_stage: m.stage, p_group: m.group });
-      state.dbMatches.set(m.id, { id: m.id, kickoff: ko, stage: m.stage, group_name: m.group });
+      state.dbMatches.set(m.id, { ...db, id: m.id, kickoff: ko, stage: m.stage, group_name: m.group });
     } catch { /* best effort */ }
   }
 }
