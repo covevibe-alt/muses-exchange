@@ -705,13 +705,17 @@ const espnBootstrap = () => espnFetch('20260608-20260722').catch(() => false);
 async function espnLiveTick() {
   if (document.hidden) return;
   const now = Date.now();
+  // Refresh from ESPN when a match is live, about to start, OR kicked off in
+  // the last 24h but still isn't marked finished — the last case self-heals
+  // results the scheduled bot missed (GitHub drops scheduled runs often), so
+  // a finished match never stays stuck on "Scheduled" once someone opens it.
   const need = state.matches.some((m) => {
     const k = kickoffOf(m).getTime();
-    return isLive(m) || (now >= k - 10 * 60e3 && now <= k + 3 * 3600e3 && !m.completed);
+    return isLive(m) || (!m.completed && now >= k - 10 * 60e3 && now <= k + 24 * 3600e3);
   });
   if (!need) return;
   const d = new Date(); const fmt = (x) => x.toISOString().slice(0, 10).replaceAll('-', '');
-  const a = new Date(d.getTime() - 36e5 * 24), b = new Date(d.getTime() + 36e5 * 24);
+  const a = new Date(d.getTime() - 36e5 * 36), b = new Date(d.getTime() + 36e5 * 24);
   if (await espnFetch(`${fmt(a)}-${fmt(b)}`).catch(() => false)) render();
 }
 
