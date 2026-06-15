@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-15T21:07:49Z",
+  "updatedAt": "2026-06-15T23:17:40Z",
   "marketIndex": 175.54,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -348,7 +348,7 @@
       "genre": "Pop",
       "spotifyId": "6M2wZ9GZgrQXHCFfjv46we",
       "popularity": 87,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 48278302,
       "monthlyListeners": 68671057,
       "listenersSource": "ratio-calibrated",
@@ -356,8 +356,8 @@
       "fairPrice": 91.32,
       "price": 91.32,
       "chg24h": 0.42,
-      "volatility30d": 0.003,
-      "volume": 7504,
+      "volatility30d": 0.004,
+      "volume": 4169,
       "youtube": {
         "subscribers": 10100,
         "views": 3321843590,
@@ -656,7 +656,7 @@
       "fairPrice": 137.27,
       "price": 137.27,
       "chg24h": 0.0,
-      "volatility30d": 0.008,
+      "volatility30d": 0.007,
       "volume": 4117,
       "youtube": {
         "subscribers": 146000,
@@ -756,7 +756,7 @@
       "fairPrice": 68.63,
       "price": 68.63,
       "chg24h": -0.56,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 4112,
       "youtube": {
         "subscribers": 78800,
@@ -856,7 +856,7 @@
       "fairPrice": 137.94,
       "price": 137.94,
       "chg24h": -0.83,
-      "volatility30d": 0.023,
+      "volatility30d": 0.025,
       "volume": 6367,
       "youtube": {
         "subscribers": 1130000,
@@ -906,7 +906,7 @@
       "fairPrice": 96.97,
       "price": 96.97,
       "chg24h": -0.39,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 4164,
       "youtube": {
         "subscribers": 1110000,
@@ -935,7 +935,7 @@
       "volume": 1387,
       "youtube": {
         "subscribers": 950,
-        "views": 139845,
+        "views": 139873,
         "videos": 16
       },
       "youtubeBoost": 0.0,
@@ -981,7 +981,7 @@
       "fairPrice": 77.94,
       "price": 77.94,
       "chg24h": -0.97,
-      "volatility30d": 0.027,
+      "volatility30d": 0.028,
       "volume": 2974,
       "youtube": {
         "subscribers": 307000,
@@ -1006,7 +1006,7 @@
       "fairPrice": 58.19,
       "price": 58.19,
       "chg24h": -0.65,
-      "volatility30d": 0.016,
+      "volatility30d": 0.017,
       "volume": 3051,
       "youtube": {
         "subscribers": 51500,
@@ -1060,7 +1060,7 @@
       "volume": 1145,
       "youtube": {
         "subscribers": 794,
-        "views": 440856628,
+        "views": 441023929,
         "videos": 189
       },
       "youtubeBoost": 0.119,
@@ -1131,7 +1131,7 @@
       "fairPrice": 54.07,
       "price": 54.07,
       "chg24h": -0.7,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 2142,
       "youtube": {
         "subscribers": 14900,
@@ -1206,7 +1206,7 @@
       "fairPrice": 32.68,
       "price": 32.68,
       "chg24h": -2.3,
-      "volatility30d": 0.014,
+      "volatility30d": 0.015,
       "volume": 2017,
       "youtube": {
         "subscribers": 3000,
@@ -1406,7 +1406,7 @@
       "fairPrice": 27.33,
       "price": 27.33,
       "chg24h": -1.39,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 2001,
       "youtube": {
         "subscribers": 27900,
@@ -1631,7 +1631,7 @@
       "fairPrice": 62.48,
       "price": 62.48,
       "chg24h": -0.61,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 3206,
       "youtube": {
         "subscribers": 153000,
@@ -1656,7 +1656,7 @@
       "fairPrice": 39.97,
       "price": 39.97,
       "chg24h": -0.95,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 1880,
       "youtube": {
         "subscribers": 12200000,
@@ -2056,7 +2056,7 @@
       "fairPrice": 50.85,
       "price": 50.85,
       "chg24h": 2.31,
-      "volatility30d": 0.021,
+      "volatility30d": 0.022,
       "volume": 2447,
       "youtube": {
         "subscribers": 4520,
@@ -2186,7 +2186,7 @@
       "youtube": {
         "subscribers": 1890,
         "views": 455346268,
-        "videos": 65
+        "videos": 66
       },
       "youtubeBoost": 0.1196,
       "chartPositions": null,
@@ -2356,7 +2356,7 @@
       "fairPrice": 82.23,
       "price": 82.23,
       "chg24h": 0.0,
-      "volatility30d": 0.008,
+      "volatility30d": 0.007,
       "volume": 2006,
       "youtube": {
         "subscribers": 28800,
@@ -2384,7 +2384,7 @@
       "volatility30d": 0.0,
       "volume": 706,
       "youtube": {
-        "subscribers": 207,
+        "subscribers": 208,
         "views": 51777874,
         "videos": 183
       },
@@ -2535,7 +2535,7 @@
       "volume": 643,
       "youtube": {
         "subscribers": 449,
-        "views": 35711862,
+        "views": 35722553,
         "videos": 31
       },
       "youtubeBoost": 0.0699,
@@ -2631,7 +2631,7 @@
       "fairPrice": 28.87,
       "price": 28.87,
       "chg24h": -1.32,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 4635,
       "youtube": {
         "subscribers": 34200,
@@ -2723,7 +2723,7 @@
       "genre": "Electronic",
       "spotifyId": "1Cs0zKBU1kc0i8ypK3B9ai",
       "popularity": 89,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 28114158,
       "monthlyListeners": 89166864,
       "listenersSource": "ratio-calibrated",
@@ -2732,7 +2732,7 @@
       "price": 119.66,
       "chg24h": 0.0,
       "volatility30d": 0.005,
-      "volume": 5726,
+      "volume": 3181,
       "youtube": {
         "subscribers": 184000,
         "views": 3311822016,
