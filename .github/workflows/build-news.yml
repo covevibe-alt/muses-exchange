@@ -1,0 +1,60 @@
+name: Build news
+
+# Renders Markdown news posts into static HTML whenever a post is added or
+# edited (the CMS commits Markdown into news/_posts/). Regenerates the
+# article pages, the /news index (featured row + grid), the sitemap entries,
+# and the RSS feed, then commits the generated files back to the repo. Netlify
+# auto-deploys from the resulting commit — zero build infrastructure on Netlify.
+#
+# Stdlib-only (app/build_news.py uses no third-party packages), so there is no
+# dependency install step.
+#
+# Loop-safety: this workflow only TRIGGERS on changes under news/_posts/** (and
+# the build script). Its own auto-commit touches only GENERATED files
+# (news/*.html, news.html, sitemap.xml, news/feed.xml) — never news/_posts/** —
+# so the bot commit cannot retrigger the workflow.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'news/_posts/**'
+      - 'app/build_news.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-news
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Render news
+        run: python app/build_news.py
+
+      - name: Commit generated files
+        run: |
+          git config user.name "Muse News Bot"
+          git config user.email "bot@muses.exchange"
+          git add news/*.html news.html sitemap.xml news/feed.xml
+          if git diff --staged --quiet; then
+            echo "No generated changes — nothing to commit."
+          else
+            git commit -m "chore(news): rebuild from Markdown $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push || (git pull --rebase -X ours && git push)
+          fi
