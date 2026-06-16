@@ -31,6 +31,10 @@ Disallow: /signin.html
 Disallow: /signup
 Disallow: /signup.html
 
+# CMS editor — not content, don't index
+Disallow: /admin
+Disallow: /admin/
+
 # Stale dev artifacts (kept for safety in case anything still links them)
 Disallow: /Muse - Exchange Prototype.html
 Disallow: /test-root.txt

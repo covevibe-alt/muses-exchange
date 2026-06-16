@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Muses Exchange — News</title>
+    <link>https://muses.exchange/news</link>
+    <atom:link href="https://muses.exchange/news/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Market commentary, data deep-dives, and field notes from the exchange for culture.</description>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 16 Jun 2026 13:33:43 GMT</lastBuildDate>
+    <item>
+      <title>Latin sector quietly leads the exchange — here's the data</title>
+      <link>https://muses.exchange/news/latin-sector-quietly-leads-the-exchange</link>
+      <guid isPermaLink="true">https://muses.exchange/news/latin-sector-quietly-leads-the-exchange</guid>
+      <description>With 15 listed artists and an average price near $64, Latin is the second-most valuable sector on Muses Exchange. Bad Bunny, Karol G, and Feid are driving the numbers.</description>
+      <category>News</category>
+      <pubDate>Fri, 15 May 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Catalog vs. Momentum — The Two Ways Artists Make Money on Streaming</title>
+      <link>https://muses.exchange/news/catalog-vs-momentum</link>
+      <guid isPermaLink="true">https://muses.exchange/news/catalog-vs-momentum</guid>
+      <description>Some artists earn from a 20-year-old back catalog. Others earn entirely on this month's release. The streaming economy splits into two business models — and they look completely different on a Muses chart.</description>
+      <category>Markets</category>
+      <pubDate>Tue, 12 May 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Chappell Roan Went From $0.20 to $1.10 in 18 Months — Here's Why</title>
+      <link>https://muses.exchange/news/chappell-roan-price-journey</link>
+      <guid isPermaLink="true">https://muses.exchange/news/chappell-roan-price-journey</guid>
+      <description>The textbook viral-artist trajectory. Chappell Roan's Muses price 5x'd in 18 months on the back of a Tiny Desk performance, a festival run, and a single Spotify playlist add. Here's the data behind the climb.</description>
+      <category>Artists</category>
+      <pubDate>Tue, 12 May 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>The Five Signals That Move an Artist's Price the Most</title>
+      <link>https://muses.exchange/news/five-signals-that-move-an-artists-price</link>
+      <guid isPermaLink="true">https://muses.exchange/news/five-signals-that-move-an-artists-price</guid>
+      <description>Streams, velocity, YouTube, playlist position, social momentum — ranked by how much they actually move the price on Muses Exchange. The data behind every chart move.</description>
+      <category>Methodology</category>
+      <pubDate>Tue, 12 May 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>$10,000 in Virtual Credits — What to Do With Them On Day One</title>
+      <link>https://muses.exchange/news/ten-thousand-in-virtual-credits-day-one</link>
+      <guid isPermaLink="true">https://muses.exchange/news/ten-thousand-in-virtual-credits-day-one</guid>
+      <description>A new Muses Exchange account starts with $10,000 in virtual credits. Here's how to actually use them — three opening strategies, what most beginners get wrong, and the one trade that teaches you the platform fastest.</description>
+      <category>Liner Notes</category>
+      <pubDate>Tue, 12 May 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Why Drake Is in a Different Price Scale Than Everyone Else</title>
+      <link>https://muses.exchange/news/why-drake-is-in-a-different-price-scale</link>
+      <guid isPermaLink="true">https://muses.exchange/news/why-drake-is-in-a-different-price-scale</guid>
+      <description>Drake sits at the top of Muses Exchange in a price band almost nobody else can reach. Here's why the platform uses log-compression to keep the chart readable — and what it means for trading him.</description>
+      <category>Methodology</category>
+      <pubDate>Tue, 12 May 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>How Spotify Streams Translate to an Artist's Value</title>
+      <link>https://muses.exchange/news/how-spotify-streams-translate-to-artist-value</link>
+      <guid isPermaLink="true">https://muses.exchange/news/how-spotify-streams-translate-to-artist-value</guid>
+      <description>Streams are the new currency of the music industry, but they don't translate to artist value in a straight line. Here's how Spotify numbers become a price — and why raw stream counts are misleading.</description>
+      <category>Methodology</category>
+      <pubDate>Mon, 11 May 2026 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>What Is a Stock Market for Artists? A Beginner's Guide</title>
+      <link>https://muses.exchange/news/what-is-a-stock-market-for-artists</link>
+      <guid isPermaLink="true">https://muses.exchange/news/what-is-a-stock-market-for-artists</guid>
+      <description>A stock market for artists is a platform where musicians have prices that move with their real streaming data. Here's how it works, what makes it different from real investing, and why people are paying attention.</description>
+      <category>Foundations</category>
+      <pubDate>Mon, 11 May 2026 12:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>
