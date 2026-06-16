@@ -8,11 +8,12 @@ backend:
   name: github
   repo: covevibe-alt/muses-exchange
   branch: main
-  # OAuth proxy (Cloudflare Worker running sveltia-cms-auth). Replace the host
-  # below with your deployed worker URL during auth setup. Until then, sign-in
-  # will fail with a clear error — the rest of the CMS still loads.
-  base_url: https://sveltia-cms-auth.muses-news.workers.dev
-  auth_endpoint: oauth
+  # OAuth handled by same-domain Netlify Functions (netlify/functions/auth.mjs
+  # + callback.mjs). The GitHub OAuth app's callback URL must be
+  # https://muses.exchange/.netlify/functions/callback and the site needs the
+  # GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET env vars.
+  base_url: https://muses.exchange
+  auth_endpoint: /.netlify/functions/auth
 
 # Editorial workflow off = publish straight to main (simplest). Turn on later
 # for a draft/review step if you add other editors.

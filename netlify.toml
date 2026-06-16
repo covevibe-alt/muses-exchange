@@ -1,6 +1,12 @@
 [build]
   publish = "."
 
+# Serverless functions — the CMS GitHub OAuth proxy (auth.mjs + callback.mjs).
+# Auto-deployed at /.netlify/functions/<name>. No build command needed.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # ── Pretty URLs ─────────────────────────────────────────────────────────────
 # Netlify automatically serves /page.html when a request comes in for /page,
 # so all we need here is 301 redirects that collapse any *.html or /index.html
