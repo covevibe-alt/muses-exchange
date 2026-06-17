@@ -6,15 +6,7 @@
     <atom:link href="https://muses.exchange/news/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Market commentary, data deep-dives, and field notes from the exchange for culture.</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 17 Jun 2026 10:39:01 GMT</lastBuildDate>
-    <item>
-      <title>Test post — confirming the Muses News CMS publishes end to end</title>
-      <link>https://muses.exchange/news/test-post-—-confirming-the-muses-news-cms-publishes-end-to-end</link>
-      <guid isPermaLink="true">https://muses.exchange/news/test-post-—-confirming-the-muses-news-cms-publishes-end-to-end</guid>
-      <description>A quick end-to-end test of the new Muses News publishing pipeline: written in the CMS, rendered by the build, deployed live by Netlify. Safe to delete.</description>
-      <category>News</category>
-      <pubDate>Wed, 17 Jun 2026 12:00:00 GMT</pubDate>
-    </item>
+    <lastBuildDate>Wed, 17 Jun 2026 10:47:42 GMT</lastBuildDate>
     <item>
       <title>Latin sector quietly leads the exchange — here's the data</title>
       <link>https://muses.exchange/news/latin-sector-quietly-leads-the-exchange</link>
