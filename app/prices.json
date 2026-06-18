@@ -1,15 +1,11 @@
 {
-  "updatedAt": "2026-06-18T19:31:38Z",
+  "updatedAt": "2026-06-18T22:13:17Z",
   "marketIndex": 175.54,
   "rawAveragePrice": 58.23,
   "topGainers": [
     {
       "ticker": "NWJN",
       "chg24h": 2.13
-    },
-    {
-      "ticker": "CLRO",
-      "chg24h": 1.64
     },
     {
       "ticker": "FRED",
@@ -22,6 +18,10 @@
     {
       "ticker": "MGSN",
       "chg24h": 1.02
+    },
+    {
+      "ticker": "OLVR",
+      "chg24h": 0.89
     }
   ],
   "topLosers": [
@@ -120,7 +120,7 @@
     {
       "sector": "Indie",
       "avgPrice": 20.59,
-      "chg24h": 0.2,
+      "chg24h": 0.0,
       "members": [
         "MARI",
         "CLRO",
@@ -306,7 +306,7 @@
       "fairPrice": 87.04,
       "price": 87.04,
       "chg24h": 0.89,
-      "volatility30d": 0.028,
+      "volatility30d": 0.027,
       "volume": 4427,
       "youtube": {
         "subscribers": 19300,
@@ -459,7 +459,7 @@
       "volatility30d": 0.0,
       "volume": 3676,
       "youtube": {
-        "subscribers": 4540,
+        "subscribers": 4550,
         "views": 3705813754,
         "videos": 649
       },
@@ -522,8 +522,8 @@
       "name": "Shakira",
       "genre": "Pop",
       "spotifyId": "0EmeFodog0BfCgMzAIvKQp",
-      "popularity": 88,
-      "popularityDelta": 0,
+      "popularity": 89,
+      "popularityDelta": 1,
       "followers": 43385190,
       "monthlyListeners": 93456038,
       "listenersSource": "ratio-calibrated",
@@ -532,7 +532,7 @@
       "price": 125.03,
       "chg24h": 0.31,
       "volatility30d": 0.021,
-      "volume": 3952,
+      "volume": 7114,
       "youtube": {
         "subscribers": 126000,
         "views": 3301725968,
@@ -861,7 +861,7 @@
       "youtube": {
         "subscribers": 1130000,
         "views": 9967993583,
-        "videos": 1064
+        "videos": 1065
       },
       "youtubeBoost": 0.2221,
       "chartPositions": null,
@@ -911,7 +911,7 @@
       "youtube": {
         "subscribers": 1110000,
         "views": 5716785275,
-        "videos": 479
+        "videos": 480
       },
       "youtubeBoost": 0.2109,
       "chartPositions": null,
@@ -1111,7 +1111,7 @@
       "youtube": {
         "subscribers": 10600,
         "views": 1189338722,
-        "videos": 296
+        "videos": 297
       },
       "youtubeBoost": 0.1384,
       "chartPositions": null,
@@ -1206,7 +1206,7 @@
       "fairPrice": 32.11,
       "price": 32.11,
       "chg24h": 0.0,
-      "volatility30d": 0.011,
+      "volatility30d": 0.01,
       "volume": 2018,
       "youtube": {
         "subscribers": 3000,
@@ -1459,7 +1459,7 @@
       "volatility30d": 0.0,
       "volume": 1774,
       "youtube": {
-        "subscribers": 17400,
+        "subscribers": 17500,
         "views": 471214674,
         "videos": 160
       },
@@ -1978,17 +1978,17 @@
       "monthlyListeners": 32149895,
       "listenersSource": "ratio-calibrated",
       "image": "https://i.scdn.co/image/ab6761610000e5eb6fa76436a2bba83b9f1d6fd1",
-      "fairPrice": 45.31,
-      "price": 45.31,
+      "fairPrice": 45.32,
+      "price": 45.32,
       "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 1602,
       "youtube": {
         "subscribers": 5900000,
-        "views": 2616141042,
+        "views": 2628929511,
         "videos": 166
       },
-      "youtubeBoost": 0.2246,
+      "youtubeBoost": 0.2247,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -2009,7 +2009,7 @@
       "volatility30d": 0.005,
       "volume": 1997,
       "youtube": {
-        "subscribers": 4830,
+        "subscribers": 4840,
         "views": 797075278,
         "videos": 302
       },
@@ -2056,7 +2056,7 @@
       "fairPrice": 52.9,
       "price": 52.9,
       "chg24h": 1.47,
-      "volatility30d": 0.027,
+      "volatility30d": 0.026,
       "volume": 2450,
       "youtube": {
         "subscribers": 4520,
@@ -2430,7 +2430,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb4804c4a44c85afea1a72d1bd",
       "fairPrice": 23.72,
       "price": 23.72,
-      "chg24h": 1.64,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 1609,
       "youtube": {
