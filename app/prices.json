@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-23T20:33:45Z",
+  "updatedAt": "2026-06-23T22:17:06Z",
   "marketIndex": 175.55,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -331,7 +331,7 @@
       "fairPrice": 62.32,
       "price": 62.32,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 1993,
       "youtube": {
         "subscribers": 6680000,
@@ -531,7 +531,7 @@
       "fairPrice": 128.68,
       "price": 128.68,
       "chg24h": 0.6,
-      "volatility30d": 0.018,
+      "volatility30d": 0.019,
       "volume": 3957,
       "youtube": {
         "subscribers": 126000,
@@ -548,7 +548,7 @@
       "genre": "Pop",
       "spotifyId": "6jJ0s89eD6GaHleKKya26X",
       "popularity": 88,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 41077293,
       "monthlyListeners": 88398335,
       "listenersSource": "ratio-calibrated",
@@ -556,8 +556,8 @@
       "fairPrice": 119.78,
       "price": 119.78,
       "chg24h": 0.32,
-      "volatility30d": 0.004,
-      "volume": 6922,
+      "volatility30d": 0.005,
+      "volume": 3845,
       "youtube": {
         "subscribers": 283000,
         "views": 3041242483,
@@ -1059,7 +1059,7 @@
       "volatility30d": 0.0,
       "volume": 1147,
       "youtube": {
-        "subscribers": 795,
+        "subscribers": 797,
         "views": 443499877,
         "videos": 189
       },
@@ -1856,7 +1856,7 @@
       "fairPrice": 60.03,
       "price": 60.03,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 4213,
       "youtube": {
         "subscribers": 131000,
@@ -1931,7 +1931,7 @@
       "fairPrice": 64.99,
       "price": 64.99,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 3118,
       "youtube": {
         "subscribers": 136000,
@@ -1956,7 +1956,7 @@
       "fairPrice": 42.01,
       "price": 42.01,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 3494,
       "youtube": {
         "subscribers": 834000,
@@ -1997,8 +1997,8 @@
       "name": "Rema",
       "genre": "Afropop",
       "spotifyId": "46pWGuE3dSwY3bMMXGBvVS",
-      "popularity": 78,
-      "popularityDelta": 0,
+      "popularity": 79,
+      "popularityDelta": 1,
       "followers": 11118124,
       "monthlyListeners": 29111696,
       "listenersSource": "ratio-calibrated",
@@ -2006,8 +2006,8 @@
       "fairPrice": 37.96,
       "price": 37.96,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
-      "volume": 2001,
+      "volatility30d": 0.004,
+      "volume": 3601,
       "youtube": {
         "subscribers": 4840,
         "views": 798978453,
