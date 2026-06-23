@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-23T22:17:06Z",
+  "updatedAt": "2026-06-23T23:36:02Z",
   "marketIndex": 175.55,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -561,7 +561,7 @@
       "youtube": {
         "subscribers": 283000,
         "views": 3041242483,
-        "videos": 1923
+        "videos": 1924
       },
       "youtubeBoost": 0.1748,
       "chartPositions": null,
@@ -756,7 +756,7 @@
       "fairPrice": 70.17,
       "price": 70.17,
       "chg24h": 0.55,
-      "volatility30d": 0.008,
+      "volatility30d": 0.009,
       "volume": 4115,
       "youtube": {
         "subscribers": 78700,
@@ -1831,7 +1831,7 @@
       "fairPrice": 65.93,
       "price": 65.93,
       "chg24h": 0.58,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 3840,
       "youtube": {
         "subscribers": 162000,
@@ -1981,7 +1981,7 @@
       "fairPrice": 44.03,
       "price": 44.03,
       "chg24h": 0.0,
-      "volatility30d": 0.012,
+      "volatility30d": 0.011,
       "volume": 1604,
       "youtube": {
         "subscribers": 5910000,
@@ -1998,7 +1998,7 @@
       "genre": "Afropop",
       "spotifyId": "46pWGuE3dSwY3bMMXGBvVS",
       "popularity": 79,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 11118124,
       "monthlyListeners": 29111696,
       "listenersSource": "ratio-calibrated",
@@ -2007,7 +2007,7 @@
       "price": 37.96,
       "chg24h": 0.0,
       "volatility30d": 0.004,
-      "volume": 3601,
+      "volume": 2001,
       "youtube": {
         "subscribers": 4840,
         "views": 798978453,
@@ -2484,7 +2484,7 @@
       "volatility30d": 0.0,
       "volume": 2062,
       "youtube": {
-        "subscribers": 8920,
+        "subscribers": 8930,
         "views": 878261681,
         "videos": 104
       },
