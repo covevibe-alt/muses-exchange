@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-25T19:28:00Z",
+  "updatedAt": "2026-06-25T21:14:42Z",
   "marketIndex": 175.55,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -306,7 +306,7 @@
       "fairPrice": 91.05,
       "price": 91.05,
       "chg24h": 0.85,
-      "volatility30d": 0.013,
+      "volatility30d": 0.014,
       "volume": 4435,
       "youtube": {
         "subscribers": 19300,
@@ -381,7 +381,7 @@
       "fairPrice": 130.72,
       "price": 130.72,
       "chg24h": 0.59,
-      "volatility30d": 0.013,
+      "volatility30d": 0.014,
       "volume": 6377,
       "youtube": {
         "subscribers": 392000,
@@ -531,7 +531,7 @@
       "fairPrice": 129.36,
       "price": 129.36,
       "chg24h": 0.3,
-      "volatility30d": 0.01,
+      "volatility30d": 0.009,
       "volume": 3959,
       "youtube": {
         "subscribers": 126000,
@@ -709,7 +709,7 @@
       "volatility30d": 0.0,
       "volume": 1874,
       "youtube": {
-        "subscribers": 835,
+        "subscribers": 836,
         "views": 538981445,
         "videos": 276
       },
@@ -772,8 +772,8 @@
       "name": "Troye Sivan",
       "genre": "Pop",
       "spotifyId": "3WGpXCj9YhhfX11TToZcXP",
-      "popularity": 73,
-      "popularityDelta": 0,
+      "popularity": 74,
+      "popularityDelta": 1,
       "followers": 9570123,
       "monthlyListeners": 18729688,
       "listenersSource": "ratio-calibrated",
@@ -782,7 +782,7 @@
       "price": 24.29,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 1856,
+      "volume": 3341,
       "youtube": {
         "subscribers": 20500,
         "views": 553734605,
@@ -1334,7 +1334,7 @@
       "volatility30d": 0.0,
       "volume": 1815,
       "youtube": {
-        "subscribers": 2180,
+        "subscribers": 2190,
         "views": 1168010364,
         "videos": 316
       },
@@ -1398,7 +1398,7 @@
       "genre": "R&B",
       "spotifyId": "2EMAnMvWE2eb56ToJVfCWs",
       "popularity": 80,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 11148721,
       "monthlyListeners": 20752229,
       "listenersSource": "ratio-calibrated",
@@ -1407,7 +1407,7 @@
       "price": 27.18,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3606,
+      "volume": 2003,
       "youtube": {
         "subscribers": 27900,
         "views": 990246367,
@@ -1984,7 +1984,7 @@
       "volatility30d": 0.008,
       "volume": 1604,
       "youtube": {
-        "subscribers": 5910000,
+        "subscribers": 5920000,
         "views": 2628929511,
         "videos": 166
       },
@@ -2159,7 +2159,7 @@
       "volatility30d": 0.0,
       "volume": 873,
       "youtube": {
-        "subscribers": 2600,
+        "subscribers": 2610,
         "views": 452324944,
         "videos": 140
       },
@@ -2231,7 +2231,7 @@
       "fairPrice": 107.83,
       "price": 107.83,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 6794,
       "youtube": {
         "subscribers": 13700,
@@ -2356,7 +2356,7 @@
       "fairPrice": 81.79,
       "price": 81.79,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2011,
       "youtube": {
         "subscribers": 28800,
@@ -2834,7 +2834,7 @@
       "volatility30d": 0.0,
       "volume": 3554,
       "youtube": {
-        "subscribers": 23900,
+        "subscribers": 23800,
         "views": 1469197285,
         "videos": 730
       },
