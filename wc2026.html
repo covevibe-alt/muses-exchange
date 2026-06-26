@@ -327,6 +327,7 @@
         <li><b>+15 points</b> — your champion pick wins the World Cup (Bonus tab)</li>
         <li><b>+10 points</b> — your top-scorer pick wins the Golden Boot (Bonus tab; a tie for most goals counts, own goals and shootout kicks don't)</li>
         <li><b>+3 points</b> — knockout matches only: correctly predict how it's decided — <b>90 minutes</b>, <b>extra time</b>, or <b>penalties</b></li>
+        <li><b>+1 point</b> — if you predicted penalties and also correctly pick which team <b>wins the shootout</b></li>
       </ul>
     </div>
     <div class="rules-card">
@@ -416,7 +417,7 @@
 
 const SUPABASE_URL = 'https://bhyjdvqbfearmrkxvppl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_rJy9Oi0xt7U2HfiUs1-S9w_klZz82Lh';
-const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15, topScorer: 10, method: 3 };
+const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15, topScorer: 10, method: 3, shootout: 1 };
 const METHOD_LABEL = { REGULAR: '90 minutes', EXTRA: 'Extra time', PENS: 'Penalties' };
 const LOCK_MS = 30 * 60e3; // predictions stay open until 30 min before kickoff
 // diacritic/case-insensitive name compare ("mbappe" matches "Mbappé")
@@ -466,7 +467,8 @@ const state = {
   openOthers: new Set(),
   editing: new Set(),     // matchIds whose saved tip is being edited
   methodDraft: new Map(), // matchId -> REGULAR/EXTRA/PENS pick not yet saved
-  pendingSave: null,      // {matchId, h, a, method} awaiting popup confirmation
+  soPickDraft: new Map(), // matchId -> 'home'/'away' shootout-winner pick not yet saved
+  pendingSave: null,      // {matchId, h, a, method, soPick} awaiting popup confirmation
   settings: new Map(),    // wc_settings key -> value (e.g. official top_scorer)
   topScorers: [],         // golden-boot tally from the data feed
   fetchedAt: null,
@@ -541,6 +543,11 @@ function methodOf(m) {
   const db = state.dbMatches.get(m.id);
   return (db && db.decided_by) || m.decidedBy || null;
 }
+// Who won the shootout (only meaningful when decided on penalties).
+function shootoutWinner(m) {
+  if (m.so && m.so.h != null && m.so.a != null && m.so.h !== m.so.a) return m.so.h > m.so.a ? 'home' : 'away';
+  return m.advances || null;
+}
 
 // Golden-boot tally: prefer the feed's aggregate, else count match scorers.
 function topScorerTally() {
@@ -584,9 +591,15 @@ function playerTotals() {
       const pts = matchPoints(p, m);
       if (pts == null) continue;
       let mPts = pts;
-      // knockout bonus: +3 for correctly predicting how it's decided
+      // knockout bonus: +3 for how it's decided, +1 for the shootout winner
       const dec = methodOf(m);
-      if (m.stage !== 'GROUP' && dec && p.method && p.method === dec) mPts += SCORING.method;
+      if (m.stage !== 'GROUP' && dec && p.method && p.method === dec) {
+        mPts += SCORING.method;
+        if (dec === 'PENS' && p.soPick) {
+          const sw = shootoutWinner(m);
+          if (sw && p.soPick === sw) mPts += SCORING.shootout;
+        }
+      }
       total += mPts;
       if (pts === SCORING.exact) exacts++;
       if (pts > 0) correct++;
@@ -777,7 +790,7 @@ async function loadDb() {
     const [matches, players, preds, finals, settings] = await Promise.all([
       fetchAll('wc_matches', 'id,kickoff,stage,group_name,predict_until,decided_by', ['id']),
       fetchAll('wc_players', 'id,name,is_admin,created_at', ['id'], ['pool', POOL]),
-      fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals,method_pick', ['match_id', 'player_id']),
+      fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals,method_pick,so_pick', ['match_id', 'player_id']),
       fetchAll('wc_finals', 'player_id,champion,top_scorer', ['player_id']),
       fetchAll('wc_settings', 'key,value', ['key']),
     ]);
@@ -788,7 +801,7 @@ async function loadDb() {
     for (const p of preds) {
       if (!inPool.has(p.player_id)) continue;
       if (!state.preds.has(p.match_id)) state.preds.set(p.match_id, []);
-      state.preds.get(p.match_id).push({ player_id: p.player_id, h: p.home_goals, a: p.away_goals, method: p.method_pick });
+      state.preds.get(p.match_id).push({ player_id: p.player_id, h: p.home_goals, a: p.away_goals, method: p.method_pick, soPick: p.so_pick });
     }
     state.finals = new Map(finals.filter((f) => inPool.has(f.player_id)).map((f) => [f.player_id, f]));
     state.settings = new Map(settings.map((s) => [s.key, s.value]));
@@ -802,7 +815,7 @@ async function loadMine() {
   try {
     const { data, error } = await state.sb.rpc('wc_get_mine', { p_token: state.auth.token });
     if (error) throw error;
-    state.mine = new Map((data.predictions || []).map((p) => [p.match_id, { h: p.h, a: p.a, method: p.method }]));
+    state.mine = new Map((data.predictions || []).map((p) => [p.match_id, { h: p.h, a: p.a, method: p.method, soPick: p.so_pick }]));
     state.myFinal = data.final || null;
     state.auth = { ...state.auth, name: data.player.name, is_admin: data.player.is_admin, player_id: data.player.id };
     saveAuth();
@@ -866,7 +879,8 @@ function readTip(matchId) {
   const a = ai ? parseInt(ai.value, 10) : (mine ? mine.a : NaN);
   if (!Number.isInteger(h) || !Number.isInteger(a) || h < 0 || a < 0 || h > 30 || a > 30) return null;
   const method = state.methodDraft.get(matchId) ?? (mine ? mine.method : null) ?? null;
-  return { matchId, h, a, method };
+  const soPick = method === 'PENS' ? (state.soPickDraft.get(matchId) ?? (mine ? mine.soPick : null) ?? null) : null;
+  return { matchId, h, a, method, soPick };
 }
 
 function maybeSave(matchId, immediate = false) {
@@ -875,7 +889,7 @@ function maybeSave(matchId, immediate = false) {
     const tip = readTip(matchId);
     if (!tip) { if (immediate) toast('Fill in both scores first'); return; }
     const saved = state.mine.get(matchId);
-    if (saved && saved.h === tip.h && saved.a === tip.a && (saved.method ?? null) === tip.method) return; // unchanged
+    if (saved && saved.h === tip.h && saved.a === tip.a && (saved.method ?? null) === tip.method && (saved.soPick ?? null) === tip.soPick) return; // unchanged
     if (!state.auth) { openJoin(); return; }
     if (!localStorage.getItem(SAVE_FLAG)) {
       const m = state.matches.find((x) => x.id === matchId);
@@ -895,11 +909,12 @@ async function commitSave(tip) {
   const span = document.querySelector(`[data-mid="${tip.matchId}"] .savestate`);
   if (span) { span.textContent = 'Saving…'; span.className = 'savestate'; }
   try {
-    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: tip.matchId, p_home: tip.h, p_away: tip.a, p_method: tip.method });
+    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: tip.matchId, p_home: tip.h, p_away: tip.a, p_method: tip.method, p_so_pick: tip.soPick });
     if (error) throw error;
-    state.mine.set(tip.matchId, { h: tip.h, a: tip.a, method: tip.method });
+    state.mine.set(tip.matchId, { h: tip.h, a: tip.a, method: tip.method, soPick: tip.soPick });
     state.editing.delete(tip.matchId);
     state.methodDraft.delete(tip.matchId);
+    state.soPickDraft.delete(tip.matchId);
     if (span?.isConnected) { span.textContent = '✓ Saved'; span.className = 'savestate ok'; }
     renderMatches(); // collapses to tip + Edit unless the user is mid-typing
     renderHero();
@@ -1062,10 +1077,16 @@ function matchCard(m) {
 
   // Knockout: predict how it's decided — 90 min / extra time / penalties, +3.
   const methodNow = (state.methodDraft.get(m.id) ?? mine?.method) || null;
+  const soNow = (state.soPickDraft.get(m.id) ?? mine?.soPick) || null;
+  const soPickUI = (!isKO || methodNow !== 'PENS') ? '' : `<div class="advances">
+    <span class="lbl">Who wins the shootout? <b style="color:var(--mut)">+${SCORING.shootout}</b></span>
+    <button class="adv-btn ${soNow === 'home' ? 'on' : ''}" data-sopick="home" data-mid="${esc(m.id)}">${esc(m.home.name)}</button>
+    <button class="adv-btn ${soNow === 'away' ? 'on' : ''}" data-sopick="away" data-mid="${esc(m.id)}">${esc(m.away.name)}</button>
+  </div>`;
   const methodUI = !isKO ? '' : `<div class="advances">
     <span class="lbl">How is it decided? <b style="color:var(--mut)">+${SCORING.method}</b></span>
     ${['REGULAR', 'EXTRA', 'PENS'].map((k) => `<button class="adv-btn ${methodNow === k ? 'on' : ''}" data-method="${k}" data-mid="${esc(m.id)}">${METHOD_LABEL[k]}</button>`).join('')}
-  </div>`;
+  </div>${soPickUI}`;
 
   let predictBlock = '';
   if (!locked && !tbdH && !tbdA) {
@@ -1097,6 +1118,13 @@ function matchCard(m) {
       const chip = !dec ? '' : hit
         ? `<span class="pts p3">+${SCORING.method}</span>` : `<span class="pts p0">✗</span>`;
       methodLine = `<div class="mypick" style="margin-top:6px">Decided in: <b>${METHOD_LABEL[mine.method]}</b> ${chip}</div>`;
+      if (mine.method === 'PENS' && mine.soPick) {
+        const pickName = mine.soPick === 'home' ? m.home.name : m.away.name;
+        const sw = dec === 'PENS' ? shootoutWinner(m) : null;
+        const soChip = dec !== 'PENS' ? '<span class="muted small">(no shootout)</span>'
+          : !sw ? '' : (mine.soPick === sw ? `<span class="pts p2">+${SCORING.shootout}</span>` : `<span class="pts p0">✗</span>`);
+        methodLine += `<div class="mypick" style="margin-top:4px">Shootout: <b>${esc(pickName)}</b> ${soChip}</div>`;
+      }
     }
     predictBlock = `<div class="mypick">${mine ? `Your prediction: <b>${mine.h}–${mine.a}</b> ${ptsChip}` : `<span class="muted">You didn't predict this one</span>`}</div>${methodLine}`;
   }
@@ -1114,8 +1142,10 @@ function matchCard(m) {
         const pts = matchPoints(p, m);
         let methodTag = '';
         if (isKO && p.method) {
-          const hit = dec && p.method === dec;
-          methodTag = `<span class="osc" style="font-size:11px;color:var(--mut)">${shortM[p.method]}${dec ? (hit ? ` <b style="color:var(--green)">+${SCORING.method}</b>` : ' ✗') : ''}</span>`;
+          let lbl = shortM[p.method], kob = 0;
+          if (p.method === 'PENS' && p.soPick) lbl += ' ' + ((p.soPick === 'home' ? m.home : m.away).abbr || '');
+          if (dec && p.method === dec) { kob = SCORING.method; if (dec === 'PENS' && p.soPick && p.soPick === shootoutWinner(m)) kob += SCORING.shootout; }
+          methodTag = `<span class="osc" style="font-size:11px;color:var(--mut)">${esc(lbl)}${dec ? (kob ? ` <b style="color:var(--green)">+${kob}</b>` : ' ✗') : ''}</span>`;
         }
         return `<div class="orow ${p.player_id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(p.player_id)}" style="cursor:pointer">
           <span class="onm">${esc(byId.get(p.player_id) || '?')}</span>
@@ -1266,9 +1296,11 @@ function openPlayer(pid) {
       let methodTag = '';
       if (m.stage !== 'GROUP' && p.method) {
         const dec = methodOf(m);
-        const hit = dec && p.method === dec;
         const shortM = { REGULAR: "90'", EXTRA: 'ET', PENS: 'pens' };
-        methodTag = `<span class="osc" style="font-size:11px;color:var(--mut)">${shortM[p.method]}${dec && hit ? ` <b style="color:var(--green)">+${SCORING.method}</b>` : ''}</span>`;
+        let lbl = shortM[p.method], kob = 0;
+        if (p.method === 'PENS' && p.soPick) lbl += ' ' + ((p.soPick === 'home' ? m.home : m.away).abbr || '');
+        if (dec && p.method === dec) { kob = SCORING.method; if (dec === 'PENS' && p.soPick && p.soPick === shootoutWinner(m)) kob += SCORING.shootout; }
+        methodTag = `<span class="osc" style="font-size:11px;color:var(--mut)">${esc(lbl)}${dec && kob ? ` <b style="color:var(--green)">+${kob}</b>` : ''}</span>`;
       }
       return `<div class="orow">
         <span class="onm">${esc(m.home.name)} <b>${res}</b> ${esc(m.away.name)}</span>
@@ -1349,7 +1381,17 @@ $('#matchList').addEventListener('click', (e) => {
     if (!state.auth) { openJoin(); return; }
     const mid = methodBtn.dataset.mid;
     state.methodDraft.set(mid, methodBtn.dataset.method);
-    methodBtn.parentElement.querySelectorAll('.adv-btn').forEach((b) => b.classList.toggle('on', b === methodBtn));
+    if (methodBtn.dataset.method !== 'PENS') state.soPickDraft.delete(mid);
+    renderMatches(); // reveal/hide the shootout picker
+    maybeSave(mid, true);
+    return;
+  }
+  const soBtn = e.target.closest('[data-sopick]');
+  if (soBtn) {
+    if (!state.auth) { openJoin(); return; }
+    const mid = soBtn.dataset.mid;
+    state.soPickDraft.set(mid, soBtn.dataset.sopick);
+    soBtn.parentElement.querySelectorAll('.adv-btn').forEach((b) => b.classList.toggle('on', b === soBtn));
     maybeSave(mid, true);
     return;
   }
