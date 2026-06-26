@@ -147,6 +147,10 @@
   .predict .tipval { font-size: 17px; font-weight: 900; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
   .savebtn { background: var(--green); color: #07120b; font-weight: 800; border-radius: 9px; padding: 9px 16px; font-size: 13px; }
   .editbtn { border: 1px solid var(--line2); color: var(--mut); font-weight: 700; border-radius: 9px; padding: 8px 14px; font-size: 13px; }
+  .advances { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+  .advances .lbl { font-size: 11px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--dim); width: 100%; text-align: center; margin-bottom: 2px; }
+  .adv-btn { flex: 1 1 0; min-width: 0; border: 1px solid var(--line2); color: var(--mut); background: var(--bg2); font-weight: 700; font-size: 13px; border-radius: 10px; padding: 9px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .adv-btn.on { background: var(--green); color: #07120b; border-color: var(--green); }
 
   /* ── Groups ── */
   .ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
@@ -322,6 +326,7 @@
         <li><b>0 points</b> — wrong result</li>
         <li><b>+15 points</b> — your champion pick wins the World Cup (Bonus tab)</li>
         <li><b>+10 points</b> — your top-scorer pick wins the Golden Boot (Bonus tab; a tie for most goals counts, own goals and shootout kicks don't)</li>
+        <li><b>+2 points</b> — knockout matches only: correctly pick which team goes through (counts the result after extra time and penalties)</li>
       </ul>
     </div>
     <div class="rules-card">
@@ -329,7 +334,7 @@
       <ul>
         <li>Predictions save automatically and <b>lock 30 minutes before kickoff</b> (enforced server-side). Until then, use <b>Edit</b> to change them as often as you like.</li>
         <li>Other people's predictions stay <b>hidden until the lock</b> (30 min before kickoff). After that they show on the match card — and you can tap any player on the leaderboard to see everything they filled in.</li>
-        <li>Knockout matches count the score <b>after extra time</b>; penalty shootouts don't add goals. Predicting a draw in a knockout match is allowed.</li>
+        <li>Knockout matches count the score <b>after extra time</b>; penalty shootouts don't add goals. Predicting a draw in a knockout match is allowed — then your <b>"who goes through"</b> pick decides your +2.</li>
         <li>Bonus picks (champion + top scorer) stay open until the deadline shown on the Bonus tab.</li>
         <li>Tiebreakers: most exact scores, then most correct results.</li>
         <li>Results come from ESPN automatically: live scores roughly every minute while you have the page open, final results within ~30 minutes.</li>
@@ -410,7 +415,7 @@
 
 const SUPABASE_URL = 'https://bhyjdvqbfearmrkxvppl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_rJy9Oi0xt7U2HfiUs1-S9w_klZz82Lh';
-const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15, topScorer: 10 };
+const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15, topScorer: 10, advance: 2 };
 const LOCK_MS = 30 * 60e3; // predictions stay open until 30 min before kickoff
 // diacritic/case-insensitive name compare ("mbappe" matches "Mbappé")
 const normName = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -458,7 +463,8 @@ const state = {
   view: 'matches',
   openOthers: new Set(),
   editing: new Set(),     // matchIds whose saved tip is being edited
-  pendingSave: null,      // {matchId, h, a} awaiting popup confirmation
+  advDraft: new Map(),    // matchId -> 'home'/'away' advances pick not yet saved
+  pendingSave: null,      // {matchId, h, a, adv} awaiting popup confirmation
   settings: new Map(),    // wc_settings key -> value (e.g. official top_scorer)
   topScorers: [],         // golden-boot tally from the data feed
   fetchedAt: null,
@@ -568,10 +574,13 @@ function playerTotals() {
       predicted++;
       const pts = matchPoints(p, m);
       if (pts == null) continue;
-      total += pts;
+      let mPts = pts;
+      // knockout bonus: +2 for correctly picking who goes through (ET/pens incl.)
+      if (m.stage !== 'GROUP' && m.advances && p.adv && p.adv === m.advances) mPts += SCORING.advance;
+      total += mPts;
       if (pts === SCORING.exact) exacts++;
       if (pts > 0) correct++;
-      if (dayKey(m.date) === today) todayPts += pts;
+      if (dayKey(m.date) === today) todayPts += mPts;
     }
     const fin = state.finals.get(pl.id);
     let champHit = false, scorerHit = false;
@@ -746,7 +755,7 @@ async function loadDb() {
     const [matches, players, preds, finals, settings] = await Promise.all([
       fetchAll('wc_matches', 'id,kickoff,stage,group_name,predict_until', ['id']),
       fetchAll('wc_players', 'id,name,is_admin,created_at', ['id'], ['pool', POOL]),
-      fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals', ['match_id', 'player_id']),
+      fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals,advances', ['match_id', 'player_id']),
       fetchAll('wc_finals', 'player_id,champion,top_scorer', ['player_id']),
       fetchAll('wc_settings', 'key,value', ['key']),
     ]);
@@ -757,7 +766,7 @@ async function loadDb() {
     for (const p of preds) {
       if (!inPool.has(p.player_id)) continue;
       if (!state.preds.has(p.match_id)) state.preds.set(p.match_id, []);
-      state.preds.get(p.match_id).push({ player_id: p.player_id, h: p.home_goals, a: p.away_goals });
+      state.preds.get(p.match_id).push({ player_id: p.player_id, h: p.home_goals, a: p.away_goals, adv: p.advances });
     }
     state.finals = new Map(finals.filter((f) => inPool.has(f.player_id)).map((f) => [f.player_id, f]));
     state.settings = new Map(settings.map((s) => [s.key, s.value]));
@@ -771,7 +780,7 @@ async function loadMine() {
   try {
     const { data, error } = await state.sb.rpc('wc_get_mine', { p_token: state.auth.token });
     if (error) throw error;
-    state.mine = new Map((data.predictions || []).map((p) => [p.match_id, { h: p.h, a: p.a }]));
+    state.mine = new Map((data.predictions || []).map((p) => [p.match_id, { h: p.h, a: p.a, adv: p.adv }]));
     state.myFinal = data.final || null;
     state.auth = { ...state.auth, name: data.player.name, is_admin: data.player.is_admin, player_id: data.player.id };
     saveAuth();
@@ -827,10 +836,15 @@ const saveTimers = new Map();
 
 function readTip(matchId) {
   const card = document.querySelector(`[data-mid="${matchId}"]`);
-  const h = parseInt(card?.querySelector('.pin.h')?.value, 10);
-  const a = parseInt(card?.querySelector('.pin.a')?.value, 10);
+  const mine = state.mine.get(matchId);
+  // Read from the score inputs when they're on screen; otherwise (collapsed
+  // card, e.g. changing only the advances pick) fall back to the saved score.
+  const hi = card?.querySelector('.pin.h'), ai = card?.querySelector('.pin.a');
+  const h = hi ? parseInt(hi.value, 10) : (mine ? mine.h : NaN);
+  const a = ai ? parseInt(ai.value, 10) : (mine ? mine.a : NaN);
   if (!Number.isInteger(h) || !Number.isInteger(a) || h < 0 || a < 0 || h > 30 || a > 30) return null;
-  return { matchId, h, a };
+  const adv = state.advDraft.get(matchId) ?? (mine ? mine.adv : null) ?? null;
+  return { matchId, h, a, adv };
 }
 
 function maybeSave(matchId, immediate = false) {
@@ -839,7 +853,7 @@ function maybeSave(matchId, immediate = false) {
     const tip = readTip(matchId);
     if (!tip) { if (immediate) toast('Fill in both scores first'); return; }
     const saved = state.mine.get(matchId);
-    if (saved && saved.h === tip.h && saved.a === tip.a) return; // unchanged
+    if (saved && saved.h === tip.h && saved.a === tip.a && (saved.adv ?? null) === tip.adv) return; // unchanged
     if (!state.auth) { openJoin(); return; }
     if (!localStorage.getItem(SAVE_FLAG)) {
       const m = state.matches.find((x) => x.id === matchId);
@@ -859,10 +873,11 @@ async function commitSave(tip) {
   const span = document.querySelector(`[data-mid="${tip.matchId}"] .savestate`);
   if (span) { span.textContent = 'Saving…'; span.className = 'savestate'; }
   try {
-    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: tip.matchId, p_home: tip.h, p_away: tip.a });
+    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: tip.matchId, p_home: tip.h, p_away: tip.a, p_advances: tip.adv });
     if (error) throw error;
-    state.mine.set(tip.matchId, { h: tip.h, a: tip.a });
+    state.mine.set(tip.matchId, { h: tip.h, a: tip.a, adv: tip.adv });
     state.editing.delete(tip.matchId);
+    state.advDraft.delete(tip.matchId);
     if (span?.isConnected) { span.textContent = '✓ Saved'; span.className = 'savestate ok'; }
     renderMatches(); // collapses to tip + Edit unless the user is mid-typing
     renderHero();
@@ -1021,6 +1036,16 @@ function matchCard(m) {
   }
 
   const tbdH = isTbdTeam(m.home), tbdA = isTbdTeam(m.away);
+  const isKO = m.stage !== 'GROUP';
+
+  // Knockout: pick who goes through (covers extra time + penalties), +2.
+  const advNow = (state.advDraft.get(m.id) ?? mine?.adv) || null;
+  const advLabel = (m.stage === 'FINAL' || m.stage === 'THIRD') ? 'Who wins?' : 'Who goes through?';
+  const advUI = !isKO ? '' : `<div class="advances">
+    <span class="lbl">${advLabel}</span>
+    <button class="adv-btn ${advNow === 'home' ? 'on' : ''}" data-adv="home" data-mid="${esc(m.id)}">${esc(m.home.name)}</button>
+    <button class="adv-btn ${advNow === 'away' ? 'on' : ''}" data-adv="away" data-mid="${esc(m.id)}">${esc(m.away.name)}</button>
+  </div>`;
 
   let predictBlock = '';
   if (!locked && !tbdH && !tbdA) {
@@ -1030,7 +1055,7 @@ function matchCard(m) {
         <span class="tipval">${mine.h} – ${mine.a}</span>
         <span class="savestate ok">✓ Saved</span>
         <button class="editbtn" data-edit="${esc(m.id)}">Edit</button>
-      </div>`;
+      </div>${advUI}`;
     } else {
       predictBlock = `<div class="predict">
         <span class="lbl">My prediction</span>
@@ -1038,14 +1063,22 @@ function matchCard(m) {
         <span class="muted">:</span>
         <input class="pin a" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.a : ''}" placeholder="–" aria-label="${esc(m.away.name)} goals">
         <span class="savestate"></span>
-      </div>`;
+      </div>${advUI}`;
     }
   } else if (!locked) {
     predictBlock = `<div class="mypick">Predictions open once both teams are known.</div>`;
   } else {
     const pts = matchPoints(mine, m);
     const ptsChip = pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'} pts</span>`;
-    predictBlock = `<div class="mypick">${mine ? `Your prediction: <b>${mine.h}–${mine.a}</b> ${ptsChip}` : `<span class="muted">You didn't predict this one</span>`}</div>`;
+    let advLine = '';
+    if (isKO && mine?.adv) {
+      const pickName = mine.adv === 'home' ? m.home.name : m.away.name;
+      const hit = m.advances && mine.adv === m.advances;
+      const chip = !m.advances ? '' : hit
+        ? `<span class="pts p2">+${SCORING.advance}</span>` : `<span class="pts p0">✗</span>`;
+      advLine = `<div class="mypick" style="margin-top:6px">${esc(pickName)} to go through ${chip}</div>`;
+    }
+    predictBlock = `<div class="mypick">${mine ? `Your prediction: <b>${mine.h}–${mine.a}</b> ${ptsChip}` : `<span class="muted">You didn't predict this one</span>`}</div>${advLine}`;
   }
 
   let othersBlock = '';
@@ -1057,8 +1090,15 @@ function matchCard(m) {
       list.sort((x, y) => (matchPoints(y, m) ?? -1) - (matchPoints(x, m) ?? -1));
       const rows = list.map((p) => {
         const pts = matchPoints(p, m);
+        let advTag = '';
+        if (isKO && p.adv) {
+          const abbr = (p.adv === 'home' ? m.home : m.away).abbr || (p.adv === 'home' ? m.home : m.away).name;
+          const hit = m.advances && p.adv === m.advances;
+          advTag = `<span class="osc" style="font-size:11px;color:var(--mut)">→${esc(abbr)}${m.advances ? (hit ? ` <b style="color:var(--green)">+${SCORING.advance}</b>` : ' ✗') : ''}</span>`;
+        }
         return `<div class="orow ${p.player_id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(p.player_id)}" style="cursor:pointer">
           <span class="onm">${esc(byId.get(p.player_id) || '?')}</span>
+          ${advTag}
           <span class="osc">${p.h}–${p.a}</span>
           ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
       }).join('');
@@ -1202,8 +1242,15 @@ function openPlayer(pid) {
       const p = (state.preds.get(m.id) || []).find((x) => x.player_id === pid);
       const pts = matchPoints(p, m);
       const res = m.hs != null ? `${m.hs}–${m.as}` : '⏳';
+      let advTag = '';
+      if (m.stage !== 'GROUP' && p.adv) {
+        const abbr = (p.adv === 'home' ? m.home : m.away).abbr || (p.adv === 'home' ? m.home : m.away).name;
+        const hit = m.advances && p.adv === m.advances;
+        advTag = `<span class="osc" style="font-size:11px;color:var(--mut)">→${esc(abbr)}${m.advances && hit ? ` <b style="color:var(--green)">+${SCORING.advance}</b>` : ''}</span>`;
+      }
       return `<div class="orow">
         <span class="onm">${esc(m.home.name)} <b>${res}</b> ${esc(m.away.name)}</span>
+        ${advTag}
         <span class="osc">${p.h}–${p.a}</span>
         ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
     }).join('');
@@ -1275,6 +1322,15 @@ $('#filters').addEventListener('click', (e) => {
 });
 
 $('#matchList').addEventListener('click', (e) => {
+  const advBtn = e.target.closest('[data-adv]');
+  if (advBtn) {
+    if (!state.auth) { openJoin(); return; }
+    const mid = advBtn.dataset.mid;
+    state.advDraft.set(mid, advBtn.dataset.adv);
+    advBtn.parentElement.querySelectorAll('.adv-btn').forEach((b) => b.classList.toggle('on', b === advBtn));
+    maybeSave(mid, true);
+    return;
+  }
   const edit = e.target.closest('[data-edit]');
   if (edit) { state.editing.add(edit.dataset.edit); renderMatches(); return; }
   const row = e.target.closest('[data-pid]');
