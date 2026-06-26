@@ -1,0 +1,81 @@
+# =============================================================================
+# Sveltia / Decap CMS configuration — Muses News editor
+# Commits Markdown into news/_posts/ on `main`; the build-news GitHub Action
+# renders the HTML, index, sitemap and RSS. Authors only ever touch this UI.
+# =============================================================================
+
+backend:
+  name: github
+  repo: covevibe-alt/muses-exchange
+  branch: main
+  # OAuth handled by same-domain Netlify Functions (netlify/functions/auth.mjs
+  # + callback.mjs). The GitHub OAuth app's callback URL must be
+  # https://muses.exchange/.netlify/functions/callback and the site needs the
+  # GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET env vars.
+  base_url: https://muses.exchange
+  auth_endpoint: /.netlify/functions/auth
+
+# Editorial workflow off = publish straight to main (simplest). Turn on later
+# for a draft/review step if you add other editors.
+publish_mode: simple
+
+# Local images would live here; Spotify artist images are external URLs, so
+# the hero is usually just a pasted i.scdn.co link (see the field hint).
+media_folder: "lifestyle/news-uploads"
+public_folder: "/lifestyle/news-uploads"
+
+site_url: https://muses.exchange
+display_url: https://muses.exchange/news
+logo_url: https://muses.exchange/icon-512.png
+
+collections:
+  - name: news
+    label: News article
+    label_singular: News article
+    description: "Write an article. Save & publish → it goes live in ~1–2 minutes."
+    folder: news/_posts
+    create: true
+    extension: md
+    format: yaml-frontmatter
+    slug: "{{title}}"
+    identifier_field: title
+    summary: "{{title}}  ·  {{category}}  ·  {{date}}"
+    sortable_fields: [date, title, category]
+    view_groups:
+      - { label: Category, field: category }
+    fields:
+      - { name: title, label: "Title (SEO — primary keyword first, 50–60 chars)", widget: string }
+      - { name: title_display, label: "Display headline", widget: string, required: false,
+          hint: "Optional. Wrap the second part in <em>…</em> for the violet gradient, e.g. 'Latin sector leads. <em>Here's the data.</em>'" }
+      - { name: description, label: "Meta description (150–160 chars)", widget: text,
+          hint: "Shown in Google results. Include the primary keyword and a hook." }
+      - { name: og_title, label: "Social title", widget: string, required: false, hint: "Optional — defaults to Title." }
+      - { name: og_description, label: "Social description", widget: text, required: false, hint: "Optional — defaults to Meta description." }
+      - { name: category, label: Category, widget: select,
+          options: ["News", "Liner Notes", "Methodology", "Markets", "Artists"], default: "News" }
+      - { name: date, label: "Published date", widget: datetime,
+          date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { name: updated, label: "Updated date", widget: datetime, required: false,
+          date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD",
+          hint: "Optional. Set when you materially revise a published piece." }
+      - { name: hero_image, label: "Hero image URL", widget: string,
+          hint: "An artist's Spotify image, e.g. https://i.scdn.co/image/… (find them in app/prices.js)." }
+      - { name: hero_alt, label: "Hero alt text", widget: string }
+      - { name: hero_credit, label: "Hero image credit", widget: string, required: false,
+          default: "Image via Spotify" }
+      - { name: featured, label: "Show in the featured row on /news", widget: boolean, default: true }
+      - { name: tags, label: Tags, widget: list, required: false, allow_add: true,
+          hint: "Keywords. Power the article schema + the /news search." }
+      - { name: search_keywords, label: "Extra search keywords", widget: string, required: false,
+          hint: "Optional extra terms for the /news filter search box." }
+      - { name: grid_title, label: "Short title for index cards", widget: string, required: false,
+          hint: "Optional. Defaults to Title; use a shorter version if Title is long." }
+      - { name: cta_title, label: "Call-to-action heading", widget: string, required: false,
+          default: "Start trading on Muses" }
+      - { name: cta_body, label: "Call-to-action text", widget: text, required: false,
+          default: "Free account, $10,000 in virtual credits, live prices on every listed artist." }
+      - { name: cta_href, label: "Call-to-action link", widget: string, required: false, default: "/signup" }
+      - { name: cta_label, label: "Call-to-action button label", widget: string, required: false,
+          default: "Sign up — it's free" }
+      - { name: body, label: "Article body", widget: markdown,
+          hint: "Write in Markdown. Embed live widgets as raw HTML: <div data-top-movers></div>, <div data-artist-card=\"BNNY\"></div>, <div data-market-index></div>." }
