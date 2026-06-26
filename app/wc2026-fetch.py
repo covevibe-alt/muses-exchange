@@ -222,6 +222,23 @@ def parse_event(event):
         elif winner != "draw":
             advances = winner
 
+    # How a knockout match was decided: PENS (shootout) | EXTRA (after extra
+    # time) | REGULAR (90'). Penalties are certain; extra-time is read from
+    # ESPN's status text/period and may need an admin override.
+    decided_by = None
+    if completed and stage != "GROUP":
+        so_present = so_h is not None or so_a is not None
+        name = (stype.get("name") or "").upper()
+        text = " ".join(str(stype.get(k) or "") for k in ("detail", "shortDetail", "description")).upper()
+        period = status.get("period")
+        if so_present or "PEN" in name or "SHOOTOUT" in name or "PEN" in text:
+            decided_by = "PENS"
+        elif "AET" in name or "AET" in text or "EXTRA" in name or "EXTRA" in text \
+                or (isinstance(period, int) and period >= 3):
+            decided_by = "EXTRA"
+        else:
+            decided_by = "REGULAR"
+
     return {
         "id": str(event["id"]),
         "date": iso_date,
@@ -240,6 +257,7 @@ def parse_event(event):
         "so": {"h": so_h, "a": so_a} if (so_h is not None or so_a is not None) else None,
         "winner": winner,
         "advances": advances,
+        "decidedBy": decided_by,
         "scorers": parse_scorers(comp),
     }
 
