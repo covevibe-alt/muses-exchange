@@ -140,9 +140,12 @@
   .others-toggle { width: 100%; text-align: center; margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--dim); padding: 4px; }
   .others { margin-top: 8px; border-top: 1px dashed var(--line2); padding-top: 8px; display: none; }
   .others.open { display: block; }
-  .orow { display: flex; align-items: center; gap: 8px; padding: 4px 2px; font-size: 13px; }
-  .orow .onm { flex: 1; overflow: hidden; text-overflow: ellipsis; color: var(--mut); font-weight: 600; }
+  .orow { display: flex; align-items: center; gap: 8px; padding: 5px 2px; font-size: 13px; }
+  .orow .onm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mut); font-weight: 600; }
+  .orow .oinfo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .orow .oinfo .onm { flex: 0 0 auto; }
   .orow.me .onm { color: var(--text); }
+  .orow .osub { font-size: 11px; color: var(--mut); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .85; }
   .orow .osc { font-weight: 800; font-variant-numeric: tabular-nums; }
   .predict .tipval { font-size: 17px; font-weight: 900; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
   .savebtn { background: var(--green); color: #07120b; font-weight: 800; border-radius: 9px; padding: 9px 16px; font-size: 13px; }
@@ -581,6 +584,26 @@ function methodOf(m) {
 function shootoutWinner(m) {
   if (m.so && m.so.h != null && m.so.a != null && m.so.h !== m.so.a) return m.so.h > m.so.a ? 'home' : 'away';
   return m.advances || null;
+}
+
+// Readable knockout method line, e.g. "in 90 minutes", "in extra time",
+// "on penalties — Canada". Empty for group matches / no pick.
+function methodPhrase(p, m) {
+  if (m.stage === 'GROUP' || !p.method) return '';
+  const L = { REGULAR: 'in 90 minutes', EXTRA: 'in extra time', PENS: 'on penalties' };
+  let s = L[p.method] || '';
+  if (p.method === 'PENS' && p.soPick) s += ` — ${(p.soPick === 'home' ? m.home : m.away).name || ''}`;
+  return s;
+}
+// Knockout bonus once the match is decided: null = not decided, 0 = wrong,
+// else +3 (method) and +1 more if the shootout winner was also right.
+function methodBonus(p, m) {
+  const dec = methodOf(m);
+  if (!dec || m.stage === 'GROUP' || !p.method) return null;
+  if (p.method !== dec) return 0;
+  let b = SCORING.method;
+  if (dec === 'PENS' && p.soPick && p.soPick === shootoutWinner(m)) b += SCORING.shootout;
+  return b;
 }
 
 // Golden-boot tally: prefer the feed's aggregate, else count match scorers.
@@ -1170,20 +1193,17 @@ function matchCard(m) {
     if (list.length) {
       const byId = new Map(state.players.map((p) => [p.id, p.name]));
       list.sort((x, y) => (matchPoints(y, m) ?? -1) - (matchPoints(x, m) ?? -1));
-      const dec = methodOf(m);
-      const shortM = { REGULAR: "90'", EXTRA: 'ET', PENS: 'pens' };
       const rows = list.map((p) => {
         const pts = matchPoints(p, m);
-        let methodTag = '';
-        if (isKO && p.method) {
-          let lbl = shortM[p.method], kob = 0;
-          if (p.method === 'PENS' && p.soPick) lbl += ' ' + ((p.soPick === 'home' ? m.home : m.away).abbr || '');
-          if (dec && p.method === dec) { kob = SCORING.method; if (dec === 'PENS' && p.soPick && p.soPick === shootoutWinner(m)) kob += SCORING.shootout; }
-          methodTag = `<span class="osc" style="font-size:11px;color:var(--mut)">${esc(lbl)}${dec ? (kob ? ` <b style="color:var(--green)">+${kob}</b>` : ' ✗') : ''}</span>`;
+        let sub = '';
+        const phrase = methodPhrase(p, m);
+        if (phrase) {
+          const b = methodBonus(p, m);
+          const mark = b == null ? '' : (b > 0 ? ` <b style="color:var(--green)">✓ +${b}</b>` : ' <span style="color:var(--dim)">✗</span>');
+          sub = `<span class="osub">${esc(phrase)}${mark}</span>`;
         }
         return `<div class="orow ${p.player_id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(p.player_id)}" style="cursor:pointer">
-          <span class="onm">${esc(byId.get(p.player_id) || '?')}</span>
-          ${methodTag}
+          <span class="oinfo"><span class="onm">${esc(byId.get(p.player_id) || '?')}</span>${sub}</span>
           <span class="osc">${p.h}–${p.a}</span>
           ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
       }).join('');
@@ -1453,18 +1473,15 @@ function openPlayer(pid) {
       const p = (state.preds.get(m.id) || []).find((x) => x.player_id === pid);
       const pts = matchPoints(p, m);
       const res = m.hs != null ? `${m.hs}–${m.as}` : '⏳';
-      let methodTag = '';
-      if (m.stage !== 'GROUP' && p.method) {
-        const dec = methodOf(m);
-        const shortM = { REGULAR: "90'", EXTRA: 'ET', PENS: 'pens' };
-        let lbl = shortM[p.method], kob = 0;
-        if (p.method === 'PENS' && p.soPick) lbl += ' ' + ((p.soPick === 'home' ? m.home : m.away).abbr || '');
-        if (dec && p.method === dec) { kob = SCORING.method; if (dec === 'PENS' && p.soPick && p.soPick === shootoutWinner(m)) kob += SCORING.shootout; }
-        methodTag = `<span class="osc" style="font-size:11px;color:var(--mut)">${esc(lbl)}${dec && kob ? ` <b style="color:var(--green)">+${kob}</b>` : ''}</span>`;
+      let sub = '';
+      const phrase = methodPhrase(p, m);
+      if (phrase) {
+        const b = methodBonus(p, m);
+        const mark = b == null ? '' : (b > 0 ? ` <b style="color:var(--green)">✓ +${b}</b>` : ' <span style="color:var(--dim)">✗</span>');
+        sub = `<span class="osub">${esc(phrase)}${mark}</span>`;
       }
       return `<div class="orow">
-        <span class="onm">${esc(m.home.name)} <b>${res}</b> ${esc(m.away.name)}</span>
-        ${methodTag}
+        <span class="oinfo"><span class="onm">${esc(m.home.name)} <b>${res}</b> ${esc(m.away.name)}</span>${sub}</span>
         <span class="osc">${p.h}–${p.a}</span>
         ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
     }).join('');
