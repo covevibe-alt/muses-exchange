@@ -169,13 +169,8 @@
   #drawRounds { margin-bottom: 4px; }
   .dpair { display: flex; align-items: stretch; margin-bottom: 26px; }
   .dpair .dties { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
-  .dpair .dconn { flex: 0 0 26px; position: relative; --ln: #3c5346; }
-  /* vertical line joins the two card centres; output nub points to the right */
-  .dpair.linked .dconn::before { content: ''; position: absolute; left: 12px; top: var(--y1, 25%); height: var(--vh, 50%); border-left: 2px solid var(--ln); border-radius: 2px; }
-  .dpair.linked .dconn::after { content: ''; position: absolute; left: 12px; right: 0; top: var(--ym, 50%); border-top: 2px solid var(--ln); }
-  .dpair.linked .dconn .st { position: absolute; left: 0; width: 12px; border-top: 2px solid var(--ln); }
-  .dpair.linked .dconn .st.top { top: var(--y1, 25%); }
-  .dpair.linked .dconn .st.bot { top: var(--y2, 75%); }
+  .dpair .dconn { flex: 0 0 30px; position: relative; }
+  .dpair .dconn svg { position: absolute; inset: 0; display: block; overflow: visible; }
   .btie { display: flex; gap: 12px; align-items: stretch; min-height: 60px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; cursor: pointer; transition: border-color .15s, background .15s; }
   .btie:active { background: var(--card2); border-color: var(--line2); }
   .dwhen { flex: 0 0 46px; display: flex; flex-direction: column; justify-content: center; gap: 2px; font-size: 11px; font-weight: 600; color: var(--dim); line-height: 1.2; text-align: left; }
@@ -1335,23 +1330,34 @@ function renderBracket() {
   const pairs = drawPairs(state.drawRound);
   box.innerHTML = pairs.map((pair) => `<div class="dpair ${pair.length === 2 ? 'linked' : ''}">
     <div class="dties">${pair.map(drawTie).join('')}</div>
-    ${pair.length === 2 ? '<div class="dconn"><span class="st top"></span><span class="st bot"></span></div>' : ''}
+    ${pair.length === 2 ? '<div class="dconn"></div>' : ''}
   </div>`).join('') || '<div class="empty">No matches in this round.</div>';
 
-  // Align each connector to the real vertical centres of its two cards, so the
-  // bracket joins stay crisp no matter how tall the cards render.
+  drawConnectors();
+  requestAnimationFrame(drawConnectors); // re-measure once layout has settled
+}
+
+// Draw each pair's bracket as a measured SVG: two stubs into the cards, a
+// vertical join across their real centres, and a short nub ending in a node
+// (the two winners meet here). SVG keeps it crisp on any screen / DPI.
+function drawConnectors() {
+  const box = $('#bracketBox');
+  const LINE = 'rgba(147,168,150,.5)';
   for (const conn of box.querySelectorAll('.dpair.linked .dconn')) {
     const ties = conn.parentElement.querySelectorAll('.btie');
     if (ties.length < 2) continue;
-    const base = conn.getBoundingClientRect().top;
-    const y1 = ties[0].getBoundingClientRect();
-    const y2 = ties[1].getBoundingClientRect();
-    const c1 = y1.top + y1.height / 2 - base;
-    const c2 = y2.top + y2.height / 2 - base;
-    conn.style.setProperty('--y1', c1 + 'px');
-    conn.style.setProperty('--y2', c2 + 'px');
-    conn.style.setProperty('--vh', (c2 - c1) + 'px');
-    conn.style.setProperty('--ym', (c1 + c2) / 2 + 'px');
+    const cr = conn.getBoundingClientRect();
+    const W = Math.round(cr.width), H = Math.round(cr.height);
+    if (W < 4 || H < 20) continue; // not laid out yet
+    const a = ties[0].getBoundingClientRect();
+    const b = ties[1].getBoundingClientRect();
+    const y1 = Math.round(a.top + a.height / 2 - cr.top);
+    const y2 = Math.round(b.top + b.height / 2 - cr.top);
+    const x = 15, ym = Math.round((y1 + y2) / 2);
+    conn.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none"`
+      + ` stroke="${LINE}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">`
+      + `<path d="M0 ${y1} H${x} V${y2} H0"/><path d="M${x} ${ym} H${W - 5}"/>`
+      + `<circle cx="${W - 4}" cy="${ym}" r="2.6" fill="${LINE}" stroke="none"/></svg>`;
   }
 }
 
@@ -1519,6 +1525,12 @@ $('#drawRounds').addEventListener('click', (e) => {
   if (!b) return;
   state.drawRound = b.dataset.round;
   renderBracket();
+});
+let drawResizeT;
+window.addEventListener('resize', () => {
+  if (state.view !== 'bracket') return;
+  clearTimeout(drawResizeT);
+  drawResizeT = setTimeout(drawConnectors, 120);
 });
 $('#pmClose').onclick = () => $('#playerModal').classList.remove('open');
 
