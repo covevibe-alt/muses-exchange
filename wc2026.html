@@ -165,26 +165,31 @@
   .gtable tr.q td:first-child { box-shadow: inset 3px 0 0 var(--green); }
   .gtable td.p { font-weight: 900; }
 
-  /* ── Bracket ── */
-  .bround { font-size: 12.5px; letter-spacing: .8px; text-transform: uppercase; color: var(--green); margin: 16px 2px 8px; }
-  .btie { display: flex; align-items: stretch; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 9px; cursor: pointer; }
+  /* ── Draw (visual bracket) ── */
+  .dpair { display: flex; align-items: stretch; margin-bottom: 22px; }
+  .dpair .dties { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+  .dpair .dconn { flex: 0 0 24px; position: relative; }
+  .dpair.linked .dconn::before { content: ''; position: absolute; left: 11px; top: 25%; height: 50%; border-left: 2px solid var(--line2); }
+  .dpair.linked .dconn::after { content: ''; position: absolute; left: 11px; right: 0; top: 50%; border-top: 2px solid var(--line2); }
+  .dpair.linked .dconn .st { position: absolute; left: 0; width: 11px; border-top: 2px solid var(--line2); }
+  .dpair.linked .dconn .st.top { top: 25%; }
+  .dpair.linked .dconn .st.bot { top: 75%; }
+  .btie { display: flex; gap: 10px; align-items: stretch; min-height: 64px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; cursor: pointer; }
   .btie:active { background: var(--card2); }
-  .bteams { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
-  .bteam { display: flex; align-items: center; gap: 8px; min-width: 0; font-weight: 700; font-size: 14px; }
-  .bteam .bflag { width: 22px; height: 16px; object-fit: cover; border-radius: 3px; flex: 0 0 auto; background: var(--bg2); }
-  .bteam .bnm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .bteam.tbd { color: var(--dim); font-weight: 600; }
+  .dwhen { flex: 0 0 50px; display: flex; flex-direction: column; justify-content: center; gap: 1px; font-size: 11px; font-weight: 700; color: var(--mut); line-height: 1.25; text-align: left; }
+  .dwhen b { color: var(--text); }
+  .dteams { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; justify-content: center; border-left: 1px solid var(--line); padding-left: 10px; }
+  .bteam { display: flex; align-items: center; gap: 8px; min-width: 0; font-weight: 700; font-size: 14.5px; }
+  .bteam .bflag { width: 24px; height: 18px; object-fit: cover; border-radius: 3px; flex: 0 0 auto; background: var(--bg2); }
+  .bteam .bnm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bteam .bnm.tbd { color: var(--dim); font-weight: 600; font-size: 13px; }
+  .bteam .bg { font-weight: 900; font-variant-numeric: tabular-nums; font-size: 15px; }
   .bteam.won .bnm { color: var(--green); }
-  .bteam.won::after { content: '✓'; color: var(--green); font-weight: 900; margin-left: auto; padding-left: 6px; }
-  .bmid { flex: 0 0 84px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; border-left: 1px solid var(--line); padding-left: 8px; }
-  .bscore { font-size: 19px; font-weight: 900; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
-  .bpen { display: block; font-size: 9.5px; color: var(--mut); font-weight: 600; letter-spacing: 0; }
-  .btime { font-size: 11.5px; color: var(--mut); font-weight: 700; line-height: 1.25; }
+  .bteam.won .bg { color: var(--green); }
+  .bpen { font-size: 9.5px; color: var(--mut); font-weight: 600; }
   .bnote { font-size: 10px; color: var(--gold); font-weight: 700; }
-  .bmine { font-size: 10px; color: var(--green); font-weight: 700; }
-  .blive { color: var(--red); }
-  .bfwd { font-size: 11px; color: var(--mut); margin: -4px 2px 12px 14px; padding-left: 8px; border-left: 2px solid var(--line2); line-height: 1.4; }
-  .bfwd b { color: var(--text); font-weight: 700; }
+  .bmine { color: var(--green); font-weight: 800; margin-top: 2px; }
+  .dlive { color: var(--red); font-weight: 800; font-size: 10px; }
   .mcard.flash { animation: flash 1.6s ease-out; }
   @keyframes flash { 0%, 30% { box-shadow: 0 0 0 2px var(--green); } 100% { box-shadow: 0 0 0 0 transparent; } }
 
@@ -302,7 +307,7 @@
 <nav class="tabs" id="tabs">
   <button data-v="matches" class="on"><span class="ico">📅</span>Matches</button>
   <button data-v="groups"><span class="ico">🏟️</span>Groups</button>
-  <button data-v="bracket"><span class="ico">🥊</span>Bracket</button>
+  <button data-v="bracket"><span class="ico">🥊</span>Draw</button>
   <button data-v="board"><span class="ico">🏆</span>Leaderboard</button>
   <button data-v="bonus"><span class="ico">🎯</span>Bonus</button>
   <button data-v="rules"><span class="ico">📖</span>Rules</button>
@@ -327,7 +332,7 @@
   </section>
 
   <section class="view" id="view-bracket">
-    <p class="muted small" style="margin:4px 2px 12px">The road to the final. Teams fill in as the groups finish; tap a tie to predict it.</p>
+    <div class="filters" id="drawRounds"></div>
     <div id="bracketBox"></div>
   </section>
 
@@ -492,6 +497,7 @@ const state = {
   auth: null,             // {token, player_id, name, is_admin}
   sb: null,
   filter: 'all',
+  drawRound: 'R32',       // selected round on the Draw tab
   view: 'matches',
   openOthers: new Set(),
   editing: new Set(),     // matchIds whose saved tip is being edited
@@ -1240,16 +1246,16 @@ function allTeams() {
   return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
-const BRACKET_ROUNDS = [
+const DRAW_ROUNDS = [
   ['R32', 'Round of 32'], ['R16', 'Round of 16'], ['QF', 'Quarter-finals'],
-  ['SF', 'Semi-finals'], ['THIRD', 'Third place'], ['FINAL', 'Final'],
+  ['SF', 'Semi-finals'], ['FINAL', 'Final'],
 ];
-const ROUND_FULL = { R16: 'Round of 16', QF: 'Quarter-finals', SF: 'Semi-finals', THIRD: 'Third place', FINAL: 'Final' };
-const fmtBracketDay = new Intl.DateTimeFormat(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+const fmtBracketDay = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' });
 
 // Knockout tree (ESPN event ids). Each tie lists the two earlier ties whose
 // winners feed it — derived from the feed's "Round of 32 N Winner" labels, so
 // the structure stays correct even after the placeholders fill in with teams.
+// Two ties sharing a parent meet each other next: that's the bracket pairing.
 const BRACKET_FEED = {
   '760502': ['760486', '760488'], '760503': ['760487', '760490'],
   '760504': ['760489', '760491'], '760505': ['760492', '760493'],
@@ -1261,75 +1267,70 @@ const BRACKET_FEED = {
   '760517': ['760514', '760515'], // Final ← semi-final winners
   '760516': ['760514', '760515'], // Third place ← semi-final losers
 };
-// Where each tie's WINNER goes next (every child except the third-place match).
-const PARENT_W = (() => {
-  const p = {};
-  for (const [child, feeders] of Object.entries(BRACKET_FEED)) {
-    if (child === '760516') continue;
-    for (const f of feeders) p[f] = child;
-  }
-  return p;
-})();
 const koById = (id) => state.matches.find((m) => m.id === id);
 
-// Compact opponent label, resolving placeholders through the tree to abbrevs
-// (e.g. "BRA/JPN", or "W(SA/CAN)" before that tie is played). Depth-capped.
-function compactSlot(m, side, depth = 0) {
-  const t = side === 0 ? m.home : m.away;
-  if (!isTbdTeam(t)) return t.abbr || t.name;
-  if (depth >= 2) return '…';
-  const f = koById((BRACKET_FEED[m.id] || [])[side]);
-  if (!f) return '?';
-  return `${m.stage === 'THIRD' ? 'L' : 'W'}(${compactSlot(f, 0, depth + 1)}/${compactSlot(f, 1, depth + 1)})`;
+// Group a round's ties into the pairs that meet next (so we can draw the
+// connector between them), in bracket order. Final shows final + third place.
+function drawPairs(stage) {
+  if (stage === 'FINAL') {
+    return [koById('760517'), koById('760516')].filter(Boolean).map((m) => [m]);
+  }
+  return Object.keys(BRACKET_FEED)
+    .filter((c) => c !== '760516' && (BRACKET_FEED[c] || []).every((f) => koById(f)?.stage === stage))
+    .sort()
+    .map((c) => BRACKET_FEED[c].map(koById).filter(Boolean))
+    .filter((p) => p.length);
 }
 
-function bracketSlot(m, side) {
+function drawSlot(m, side) {
   const t = side === 0 ? m.home : m.away;
+  const goals = side === 0 ? m.hs : m.as;
   const won = m.completed && m.advances === (side === 0 ? 'home' : 'away');
+  let inner;
   if (!isTbdTeam(t)) {
-    return `<div class="bteam ${won ? 'won' : ''}">${flagImg(t, 'bflag')}<span class="bnm">${esc(t.name)}</span></div>`;
+    inner = `${flagImg(t, 'bflag')}<span class="bnm">${esc(t.name)}</span>`;
+  } else {
+    const f = koById((BRACKET_FEED[m.id] || [])[side]);
+    const role = m.stage === 'THIRD' ? 'Loser' : 'Winner';
+    const label = (f && !isTbdTeam(f.home) && !isTbdTeam(f.away))
+      ? `${role} of ${f.home.name} v ${f.away.name}` : t.name;
+    inner = `<span class="bnm tbd">${esc(label)}</span>`;
   }
-  // Placeholder: name the feeding tie's teams once they're known.
-  const f = koById((BRACKET_FEED[m.id] || [])[side]);
-  const role = m.stage === 'THIRD' ? 'Loser' : 'Winner';
-  const label = (f && !isTbdTeam(f.home) && !isTbdTeam(f.away))
-    ? `${role} of ${f.home.name} v ${f.away.name}` : t.name;
-  return `<div class="bteam tbd"><span class="bnm">${esc(label)}</span></div>`;
+  const showGoals = goals != null && (m.completed || isLive(m));
+  return `<div class="bteam ${won ? 'won' : ''}">${inner}${showGoals ? `<span class="bg">${goals}</span>` : ''}</div>`;
+}
+
+function drawTie(m) {
+  const live = isLive(m);
+  const dec = methodOf(m);
+  const so = m.completed && m.so ? `<span class="bpen">pen ${m.so.h ?? '–'}-${m.so.a ?? '–'}</span>` : '';
+  const note = m.completed && dec && dec !== 'REGULAR' ? `<span class="bnote">${dec === 'PENS' ? 'pens' : 'a.e.t.'}</span>` : '';
+  const when = live ? '<span class="dlive"><span class="live-dot"></span>LIVE</span>'
+    : m.completed ? `FT${note ? '<br>' + note : ''}${so ? '<br>' + so : ''}`
+      : `${esc(fmtBracketDay.format(new Date(m.date)))}<br><b>${esc(fmtTime.format(kickoffOf(m)))}</b>`;
+  const mineTag = state.mine.get(m.id) ? '<span class="bmine">✓</span>' : '';
+  return `<div class="btie" data-jump="${esc(m.id)}">
+    <div class="dwhen">${when}${mineTag}</div>
+    <div class="dteams">${drawSlot(m, 0)}${drawSlot(m, 1)}</div>
+  </div>`;
 }
 
 function renderBracket() {
   const box = $('#bracketBox');
   const ko = state.matches.filter((m) => m.stage !== 'GROUP');
-  if (!ko.length) { box.innerHTML = '<div class="empty">The knockout bracket appears once the schedule loads.</div>'; return; }
-  let html = '';
-  for (const [stage, label] of BRACKET_ROUNDS) {
-    const ties = ko.filter((m) => m.stage === stage).sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-    if (!ties.length) continue;
-    html += `<h3 class="bround">${label}</h3>`;
-    for (const m of ties) {
-      const live = isLive(m);
-      const mid = m.hs != null && (live || m.completed)
-        ? `<div class="bscore">${m.hs}–${m.as}${m.so ? `<span class="bpen">pens ${m.so.h ?? '–'}–${m.so.a ?? '–'}</span>` : ''}</div>`
-        : `<div class="btime">${esc(fmtBracketDay.format(new Date(m.date)))}<br>${esc(fmtTime.format(kickoffOf(m)))}</div>`;
-      const dec = methodOf(m);
-      const decNote = m.completed && dec && dec !== 'REGULAR'
-        ? `<div class="bnote">${dec === 'PENS' ? 'after penalties' : 'after extra time'}</div>` : '';
-      const mineTag = state.mine.get(m.id) ? '<span class="bmine">✓ predicted</span>' : '';
-      // "winner plays …" — trace the path forward.
-      let fwd = '';
-      const pid = PARENT_W[m.id];
-      if (pid) {
-        const sib = koById((BRACKET_FEED[pid] || []).find((x) => x !== m.id));
-        const opp = sib ? `${compactSlot(sib, 0)}/${compactSlot(sib, 1)}` : '?';
-        fwd = `<div class="bfwd">🏆 Winner → ${ROUND_FULL[koById(pid).stage]} · vs winner of <b>${esc(opp)}</b></div>`;
-      }
-      html += `<div class="btie" data-jump="${esc(m.id)}">
-        <div class="bteams">${bracketSlot(m, 0)}${bracketSlot(m, 1)}</div>
-        <div class="bmid">${live ? '<span class="blive"><span class="live-dot"></span></span>' : ''}${mid}${decNote}${mineTag}</div>
-      </div>${fwd}`;
-    }
-  }
-  box.innerHTML = html;
+  const avail = DRAW_ROUNDS.filter(([s]) => s === 'FINAL'
+    ? ko.some((m) => m.stage === 'FINAL' || m.stage === 'THIRD')
+    : ko.some((m) => m.stage === s));
+  $('#drawRounds').innerHTML = avail.map(([s, label]) =>
+    `<button class="fchip ${state.drawRound === s ? 'on' : ''}" data-round="${s}">${label}</button>`).join('');
+  if (!ko.length) { box.innerHTML = '<div class="empty">The draw appears once the schedule loads.</div>'; return; }
+  if (!avail.some(([s]) => s === state.drawRound)) state.drawRound = (avail[0] || ['R32'])[0];
+
+  const pairs = drawPairs(state.drawRound);
+  box.innerHTML = pairs.map((pair) => `<div class="dpair ${pair.length === 2 ? 'linked' : ''}">
+    <div class="dties">${pair.map(drawTie).join('')}</div>
+    ${pair.length === 2 ? '<div class="dconn"><span class="st top"></span><span class="st bot"></span></div>' : ''}
+  </div>`).join('') || '<div class="empty">No matches in this round.</div>';
 }
 
 function renderFinals() {
@@ -1490,6 +1491,12 @@ function jumpToMatch(mid) {
 $('#bracketBox').addEventListener('click', (e) => {
   const tie = e.target.closest('[data-jump]');
   if (tie) jumpToMatch(tie.dataset.jump);
+});
+$('#drawRounds').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-round]');
+  if (!b) return;
+  state.drawRound = b.dataset.round;
+  renderBracket();
 });
 $('#pmClose').onclick = () => $('#playerModal').classList.remove('open');
 
