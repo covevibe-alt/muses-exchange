@@ -183,6 +183,8 @@
   .bnote { font-size: 10px; color: var(--gold); font-weight: 700; }
   .bmine { font-size: 10px; color: var(--green); font-weight: 700; }
   .blive { color: var(--red); }
+  .bfwd { font-size: 11px; color: var(--mut); margin: -4px 2px 12px 14px; padding-left: 8px; border-left: 2px solid var(--line2); line-height: 1.4; }
+  .bfwd b { color: var(--text); font-weight: 700; }
   .mcard.flash { animation: flash 1.6s ease-out; }
   @keyframes flash { 0%, 30% { box-shadow: 0 0 0 2px var(--green); } 100% { box-shadow: 0 0 0 0 transparent; } }
 
@@ -1242,14 +1244,57 @@ const BRACKET_ROUNDS = [
   ['R32', 'Round of 32'], ['R16', 'Round of 16'], ['QF', 'Quarter-finals'],
   ['SF', 'Semi-finals'], ['THIRD', 'Third place'], ['FINAL', 'Final'],
 ];
+const ROUND_FULL = { R16: 'Round of 16', QF: 'Quarter-finals', SF: 'Semi-finals', THIRD: 'Third place', FINAL: 'Final' };
 const fmtBracketDay = new Intl.DateTimeFormat(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
 
-function bracketTeam(t, side, m) {
-  const tbd = isTbdTeam(t);
-  const won = m.completed && m.advances === side;
-  return `<div class="bteam ${side} ${tbd ? 'tbd' : ''} ${won ? 'won' : ''}">
-    ${flagImg(t, 'bflag')}<span class="bnm">${esc(t.name || 'TBD')}</span>
-  </div>`;
+// Knockout tree (ESPN event ids). Each tie lists the two earlier ties whose
+// winners feed it — derived from the feed's "Round of 32 N Winner" labels, so
+// the structure stays correct even after the placeholders fill in with teams.
+const BRACKET_FEED = {
+  '760502': ['760486', '760488'], '760503': ['760487', '760490'],
+  '760504': ['760489', '760491'], '760505': ['760492', '760493'],
+  '760506': ['760496', '760497'], '760507': ['760494', '760495'],
+  '760508': ['760498', '760500'], '760509': ['760499', '760501'],
+  '760510': ['760502', '760503'], '760511': ['760506', '760507'],
+  '760512': ['760504', '760505'], '760513': ['760508', '760509'],
+  '760514': ['760510', '760511'], '760515': ['760512', '760513'],
+  '760517': ['760514', '760515'], // Final ← semi-final winners
+  '760516': ['760514', '760515'], // Third place ← semi-final losers
+};
+// Where each tie's WINNER goes next (every child except the third-place match).
+const PARENT_W = (() => {
+  const p = {};
+  for (const [child, feeders] of Object.entries(BRACKET_FEED)) {
+    if (child === '760516') continue;
+    for (const f of feeders) p[f] = child;
+  }
+  return p;
+})();
+const koById = (id) => state.matches.find((m) => m.id === id);
+
+// Compact opponent label, resolving placeholders through the tree to abbrevs
+// (e.g. "BRA/JPN", or "W(SA/CAN)" before that tie is played). Depth-capped.
+function compactSlot(m, side, depth = 0) {
+  const t = side === 0 ? m.home : m.away;
+  if (!isTbdTeam(t)) return t.abbr || t.name;
+  if (depth >= 2) return '…';
+  const f = koById((BRACKET_FEED[m.id] || [])[side]);
+  if (!f) return '?';
+  return `${m.stage === 'THIRD' ? 'L' : 'W'}(${compactSlot(f, 0, depth + 1)}/${compactSlot(f, 1, depth + 1)})`;
+}
+
+function bracketSlot(m, side) {
+  const t = side === 0 ? m.home : m.away;
+  const won = m.completed && m.advances === (side === 0 ? 'home' : 'away');
+  if (!isTbdTeam(t)) {
+    return `<div class="bteam ${won ? 'won' : ''}">${flagImg(t, 'bflag')}<span class="bnm">${esc(t.name)}</span></div>`;
+  }
+  // Placeholder: name the feeding tie's teams once they're known.
+  const f = koById((BRACKET_FEED[m.id] || [])[side]);
+  const role = m.stage === 'THIRD' ? 'Loser' : 'Winner';
+  const label = (f && !isTbdTeam(f.home) && !isTbdTeam(f.away))
+    ? `${role} of ${f.home.name} v ${f.away.name}` : t.name;
+  return `<div class="bteam tbd"><span class="bnm">${esc(label)}</span></div>`;
 }
 
 function renderBracket() {
@@ -1269,12 +1314,19 @@ function renderBracket() {
       const dec = methodOf(m);
       const decNote = m.completed && dec && dec !== 'REGULAR'
         ? `<div class="bnote">${dec === 'PENS' ? 'after penalties' : 'after extra time'}</div>` : '';
-      const mine = state.mine.get(m.id);
-      const mineTag = mine ? `<span class="bmine">✓ predicted</span>` : '';
+      const mineTag = state.mine.get(m.id) ? '<span class="bmine">✓ predicted</span>' : '';
+      // "winner plays …" — trace the path forward.
+      let fwd = '';
+      const pid = PARENT_W[m.id];
+      if (pid) {
+        const sib = koById((BRACKET_FEED[pid] || []).find((x) => x !== m.id));
+        const opp = sib ? `${compactSlot(sib, 0)}/${compactSlot(sib, 1)}` : '?';
+        fwd = `<div class="bfwd">🏆 Winner → ${ROUND_FULL[koById(pid).stage]} · vs winner of <b>${esc(opp)}</b></div>`;
+      }
       html += `<div class="btie" data-jump="${esc(m.id)}">
-        <div class="bteams">${bracketTeam(m.home, 'home', m)}${bracketTeam(m.away, 'away', m)}</div>
+        <div class="bteams">${bracketSlot(m, 0)}${bracketSlot(m, 1)}</div>
         <div class="bmid">${live ? '<span class="blive"><span class="live-dot"></span></span>' : ''}${mid}${decNote}${mineTag}</div>
-      </div>`;
+      </div>${fwd}`;
     }
   }
   box.innerHTML = html;
