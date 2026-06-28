@@ -1251,18 +1251,28 @@ const DRAW_ROUNDS = [
 ];
 const fmtBracketDay = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' });
 
-// Knockout tree (ESPN event ids). Each tie lists the two earlier ties whose
-// winners feed it — derived from the feed's "Round of 32 N Winner" labels, so
-// the structure stays correct even after the placeholders fill in with teams.
-// Two ties sharing a parent meet each other next: that's the bracket pairing.
+// Knockout tree (ESPN event ids → the two earlier ties whose winners feed it).
+// Built from the OFFICIAL 2026 bracket (FIFA match numbers 73–104) mapped onto
+// our match ids by venue, NOT from ESPN's "Round of 32 N Winner" labels (whose
+// numbering didn't line up). Two ties sharing a parent meet next.
 const BRACKET_FEED = {
-  '760502': ['760486', '760488'], '760503': ['760487', '760490'],
-  '760504': ['760489', '760491'], '760505': ['760492', '760493'],
-  '760506': ['760496', '760497'], '760507': ['760494', '760495'],
-  '760508': ['760498', '760500'], '760509': ['760499', '760501'],
-  '760510': ['760502', '760503'], '760511': ['760506', '760507'],
-  '760512': ['760504', '760505'], '760513': ['760508', '760509'],
-  '760514': ['760510', '760511'], '760515': ['760512', '760513'],
+  // Round of 16 ← Round of 32 (by official R16 venue)
+  '760503': ['760489', '760492'], // M89 Philadelphia: Germany/Paraguay · France/Sweden
+  '760502': ['760486', '760488'], // M90 Houston: South Africa/Canada · Netherlands/Morocco
+  '760504': ['760487', '760490'], // M91 New Jersey: Brazil/Japan · Ivory Coast/Norway
+  '760505': ['760491', '760495'], // M92 Mexico City: Mexico/Ecuador · England/DR Congo
+  '760506': ['760496', '760497'], // M93 Arlington: Portugal/Croatia · Spain/Austria
+  '760507': ['760494', '760493'], // M94 Seattle: USA/Bosnia · Belgium/Senegal
+  '760509': ['760500', '760499'], // M95 Atlanta: Argentina/Cape Verde · Australia/Egypt
+  '760508': ['760498', '760501'], // M96 Vancouver: Switzerland/Algeria · Colombia/Ghana
+  // Quarter-finals ← Round of 16
+  '760510': ['760503', '760502'], // M97 Boston
+  '760511': ['760506', '760507'], // M98 Los Angeles
+  '760512': ['760504', '760505'], // M99 Miami
+  '760513': ['760509', '760508'], // M100 Kansas City
+  // Semi-finals ← Quarter-finals
+  '760514': ['760510', '760511'], // M101 Arlington
+  '760515': ['760512', '760513'], // M102 Atlanta
   '760517': ['760514', '760515'], // Final ← semi-final winners
   '760516': ['760514', '760515'], // Third place ← semi-final losers
 };
