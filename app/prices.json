@@ -1,56 +1,56 @@
 {
-  "updatedAt": "2026-07-03T04:25:45Z",
+  "updatedAt": "2026-07-03T07:46:12Z",
   "marketIndex": 175.56,
   "rawAveragePrice": 58.23,
   "topGainers": [
     {
-      "ticker": "PHBE",
-      "chg24h": 2.38
+      "ticker": "KDOT",
+      "chg24h": 0.4
     },
     {
-      "ticker": "WZKD",
-      "chg24h": 1.72
+      "ticker": "SABR",
+      "chg24h": 0.0
     },
     {
-      "ticker": "BRNA",
-      "chg24h": 1.26
+      "ticker": "TSWF",
+      "chg24h": 0.0
     },
     {
-      "ticker": "TYLR",
-      "chg24h": 0.74
+      "ticker": "CHPL",
+      "chg24h": 0.0
     },
     {
-      "ticker": "ARGR",
-      "chg24h": 0.29
+      "ticker": "OLVR",
+      "chg24h": 0.0
     }
   ],
   "topLosers": [
     {
-      "ticker": "BLPK",
-      "chg24h": -1.37
+      "ticker": "MRSH",
+      "chg24h": 0.0
     },
     {
-      "ticker": "KHLN",
-      "chg24h": -1.08
+      "ticker": "SKRL",
+      "chg24h": 0.0
     },
     {
-      "ticker": "JRRH",
-      "chg24h": -0.92
+      "ticker": "FRED",
+      "chg24h": 0.0
     },
     {
-      "ticker": "DONT",
-      "chg24h": -0.66
+      "ticker": "CHRS",
+      "chg24h": 0.0
     },
     {
-      "ticker": "ARCT",
-      "chg24h": -0.53
+      "ticker": "GTTA",
+      "chg24h": 0.0
     }
   ],
   "sectorIndices": [
     {
       "sector": "Afropop",
       "avgPrice": 29.01,
-      "chg24h": 0.3,
+      "chg24h": 0.0,
       "members": [
         "TYLA",
         "REMA",
@@ -67,7 +67,7 @@
     {
       "sector": "Alt",
       "avgPrice": 63.53,
-      "chg24h": -0.14,
+      "chg24h": 0.0,
       "members": [
         "BILL",
         "LANA",
@@ -81,7 +81,7 @@
     {
       "sector": "Electronic",
       "avgPrice": 69.98,
-      "chg24h": -0.06,
+      "chg24h": 0.0,
       "members": [
         "GTTA",
         "CHRS",
@@ -93,7 +93,7 @@
     {
       "sector": "Hip-hop",
       "avgPrice": 56.06,
-      "chg24h": -0.02,
+      "chg24h": 0.02,
       "members": [
         "DRKE",
         "TRVS",
@@ -120,7 +120,7 @@
     {
       "sector": "Indie",
       "avgPrice": 20.95,
-      "chg24h": 0.3,
+      "chg24h": 0.0,
       "members": [
         "MARI",
         "CLRO",
@@ -135,7 +135,7 @@
     {
       "sector": "K-Pop",
       "avgPrice": 16.17,
-      "chg24h": -0.27,
+      "chg24h": 0.0,
       "members": [
         "BTS",
         "BLPK",
@@ -147,7 +147,7 @@
     {
       "sector": "Latin",
       "avgPrice": 63.61,
-      "chg24h": -0.06,
+      "chg24h": 0.0,
       "members": [
         "BNNY",
         "PESO",
@@ -169,7 +169,7 @@
     {
       "sector": "Pop",
       "avgPrice": 88.01,
-      "chg24h": -0.0,
+      "chg24h": 0.0,
       "members": [
         "SABR",
         "TSWF",
@@ -201,7 +201,7 @@
     {
       "sector": "R&B",
       "avgPrice": 50.56,
-      "chg24h": -0.11,
+      "chg24h": 0.0,
       "members": [
         "WKND",
         "SZA",
@@ -306,7 +306,7 @@
       "fairPrice": 92.83,
       "price": 92.83,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 4443,
       "youtube": {
         "subscribers": 19400,
@@ -331,7 +331,7 @@
       "fairPrice": 61.07,
       "price": 61.07,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1997,
       "youtube": {
         "subscribers": 6680000,
@@ -355,12 +355,12 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb0c68f6c95232e716f0abee8d",
       "fairPrice": 92.06,
       "price": 92.06,
-      "chg24h": -0.42,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 4173,
       "youtube": {
         "subscribers": 10100,
-        "views": 3348039000,
+        "views": 3349363967,
         "videos": 968
       },
       "youtubeBoost": 0.1586,
@@ -380,7 +380,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb766397ec42a573a53eb5fb87",
       "fairPrice": 131.88,
       "price": 131.88,
-      "chg24h": 0.29,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 6383,
       "youtube": {
@@ -410,7 +410,7 @@
       "volume": 6768,
       "youtube": {
         "subscribers": 559000,
-        "views": 5392236730,
+        "views": 5393493288,
         "videos": 1055
       },
       "youtubeBoost": 0.1978,
@@ -431,7 +431,7 @@
       "fairPrice": 86.91,
       "price": 86.91,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 3580,
       "youtube": {
         "subscribers": 30900,
@@ -530,8 +530,8 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb17f15f351cba70561ad8bcac",
       "fairPrice": 132.62,
       "price": 132.62,
-      "chg24h": 0.29,
-      "volatility30d": 0.013,
+      "chg24h": 0.0,
+      "volatility30d": 0.012,
       "volume": 3966,
       "youtube": {
         "subscribers": 126000,
@@ -556,7 +556,7 @@
       "fairPrice": 120.95,
       "price": 120.95,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 3851,
       "youtube": {
         "subscribers": 283000,
@@ -580,7 +580,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebaf20f7db5288bce9beede034",
       "fairPrice": 179.01,
       "price": 179.01,
-      "chg24h": -0.21,
+      "chg24h": 0.0,
       "volatility30d": 0.008,
       "volume": 5791,
       "youtube": {
@@ -656,7 +656,7 @@
       "fairPrice": 137.91,
       "price": 137.91,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 4130,
       "youtube": {
         "subscribers": 146000,
@@ -681,7 +681,7 @@
       "fairPrice": 54.38,
       "price": 54.38,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1726,
       "youtube": {
         "subscribers": 4510,
@@ -706,11 +706,11 @@
       "fairPrice": 47.25,
       "price": 47.25,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1878,
       "youtube": {
         "subscribers": 842,
-        "views": 543621722,
+        "views": 543978694,
         "videos": 277
       },
       "youtubeBoost": 0.1231,
@@ -831,7 +831,7 @@
       "fairPrice": 21.46,
       "price": 21.46,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1862,
       "youtube": {
         "subscribers": 1290,
@@ -856,7 +856,7 @@
       "fairPrice": 131.96,
       "price": 131.96,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 6389,
       "youtube": {
         "subscribers": 1130000,
@@ -880,7 +880,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb19c2790744c792d05570bb71",
       "fairPrice": 78.64,
       "price": 78.64,
-      "chg24h": -0.49,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 3988,
       "youtube": {
@@ -905,7 +905,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb39ba6dcd4355c03de0b50918",
       "fairPrice": 96.78,
       "price": 96.78,
-      "chg24h": 0.0,
+      "chg24h": 0.4,
       "volatility30d": 0.005,
       "volume": 4172,
       "youtube": {
@@ -985,7 +985,7 @@
       "volume": 2982,
       "youtube": {
         "subscribers": 307000,
-        "views": 4786148414,
+        "views": 4787233940,
         "videos": 1314
       },
       "youtubeBoost": 0.1851,
@@ -1135,7 +1135,7 @@
       "volume": 2147,
       "youtube": {
         "subscribers": 14900,
-        "views": 1607198648,
+        "views": 1607650838,
         "videos": 437
       },
       "youtubeBoost": 0.1443,
@@ -1156,11 +1156,11 @@
       "fairPrice": 42.34,
       "price": 42.34,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2082,
       "youtube": {
         "subscribers": 1430,
-        "views": 1050743836,
+        "views": 1051310256,
         "videos": 366
       },
       "youtubeBoost": 0.136,
@@ -1206,7 +1206,7 @@
       "fairPrice": 30.83,
       "price": 30.83,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2026,
       "youtube": {
         "subscribers": 3010,
@@ -1256,7 +1256,7 @@
       "fairPrice": 40.48,
       "price": 40.48,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2059,
       "youtube": {
         "subscribers": 7400000,
@@ -1280,7 +1280,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebdf2728294ff77dd11eeb18fb",
       "fairPrice": 52.2,
       "price": 52.2,
-      "chg24h": 0.74,
+      "chg24h": 0.0,
       "volatility30d": 0.004,
       "volume": 3128,
       "youtube": {
@@ -1330,12 +1330,12 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebc52b798deb89eb8414a51b7b",
       "fairPrice": 58.29,
       "price": 58.29,
-      "chg24h": -0.66,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 1820,
       "youtube": {
         "subscribers": 2190,
-        "views": 1179476090,
+        "views": 1180357416,
         "videos": 316
       },
       "youtubeBoost": 0.1382,
@@ -1381,7 +1381,7 @@
       "fairPrice": 88.49,
       "price": 88.49,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 3617,
       "youtube": {
         "subscribers": 49600,
@@ -1410,7 +1410,7 @@
       "volume": 2005,
       "youtube": {
         "subscribers": 27900,
-        "views": 993132750,
+        "views": 993607372,
         "videos": 353
       },
       "youtubeBoost": 0.1349,
@@ -1435,7 +1435,7 @@
       "volume": 1764,
       "youtube": {
         "subscribers": 1770,
-        "views": 963380915,
+        "views": 963586226,
         "videos": 409
       },
       "youtubeBoost": 0.1343,
@@ -1535,7 +1535,7 @@
       "volume": 1922,
       "youtube": {
         "subscribers": 28900,
-        "views": 1122218465,
+        "views": 1122436516,
         "videos": 587
       },
       "youtubeBoost": 0.1373,
@@ -1555,7 +1555,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebcf865d7d399a41e1bd036149",
       "fairPrice": 35.59,
       "price": 35.59,
-      "chg24h": -1.08,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 1853,
       "youtube": {
@@ -1585,7 +1585,7 @@
       "volume": 2301,
       "youtube": {
         "subscribers": 13700,
-        "views": 615751352,
+        "views": 616431364,
         "videos": 149
       },
       "youtubeBoost": 0.1255,
@@ -1678,17 +1678,17 @@
       "monthlyListeners": 53009611,
       "listenersSource": "ratio-calibrated",
       "image": "https://i.scdn.co/image/ab6761610000e5eb66041ce9eb4497057cbc3496",
-      "fairPrice": 71.46,
-      "price": 71.46,
+      "fairPrice": 71.47,
+      "price": 71.47,
       "chg24h": 0.0,
       "volatility30d": 0.0,
       "volume": 4854,
       "youtube": {
         "subscribers": 40700,
-        "views": 5369626176,
+        "views": 5370818341,
         "videos": 1606
       },
-      "youtubeBoost": 0.1678,
+      "youtubeBoost": 0.1679,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -1760,7 +1760,7 @@
       "volume": 2970,
       "youtube": {
         "subscribers": 3700,
-        "views": 3061615226,
+        "views": 3062326045,
         "videos": 363
       },
       "youtubeBoost": 0.1569,
@@ -1835,7 +1835,7 @@
       "volume": 3844,
       "youtube": {
         "subscribers": 162000,
-        "views": 3278174774,
+        "views": 3278987239,
         "videos": 295
       },
       "youtubeBoost": 0.1666,
@@ -1955,7 +1955,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb5fbe9b7dc7d9a2295bd6022c",
       "fairPrice": 41.75,
       "price": 41.75,
-      "chg24h": -0.92,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 3503,
       "youtube": {
@@ -2031,7 +2031,7 @@
       "fairPrice": 23.58,
       "price": 23.58,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1612,
       "youtube": {
         "subscribers": 4520,
@@ -2055,8 +2055,8 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebb4e44d0f4e3e47af2cf06f3f",
       "fairPrice": 61.8,
       "price": 61.8,
-      "chg24h": 1.26,
-      "volatility30d": 0.018,
+      "chg24h": 0.0,
+      "volatility30d": 0.017,
       "volume": 2461,
       "youtube": {
         "subscribers": 4530,
@@ -2080,12 +2080,12 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebe6ef803356b45ee5a9fa7a8a",
       "fairPrice": 22.55,
       "price": 22.55,
-      "chg24h": 1.72,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 2073,
       "youtube": {
         "subscribers": 25500,
-        "views": 508092525,
+        "views": 508280075,
         "videos": 250
       },
       "youtubeBoost": 0.1218,
@@ -2160,7 +2160,7 @@
       "volume": 876,
       "youtube": {
         "subscribers": 2610,
-        "views": 453769946,
+        "views": 454011731,
         "videos": 140
       },
       "youtubeBoost": 0.1196,
@@ -2235,7 +2235,7 @@
       "volume": 6800,
       "youtube": {
         "subscribers": 13700,
-        "views": 5873232103,
+        "views": 5875940652,
         "videos": 774
       },
       "youtubeBoost": 0.1696,
@@ -2305,7 +2305,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb7da39dea0a72f581535fb11f",
       "fairPrice": 72.11,
       "price": 72.11,
-      "chg24h": -0.53,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 3544,
       "youtube": {
@@ -2355,7 +2355,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebe412a782245eb20d9626c601",
       "fairPrice": 81.23,
       "price": 81.23,
-      "chg24h": -0.47,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 2015,
       "youtube": {
@@ -2385,7 +2385,7 @@
       "volume": 709,
       "youtube": {
         "subscribers": 206,
-        "views": 53272914,
+        "views": 53371539,
         "videos": 183
       },
       "youtubeBoost": 0.0777,
@@ -2406,10 +2406,10 @@
       "fairPrice": 13.15,
       "price": 13.15,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2926,
       "youtube": {
-        "subscribers": 1890,
+        "subscribers": 1880,
         "views": 454380237,
         "videos": 61
       },
@@ -2435,7 +2435,7 @@
       "volume": 1613,
       "youtube": {
         "subscribers": 1950,
-        "views": 155529836,
+        "views": 155645553,
         "videos": 65
       },
       "youtubeBoost": 0.0986,
@@ -2505,7 +2505,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb6e2d4ab2b84463aa4c349311",
       "fairPrice": 16.37,
       "price": 16.37,
-      "chg24h": 2.38,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 1101,
       "youtube": {
@@ -2630,12 +2630,12 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb623538b7014238c54ceee056",
       "fairPrice": 27.88,
       "price": 27.88,
-      "chg24h": -1.37,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 4645,
       "youtube": {
         "subscribers": 34200,
-        "views": 4849119921,
+        "views": 4850187529,
         "videos": 191
       },
       "youtubeBoost": 0.1659,
@@ -2656,7 +2656,7 @@
       "fairPrice": 18.74,
       "price": 18.74,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2172,
       "youtube": {
         "subscribers": 27900,
@@ -2681,7 +2681,7 @@
       "fairPrice": 13.59,
       "price": 13.59,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2926,
       "youtube": {
         "subscribers": 69200,
@@ -2730,7 +2730,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebf150017ca69c8793503c2d4f",
       "fairPrice": 118.6,
       "price": 118.6,
-      "chg24h": -0.32,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 3186,
       "youtube": {
@@ -2835,7 +2835,7 @@
       "volume": 3555,
       "youtube": {
         "subscribers": 23900,
-        "views": 1474213298,
+        "views": 1475063910,
         "videos": 730
       },
       "youtubeBoost": 0.1426,
