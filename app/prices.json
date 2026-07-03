@@ -1,12 +1,8 @@
 {
-  "updatedAt": "2026-07-03T07:46:12Z",
+  "updatedAt": "2026-07-03T10:39:06Z",
   "marketIndex": 175.56,
   "rawAveragePrice": 58.23,
   "topGainers": [
-    {
-      "ticker": "KDOT",
-      "chg24h": 0.4
-    },
     {
       "ticker": "SABR",
       "chg24h": 0.0
@@ -22,27 +18,31 @@
     {
       "ticker": "OLVR",
       "chg24h": 0.0
+    },
+    {
+      "ticker": "TATE",
+      "chg24h": 0.0
     }
   ],
   "topLosers": [
     {
+      "ticker": "KHLN",
+      "chg24h": -1.08
+    },
+    {
+      "ticker": "JRRH",
+      "chg24h": -0.92
+    },
+    {
+      "ticker": "DONT",
+      "chg24h": -0.66
+    },
+    {
+      "ticker": "GAGA",
+      "chg24h": -0.28
+    },
+    {
       "ticker": "MRSH",
-      "chg24h": 0.0
-    },
-    {
-      "ticker": "SKRL",
-      "chg24h": 0.0
-    },
-    {
-      "ticker": "FRED",
-      "chg24h": 0.0
-    },
-    {
-      "ticker": "CHRS",
-      "chg24h": 0.0
-    },
-    {
-      "ticker": "GTTA",
       "chg24h": 0.0
     }
   ],
@@ -93,7 +93,7 @@
     {
       "sector": "Hip-hop",
       "avgPrice": 56.06,
-      "chg24h": 0.02,
+      "chg24h": -0.03,
       "members": [
         "DRKE",
         "TRVS",
@@ -147,7 +147,7 @@
     {
       "sector": "Latin",
       "avgPrice": 63.61,
-      "chg24h": 0.0,
+      "chg24h": -0.06,
       "members": [
         "BNNY",
         "PESO",
@@ -169,7 +169,7 @@
     {
       "sector": "Pop",
       "avgPrice": 88.01,
-      "chg24h": 0.0,
+      "chg24h": -0.01,
       "members": [
         "SABR",
         "TSWF",
@@ -201,7 +201,7 @@
     {
       "sector": "R&B",
       "avgPrice": 50.56,
-      "chg24h": 0.0,
+      "chg24h": -0.11,
       "members": [
         "WKND",
         "SZA",
@@ -231,7 +231,7 @@
       "fairPrice": 82.03,
       "price": 82.03,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 3476,
       "youtube": {
         "subscribers": 17700,
@@ -247,8 +247,8 @@
       "name": "Taylor Swift",
       "genre": "Pop",
       "spotifyId": "06HL4z0CvFAxyc27GXpf02",
-      "popularity": 96,
-      "popularityDelta": 0,
+      "popularity": 97,
+      "popularityDelta": 1,
       "followers": 160118231,
       "monthlyListeners": 103036082,
       "listenersSource": "ratio-calibrated",
@@ -257,7 +257,7 @@
       "price": 144.4,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 7592,
+      "volume": 13666,
       "youtube": {
         "subscribers": 719000,
         "views": 9842236696,
@@ -297,8 +297,8 @@
       "name": "Olivia Rodrigo",
       "genre": "Pop",
       "spotifyId": "1McMsnEElThX1knmY4oliG",
-      "popularity": 95,
-      "popularityDelta": 0,
+      "popularity": 96,
+      "popularityDelta": 1,
       "followers": 54831182,
       "monthlyListeners": 69860409,
       "listenersSource": "ratio-calibrated",
@@ -307,7 +307,7 @@
       "price": 92.83,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 4443,
+      "volume": 7997,
       "youtube": {
         "subscribers": 19400,
         "views": 2273575784,
@@ -406,7 +406,7 @@
       "fairPrice": 115.87,
       "price": 115.87,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 6768,
       "youtube": {
         "subscribers": 559000,
@@ -456,7 +456,7 @@
       "fairPrice": 73.85,
       "price": 73.85,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 3684,
       "youtube": {
         "subscribers": 4560,
@@ -506,12 +506,12 @@
       "fairPrice": 76.93,
       "price": 76.93,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 3190,
       "youtube": {
         "subscribers": 264000,
         "views": 2043713745,
-        "videos": 1052
+        "videos": 1051
       },
       "youtubeBoost": 0.1658,
       "chartPositions": null,
@@ -631,7 +631,7 @@
       "fairPrice": 57.61,
       "price": 57.61,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 4434,
       "youtube": {
         "subscribers": 276000,
@@ -655,7 +655,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebaadc18cac8d48124357c38e6",
       "fairPrice": 137.91,
       "price": 137.91,
-      "chg24h": 0.0,
+      "chg24h": -0.28,
       "volatility30d": 0.002,
       "volume": 4130,
       "youtube": {
@@ -756,7 +756,7 @@
       "fairPrice": 72.11,
       "price": 72.11,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 4117,
       "youtube": {
         "subscribers": 78700,
@@ -905,7 +905,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb39ba6dcd4355c03de0b50918",
       "fairPrice": 96.78,
       "price": 96.78,
-      "chg24h": 0.4,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 4172,
       "youtube": {
@@ -956,7 +956,7 @@
       "fairPrice": 82.99,
       "price": 82.99,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 4197,
       "youtube": {
         "subscribers": 65300,
@@ -981,7 +981,7 @@
       "fairPrice": 73.78,
       "price": 73.78,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 2982,
       "youtube": {
         "subscribers": 307000,
@@ -1022,8 +1022,8 @@
       "name": "Nicki Minaj",
       "genre": "Hip-hop",
       "spotifyId": "0hCNtLu0JehylgoiP8L4Gh",
-      "popularity": 87,
-      "popularityDelta": 0,
+      "popularity": 88,
+      "popularityDelta": 1,
       "followers": 34931660,
       "monthlyListeners": 47489592,
       "listenersSource": "ratio-calibrated",
@@ -1032,7 +1032,7 @@
       "price": 64.51,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3546,
+      "volume": 6383,
       "youtube": {
         "subscribers": 477000,
         "views": 2109303856,
@@ -1056,7 +1056,7 @@
       "fairPrice": 33.94,
       "price": 33.94,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 1149,
       "youtube": {
         "subscribers": 796,
@@ -1231,7 +1231,7 @@
       "fairPrice": 24.67,
       "price": 24.67,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 1005,
       "youtube": {
         "subscribers": 2750000,
@@ -1306,7 +1306,7 @@
       "fairPrice": 39.72,
       "price": 39.72,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 2723,
       "youtube": {
         "subscribers": 78100,
@@ -1330,7 +1330,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebc52b798deb89eb8414a51b7b",
       "fairPrice": 58.29,
       "price": 58.29,
-      "chg24h": 0.0,
+      "chg24h": -0.66,
       "volatility30d": 0.005,
       "volume": 1820,
       "youtube": {
@@ -1481,7 +1481,7 @@
       "fairPrice": 36.5,
       "price": 36.5,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 2057,
       "youtube": {
         "subscribers": 70700,
@@ -1555,7 +1555,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebcf865d7d399a41e1bd036149",
       "fairPrice": 35.59,
       "price": 35.59,
-      "chg24h": 0.0,
+      "chg24h": -1.08,
       "volatility30d": 0.005,
       "volume": 1853,
       "youtube": {
@@ -1606,7 +1606,7 @@
       "fairPrice": 135.73,
       "price": 135.73,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 6550,
       "youtube": {
         "subscribers": 161000,
@@ -1656,7 +1656,7 @@
       "fairPrice": 38.49,
       "price": 38.49,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 1884,
       "youtube": {
         "subscribers": 12200000,
@@ -1706,7 +1706,7 @@
       "fairPrice": 50.31,
       "price": 50.31,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 2710,
       "youtube": {
         "subscribers": 2710,
@@ -1822,8 +1822,8 @@
       "name": "Maluma",
       "genre": "Latin",
       "spotifyId": "1r4hJ1h58CWwUQe3MxPuau",
-      "popularity": 86,
-      "popularityDelta": 0,
+      "popularity": 87,
+      "popularityDelta": 1,
       "followers": 41043805,
       "monthlyListeners": 49084286,
       "listenersSource": "ratio-calibrated",
@@ -1832,7 +1832,7 @@
       "price": 66.1,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3844,
+      "volume": 6919,
       "youtube": {
         "subscribers": 162000,
         "views": 3278987239,
@@ -1955,11 +1955,11 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb5fbe9b7dc7d9a2295bd6022c",
       "fairPrice": 41.75,
       "price": 41.75,
-      "chg24h": 0.0,
+      "chg24h": -0.92,
       "volatility30d": 0.005,
       "volume": 3503,
       "youtube": {
-        "subscribers": 834000,
+        "subscribers": 833000,
         "views": 6167316598,
         "videos": 184
       },
@@ -1981,7 +1981,7 @@
       "fairPrice": 42.66,
       "price": 42.66,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 1606,
       "youtube": {
         "subscribers": 5920000,
@@ -2047,8 +2047,8 @@
       "name": "Burna Boy",
       "genre": "Afropop",
       "spotifyId": "3wcj11K77LjEY1PkEazffa",
-      "popularity": 83,
-      "popularityDelta": 0,
+      "popularity": 84,
+      "popularityDelta": 1,
       "followers": 16830022,
       "monthlyListeners": 47378195,
       "listenersSource": "ratio-calibrated",
@@ -2056,8 +2056,8 @@
       "fairPrice": 61.8,
       "price": 61.8,
       "chg24h": 0.0,
-      "volatility30d": 0.017,
-      "volume": 2461,
+      "volatility30d": 0.016,
+      "volume": 4431,
       "youtube": {
         "subscribers": 4530,
         "views": 771148478,
@@ -2456,7 +2456,7 @@
       "fairPrice": 31.84,
       "price": 31.84,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 1649,
       "youtube": {
         "subscribers": 1130,
@@ -2559,7 +2559,7 @@
       "volatility30d": 0.0,
       "volume": 947,
       "youtube": {
-        "subscribers": 449,
+        "subscribers": 450,
         "views": 186377622,
         "videos": 50
       },
@@ -2772,8 +2772,8 @@
       "name": "Fred again..",
       "genre": "Electronic",
       "spotifyId": "4oLeXFyACqeem2VImYeBFe",
-      "popularity": 78,
-      "popularityDelta": 0,
+      "popularity": 79,
+      "popularityDelta": 1,
       "followers": 2668182,
       "monthlyListeners": 18639386,
       "listenersSource": "ratio-calibrated",
@@ -2782,7 +2782,7 @@
       "price": 23.93,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 980,
+      "volume": 1764,
       "youtube": {
         "subscribers": 472,
         "views": 309511995,
