@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-09T17:58:27Z",
+  "updatedAt": "2026-07-09T19:58:12Z",
   "marketIndex": 175.56,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -431,7 +431,7 @@
       "fairPrice": 86.04,
       "price": 86.04,
       "chg24h": 0.0,
-      "volatility30d": 0.006,
+      "volatility30d": 0.005,
       "volume": 3582,
       "youtube": {
         "subscribers": 30900,
@@ -835,7 +835,7 @@
       "volume": 1864,
       "youtube": {
         "subscribers": 1290,
-        "views": 318259411,
+        "views": 318411025,
         "videos": 133
       },
       "youtubeBoost": 0.1126,
@@ -935,7 +935,7 @@
       "volume": 1391,
       "youtube": {
         "subscribers": 962,
-        "views": 141068,
+        "views": 141104,
         "videos": 16
       },
       "youtubeBoost": 0.0,
@@ -1122,8 +1122,8 @@
       "name": "Metro Boomin",
       "genre": "Hip-hop",
       "spotifyId": "0iEtIxbK0KxaSlF7G42ZOp",
-      "popularity": 84,
-      "popularityDelta": 0,
+      "popularity": 85,
+      "popularityDelta": 1,
       "followers": 12837689,
       "monthlyListeners": 40588921,
       "listenersSource": "ratio-calibrated",
@@ -1132,7 +1132,7 @@
       "price": 53.89,
       "chg24h": -0.71,
       "volatility30d": 0.004,
-      "volume": 2150,
+      "volume": 3870,
       "youtube": {
         "subscribers": 14900,
         "views": 1615382536,
@@ -1272,8 +1272,8 @@
       "name": "Tyler, The Creator",
       "genre": "Hip-hop",
       "spotifyId": "4V8LLVI7PbaPR0K2TGSxFF",
-      "popularity": 85,
-      "popularityDelta": 0,
+      "popularity": 86,
+      "popularityDelta": 1,
       "followers": 27225458,
       "monthlyListeners": 39128428,
       "listenersSource": "ratio-calibrated",
@@ -1282,7 +1282,7 @@
       "price": 52.41,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3131,
+      "volume": 5635,
       "youtube": {
         "subscribers": 95600,
         "views": 2722908893,
@@ -1347,8 +1347,8 @@
       "name": "The Weeknd",
       "genre": "R&B",
       "spotifyId": "1Xyo4u8uXC1ZmMpatF05PJ",
-      "popularity": 94,
-      "popularityDelta": 0,
+      "popularity": 95,
+      "popularityDelta": 1,
       "followers": 124802371,
       "monthlyListeners": 113420395,
       "listenersSource": "ratio-calibrated",
@@ -1357,7 +1357,7 @@
       "price": 157.34,
       "chg24h": -0.49,
       "volatility30d": 0.008,
-      "volume": 6703,
+      "volume": 12065,
       "youtube": {
         "subscribers": 253000,
         "views": 9833007871,
@@ -2147,8 +2147,8 @@
       "name": "CKay",
       "genre": "Afropop",
       "spotifyId": "048LktY5zMnakWq7PTtFrz",
-      "popularity": 69,
-      "popularityDelta": 0,
+      "popularity": 70,
+      "popularityDelta": 1,
       "followers": 2142041,
       "monthlyListeners": 10692640,
       "listenersSource": "ratio-calibrated",
@@ -2157,7 +2157,7 @@
       "price": 13.89,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 878,
+      "volume": 1581,
       "youtube": {
         "subscribers": 2600,
         "views": 455505135,
@@ -2181,7 +2181,7 @@
       "fairPrice": 49.44,
       "price": 49.44,
       "chg24h": -1.54,
-      "volatility30d": 0.007,
+      "volatility30d": 0.008,
       "volume": 1303,
       "youtube": {
         "subscribers": 1900,
@@ -2335,7 +2335,7 @@
       "volume": 1982,
       "youtube": {
         "subscribers": 22000,
-        "views": 609283108,
+        "views": 609451158,
         "videos": 745
       },
       "youtubeBoost": 0.1253,
@@ -2385,7 +2385,7 @@
       "volume": 711,
       "youtube": {
         "subscribers": 207,
-        "views": 53889430,
+        "views": 53930206,
         "videos": 183
       },
       "youtubeBoost": 0.0779,
