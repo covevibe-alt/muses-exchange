@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-10T12:26:41Z",
+  "updatedAt": "2026-07-10T15:14:01Z",
   "marketIndex": 175.56,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -331,7 +331,7 @@
       "fairPrice": 60.55,
       "price": 60.55,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 2000,
       "youtube": {
         "subscribers": 6690000,
@@ -581,7 +581,7 @@
       "fairPrice": 176.85,
       "price": 176.85,
       "chg24h": -0.22,
-      "volatility30d": 0.016,
+      "volatility30d": 0.017,
       "volume": 5802,
       "youtube": {
         "subscribers": 1610000,
@@ -934,7 +934,7 @@
       "volatility30d": 0.002,
       "volume": 1391,
       "youtube": {
-        "subscribers": 961,
+        "subscribers": 962,
         "views": 141135,
         "videos": 16
       },
@@ -2056,7 +2056,7 @@
       "fairPrice": 67.3,
       "price": 67.3,
       "chg24h": 0.58,
-      "volatility30d": 0.016,
+      "volatility30d": 0.017,
       "volume": 2468,
       "youtube": {
         "subscribers": 4530,
@@ -2097,8 +2097,8 @@
       "name": "Davido",
       "genre": "Afropop",
       "spotifyId": "0Y3agQaa6g2r0YmHPOO9rh",
-      "popularity": 75,
-      "popularityDelta": 0,
+      "popularity": 76,
+      "popularityDelta": 1,
       "followers": 11372560,
       "monthlyListeners": 11283854,
       "listenersSource": "ratio-calibrated",
@@ -2107,7 +2107,7 @@
       "price": 14.61,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2023,
+      "volume": 3642,
       "youtube": {
         "subscribers": 14100,
         "views": 362305791,
@@ -2181,7 +2181,7 @@
       "fairPrice": 49.31,
       "price": 49.31,
       "chg24h": -0.78,
-      "volatility30d": 0.01,
+      "volatility30d": 0.011,
       "volume": 1303,
       "youtube": {
         "subscribers": 1900,
@@ -2686,7 +2686,7 @@
       "youtube": {
         "subscribers": 69200,
         "views": 3059158356,
-        "videos": 758
+        "videos": 774
       },
       "youtubeBoost": 0.1569,
       "chartPositions": null,
@@ -2784,7 +2784,7 @@
       "volatility30d": 0.005,
       "volume": 982,
       "youtube": {
-        "subscribers": 471,
+        "subscribers": 472,
         "views": 312686930,
         "videos": 379
       },
