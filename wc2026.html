@@ -289,6 +289,16 @@
     opacity: 0; pointer-events: none; transition: opacity .25s; max-width: 90vw; text-align: center;
   }
   #toast.show { opacity: 1; }
+  #updateBar {
+    position: fixed; left: 12px; right: 12px; z-index: 240;
+    top: calc(8px + env(safe-area-inset-top));
+    background: var(--green); color: #07120b; border-radius: 12px;
+    padding: 11px 14px; font-size: 13.5px; font-weight: 800;
+    display: none; align-items: center; gap: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.4);
+  }
+  #updateBar.show { display: flex; }
+  #updateBar .msg { flex: 1; }
+  #updateBar button { background: #07120b; color: var(--green); font-weight: 800; border-radius: 8px; padding: 7px 14px; font-size: 13px; }
   .src-note { text-align: center; color: var(--dim); font-size: 11.5px; padding: 18px 0 4px; }
   .empty { text-align: center; color: var(--mut); padding: 36px 12px; font-size: 14px; }
   .skel { height: 86px; border-radius: var(--r); background: linear-gradient(110deg, var(--card) 8%, var(--card2) 18%, var(--card) 33%); background-size: 200% 100%; animation: sh 1.2s linear infinite; margin-bottom: 10px; }
@@ -438,6 +448,7 @@
   </div>
 </div>
 
+<div id="updateBar"><span class="msg">✨ New version available</span><button id="updateBtn">Refresh</button></div>
 <div id="toast"></div>
 
 <!-- relative path: works at muses.exchange/wc2026 AND on the GitHub Pages mirror -->
@@ -1311,6 +1322,17 @@ function drawPairs(stage) {
     .filter((p) => p.length);
 }
 
+// For a slot ESPN hasn't filled yet, derive the team from the feeding tie's
+// result — the winner (or the loser, for the third-place game) — so a decided
+// quarter-final immediately shows the real team in the semi, not "Winner of…".
+function feederTeam(m, side) {
+  const f = koById((BRACKET_FEED[m.id] || [])[side]);
+  if (!f || !f.completed || !f.advances) return null;
+  const wantSide = m.stage === 'THIRD' ? (f.advances === 'home' ? 'away' : 'home') : f.advances;
+  const team = wantSide === 'home' ? f.home : f.away;
+  return isTbdTeam(team) ? null : team;
+}
+
 function drawSlot(m, side) {
   const t = side === 0 ? m.home : m.away;
   const goals = side === 0 ? m.hs : m.as;
@@ -1321,11 +1343,16 @@ function drawSlot(m, side) {
   if (!isTbdTeam(t)) {
     inner = `${flagImg(t, 'bflag')}<span class="bnm">${esc(t.name)}</span>`;
   } else {
-    const f = koById((BRACKET_FEED[m.id] || [])[side]);
-    const role = m.stage === 'THIRD' ? 'Loser' : 'Winner';
-    const label = (f && !isTbdTeam(f.home) && !isTbdTeam(f.away))
-      ? `${role} of ${f.home.name} v ${f.away.name}` : t.name;
-    inner = `<span class="bnm tbd">${esc(label)}</span>`;
+    const w = feederTeam(m, side);
+    if (w) {
+      inner = `${flagImg(w, 'bflag')}<span class="bnm">${esc(w.name)}</span>`;
+    } else {
+      const f = koById((BRACKET_FEED[m.id] || [])[side]);
+      const role = m.stage === 'THIRD' ? 'Loser' : 'Winner';
+      const label = (f && !isTbdTeam(f.home) && !isTbdTeam(f.away))
+        ? `${role} of ${f.home.name} v ${f.away.name}` : t.name;
+      inner = `<span class="bnm tbd">${esc(label)}</span>`;
+    }
   }
   const showGoals = goals != null && (m.completed || isLive(m));
   return `<div class="bteam ${won ? 'won' : ''} ${lost ? 'lost' : ''}">${inner}${showGoals ? `<span class="bg">${goals}</span>` : ''}</div>`;
@@ -1742,9 +1769,28 @@ async function boot() {
     if (document.hidden) return;
     await Promise.all([loadBaseline(), state.sb ? loadDb() : null, state.sb ? loadMine() : null]);
     espnLiveTick();
+    checkForUpdate();
     render();
   });
+
+  checkForUpdate();                   // snapshot this build
+  setInterval(checkForUpdate, 120e3); // then watch for a newer one every 2 min
 }
+
+/* Auto-update: the app is one page, so switching tabs never reloads it. Poll
+   our own HTML; if the deployed file changed, offer a one-tap refresh. */
+let __buildSnapshot = null;
+async function checkForUpdate() {
+  if (document.hidden) return;
+  try {
+    const r = await fetch(location.pathname, { cache: 'no-store' });
+    if (!r.ok) return;
+    const t = await r.text();
+    if (__buildSnapshot === null) { __buildSnapshot = t; return; }
+    if (t !== __buildSnapshot) document.getElementById('updateBar').classList.add('show');
+  } catch { /* offline — ignore */ }
+}
+document.getElementById('updateBtn').onclick = () => location.reload();
 
 boot();
 </script>
