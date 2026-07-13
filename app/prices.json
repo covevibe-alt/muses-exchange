@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-13T19:58:49Z",
+  "updatedAt": "2026-07-13T21:07:11Z",
   "marketIndex": 175.56,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -1073,7 +1073,7 @@
       "genre": "Hip-hop",
       "spotifyId": "6l3HvQ5sa6mXTsMTB19rO5",
       "popularity": 86,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 28653415,
       "monthlyListeners": 37349726,
       "listenersSource": "ratio-calibrated",
@@ -1082,7 +1082,7 @@
       "price": 50.07,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 5781,
+      "volume": 3212,
       "youtube": {
         "subscribers": 102000,
         "views": 2616048221,
@@ -1209,7 +1209,7 @@
       "volatility30d": 0.0,
       "volume": 2032,
       "youtube": {
-        "subscribers": 3020,
+        "subscribers": 3030,
         "views": 587049511,
         "videos": 98
       },
@@ -2559,7 +2559,7 @@
       "volatility30d": 0.0,
       "volume": 949,
       "youtube": {
-        "subscribers": 447,
+        "subscribers": 448,
         "views": 187861044,
         "videos": 50
       },
