@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-15T22:03:55Z",
+  "updatedAt": "2026-07-15T23:29:47Z",
   "marketIndex": 175.56,
   "rawAveragePrice": 58.24,
   "topGainers": [
@@ -281,7 +281,7 @@
       "fairPrice": 40.43,
       "price": 40.43,
       "chg24h": -0.95,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 1735,
       "youtube": {
         "subscribers": 989,
@@ -1059,7 +1059,7 @@
       "volatility30d": 0.0,
       "volume": 1152,
       "youtube": {
-        "subscribers": 799,
+        "subscribers": 800,
         "views": 452348897,
         "videos": 189
       },
@@ -1747,8 +1747,8 @@
       "name": "Myke Towers",
       "genre": "Latin",
       "spotifyId": "7iK8PXO48WeuP03g8YR51W",
-      "popularity": 87,
-      "popularityDelta": 0,
+      "popularity": 88,
+      "popularityDelta": 1,
       "followers": 24608179,
       "monthlyListeners": 41737932,
       "listenersSource": "ratio-calibrated",
@@ -1757,7 +1757,7 @@
       "price": 56.06,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2976,
+      "volume": 5358,
       "youtube": {
         "subscribers": 3700,
         "views": 3082241547,
@@ -1909,7 +1909,7 @@
       "volatility30d": 0.005,
       "volume": 1599,
       "youtube": {
-        "subscribers": 721,
+        "subscribers": 722,
         "views": 672939351,
         "videos": 89
       },
@@ -2784,7 +2784,7 @@
       "volatility30d": 0.0,
       "volume": 983,
       "youtube": {
-        "subscribers": 473,
+        "subscribers": 474,
         "views": 315143247,
         "videos": 379
       },
