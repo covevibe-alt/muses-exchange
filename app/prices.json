@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-16T13:59:50Z",
+  "updatedAt": "2026-07-16T15:43:36Z",
   "marketIndex": 175.57,
   "rawAveragePrice": 58.24,
   "topGainers": [
@@ -38,12 +38,12 @@
       "chg24h": -1.16
     },
     {
-      "ticker": "CHPL",
-      "chg24h": -0.95
-    },
-    {
       "ticker": "TYLA",
       "chg24h": -0.91
+    },
+    {
+      "ticker": "TEMS",
+      "chg24h": -0.79
     }
   ],
   "sectorIndices": [
@@ -147,7 +147,7 @@
     {
       "sector": "Latin",
       "avgPrice": 63.63,
-      "chg24h": 0.06,
+      "chg24h": 0.09,
       "members": [
         "BNNY",
         "PESO",
@@ -169,7 +169,7 @@
     {
       "sector": "Pop",
       "avgPrice": 88.23,
-      "chg24h": -0.18,
+      "chg24h": -0.14,
       "members": [
         "SABR",
         "TSWF",
@@ -201,7 +201,7 @@
     {
       "sector": "R&B",
       "avgPrice": 50.27,
-      "chg24h": -0.05,
+      "chg24h": 0.03,
       "members": [
         "WKND",
         "SZA",
@@ -280,7 +280,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebd258ecb0d66244e6300bcf64",
       "fairPrice": 40.28,
       "price": 40.28,
-      "chg24h": -0.95,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 1735,
       "youtube": {
@@ -381,7 +381,7 @@
       "fairPrice": 131.15,
       "price": 131.15,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 6394,
       "youtube": {
         "subscribers": 392000,
@@ -1580,8 +1580,8 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebe4d94f7cbebb17504c25d419",
       "fairPrice": 53.57,
       "price": 53.57,
-      "chg24h": -0.72,
-      "volatility30d": 0.004,
+      "chg24h": 0.0,
+      "volatility30d": 0.003,
       "volume": 2317,
       "youtube": {
         "subscribers": 13700,
@@ -1805,8 +1805,8 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb0405b03342c2e56751b9923d",
       "fairPrice": 97.4,
       "price": 97.4,
-      "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "chg24h": 0.4,
+      "volatility30d": 0.005,
       "volume": 3866,
       "youtube": {
         "subscribers": 90200,
@@ -1981,7 +1981,7 @@
       "fairPrice": 42.38,
       "price": 42.38,
       "chg24h": -0.91,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 1610,
       "youtube": {
         "subscribers": 5940000,
@@ -2581,7 +2581,7 @@
       "fairPrice": 41.88,
       "price": 41.88,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2649,
       "youtube": {
         "subscribers": 4300000,
