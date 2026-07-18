@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-18T11:11:35Z",
+  "updatedAt": "2026-07-18T12:27:13Z",
   "marketIndex": 175.57,
   "rawAveragePrice": 58.24,
   "topGainers": [
@@ -448,7 +448,7 @@
       "genre": "Pop",
       "spotifyId": "5cj0lLjcoR7YOSnhnX0Po5",
       "popularity": 87,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 37862709,
       "monthlyListeners": 53780192,
       "listenersSource": "ratio-calibrated",
@@ -457,7 +457,7 @@
       "price": 72.65,
       "chg24h": -0.53,
       "volatility30d": 0.004,
-      "volume": 6646,
+      "volume": 3692,
       "youtube": {
         "subscribers": 4560,
         "views": 3759787360,
@@ -698,7 +698,7 @@
       "genre": "Pop",
       "spotifyId": "4tuJ0bMpJh08umKkEXKUI5",
       "popularity": 85,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 9898064,
       "monthlyListeners": 36347671,
       "listenersSource": "ratio-calibrated",
@@ -707,7 +707,7 @@
       "price": 47.52,
       "chg24h": -0.81,
       "volatility30d": 0.003,
-      "volume": 3398,
+      "volume": 1888,
       "youtube": {
         "subscribers": 845,
         "views": 553591783,
@@ -981,7 +981,7 @@
       "fairPrice": 73.79,
       "price": 73.79,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2991,
       "youtube": {
         "subscribers": 307000,
@@ -1981,7 +1981,7 @@
       "fairPrice": 42.27,
       "price": 42.27,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1611,
       "youtube": {
         "subscribers": 5940000,
@@ -2223,7 +2223,7 @@
       "genre": "Alt",
       "spotifyId": "6qqNVTkY8uBg9cP3Jd7DAH",
       "popularity": 91,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 128964257,
       "monthlyListeners": 78139443,
       "listenersSource": "ratio-calibrated",
@@ -2232,7 +2232,7 @@
       "price": 106.36,
       "chg24h": -0.36,
       "volatility30d": 0.004,
-      "volume": 12265,
+      "volume": 6814,
       "youtube": {
         "subscribers": 13800,
         "views": 5912087194,
