@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-18T12:27:13Z",
+  "updatedAt": "2026-07-18T13:58:50Z",
   "marketIndex": 175.57,
   "rawAveragePrice": 58.24,
   "topGainers": [
@@ -706,7 +706,7 @@
       "fairPrice": 47.52,
       "price": 47.52,
       "chg24h": -0.81,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 1888,
       "youtube": {
         "subscribers": 845,
@@ -834,7 +834,7 @@
       "volatility30d": 0.0,
       "volume": 1867,
       "youtube": {
-        "subscribers": 1290,
+        "subscribers": 1300,
         "views": 320982405,
         "videos": 133
       },
@@ -1247,8 +1247,8 @@
       "name": "Megan Thee Stallion",
       "genre": "Hip-hop",
       "spotifyId": "181bsRPaVXVlUKXrxwZfHK",
-      "popularity": 80,
-      "popularityDelta": 0,
+      "popularity": 81,
+      "popularityDelta": 1,
       "followers": 11830247,
       "monthlyListeners": 28353553,
       "listenersSource": "ratio-calibrated",
@@ -1257,7 +1257,7 @@
       "price": 40.81,
       "chg24h": -0.94,
       "volatility30d": 0.004,
-      "volume": 2064,
+      "volume": 3715,
       "youtube": {
         "subscribers": 7410000,
         "views": 4010241371,
