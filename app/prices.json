@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-24T17:05:49Z",
+  "updatedAt": "2026-07-24T18:59:00Z",
   "marketIndex": 175.58,
   "rawAveragePrice": 58.24,
   "topGainers": [
@@ -356,7 +356,7 @@
       "fairPrice": 90.78,
       "price": 90.78,
       "chg24h": -0.43,
-      "volatility30d": 0.007,
+      "volatility30d": 0.008,
       "volume": 4179,
       "youtube": {
         "subscribers": 10100,
@@ -935,7 +935,7 @@
       "volume": 1393,
       "youtube": {
         "subscribers": 962,
-        "views": 141717,
+        "views": 141743,
         "videos": 16
       },
       "youtubeBoost": 0.0,
@@ -1060,7 +1060,7 @@
       "volume": 1155,
       "youtube": {
         "subscribers": 802,
-        "views": 455479844,
+        "views": 455709431,
         "videos": 189
       },
       "youtubeBoost": 0.1196,
@@ -1236,7 +1236,7 @@
       "youtube": {
         "subscribers": 2770000,
         "views": 1628687794,
-        "videos": 581
+        "videos": 582
       },
       "youtubeBoost": 0.2022,
       "chartPositions": null,
@@ -1422,8 +1422,8 @@
       "name": "Summer Walker",
       "genre": "R&B",
       "spotifyId": "57LYzLEk2LcFghVwuWbcuS",
-      "popularity": 77,
-      "popularityDelta": 0,
+      "popularity": 78,
+      "popularityDelta": 1,
       "followers": 8693978,
       "monthlyListeners": 19242382,
       "listenersSource": "ratio-calibrated",
@@ -1432,7 +1432,7 @@
       "price": 25.47,
       "chg24h": -1.52,
       "volatility30d": 0.004,
-      "volume": 1769,
+      "volume": 3184,
       "youtube": {
         "subscribers": 1770,
         "views": 972225233,
@@ -2009,7 +2009,7 @@
       "volatility30d": 0.005,
       "volume": 2024,
       "youtube": {
-        "subscribers": 4860,
+        "subscribers": 4870,
         "views": 813246134,
         "videos": 302
       },
@@ -2178,17 +2178,17 @@
       "monthlyListeners": 36861475,
       "listenersSource": "ratio-calibrated",
       "image": "https://i.scdn.co/image/ab6761610000e5eb22d7d6f8981c7a27bf68a382",
-      "fairPrice": 48.18,
-      "price": 48.18,
+      "fairPrice": 48.19,
+      "price": 48.19,
       "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 1312,
       "youtube": {
         "subscribers": 1910,
-        "views": 472296010,
+        "views": 472577661,
         "videos": 67
       },
-      "youtubeBoost": 0.1203,
+      "youtubeBoost": 0.1204,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -2210,7 +2210,7 @@
       "volume": 1409,
       "youtube": {
         "subscribers": 1030,
-        "views": 280239416,
+        "views": 280324390,
         "videos": 122
       },
       "youtubeBoost": 0.1101,
@@ -2335,7 +2335,7 @@
       "volume": 1984,
       "youtube": {
         "subscribers": 22000,
-        "views": 614059515,
+        "views": 614272101,
         "videos": 746
       },
       "youtubeBoost": 0.1255,
@@ -2510,7 +2510,7 @@
       "volume": 1106,
       "youtube": {
         "subscribers": 1830,
-        "views": 156169172,
+        "views": 156242148,
         "videos": 88
       },
       "youtubeBoost": 0.0987,
@@ -2559,7 +2559,7 @@
       "volatility30d": 0.0,
       "volume": 951,
       "youtube": {
-        "subscribers": 448,
+        "subscribers": 449,
         "views": 189469077,
         "videos": 50
       },
