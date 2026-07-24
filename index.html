@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a0f0c">
+<title>WC 2026 · Predictions Pool</title>
+<meta property="og:title" content="⚽ World Cup 2026 — Predictions Pool">
+<meta property="og:description" content="Predict every match, beat your friends. Scores update live, points count themselves.">
+<meta property="og:url" content="https://muses.exchange/wc2026">
+<link rel="icon" href="icon-32.png">
+<style>
+  :root {
+    --bg: #0a0f0c; --bg2: #0f1610; --card: #131c15; --card2: #18241a;
+    --line: #233226; --line2: #2e4233;
+    --text: #e9f2ea; --mut: #93a896; --dim: #5f7263;
+    --green: #34d399; --green-dim: #34d39922;
+    --gold: #fbbf24; --red: #f87171; --blue: #7dd3fc;
+    --r: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-padding-top: 120px; }
+  body {
+    background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+  button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+  input, select { font: inherit; color: var(--text); }
+  img { display: block; }
+
+  /* ── Header ── */
+  .top {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px calc(10px);
+    background: linear-gradient(180deg, rgba(10,15,12,.97), rgba(10,15,12,.92));
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .top .ball { font-size: 22px; }
+  .top h1 { font-size: 17px; font-weight: 800; letter-spacing: .2px; }
+  .top h1 small { display: block; font-size: 11px; font-weight: 600; color: var(--mut); letter-spacing: .6px; text-transform: uppercase; }
+  .top .spacer { flex: 1; }
+  .userchip {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 12px 6px 6px; font-weight: 700; font-size: 13px;
+  }
+  .userchip .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--green-dim); color: var(--green);
+    display: grid; place-items: center; font-size: 12px; font-weight: 800;
+  }
+  .userchip.ghost { padding: 8px 14px; color: var(--green); border-color: var(--green); }
+
+  /* ── Hero strip ── */
+  .hero { padding: 14px 16px 4px; max-width: 980px; margin: 0 auto; width: 100%; }
+  .hero-card {
+    background: linear-gradient(135deg, var(--card2), var(--card));
+    border: 1px solid var(--line2); border-radius: var(--r);
+    padding: 12px 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  .hero-card .big { font-size: 16px; font-weight: 800; }
+  .hero-card .sub { font-size: 12.5px; color: var(--mut); }
+  .live-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--red); margin-right: 6px; animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+  .chip {
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--line2); color: var(--mut); background: var(--bg2);
+  }
+  .chip.warn { color: var(--gold); border-color: #fbbf2444; }
+  .chip.btnish { color: var(--green); border-color: #34d39944; cursor: pointer; }
+
+  /* ── Layout / views ── */
+  main { max-width: 980px; margin: 0 auto; padding: 12px 16px 32px; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .muted { color: var(--mut); }
+  .small { font-size: 12.5px; }
+
+  /* ── Filters ── */
+  .filters { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 12px; scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .fchip {
+    flex: 0 0 auto; font-size: 13px; font-weight: 700; padding: 7px 14px;
+    border-radius: 999px; border: 1px solid var(--line); color: var(--mut); background: var(--card);
+  }
+  .fchip.on { color: #07120b; background: var(--green); border-color: var(--green); }
+  .fchip .n { opacity: .75; font-weight: 600; }
+
+  /* ── Day sections & match cards ── */
+  .day-h {
+    position: sticky; top: 58px; z-index: 10;
+    font-size: 12.5px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase;
+    color: var(--mut); padding: 14px 2px 8px;
+    background: linear-gradient(180deg, var(--bg) 75%, transparent);
+  }
+  .day-h .today { color: var(--green); }
+  .mcard {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .mcard.live { border-color: #f8717155; }
+  .m-meta { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--dim); margin-bottom: 10px; flex-wrap: wrap; }
+  .m-meta .stagechip { color: var(--mut); font-weight: 700; }
+  .m-meta .statebadge { margin-left: auto; font-weight: 800; font-size: 11.5px; }
+  .statebadge.live { color: var(--red); }
+  .statebadge.ft { color: var(--mut); }
+  .statebadge.soon { color: var(--blue); }
+  .m-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
+  .team { display: flex; align-items: center; gap: 8px; min-width: 0; font-weight: 700; font-size: 14.5px; }
+  .team.away { flex-direction: row-reverse; text-align: right; }
+  .team .flag { width: 24px; height: 18px; object-fit: cover; border-radius: 3px; flex: 0 0 auto; background: var(--bg2); }
+  .team .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .team.tbd { color: var(--dim); font-weight: 600; }
+  .score-mid { text-align: center; min-width: 86px; }
+  .score-mid .res { font-size: 21px; font-weight: 900; letter-spacing: 1px; }
+  .score-mid .res .pen { display: block; font-size: 10.5px; color: var(--mut); font-weight: 600; letter-spacing: 0; }
+  .score-mid .ko { font-size: 13px; color: var(--mut); font-weight: 700; }
+  .predict { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; }
+  .predict .lbl { font-size: 11px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--dim); }
+  .pin {
+    width: 52px; height: 40px; text-align: center; font-size: 17px; font-weight: 800;
+    background: var(--bg2); border: 1px solid var(--line2); border-radius: 10px; outline: none;
+    -moz-appearance: textfield; appearance: textfield;
+  }
+  .pin::-webkit-outer-spin-button, .pin::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .pin:focus { border-color: var(--green); }
+  .savestate { font-size: 11.5px; font-weight: 700; min-width: 52px; }
+  .savestate.ok { color: var(--green); }
+  .savestate.err { color: var(--red); }
+  .mypick { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; font-size: 12.5px; color: var(--mut); flex-wrap: wrap; }
+  .pts { font-weight: 900; font-size: 12px; border-radius: 7px; padding: 2px 8px; }
+  .pts.p5 { background: #fbbf2426; color: var(--gold); }
+  .pts.p3 { background: #34d39926; color: var(--green); }
+  .pts.p2 { background: #7dd3fc22; color: var(--blue); }
+  .pts.p0 { background: #ffffff10; color: var(--dim); }
+  .others-toggle { width: 100%; text-align: center; margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--dim); padding: 4px; }
+  .others { margin-top: 8px; border-top: 1px dashed var(--line2); padding-top: 8px; display: none; }
+  .others.open { display: block; }
+  .orow { display: flex; align-items: center; gap: 8px; padding: 5px 2px; font-size: 13px; }
+  .orow .onm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mut); font-weight: 600; }
+  .orow .oinfo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .orow .oinfo .onm { flex: 0 0 auto; }
+  .orow.me .onm { color: var(--text); }
+  .orow .osub { font-size: 11px; color: var(--mut); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: .85; }
+  .orow .osc { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .predict .tipval { font-size: 17px; font-weight: 900; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+  .savebtn { background: var(--green); color: #07120b; font-weight: 800; border-radius: 9px; padding: 9px 16px; font-size: 13px; }
+  .editbtn { border: 1px solid var(--line2); color: var(--mut); font-weight: 700; border-radius: 9px; padding: 8px 14px; font-size: 13px; }
+  .advances { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+  .advances .lbl { font-size: 11px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--dim); width: 100%; text-align: center; margin-bottom: 2px; }
+  .adv-btn { flex: 1 1 0; min-width: 0; border: 1px solid var(--line2); color: var(--mut); background: var(--bg2); font-weight: 700; font-size: 13px; border-radius: 10px; padding: 9px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .adv-btn.on { background: var(--green); color: #07120b; border-color: var(--green); }
+
+  /* ── Groups ── */
+  .ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .gcard { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; }
+  .gcard h3 { font-size: 13px; letter-spacing: .8px; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+  .gtable { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .gtable th { font-size: 10.5px; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; text-align: center; padding: 2px 4px; font-weight: 700; }
+  .gtable th:first-child { text-align: left; }
+  .gtable td { padding: 5px 4px; text-align: center; font-variant-numeric: tabular-nums; border-top: 1px solid var(--line); }
+  .gtable td.tm { text-align: left; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+  .gtable td.tm img { width: 20px; height: 15px; object-fit: cover; border-radius: 2px; }
+  .gtable tr.q td:first-child { box-shadow: inset 3px 0 0 var(--green); }
+  .gtable td.p { font-weight: 900; }
+
+  /* ── Draw (visual bracket) ── */
+  #drawRounds { margin-bottom: 4px; }
+  .dpair { display: flex; align-items: stretch; margin-bottom: 26px; }
+  .dpair .dties { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+  .dpair .dconn { flex: 0 0 30px; position: relative; }
+  .dpair .dconn svg { position: absolute; inset: 0; display: block; overflow: visible; }
+  .btie { display: flex; gap: 12px; align-items: stretch; min-height: 60px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; cursor: pointer; transition: border-color .15s, background .15s; }
+  .btie:active { background: var(--card2); border-color: var(--line2); }
+  .dwhen { flex: 0 0 46px; display: flex; flex-direction: column; justify-content: center; gap: 2px; font-size: 11px; font-weight: 600; color: var(--dim); line-height: 1.2; text-align: left; }
+  .dwhen b { color: var(--text); font-weight: 800; font-size: 12px; }
+  .dteams { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 9px; justify-content: center; border-left: 1px solid var(--line); padding-left: 12px; }
+  .bteam { display: flex; align-items: center; gap: 9px; min-width: 0; font-weight: 700; font-size: 15px; }
+  .bteam .bflag { width: 26px; height: 19px; object-fit: cover; border-radius: 3px; flex: 0 0 auto; background: var(--bg2); box-shadow: 0 0 0 1px rgba(255,255,255,.06); }
+  .bteam .bnm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bteam .bnm.tbd { color: var(--dim); font-weight: 600; font-size: 12.5px; }
+  .bteam .bg { font-weight: 900; font-variant-numeric: tabular-nums; font-size: 16px; color: var(--mut); }
+  .bteam.won .bnm { color: var(--green); }
+  .bteam.won .bg { color: var(--green); }
+  .bteam.lost .bnm { color: var(--dim); }
+  .bteam.lost .bg { color: var(--dim); }
+  .bpen { font-size: 9.5px; color: var(--mut); font-weight: 600; }
+  .bnote { font-size: 10px; color: var(--gold); font-weight: 700; }
+  .bmine { color: var(--green); font-weight: 800; margin-top: 3px; font-size: 12px; }
+  .dlive { color: var(--red); font-weight: 800; font-size: 10px; }
+  .mcard.flash { animation: flash 1.6s ease-out; }
+  @keyframes flash { 0%, 30% { box-shadow: 0 0 0 2px var(--green); } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+  /* ── Leaderboard ── */
+  .finals-card { background: linear-gradient(135deg, #1a2317, var(--card)); border: 1px solid #fbbf2433; border-radius: var(--r); padding: 14px 16px; margin-bottom: 14px; }
+  .finals-card h3 { font-size: 14px; margin-bottom: 4px; }
+  .finals-card .row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
+  .finals-card select, .finals-card input {
+    background: var(--bg2); border: 1px solid var(--line2); border-radius: 10px;
+    padding: 9px 10px; outline: none; min-width: 0;
+  }
+  .finals-card select { flex: 2 1 150px; }
+  .finals-card input { flex: 1 1 90px; width: 90px; }
+  .btn {
+    background: var(--green); color: #07120b; font-weight: 800; border-radius: 10px;
+    padding: 9px 16px; font-size: 14px;
+  }
+  .btn:disabled { opacity: .5; }
+  .btn.ghost { background: none; border: 1px solid var(--line2); color: var(--text); }
+  .lb { width: 100%; border-collapse: collapse; }
+  .lb td, .lb th { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+  .lb th { font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: var(--dim); font-weight: 700; }
+  .lb td.nm, .lb th.nm { text-align: left; }
+  .lb td.rk { color: var(--dim); font-weight: 800; width: 30px; text-align: left; }
+  .lb tr.me td { background: #34d39910; }
+  .lb td.nm { font-weight: 700; }
+  .lb td.nm .champ { display: block; font-size: 11px; color: var(--mut); font-weight: 600; }
+  .lb td.tot { font-weight: 900; font-size: 16px; color: var(--gold); }
+  .lb tbody tr:nth-child(1) td.rk::before { content: "🥇"; }
+  .lb tbody tr:nth-child(2) td.rk::before { content: "🥈"; }
+  .lb tbody tr:nth-child(3) td.rk::before { content: "🥉"; }
+  .lb tbody tr:nth-child(-n+3) td.rk { font-size: 0; }
+  .lb tbody tr:nth-child(-n+3) td.rk::before { font-size: 15px; }
+
+  /* ── Rules ── */
+  .rules-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; margin-bottom: 12px; }
+  .rules-card h3 { font-size: 14px; margin-bottom: 8px; color: var(--green); }
+  .rules-card p, .rules-card li { color: var(--mut); font-size: 14px; margin-bottom: 6px; }
+  .rules-card ul { padding-left: 18px; }
+  .rules-card b { color: var(--text); }
+
+  /* ── Bottom nav / tabs ── */
+  .tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    display: flex; justify-content: space-around;
+    background: rgba(13,19,15,.97); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+  }
+  .tabs button {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 10.5px; font-weight: 700; color: var(--dim); letter-spacing: .3px;
+  }
+  .tabs button .ico { font-size: 19px; }
+  .tabs button.on { color: var(--green); }
+  @media (min-width: 760px) {
+    body { padding-bottom: 32px; }
+    .tabs { position: sticky; top: 0; bottom: auto; order: -1; border-top: 0; }
+    .tabs { position: static; background: none; backdrop-filter: none; border: 0; max-width: 980px; margin: 4px auto 0; justify-content: flex-start; gap: 6px; padding: 0 16px; }
+    .tabs button { flex: 0 0 auto; flex-direction: row; gap: 7px; font-size: 13.5px; padding: 8px 14px; border-radius: 999px; border: 1px solid transparent; }
+    .tabs button.on { background: var(--card); border-color: var(--line2); }
+  }
+
+  /* ── Modal / toast ── */
+  .backdrop {
+    position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.72);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: none; place-items: center; padding: 20px;
+  }
+  .backdrop.open { display: grid; }
+  .modal {
+    width: 100%; max-width: 400px; background: var(--bg2);
+    border: 1px solid var(--line2); border-radius: 18px; padding: 22px;
+  }
+  .modal h2 { font-size: 19px; margin-bottom: 6px; }
+  .modal .sub { color: var(--mut); font-size: 13.5px; margin-bottom: 16px; }
+  .modal label { display: block; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--dim); margin: 12px 0 6px; }
+  .modal input {
+    width: 100%; background: var(--card); border: 1px solid var(--line2);
+    border-radius: 10px; padding: 12px; font-size: 16px; outline: none;
+  }
+  .modal input:focus { border-color: var(--green); }
+  .modal .err { color: var(--red); font-size: 13px; min-height: 18px; margin-top: 10px; font-weight: 600; }
+  .modal .btn { width: 100%; margin-top: 6px; padding: 13px; font-size: 15px; }
+  .modal .skip { width: 100%; text-align: center; color: var(--dim); font-size: 13px; margin-top: 12px; }
+  .menu-list { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
+  .menu-list button { text-align: left; padding: 12px 10px; border-radius: 10px; font-weight: 600; font-size: 14.5px; display: flex; gap: 10px; align-items: center; }
+  .menu-list button:active { background: var(--card); }
+  .menu-list .danger { color: var(--red); }
+  #toast {
+    position: fixed; left: 50%; transform: translateX(-50%);
+    bottom: calc(86px + env(safe-area-inset-bottom)); z-index: 200;
+    background: #1c2a1f; border: 1px solid var(--line2); color: var(--text);
+    border-radius: 12px; padding: 11px 18px; font-size: 13.5px; font-weight: 600;
+    opacity: 0; pointer-events: none; transition: opacity .25s; max-width: 90vw; text-align: center;
+  }
+  #toast.show { opacity: 1; }
+  #updateBar {
+    position: fixed; left: 12px; right: 12px; z-index: 240;
+    top: calc(8px + env(safe-area-inset-top));
+    background: var(--green); color: #07120b; border-radius: 12px;
+    padding: 11px 14px; font-size: 13.5px; font-weight: 800;
+    display: none; align-items: center; gap: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.4);
+  }
+  #updateBar.show { display: flex; }
+  #updateBar .msg { flex: 1; }
+  #updateBar button { background: #07120b; color: var(--green); font-weight: 800; border-radius: 8px; padding: 7px 14px; font-size: 13px; }
+  .src-note { text-align: center; color: var(--dim); font-size: 11.5px; padding: 18px 0 4px; }
+  .empty { text-align: center; color: var(--mut); padding: 36px 12px; font-size: 14px; }
+  .skel { height: 86px; border-radius: var(--r); background: linear-gradient(110deg, var(--card) 8%, var(--card2) 18%, var(--card) 33%); background-size: 200% 100%; animation: sh 1.2s linear infinite; margin-bottom: 10px; }
+  @keyframes sh { to { background-position-x: -200% } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="ball">⚽</span>
+  <h1>World Cup 2026<small>Predictions Pool</small></h1>
+  <span class="spacer"></span>
+  <button class="userchip ghost" id="userBtn">Join</button>
+</header>
+
+<div class="hero"><div class="hero-card" id="heroCard"><span class="sub">Loading schedule…</span></div></div>
+
+<nav class="tabs" id="tabs">
+  <button data-v="matches" class="on"><span class="ico">📅</span>Matches</button>
+  <button data-v="groups"><span class="ico">🏟️</span>Groups</button>
+  <button data-v="bracket"><span class="ico">🥊</span>Draw</button>
+  <button data-v="board"><span class="ico">🏆</span>Leaderboard</button>
+  <button data-v="bonus"><span class="ico">🎯</span>Bonus</button>
+  <button data-v="rules"><span class="ico">📖</span>Rules</button>
+</nav>
+
+<main>
+  <section class="view active" id="view-matches">
+    <div class="filters" id="filters">
+      <button class="fchip on" data-f="all">All</button>
+      <button class="fchip" data-f="today">Today</button>
+      <button class="fchip" data-f="open">To predict <span class="n" id="openCount"></span></button>
+      <button class="fchip" data-f="live">Live</button>
+      <button class="fchip" data-f="done">Finished</button>
+    </div>
+    <div id="matchList"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+    <div class="src-note" id="srcNote"></div>
+  </section>
+
+  <section class="view" id="view-groups">
+    <p class="muted small" style="margin:4px 2px 12px">Standings update automatically from results. Top 2 of each group advance, plus the 8 best third-placed teams.</p>
+    <div class="ggrid" id="groupGrid"></div>
+  </section>
+
+  <section class="view" id="view-bracket">
+    <div class="filters" id="drawRounds"></div>
+    <div id="bracketBox"></div>
+  </section>
+
+  <section class="view" id="view-board">
+    <div id="boardBox"></div>
+  </section>
+
+  <section class="view" id="view-bonus">
+    <div id="finalsBox"></div>
+    <div id="bootRace"></div>
+    <div id="bonusList"></div>
+  </section>
+
+  <section class="view" id="view-rules">
+    <div class="rules-card">
+      <h3>How it works</h3>
+      <p>Predict the score of every World Cup match before kickoff. Points are awarded automatically when matches finish — no admin, no spreadsheets.</p>
+    </div>
+    <div class="rules-card">
+      <h3>Scoring</h3>
+      <ul>
+        <li><b>5 points</b> — exact score (you said 2–1, it ended 2–1)</li>
+        <li><b>3 points</b> — right winner and right goal difference (you said 2–1, it ended 3–2) — or a correctly predicted draw with the wrong score</li>
+        <li><b>2 points</b> — right winner only</li>
+        <li><b>0 points</b> — wrong result</li>
+        <li><b>+15 points</b> — your champion pick wins the World Cup (Bonus tab)</li>
+        <li><b>+10 points</b> — your top-scorer pick wins the Golden Boot (Bonus tab; a tie for most goals counts, own goals and shootout kicks don't)</li>
+        <li><b>+3 points</b> — knockout matches only: correctly predict how it's decided — <b>90 minutes</b>, <b>extra time</b>, or <b>penalties</b></li>
+        <li><b>+1 point</b> — if you predicted penalties and also correctly pick which team <b>wins the shootout</b></li>
+      </ul>
+    </div>
+    <div class="rules-card">
+      <h3>The fine print</h3>
+      <ul>
+        <li>Predictions save automatically and <b>lock 30 minutes before kickoff</b> (enforced server-side). Until then, use <b>Edit</b> to change them as often as you like.</li>
+        <li>Other people's predictions stay <b>hidden until the lock</b> (30 min before kickoff). After that they show on the match card — and you can tap any player on the leaderboard to see everything they filled in.</li>
+        <li>Knockout matches count the score <b>after extra time</b>; penalty shootouts don't add goals. Predicting a draw in a knockout match is allowed. On top of the score you predict <b>how it's decided</b> (90 min / extra time / penalties) for <b>+3</b>.</li>
+        <li>Bonus picks (champion + top scorer) stay open until the deadline shown on the Bonus tab.</li>
+        <li>Tiebreakers: most exact scores, then most correct results.</li>
+        <li>Results come from ESPN automatically: live scores roughly every minute while you have the page open, final results within ~30 minutes.</li>
+      </ul>
+    </div>
+    <div class="rules-card">
+      <h3>Invite friends</h3>
+      <p>Anyone with the link can join with just a name and a PIN:</p>
+      <div style="margin-top:10px"><button class="btn" id="inviteBtn2">Share invite link</button></div>
+    </div>
+  </section>
+</main>
+
+<!-- Join / sign-in modal -->
+<div class="backdrop" id="joinModal">
+  <div class="modal">
+    <h2>Join the pool ⚽</h2>
+    <p class="sub">Pick a name and a PIN. Same name + PIN signs you back in on any device.</p>
+    <label>Your name</label>
+    <input id="jName" maxlength="24" autocomplete="nickname" placeholder="e.g. Sander">
+    <label>PIN (4–8 digits)</label>
+    <input id="jPin" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="••••" type="password">
+    <div class="err" id="jErr"></div>
+    <button class="btn" id="jGo">Join / Sign in</button>
+    <button class="skip" id="jSkip">Just browsing for now</button>
+  </div>
+</div>
+
+<!-- User menu modal -->
+<div class="backdrop" id="menuModal">
+  <div class="modal">
+    <h2 id="menuName"></h2>
+    <p class="sub" id="menuSub"></p>
+    <div class="menu-list">
+      <button id="mInvite">📲 Invite friends (WhatsApp-ready)</button>
+      <button id="mPicks">🎯 My bonus picks</button>
+      <button id="mResetPin" style="display:none">🛠️ Admin: reset a player's PIN</button>
+      <button id="mSetScorer" style="display:none">🛠️ Admin: set official top scorer</button>
+      <button id="mSetDecided" style="display:none">🛠️ Admin: fix how a match was decided</button>
+      <button id="mLogout" class="danger">🚪 Sign out on this device</button>
+    </div>
+    <button class="skip" id="menuClose">Close</button>
+  </div>
+</div>
+
+<!-- Save-confirmation popup -->
+<div class="backdrop" id="saveModal">
+  <div class="modal">
+    <h2>Save your prediction?</h2>
+    <p class="sub" id="saveModalMatch" style="font-size:16px;font-weight:800;color:var(--text)"></p>
+    <p class="sub">From now on predictions save automatically as you type. You can change them with the Edit button until 30 min before kickoff.</p>
+    <button class="btn" id="saveModalGo">✓ Save prediction</button>
+    <button class="skip" id="saveModalCancel">Cancel</button>
+  </div>
+</div>
+
+<!-- Player detail: everything they filled in (revealed picks only) -->
+<div class="backdrop" id="playerModal">
+  <div class="modal" style="max-height:80vh;overflow-y:auto">
+    <h2 id="pmName"></h2>
+    <p class="sub" id="pmStats"></p>
+    <div id="pmBody"></div>
+    <button class="skip" id="pmClose">Close</button>
+  </div>
+</div>
+
+<div id="updateBar"><span class="msg">✨ New version available</span><button id="updateBtn">Refresh</button></div>
+<div id="toast"></div>
+
+<!-- relative path: works at muses.exchange/wc2026 AND on the GitHub Pages mirror -->
+<script src="app/wc2026-data.js"></script>
+<script type="module">
+/* ════════════════════════════════════════════════════════════════════════
+   WC2026 predictions pool.
+   Data flow:
+     schedule/results  -> committed JSON (GitHub Action) + direct ESPN polls
+     players/picks     -> Supabase (RPC writes, RLS-filtered reads)
+     points            -> pure client-side function of (predictions × results)
+   ════════════════════════════════════════════════════════════════════════ */
+
+const SUPABASE_URL = 'https://bhyjdvqbfearmrkxvppl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_rJy9Oi0xt7U2HfiUs1-S9w_klZz82Lh';
+const SCORING = { exact: 5, diff: 3, outcome: 2, champion: 15, topScorer: 10, method: 3, shootout: 1 };
+const METHOD_LABEL = { REGULAR: '90 minutes', EXTRA: 'Extra time', PENS: 'Penalties' };
+const LOCK_MS = 30 * 60e3; // predictions stay open until 30 min before kickoff
+// diacritic/case-insensitive name compare ("mbappe" matches "Mbappé")
+const normName = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+const POOL = 'main'; // each pool has its own players, predictions & leaderboard
+const ESPN = 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard';
+const STAGE_LABEL = { GROUP: 'Group', R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarter-final', SF: 'Semi-final', THIRD: 'Third place', FINAL: 'Final' };
+// invite links point at wherever the page is currently served from
+const POOL_URL = location.origin + location.pathname;
+// Final-draw groups (ESPN team names) — fallback when the feed lacks letters.
+const TEAM_GROUPS = (() => {
+  const g = {
+    A: ['Mexico', 'South Africa', 'South Korea', 'Czechia'],
+    B: ['Canada', 'Bosnia-Herzegovina', 'Qatar', 'Switzerland'],
+    C: ['Brazil', 'Morocco', 'Haiti', 'Scotland'],
+    D: ['United States', 'Paraguay', 'Australia', 'Türkiye'],
+    E: ['Germany', 'Curaçao', 'Ivory Coast', 'Ecuador'],
+    F: ['Netherlands', 'Japan', 'Sweden', 'Tunisia'],
+    G: ['Belgium', 'Egypt', 'Iran', 'New Zealand'],
+    H: ['Spain', 'Cape Verde', 'Saudi Arabia', 'Uruguay'],
+    I: ['France', 'Senegal', 'Iraq', 'Norway'],
+    J: ['Argentina', 'Algeria', 'Austria', 'Jordan'],
+    K: ['Portugal', 'Congo DR', 'Uzbekistan', 'Colombia'],
+    L: ['England', 'Croatia', 'Ghana', 'Panama'],
+  };
+  const map = {};
+  for (const [letter, teams] of Object.entries(g)) for (const t of teams) map[t] = letter;
+  return map;
+})();
+const isTbdTeam = (t) => !!t?.tbd || !t?.name || t.name === 'TBD' || /(1st|2nd|3rd)\s+place|winner|runner|loser|\btbd\b/i.test(t.name);
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const state = {
+  matches: [],            // normalized matches, sorted by date
+  dbMatches: new Map(),   // id -> {kickoff, stage}
+  players: [],
+  preds: new Map(),       // matchId -> [{player_id, h, a}]
+  finals: new Map(),      // player_id -> {champion, top_scorer}
+  mine: new Map(),        // matchId -> {h, a}
+  myFinal: null,
+  auth: null,             // {token, player_id, name, is_admin}
+  sb: null,
+  filter: 'all',
+  drawRound: 'R32',       // selected round on the Draw tab
+  view: 'matches',
+  openOthers: new Set(),
+  editing: new Set(),     // matchIds whose saved tip is being edited
+  methodDraft: new Map(), // matchId -> REGULAR/EXTRA/PENS pick not yet saved
+  soPickDraft: new Map(), // matchId -> 'home'/'away' shootout-winner pick not yet saved
+  pendingSave: null,      // {matchId, h, a, method, soPick} awaiting popup confirmation
+  settings: new Map(),    // wc_settings key -> value (e.g. official top_scorer)
+  topScorers: [],         // golden-boot tally from the data feed
+  fetchedAt: null,
+  scrolled: false,
+};
+
+/* ── tiny utils ── */
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove('show'), 2600);
+}
+const fmtTime = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
+const fmtDay = new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+const fmtDateTime = new Intl.DateTimeFormat(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+const dayKey = (iso) => { const d = new Date(iso); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const todayKey = () => dayKey(new Date().toISOString());
+
+function kickoffOf(m) {
+  const db = state.dbMatches.get(m.id);
+  return new Date(db?.kickoff || m.date);
+}
+// When does this match stop accepting predictions? Normally 30 min before
+// kickoff, but an admin can override a single match via predict_until.
+function lockAt(m) {
+  const db = state.dbMatches.get(m.id);
+  if (db && db.predict_until) return new Date(db.predict_until).getTime();
+  return kickoffOf(m).getTime() - LOCK_MS;
+}
+const isLocked = (m) => Date.now() >= lockAt(m);
+const isLive = (m) => m.state === 'in';
+const firstKickoff = () => {
+  let min = null;
+  for (const m of state.matches) { const k = kickoffOf(m).getTime(); if (min === null || k < min) min = k; }
+  for (const r of state.dbMatches.values()) { const k = new Date(r.kickoff).getTime(); if (min === null || k < min) min = k; }
+  return min;
+};
+// Bonus picks close at the admin-set deadline (wc_settings.bonus_deadline)
+// if present, otherwise the default rule (30 min before the opening match).
+function bonusDeadlineMs() {
+  const v = state.settings.get('bonus_deadline');
+  if (v) { const t = new Date(v).getTime(); if (!isNaN(t)) return t; }
+  const f = firstKickoff();
+  return f !== null ? f - LOCK_MS : null;
+}
+const finalsLocked = () => { const d = bonusDeadlineMs(); return d !== null && Date.now() >= d; };
+
+/* ── scoring: the one true function ── */
+function matchPoints(p, m) {
+  if (!m.completed || m.hs == null || m.as == null || !p) return null;
+  if (p.h === m.hs && p.a === m.as) return SCORING.exact;
+  const ps = Math.sign(p.h - p.a), as = Math.sign(m.hs - m.as);
+  if (ps !== as) return 0;
+  if ((p.h - p.a) === (m.hs - m.as)) return SCORING.diff;
+  return SCORING.outcome;
+}
+
+function championWinner() {
+  const fin = state.matches.find((m) => m.stage === 'FINAL' && m.completed);
+  if (!fin) return null;
+  const side = fin.advances || fin.winner;
+  if (side === 'home') return fin.home.name;
+  if (side === 'away') return fin.away.name;
+  return null;
+}
+
+// How a knockout match was decided: admin override wins, else the feed's
+// auto-detected value (REGULAR/EXTRA/PENS), else null (not yet known).
+function methodOf(m) {
+  const db = state.dbMatches.get(m.id);
+  return (db && db.decided_by) || m.decidedBy || null;
+}
+// Who won the shootout (only meaningful when decided on penalties).
+function shootoutWinner(m) {
+  if (m.so && m.so.h != null && m.so.a != null && m.so.h !== m.so.a) return m.so.h > m.so.a ? 'home' : 'away';
+  return m.advances || null;
+}
+
+// Readable knockout method line, e.g. "in 90 minutes", "in extra time",
+// "on penalties — Canada". Empty for group matches / no pick.
+function methodPhrase(p, m) {
+  if (m.stage === 'GROUP' || !p.method) return '';
+  const L = { REGULAR: 'in 90 minutes', EXTRA: 'in extra time', PENS: 'on penalties' };
+  let s = L[p.method] || '';
+  if (p.method === 'PENS' && p.soPick) s += ` — ${(p.soPick === 'home' ? m.home : m.away).name || ''}`;
+  return s;
+}
+// Knockout bonus once the match is decided: null = not decided, 0 = wrong,
+// else +3 (method) and +1 more if the shootout winner was also right.
+function methodBonus(p, m) {
+  const dec = methodOf(m);
+  if (!dec || m.stage === 'GROUP' || !p.method) return null;
+  if (p.method !== dec) return 0;
+  let b = SCORING.method;
+  if (dec === 'PENS' && p.soPick && p.soPick === shootoutWinner(m)) b += SCORING.shootout;
+  return b;
+}
+
+// Golden-boot tally: prefer the feed's aggregate, else count match scorers.
+function topScorerTally() {
+  if (state.topScorers.length) return state.topScorers;
+  const map = new Map();
+  for (const m of state.matches) {
+    for (const s of m.scorers || []) {
+      const k = normName(s.n);
+      if (!k) continue;
+      const e = map.get(k) || { name: s.n, goals: 0 };
+      e.goals += 1;
+      map.set(k, e);
+    }
+  }
+  return [...map.values()].sort((a, b) => b.goals - a.goals || a.name.localeCompare(b.name));
+}
+
+// Who wins the +10: the admin-set official answer if present, otherwise —
+// once every match is final — everyone tied for most goals.
+function officialTopScorers() {
+  const override = state.settings.get('top_scorer');
+  if (override) return new Set(override.split(',').map(normName).filter(Boolean));
+  if (!state.matches.length || !state.matches.every((m) => m.completed)) return new Set();
+  const tally = topScorerTally();
+  if (!tally.length) return new Set();
+  const max = tally[0].goals;
+  return new Set(tally.filter((t) => t.goals === max).map((t) => normName(t.name)));
+}
+
+function playerTotals() {
+  const today = todayKey();
+  const champ = championWinner();
+  const scorers = officialTopScorers();
+  const rows = state.players.map((pl) => {
+    let total = 0, exacts = 0, correct = 0, todayPts = 0, predicted = 0;
+    for (const m of state.matches) {
+      const list = state.preds.get(m.id);
+      const p = list?.find((x) => x.player_id === pl.id);
+      if (!p) continue;
+      predicted++;
+      const pts = matchPoints(p, m);
+      if (pts == null) continue;
+      let mPts = pts;
+      // knockout bonus: +3 for how it's decided, +1 for the shootout winner
+      const dec = methodOf(m);
+      if (m.stage !== 'GROUP' && dec && p.method && p.method === dec) {
+        mPts += SCORING.method;
+        if (dec === 'PENS' && p.soPick) {
+          const sw = shootoutWinner(m);
+          if (sw && p.soPick === sw) mPts += SCORING.shootout;
+        }
+      }
+      total += mPts;
+      if (pts === SCORING.exact) exacts++;
+      if (pts > 0) correct++;
+      if (dayKey(m.date) === today) todayPts += mPts;
+    }
+    const fin = state.finals.get(pl.id);
+    let champHit = false, scorerHit = false;
+    if (champ && fin?.champion && normName(fin.champion) === normName(champ)) {
+      total += SCORING.champion; champHit = true;
+    }
+    if (scorers.size && fin?.top_scorer && scorers.has(normName(fin.top_scorer))) {
+      total += SCORING.topScorer; scorerHit = true;
+    }
+    return { ...pl, total, exacts, correct, todayPts, predicted, fin, champHit, scorerHit };
+  });
+  rows.sort((a, b) => b.total - a.total || b.exacts - a.exacts
+    || b.correct - a.correct || a.name.localeCompare(b.name));
+  return { rows };
+}
+
+/* ════════════════ data loading ════════════════ */
+
+function normalizeBaseline(data) {
+  if (!data?.matches?.length) return false;
+  const map = new Map(state.matches.map((m) => [m.id, m]));
+  for (const m of data.matches) {
+    const old = map.get(m.id);
+    if (old && !m.scorers && old.scorers) m.scorers = old.scorers;
+    if (old && !m.decidedBy && old.decidedBy) m.decidedBy = old.decidedBy;
+    map.set(m.id, m);
+  }
+  state.matches = [...map.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  state.fetchedAt = data.fetchedAt || state.fetchedAt;
+  if (data.topScorers?.length) state.topScorers = data.topScorers;
+  return true;
+}
+
+async function loadBaseline() {
+  if (window.WC2026_DATA) normalizeBaseline(window.WC2026_DATA);
+  // Raw GitHub first: always the latest bot commit, without needing a host
+  // deploy (data commits are [skip netlify] to save build credits). The
+  // host's own copy is the fallback.
+  const sources = [
+    'https://raw.githubusercontent.com/covevibe-alt/muses-exchange/main/app/wc2026-data.json',
+    'app/wc2026-data.json',
+  ];
+  for (const src of sources) {
+    try {
+      const r = await fetch(src, { cache: 'no-store' });
+      if (r.ok && normalizeBaseline(await r.json())) return;
+    } catch { /* try next source; ESPN bootstrap covers total failure */ }
+  }
+}
+
+/* Direct ESPN poll — live scores between Action commits, and full bootstrap
+   if the committed feed doesn't exist yet. Mirrors app/wc2026-fetch.py. */
+function parseEspnEvent(ev) {
+  const comp = (ev.competitions || [])[0] || {};
+  const rawDate = ev.date || comp.date;
+  const dt = rawDate ? new Date(rawDate) : null;
+  if (!ev.id || !dt || isNaN(dt)) return null;
+  const iso = dt.toISOString().replace('.000Z', 'Z');
+  const notes = (comp.notes || ev.notes || []).map((n) => n.headline || '').join(' ');
+  const team = (c) => {
+    const t = c?.team || {};
+    const out = { id: String(t.id || ''), name: t.displayName || t.name || 'TBD', abbr: t.abbreviation || '', logo: t.logo || t.logos?.[0]?.href || '' };
+    if (isTbdTeam(out)) out.tbd = true;
+    return out;
+  };
+  const num = (v) => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : null; };
+  let home = null, away = null, hW = false, aW = false, hs = null, as = null, soH = null, soA = null;
+  for (const c of comp.competitors || []) {
+    const t = team(c);
+    if (c.homeAway === 'home') { home = t; hs = num(c.score); soH = num(c.shootoutScore); hW = !!c.winner; }
+    if (c.homeAway === 'away') { away = t; as = num(c.score); soA = num(c.shootoutScore); aW = !!c.winner; }
+  }
+  const st = comp.status || ev.status || {}; const ty = st.type || {};
+  const completed = !!ty.completed;
+  let winner = null, advances = null;
+  if (completed && hs != null && as != null) {
+    winner = hs > as ? 'home' : as > hs ? 'away' : 'draw';
+    advances = hW ? 'home' : aW ? 'away' : (winner !== 'draw' ? winner : null);
+  }
+  // Calendar fallback boundaries are US-Eastern days; shift -4h so late
+  // kickoffs that spill past midnight UTC stay on the right matchday.
+  const day = new Date(dt.getTime() - 4 * 3600e3).toISOString().slice(0, 10);
+  const stageGuess = /round of 32/i.test(notes) ? 'R32' : /round of 16/i.test(notes) ? 'R16'
+    : /quarter/i.test(notes) ? 'QF' : /semi/i.test(notes) ? 'SF' : /third/i.test(notes) ? 'THIRD'
+    : /\bfinal\b/i.test(notes) ? 'FINAL' : /group/i.test(notes) ? 'GROUP'
+    : day <= '2026-06-27' ? 'GROUP' : day <= '2026-07-03' ? 'R32' : day <= '2026-07-07' ? 'R16'
+    : day <= '2026-07-12' ? 'QF' : day <= '2026-07-16' ? 'SF' : day <= '2026-07-18' ? 'THIRD' : 'FINAL';
+  const g = notes.match(/group\s+([A-L])\b/i);
+  let group = g ? g[1].toUpperCase() : null;
+  if (!group && stageGuess === 'GROUP' && home && away
+      && TEAM_GROUPS[home.name] && TEAM_GROUPS[home.name] === TEAM_GROUPS[away.name]) {
+    group = TEAM_GROUPS[home.name];
+  }
+  const goalScorers = (comp.details || [])
+    .filter((d) => d?.scoringPlay && !d.ownGoal)
+    .map((d) => ({ n: d.athletesInvolved?.[0]?.displayName }))
+    .filter((s) => s.n)
+    .slice(0, 30);
+  // How a knockout match was decided (mirrors app/wc2026-fetch.py).
+  let decidedBy = null;
+  if (completed && stageGuess !== 'GROUP') {
+    const soPresent = soH != null || soA != null;
+    const nm = (ty.name || '').toUpperCase();
+    const txt = `${ty.detail || ''} ${ty.shortDetail || ''} ${ty.description || ''}`.toUpperCase();
+    const period = st.period;
+    if (soPresent || /PEN|SHOOTOUT/.test(nm) || /PEN/.test(txt)) decidedBy = 'PENS';
+    else if (/AET|EXTRA/.test(nm) || /AET|EXTRA/.test(txt) || (typeof period === 'number' && period >= 3)) decidedBy = 'EXTRA';
+    else decidedBy = 'REGULAR';
+  }
+  return {
+    id: String(ev.id), date: iso,
+    stage: stageGuess, group,
+    venue: comp.venue?.fullName || '', city: comp.venue?.address?.city || '',
+    home: home || { id: '', name: 'TBD', abbr: '', logo: '' },
+    away: away || { id: '', name: 'TBD', abbr: '', logo: '' },
+    state: ty.state || 'pre', completed,
+    detail: ty.shortDetail || ty.detail || '', clock: st.displayClock || '',
+    hs, as, so: (soH != null || soA != null) ? { h: soH, a: soA } : null,
+    winner, advances, decidedBy,
+    scorers: goalScorers.length ? goalScorers : null,
+  };
+}
+
+async function espnFetch(rangeParam) {
+  const r = await fetch(`${ESPN}?dates=${rangeParam}&limit=400`, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`espn ${r.status}`);
+  const json = await r.json();
+  const parsed = (json.events || []).map((e) => { try { return parseEspnEvent(e); } catch { return null; } }).filter(Boolean);
+  if (!parsed.length) return false;
+  const map = new Map(state.matches.map((m) => [m.id, m]));
+  for (const p of parsed) {
+    const old = map.get(p.id);
+    // Keep baseline stage/group/scorers when known — live payloads can be thin.
+    if (old) map.set(p.id, { ...old, ...p, stage: old.stage || p.stage, group: old.group ?? p.group, scorers: p.scorers ?? old.scorers, decidedBy: p.decidedBy ?? old.decidedBy });
+    else map.set(p.id, p);
+  }
+  state.matches = [...map.values()].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  return true;
+}
+
+const espnBootstrap = () => espnFetch('20260608-20260722').catch(() => false);
+
+async function espnLiveTick() {
+  if (document.hidden) return;
+  const now = Date.now();
+  // Refresh from ESPN when a match is live, about to start, OR kicked off in
+  // the last 24h but still isn't marked finished — the last case self-heals
+  // results the scheduled bot missed (GitHub drops scheduled runs often), so
+  // a finished match never stays stuck on "Scheduled" once someone opens it.
+  const need = state.matches.some((m) => {
+    const k = kickoffOf(m).getTime();
+    return isLive(m) || (!m.completed && now >= k - 10 * 60e3 && now <= k + 24 * 3600e3);
+  });
+  if (!need) return;
+  const d = new Date(); const fmt = (x) => x.toISOString().slice(0, 10).replaceAll('-', '');
+  const a = new Date(d.getTime() - 36e5 * 36), b = new Date(d.getTime() + 36e5 * 24);
+  if (await espnFetch(`${fmt(a)}-${fmt(b)}`).catch(() => false)) render();
+}
+
+/* ── Supabase ── */
+async function initSb() {
+  const mod = await import('https://esm.sh/@supabase/supabase-js@2');
+  state.sb = mod.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
+}
+
+async function fetchAll(table, cols, orderCols, eq) {
+  // unique ordering so >1000-row pagination can't skip/duplicate rows
+  const out = [];
+  for (let from = 0; ; from += 1000) {
+    let q = state.sb.from(table).select(cols);
+    if (eq) q = q.eq(eq[0], eq[1]);
+    for (const c of orderCols) q = q.order(c);
+    const { data, error } = await q.range(from, from + 999);
+    if (error) throw error;
+    out.push(...(data || []));
+    if (!data || data.length < 1000) break;
+  }
+  return out;
+}
+
+async function loadDb() {
+  if (!state.sb) return;
+  try {
+    const [matches, players, preds, finals, settings] = await Promise.all([
+      fetchAll('wc_matches', 'id,kickoff,stage,group_name,predict_until,decided_by', ['id']),
+      fetchAll('wc_players', 'id,name,is_admin,created_at', ['id'], ['pool', POOL]),
+      fetchAll('wc_predictions', 'player_id,match_id,home_goals,away_goals,method_pick,so_pick', ['match_id', 'player_id']),
+      fetchAll('wc_finals', 'player_id,champion,top_scorer', ['player_id']),
+      fetchAll('wc_settings', 'key,value', ['key']),
+    ]);
+    state.dbMatches = new Map(matches.map((m) => [m.id, m]));
+    state.players = players.sort((a, b) => a.name.localeCompare(b.name));
+    const inPool = new Set(players.map((p) => p.id)); // other pools share these tables
+    state.preds = new Map();
+    for (const p of preds) {
+      if (!inPool.has(p.player_id)) continue;
+      if (!state.preds.has(p.match_id)) state.preds.set(p.match_id, []);
+      state.preds.get(p.match_id).push({ player_id: p.player_id, h: p.home_goals, a: p.away_goals, method: p.method_pick, soPick: p.so_pick });
+    }
+    state.finals = new Map(finals.filter((f) => inPool.has(f.player_id)).map((f) => [f.player_id, f]));
+    state.settings = new Map(settings.map((s) => [s.key, s.value]));
+  } catch (e) {
+    console.warn('db load failed', e);
+  }
+}
+
+async function loadMine() {
+  if (!state.sb || !state.auth) return;
+  try {
+    const { data, error } = await state.sb.rpc('wc_get_mine', { p_token: state.auth.token });
+    if (error) throw error;
+    state.mine = new Map((data.predictions || []).map((p) => [p.match_id, { h: p.h, a: p.a, method: p.method, soPick: p.so_pick }]));
+    state.myFinal = data.final || null;
+    state.auth = { ...state.auth, name: data.player.name, is_admin: data.player.is_admin, player_id: data.player.id };
+    saveAuth();
+  } catch (e) {
+    if (String(e?.message).includes('BAD_TOKEN')) { signOut(); toast('Session expired — join again'); }
+  }
+}
+
+/* Knockout fixtures appear in the feed days before kickoff; make sure the
+   server knows them so predictions can be saved + locked. Insert-only, and
+   kickoff corrections may only move EARLIER — both enforced server-side. */
+async function syncMatchesToDb() {
+  if (!state.sb) return;
+  for (const m of state.matches) {
+    const db = state.dbMatches.get(m.id);
+    const ko = new Date(m.date).toISOString();
+    if (db && new Date(db.kickoff).toISOString() <= ko) continue;
+    if (!db && new Date(m.date).getTime() < Date.now() + 11 * 60e3) continue;
+    try {
+      await state.sb.rpc('wc_sync_match', { p_id: m.id, p_kickoff: ko, p_stage: m.stage, p_group: m.group });
+      state.dbMatches.set(m.id, { ...db, id: m.id, kickoff: ko, stage: m.stage, group_name: m.group });
+    } catch { /* best effort */ }
+  }
+}
+
+/* ── auth ── */
+const AUTH_KEY = POOL === 'main' ? 'wc26_auth' : `wc26_auth_${POOL}`;
+function saveAuth() { localStorage.setItem(AUTH_KEY, JSON.stringify(state.auth)); }
+function loadAuth() { try { state.auth = JSON.parse(localStorage.getItem(AUTH_KEY)) || null; } catch { state.auth = null; } }
+function signOut() { state.auth = null; state.mine = new Map(); state.myFinal = null; localStorage.removeItem(AUTH_KEY); renderUserChip(); render(); }
+
+async function join(name, pin) {
+  const { data, error } = await state.sb.rpc('wc_join', { p_name: name, p_pin: pin, p_pool: POOL });
+  if (error) {
+    const m = String(error.message || '');
+    if (m.includes('WRONG_PIN')) throw new Error('That name already exists — and the PIN doesn\'t match.');
+    if (m.includes('NAME_INVALID')) throw new Error('Name must be 2–24 characters.');
+    if (m.includes('PIN_INVALID')) throw new Error('PIN must be 4–8 digits.');
+    if (m.includes('POOL_FULL')) throw new Error('The pool is full.');
+    throw new Error('Could not join — try again.');
+  }
+  state.auth = { token: data.token, player_id: data.player_id, name: data.name, is_admin: data.is_admin };
+  saveAuth();
+  return data;
+}
+
+/* ── writes ── */
+/* Tips autosave as soon as both scores are filled in. The very first save
+   shows a one-time confirmation popup explaining the rules; after that
+   saves are silent (inline ✓). Saved tips collapse to a value + Edit. */
+const SAVE_FLAG = 'wc26_save_confirmed';
+const saveTimers = new Map();
+
+function readTip(matchId) {
+  const card = document.querySelector(`[data-mid="${matchId}"]`);
+  const mine = state.mine.get(matchId);
+  // Read from the score inputs when they're on screen; otherwise (collapsed
+  // card, e.g. changing only the method pick) fall back to the saved score.
+  const hi = card?.querySelector('.pin.h'), ai = card?.querySelector('.pin.a');
+  const h = hi ? parseInt(hi.value, 10) : (mine ? mine.h : NaN);
+  const a = ai ? parseInt(ai.value, 10) : (mine ? mine.a : NaN);
+  if (!Number.isInteger(h) || !Number.isInteger(a) || h < 0 || a < 0 || h > 30 || a > 30) return null;
+  const method = state.methodDraft.get(matchId) ?? (mine ? mine.method : null) ?? null;
+  const soPick = method === 'PENS' ? (state.soPickDraft.get(matchId) ?? (mine ? mine.soPick : null) ?? null) : null;
+  return { matchId, h, a, method, soPick };
+}
+
+function maybeSave(matchId, immediate = false) {
+  clearTimeout(saveTimers.get(matchId));
+  const run = () => {
+    const tip = readTip(matchId);
+    if (!tip) { if (immediate) toast('Fill in both scores first'); return; }
+    const saved = state.mine.get(matchId);
+    if (saved && saved.h === tip.h && saved.a === tip.a && (saved.method ?? null) === tip.method && (saved.soPick ?? null) === tip.soPick) return; // unchanged
+    if (!state.auth) { openJoin(); return; }
+    if (!localStorage.getItem(SAVE_FLAG)) {
+      const m = state.matches.find((x) => x.id === matchId);
+      state.pendingSave = tip;
+      $('#saveModalMatch').textContent = m ? `${m.home.name}  ${tip.h} – ${tip.a}  ${m.away.name}` : `${tip.h} – ${tip.a}`;
+      $('#saveModal').classList.add('open');
+      return;
+    }
+    commitSave(tip);
+  };
+  if (immediate) run();
+  else saveTimers.set(matchId, setTimeout(run, 900));
+}
+
+async function commitSave(tip) {
+  if (!tip) return;
+  const span = document.querySelector(`[data-mid="${tip.matchId}"] .savestate`);
+  if (span) { span.textContent = 'Saving…'; span.className = 'savestate'; }
+  try {
+    const { error } = await state.sb.rpc('wc_save_prediction', { p_token: state.auth.token, p_match_id: tip.matchId, p_home: tip.h, p_away: tip.a, p_method: tip.method, p_so_pick: tip.soPick });
+    if (error) throw error;
+    state.mine.set(tip.matchId, { h: tip.h, a: tip.a, method: tip.method, soPick: tip.soPick });
+    state.editing.delete(tip.matchId);
+    state.methodDraft.delete(tip.matchId);
+    state.soPickDraft.delete(tip.matchId);
+    if (span?.isConnected) { span.textContent = '✓ Saved'; span.className = 'savestate ok'; }
+    renderMatches(); // collapses to tip + Edit unless the user is mid-typing
+    renderHero();
+  } catch (e) {
+    const m = String(e?.message || '');
+    if (span?.isConnected) { span.textContent = 'Failed'; span.className = 'savestate err'; }
+    if (m.includes('LOCKED')) { toast('Too late — predictions close 30 min before kickoff.'); render(); }
+    else if (m.includes('BAD_TOKEN')) { signOut(); openJoin(); }
+    else if (m.includes('NO_MATCH')) toast('This match isn\'t open for predictions yet — try again in a bit.');
+    else toast('Couldn\'t save — check your connection.');
+  }
+}
+
+async function saveFinal(champion, topScorer) {
+  const { error } = await state.sb.rpc('wc_save_final', { p_token: state.auth.token, p_champion: champion, p_top_scorer: topScorer || null });
+  if (error) {
+    const m = String(error.message || '');
+    if (m.includes('LOCKED')) throw new Error('Bonus picks are closed now.');
+    if (m.includes('SCORER_INVALID')) throw new Error('Top scorer name looks too short/long.');
+    throw new Error('Couldn\'t save your picks.');
+  }
+  state.myFinal = { champion, top_scorer: topScorer || null };
+}
+
+/* ════════════════ rendering ════════════════ */
+
+function flagImg(t, cls = 'flag') {
+  if (!t?.logo) return `<span class="${cls}" style="display:grid;place-items:center;font-size:10px;color:var(--dim)">${esc(t?.abbr || '?')}</span>`;
+  return `<img class="${cls}" src="${esc(t.logo)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`;
+}
+
+function renderUserChip() {
+  const b = $('#userBtn');
+  if (state.auth) {
+    b.className = 'userchip';
+    b.innerHTML = `<span class="avatar">${esc(state.auth.name.slice(0, 2).toUpperCase())}</span>${esc(state.auth.name)}`;
+  } else {
+    b.className = 'userchip ghost';
+    b.textContent = 'Join';
+  }
+}
+
+function renderHero() {
+  const el = $('#heroCard');
+  if (!state.matches.length) {
+    el.innerHTML = `<span class="sub">Schedule is loading… if this persists, results will appear automatically once the feed updates.</span>`;
+    return;
+  }
+  const live = state.matches.filter(isLive);
+  const open = state.matches.filter((m) => !isLocked(m));
+  const unpredicted = open.filter((m) => !state.mine.has(m.id)).length;
+  const chips = [];
+  if (state.auth && unpredicted > 0) chips.push(`<span class="chip warn" id="chipOpen">⚠️ ${unpredicted} still to predict</span>`);
+  if (!state.auth) chips.push(`<span class="chip btnish" id="chipJoin">👋 Join to play</span>`);
+
+  if (live.length) {
+    const m = live[0];
+    const more = live.length > 1 ? ` <span class="sub">+${live.length - 1} more live</span>` : '';
+    el.innerHTML = `<div><div class="big"><span class="live-dot"></span>${esc(m.home.name)} ${m.hs ?? 0}–${m.as ?? 0} ${esc(m.away.name)}</div>
+      <div class="sub">${esc(m.clock || m.detail || 'Live')}${more}</div></div>${chips.join('')}`;
+  } else {
+    const next = state.matches.filter((m) => !m.completed && m.state === 'pre' && kickoffOf(m).getTime() > Date.now())
+      .sort((a, b) => kickoffOf(a) - kickoffOf(b))[0];
+    if (next) {
+      const ms = kickoffOf(next).getTime() - Date.now();
+      const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, mi = Math.floor(ms / 6e4) % 60;
+      const cd = d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${mi}m` : `${mi}m`;
+      el.innerHTML = `<div><div class="big">${esc(next.home.name)} vs ${esc(next.away.name)}</div>
+        <div class="sub">Next match · kicks off in <b>${cd}</b> · ${esc(fmtTime.format(kickoffOf(next)))} your time</div></div>${chips.join('')}`;
+    } else {
+      const champ = championWinner();
+      el.innerHTML = champ
+        ? `<div><div class="big">🏆 ${esc(champ)} are world champions!</div><div class="sub">Final standings on the leaderboard.</div></div>`
+        : `<div><div class="sub">No upcoming matches found.</div></div>${chips.join('')}`;
+    }
+  }
+  $('#chipJoin')?.addEventListener('click', openJoin);
+  $('#chipOpen')?.addEventListener('click', () => { state.filter = 'open'; switchView('matches'); });
+  const openChip = $('#openCount');
+  if (openChip) openChip.textContent = state.auth ? `(${unpredicted})` : '';
+}
+
+function matchVisible(m) {
+  switch (state.filter) {
+    case 'today': return dayKey(m.date) === todayKey();
+    case 'open': return !isLocked(m) && !state.mine.has(m.id);
+    case 'live': return isLive(m);
+    case 'done': return m.completed;
+    default: return true;
+  }
+}
+
+function renderMatches() {
+  const list = $('#matchList');
+  const typing = document.activeElement?.classList?.contains('pin');
+  if (typing) return; // don't yank the keyboard out from under the user
+  // preserve typed-but-unsaved scores across rerenders (e.g. the 60s poll)
+  const drafts = new Map();
+  for (const card of list.querySelectorAll('[data-mid]')) {
+    const h = card.querySelector('.pin.h'), a = card.querySelector('.pin.a');
+    if (h && a && (h.value !== '' || a.value !== '')) drafts.set(card.dataset.mid, { h: h.value, a: a.value });
+  }
+  const visible = state.matches.filter(matchVisible);
+  if (!visible.length) {
+    list.innerHTML = `<div class="empty">${state.matches.length ? 'Nothing here with this filter.' : 'Schedule loading…'}</div>`;
+    return;
+  }
+  const today = todayKey();
+  let html = '', lastDay = '';
+  for (const m of visible) {
+    const dk = dayKey(m.date);
+    if (dk !== lastDay) {
+      lastDay = dk;
+      const label = fmtDay.format(new Date(m.date));
+      html += `<div class="day-h" ${dk === today ? 'data-today="1"' : ''}>${dk === today ? `<span class="today">Today · </span>` : ''}${esc(label)}</div>`;
+    }
+    html += matchCard(m);
+  }
+  list.innerHTML = html;
+  for (const [mid, d] of drafts) {
+    const card = list.querySelector(`[data-mid="${mid}"]`);
+    const h = card?.querySelector('.pin.h'), a = card?.querySelector('.pin.a');
+    if (h && d.h !== '') h.value = d.h;
+    if (a && d.a !== '') a.value = d.a;
+  }
+  $('#srcNote').textContent = state.fetchedAt
+    ? `Results auto-update · feed refreshed ${new Date(state.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · source: ESPN`
+    : 'Results auto-update · source: ESPN';
+
+  if (!state.scrolled && state.filter === 'all') {
+    state.scrolled = true;
+    const t = list.querySelector('[data-today="1"]');
+    if (t) setTimeout(() => t.scrollIntoView({ block: 'start' }), 60);
+  }
+}
+
+function matchCard(m) {
+  const locked = isLocked(m);
+  const live = isLive(m);
+  const mine = state.mine.get(m.id);
+  const ko = kickoffOf(m);
+  const stage = m.stage === 'GROUP' ? `Group ${m.group || '?'}` : (STAGE_LABEL[m.stage] || m.stage);
+  const place = [m.venue, m.city].filter(Boolean).join(' · ');
+
+  let badge;
+  if (live) badge = `<span class="statebadge live"><span class="live-dot"></span>${esc(m.clock || 'LIVE')}</span>`;
+  else if (m.completed) badge = `<span class="statebadge ft">FT</span>`;
+  else badge = `<span class="statebadge soon">${esc(fmtTime.format(ko))}</span>`;
+
+  let mid;
+  if (m.hs != null && (live || m.completed)) {
+    const pen = m.so ? `<span class="pen">pens ${m.so.h ?? '–'}–${m.so.a ?? '–'}</span>` : '';
+    mid = `<div class="res">${m.hs}–${m.as}${pen}</div>`;
+  } else {
+    mid = `<div class="ko">vs</div>`;
+  }
+
+  const tbdH = isTbdTeam(m.home), tbdA = isTbdTeam(m.away);
+  const isKO = m.stage !== 'GROUP';
+
+  // Knockout: predict how it's decided — 90 min / extra time / penalties, +3.
+  const methodNow = (state.methodDraft.get(m.id) ?? mine?.method) || null;
+  const soNow = (state.soPickDraft.get(m.id) ?? mine?.soPick) || null;
+  const soPickUI = (!isKO || methodNow !== 'PENS') ? '' : `<div class="advances">
+    <span class="lbl">Who wins the shootout? <b style="color:var(--mut)">+${SCORING.shootout}</b></span>
+    <button class="adv-btn ${soNow === 'home' ? 'on' : ''}" data-sopick="home" data-mid="${esc(m.id)}">${esc(m.home.name)}</button>
+    <button class="adv-btn ${soNow === 'away' ? 'on' : ''}" data-sopick="away" data-mid="${esc(m.id)}">${esc(m.away.name)}</button>
+  </div>`;
+  const methodUI = !isKO ? '' : `<div class="advances">
+    <span class="lbl">How is it decided? <b style="color:var(--mut)">+${SCORING.method}</b></span>
+    ${['REGULAR', 'EXTRA', 'PENS'].map((k) => `<button class="adv-btn ${methodNow === k ? 'on' : ''}" data-method="${k}" data-mid="${esc(m.id)}">${METHOD_LABEL[k]}</button>`).join('')}
+  </div>${soPickUI}`;
+
+  let predictBlock = '';
+  if (!locked && !tbdH && !tbdA) {
+    if (mine && !state.editing.has(m.id)) {
+      predictBlock = `<div class="predict">
+        <span class="lbl">My prediction</span>
+        <span class="tipval">${mine.h} – ${mine.a}</span>
+        <span class="savestate ok">✓ Saved</span>
+        <button class="editbtn" data-edit="${esc(m.id)}">Edit</button>
+      </div>${methodUI}`;
+    } else {
+      predictBlock = `<div class="predict">
+        <span class="lbl">My prediction</span>
+        <input class="pin h" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.h : ''}" placeholder="–" aria-label="${esc(m.home.name)} goals">
+        <span class="muted">:</span>
+        <input class="pin a" type="number" inputmode="numeric" min="0" max="30" value="${mine ? mine.a : ''}" placeholder="–" aria-label="${esc(m.away.name)} goals">
+        <span class="savestate"></span>
+      </div>${methodUI}`;
+    }
+  } else if (!locked) {
+    predictBlock = `<div class="mypick">Predictions open once both teams are known.</div>`;
+  } else {
+    const pts = matchPoints(mine, m);
+    const ptsChip = pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'} pts</span>`;
+    let methodLine = '';
+    if (isKO && mine?.method) {
+      const dec = methodOf(m);
+      const hit = dec && mine.method === dec;
+      const chip = !dec ? '' : hit
+        ? `<span class="pts p3">+${SCORING.method}</span>` : `<span class="pts p0">✗</span>`;
+      methodLine = `<div class="mypick" style="margin-top:6px">Decided in: <b>${METHOD_LABEL[mine.method]}</b> ${chip}</div>`;
+      if (mine.method === 'PENS' && mine.soPick) {
+        const pickName = mine.soPick === 'home' ? m.home.name : m.away.name;
+        const sw = dec === 'PENS' ? shootoutWinner(m) : null;
+        const soChip = dec !== 'PENS' ? '<span class="muted small">(no shootout)</span>'
+          : !sw ? '' : (mine.soPick === sw ? `<span class="pts p2">+${SCORING.shootout}</span>` : `<span class="pts p0">✗</span>`);
+        methodLine += `<div class="mypick" style="margin-top:4px">Shootout: <b>${esc(pickName)}</b> ${soChip}</div>`;
+      }
+    }
+    predictBlock = `<div class="mypick">${mine ? `Your prediction: <b>${mine.h}–${mine.a}</b> ${ptsChip}` : `<span class="muted">You didn't predict this one</span>`}</div>${methodLine}`;
+  }
+
+  let othersBlock = '';
+  if (locked) {
+    const list = (state.preds.get(m.id) || []).slice();
+    const open = state.openOthers.has(m.id);
+    if (list.length) {
+      const byId = new Map(state.players.map((p) => [p.id, p.name]));
+      list.sort((x, y) => (matchPoints(y, m) ?? -1) - (matchPoints(x, m) ?? -1));
+      const rows = list.map((p) => {
+        const pts = matchPoints(p, m);
+        let sub = '';
+        const phrase = methodPhrase(p, m);
+        if (phrase) {
+          const b = methodBonus(p, m);
+          const mark = b == null ? '' : (b > 0 ? ` <b style="color:var(--green)">✓ +${b}</b>` : ' <span style="color:var(--dim)">✗</span>');
+          sub = `<span class="osub">${esc(phrase)}${mark}</span>`;
+        }
+        return `<div class="orow ${p.player_id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(p.player_id)}" style="cursor:pointer">
+          <span class="oinfo"><span class="onm">${esc(byId.get(p.player_id) || '?')}</span>${sub}</span>
+          <span class="osc">${p.h}–${p.a}</span>
+          ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
+      }).join('');
+      othersBlock = `<button class="others-toggle" data-toggle="${m.id}">${open ? '▲ Hide' : `▼ Everyone's predictions (${list.length})`}</button>
+        <div class="others ${open ? 'open' : ''}">${rows}</div>`;
+    }
+  }
+
+  return `<div class="mcard ${live ? 'live' : ''}" data-mid="${esc(m.id)}">
+    <div class="m-meta"><span class="stagechip">${esc(stage)}</span>${place ? `<span>· ${esc(place)}</span>` : ''}${badge}</div>
+    <div class="m-row">
+      <div class="team home ${tbdH ? 'tbd' : ''}">${flagImg(m.home)}<span class="nm">${esc(m.home.name)}</span></div>
+      <div class="score-mid">${mid}</div>
+      <div class="team away ${tbdA ? 'tbd' : ''}">${flagImg(m.away)}<span class="nm">${esc(m.away.name)}</span></div>
+    </div>
+    ${predictBlock}${othersBlock}
+  </div>`;
+}
+
+function renderGroups() {
+  const grid = $('#groupGrid');
+  const groups = new Map();
+  for (const m of state.matches) {
+    if (m.stage !== 'GROUP' || !m.group) continue;
+    if (!groups.has(m.group)) groups.set(m.group, new Map());
+    const g = groups.get(m.group);
+    for (const t of [m.home, m.away]) {
+      if (!isTbdTeam(t) && !g.has(t.name)) g.set(t.name, { team: t, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 });
+    }
+    if (m.completed && m.hs != null) {
+      const H = g.get(m.home.name), A = g.get(m.away.name);
+      if (H && A) {
+        H.p++; A.p++; H.gf += m.hs; H.ga += m.as; A.gf += m.as; A.ga += m.hs;
+        if (m.hs > m.as) { H.w++; H.pts += 3; A.l++; }
+        else if (m.hs < m.as) { A.w++; A.pts += 3; H.l++; }
+        else { H.d++; A.d++; H.pts++; A.pts++; }
+      }
+    }
+  }
+  if (!groups.size) { grid.innerHTML = '<div class="empty">Group tables appear once the schedule loads.</div>'; return; }
+  grid.innerHTML = [...groups.keys()].sort().map((letter) => {
+    const rows = [...groups.get(letter).values()]
+      .sort((a, b) => b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf || a.team.name.localeCompare(b.team.name));
+    return `<div class="gcard"><h3>Group ${letter}</h3><table class="gtable">
+      <tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>+/−</th><th>Pts</th></tr>
+      ${rows.map((r, i) => `<tr class="${i < 2 ? 'q' : ''}">
+        <td class="tm">${flagImg(r.team, '')}<span>${esc(r.team.name)}</span></td>
+        <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf - r.ga > 0 ? '+' : ''}${r.gf - r.ga}</td><td class="p">${r.pts}</td></tr>`).join('')}
+    </table></div>`;
+  }).join('');
+}
+
+function allTeams() {
+  const seen = new Map();
+  for (const m of state.matches) {
+    if (m.stage !== 'GROUP') continue;
+    for (const t of [m.home, m.away]) if (!isTbdTeam(t)) seen.set(t.name, t);
+  }
+  return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+const DRAW_ROUNDS = [
+  ['R32', 'Round of 32'], ['R16', 'Round of 16'], ['QF', 'Quarter-finals'],
+  ['SF', 'Semi-finals'], ['FINAL', 'Final'],
+];
+const fmtBracketDay = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short' });
+
+// Knockout tree (ESPN event ids → the two earlier ties whose winners feed it).
+// Built from the OFFICIAL 2026 bracket (FIFA match numbers 73–104) mapped onto
+// our match ids by venue, NOT from ESPN's "Round of 32 N Winner" labels (whose
+// numbering didn't line up). Two ties sharing a parent meet next.
+const BRACKET_FEED = {
+  // Round of 16 ← Round of 32 (by official R16 venue)
+  '760503': ['760489', '760492'], // M89 Philadelphia: Germany/Paraguay · France/Sweden
+  '760502': ['760486', '760488'], // M90 Houston: South Africa/Canada · Netherlands/Morocco
+  '760504': ['760487', '760490'], // M91 New Jersey: Brazil/Japan · Ivory Coast/Norway
+  '760505': ['760491', '760495'], // M92 Mexico City: Mexico/Ecuador · England/DR Congo
+  '760506': ['760496', '760497'], // M93 Arlington: Portugal/Croatia · Spain/Austria
+  '760507': ['760494', '760493'], // M94 Seattle: USA/Bosnia · Belgium/Senegal
+  '760509': ['760500', '760499'], // M95 Atlanta: Argentina/Cape Verde · Australia/Egypt
+  '760508': ['760498', '760501'], // M96 Vancouver: Switzerland/Algeria · Colombia/Ghana
+  // Quarter-finals ← Round of 16
+  '760510': ['760503', '760502'], // M97 Boston
+  '760511': ['760506', '760507'], // M98 Los Angeles
+  '760512': ['760504', '760505'], // M99 Miami
+  '760513': ['760509', '760508'], // M100 Kansas City
+  // Semi-finals ← Quarter-finals
+  '760514': ['760510', '760511'], // M101 Arlington
+  '760515': ['760512', '760513'], // M102 Atlanta
+  '760517': ['760514', '760515'], // Final ← semi-final winners
+  '760516': ['760514', '760515'], // Third place ← semi-final losers
+};
+const koById = (id) => state.matches.find((m) => m.id === id);
+
+// Group a round's ties into the pairs that meet next (so we can draw the
+// connector between them), in bracket order. Final shows final + third place.
+function drawPairs(stage) {
+  if (stage === 'FINAL') {
+    return [koById('760517'), koById('760516')].filter(Boolean).map((m) => [m]);
+  }
+  return Object.keys(BRACKET_FEED)
+    .filter((c) => c !== '760516' && (BRACKET_FEED[c] || []).every((f) => koById(f)?.stage === stage))
+    .sort()
+    .map((c) => BRACKET_FEED[c].map(koById).filter(Boolean))
+    .filter((p) => p.length);
+}
+
+// For a slot ESPN hasn't filled yet, derive the team from the feeding tie's
+// result — the winner (or the loser, for the third-place game) — so a decided
+// quarter-final immediately shows the real team in the semi, not "Winner of…".
+function feederTeam(m, side) {
+  const f = koById((BRACKET_FEED[m.id] || [])[side]);
+  if (!f || !f.completed || !f.advances) return null;
+  const wantSide = m.stage === 'THIRD' ? (f.advances === 'home' ? 'away' : 'home') : f.advances;
+  const team = wantSide === 'home' ? f.home : f.away;
+  return isTbdTeam(team) ? null : team;
+}
+
+function drawSlot(m, side) {
+  const t = side === 0 ? m.home : m.away;
+  const goals = side === 0 ? m.hs : m.as;
+  const sideKey = side === 0 ? 'home' : 'away';
+  const won = m.completed && m.advances === sideKey;
+  const lost = m.completed && m.advances && m.advances !== sideKey;
+  let inner;
+  if (!isTbdTeam(t)) {
+    inner = `${flagImg(t, 'bflag')}<span class="bnm">${esc(t.name)}</span>`;
+  } else {
+    const w = feederTeam(m, side);
+    if (w) {
+      inner = `${flagImg(w, 'bflag')}<span class="bnm">${esc(w.name)}</span>`;
+    } else {
+      const f = koById((BRACKET_FEED[m.id] || [])[side]);
+      const role = m.stage === 'THIRD' ? 'Loser' : 'Winner';
+      const label = (f && !isTbdTeam(f.home) && !isTbdTeam(f.away))
+        ? `${role} of ${f.home.name} v ${f.away.name}` : t.name;
+      inner = `<span class="bnm tbd">${esc(label)}</span>`;
+    }
+  }
+  const showGoals = goals != null && (m.completed || isLive(m));
+  return `<div class="bteam ${won ? 'won' : ''} ${lost ? 'lost' : ''}">${inner}${showGoals ? `<span class="bg">${goals}</span>` : ''}</div>`;
+}
+
+function drawTie(m) {
+  const live = isLive(m);
+  const dec = methodOf(m);
+  const so = m.completed && m.so ? `<span class="bpen">pen ${m.so.h ?? '–'}-${m.so.a ?? '–'}</span>` : '';
+  const note = m.completed && dec && dec !== 'REGULAR' ? `<span class="bnote">${dec === 'PENS' ? 'pens' : 'a.e.t.'}</span>` : '';
+  const when = live ? '<span class="dlive"><span class="live-dot"></span>LIVE</span>'
+    : m.completed ? `FT${note ? '<br>' + note : ''}${so ? '<br>' + so : ''}`
+      : `${esc(fmtBracketDay.format(new Date(m.date)))}<br><b>${esc(fmtTime.format(kickoffOf(m)))}</b>`;
+  const mineTag = state.mine.get(m.id) ? '<span class="bmine">✓</span>' : '';
+  return `<div class="btie" data-jump="${esc(m.id)}">
+    <div class="dwhen">${when}${mineTag}</div>
+    <div class="dteams">${drawSlot(m, 0)}${drawSlot(m, 1)}</div>
+  </div>`;
+}
+
+function renderBracket() {
+  const box = $('#bracketBox');
+  const ko = state.matches.filter((m) => m.stage !== 'GROUP');
+  const avail = DRAW_ROUNDS.filter(([s]) => s === 'FINAL'
+    ? ko.some((m) => m.stage === 'FINAL' || m.stage === 'THIRD')
+    : ko.some((m) => m.stage === s));
+  $('#drawRounds').innerHTML = avail.map(([s, label]) =>
+    `<button class="fchip ${state.drawRound === s ? 'on' : ''}" data-round="${s}">${label}</button>`).join('');
+  if (!ko.length) { box.innerHTML = '<div class="empty">The draw appears once the schedule loads.</div>'; return; }
+  if (!avail.some(([s]) => s === state.drawRound)) state.drawRound = (avail[0] || ['R32'])[0];
+
+  const pairs = drawPairs(state.drawRound);
+  box.innerHTML = pairs.map((pair) => `<div class="dpair ${pair.length === 2 ? 'linked' : ''}">
+    <div class="dties">${pair.map(drawTie).join('')}</div>
+    ${pair.length === 2 ? '<div class="dconn"></div>' : ''}
+  </div>`).join('') || '<div class="empty">No matches in this round.</div>';
+
+  drawConnectors();
+  requestAnimationFrame(drawConnectors); // re-measure once layout has settled
+}
+
+// Draw each pair's bracket as a measured SVG: two stubs into the cards, a
+// vertical join across their real centres, and a short nub ending in a node
+// (the two winners meet here). SVG keeps it crisp on any screen / DPI.
+function drawConnectors() {
+  const box = $('#bracketBox');
+  const LINE = 'rgba(147,168,150,.5)';
+  for (const conn of box.querySelectorAll('.dpair.linked .dconn')) {
+    const ties = conn.parentElement.querySelectorAll('.btie');
+    if (ties.length < 2) continue;
+    const cr = conn.getBoundingClientRect();
+    const W = Math.round(cr.width), H = Math.round(cr.height);
+    if (W < 4 || H < 20) continue; // not laid out yet
+    const a = ties[0].getBoundingClientRect();
+    const b = ties[1].getBoundingClientRect();
+    const y1 = Math.round(a.top + a.height / 2 - cr.top);
+    const y2 = Math.round(b.top + b.height / 2 - cr.top);
+    const x = 15, ym = Math.round((y1 + y2) / 2);
+    conn.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none"`
+      + ` stroke="${LINE}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">`
+      + `<path d="M0 ${y1} H${x} V${y2} H0"/><path d="M${x} ${ym} H${W - 5}"/>`
+      + `<circle cx="${W - 4}" cy="${ym}" r="2.6" fill="${LINE}" stroke="none"/></svg>`;
+  }
+}
+
+function renderFinals() {
+  const box = $('#finalsBox');
+  if (!finalsLocked()) {
+    const dl = bonusDeadlineMs();
+    const when = dl ? esc(fmtDateTime.format(new Date(dl))) : '';
+    const teams = allTeams();
+    const opts = teams.map((t) => `<option ${state.myFinal?.champion === t.name ? 'selected' : ''}>${esc(t.name)}</option>`).join('');
+    box.innerHTML = `<div class="finals-card">
+      <h3>🎯 Your bonus picks</h3>
+      <div class="muted small">World champion = <b>+${SCORING.champion}</b> · top scorer = <b>+${SCORING.topScorer}</b>.</div>
+      ${when ? `<div class="muted small" style="margin-top:4px">⏳ Open until <b>${when}</b> — everyone's picks stay hidden until then.</div>` : ''}
+      <div class="row">
+        <select id="champSel" style="flex:1 1 100%"><option value="" disabled ${state.myFinal?.champion ? '' : 'selected'}>🏆 Who wins it all?</option>${opts}</select>
+      </div>
+      <div class="row">
+        <input id="scorerIn" type="text" maxlength="60" placeholder="⚽ Top scorer (e.g. Mbappé)" value="${esc(state.myFinal?.top_scorer ?? '')}" style="flex:2 1 150px">
+        <button class="btn" id="finalsSave">Save</button>
+      </div>
+      ${state.myFinal ? `<div class="small" style="color:var(--green);margin-top:8px">✓ Saved: ${esc(state.myFinal.champion)}${state.myFinal.top_scorer ? ` · ⚽ ${esc(state.myFinal.top_scorer)}` : ''}</div>` : ''}
+    </div>`;
+    $('#finalsSave').onclick = async () => {
+      if (!state.auth) return openJoin();
+      const champ = $('#champSel').value;
+      const scorer = $('#scorerIn').value.trim();
+      if (!champ) return toast('Pick a champion first');
+      try { await saveFinal(champ, scorer); toast('Bonus picks saved 🎯'); renderBonus(); }
+      catch (e) { toast(e.message); }
+    };
+  } else {
+    box.innerHTML = `<div class="finals-card"><h3>🎯 Bonus picks are locked</h3>
+      <div class="muted small">Champion <b>+${SCORING.champion}</b> · top scorer <b>+${SCORING.topScorer}</b> (a tie for most goals counts). Everyone's picks are below.</div></div>`;
+  }
+}
+
+function renderBonus() {
+  renderFinals();
+
+  const tally = topScorerTally().slice(0, 8);
+  $('#bootRace').innerHTML = tally.length ? `<div class="rules-card" style="margin-top:12px">
+    <h3>⚽ Golden Boot race</h3>
+    ${tally.map((t, i) => `<div class="orow"><span class="onm">${i + 1}. ${esc(t.name)}</span><span class="osc">${t.goals}</span></div>`).join('')}
+  </div>` : '';
+
+  const box = $('#bonusList');
+  if (!finalsLocked()) {
+    box.innerHTML = `<p class="muted small" style="margin:10px 2px">Everyone's bonus picks appear here once picks lock — until then they're secret.</p>`;
+    return;
+  }
+  const { rows } = playerTotals();
+  const withFin = rows.filter((r) => r.fin);
+  box.innerHTML = `<div class="rules-card" style="margin-top:12px"><h3>Everyone's picks</h3>
+    ${withFin.length ? withFin.map((r) => `<div class="orow" data-pid="${esc(r.id)}" style="cursor:pointer">
+      <span class="onm">${esc(r.name)}</span>
+      <span class="small" style="text-align:right">🏆 ${esc(r.fin.champion)}${r.champHit ? ` <b style="color:var(--gold)">+${SCORING.champion}</b>` : ''}${r.fin.top_scorer ? `<br>⚽ ${esc(r.fin.top_scorer)}` : ''}${r.scorerHit ? ` <b style="color:var(--gold)">+${SCORING.topScorer}</b>` : ''}</span>
+    </div>`).join('') : '<p class="muted small">Nobody made bonus picks in time.</p>'}
+  </div>`;
+}
+
+/* Everything one player filled in (only what the lock rule has revealed). */
+function openPlayer(pid) {
+  const pl = state.players.find((p) => p.id === pid);
+  if (!pl) return;
+  const { rows } = playerTotals();
+  const r = rows.find((x) => x.id === pid) || { total: 0, exacts: 0, predicted: 0 };
+  $('#pmName').textContent = pl.name;
+  $('#pmStats').textContent = `${r.total} points · ${r.exacts} exact · ${r.predicted} predictions revealed`;
+  let html = '';
+  if (finalsLocked() && r.fin) {
+    html += `<div class="rules-card" style="padding:10px 12px;margin-bottom:10px">
+      🏆 ${esc(r.fin.champion)}${r.champHit ? ` <b style="color:var(--gold)">+${SCORING.champion}</b>` : ''}<br>
+      ⚽ ${r.fin.top_scorer ? esc(r.fin.top_scorer) : '<span class="muted">no top-scorer pick</span>'}${r.scorerHit ? ` <b style="color:var(--gold)">+${SCORING.topScorer}</b>` : ''}
+    </div>`;
+  }
+  const revealed = state.matches.filter((m) =>
+    (state.preds.get(m.id) || []).some((p) => p.player_id === pid));
+  if (!revealed.length) {
+    html += `<p class="muted small">No revealed predictions yet — predictions stay hidden until 30 min before each kickoff.</p>`;
+  } else {
+    html += revealed.slice().reverse().map((m) => {
+      const p = (state.preds.get(m.id) || []).find((x) => x.player_id === pid);
+      const pts = matchPoints(p, m);
+      const res = m.hs != null ? `${m.hs}–${m.as}` : '⏳';
+      let sub = '';
+      const phrase = methodPhrase(p, m);
+      if (phrase) {
+        const b = methodBonus(p, m);
+        const mark = b == null ? '' : (b > 0 ? ` <b style="color:var(--green)">✓ +${b}</b>` : ' <span style="color:var(--dim)">✗</span>');
+        sub = `<span class="osub">${esc(phrase)}${mark}</span>`;
+      }
+      return `<div class="orow">
+        <span class="oinfo"><span class="onm">${esc(m.home.name)} <b>${res}</b> ${esc(m.away.name)}</span>${sub}</span>
+        <span class="osc">${p.h}–${p.a}</span>
+        ${pts == null ? '' : `<span class="pts p${pts}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
+    }).join('');
+    html += `<p class="muted small" style="margin-top:10px">Their prediction on the right · predictions stay hidden until 30 min before each kickoff.</p>`;
+  }
+  $('#pmBody').innerHTML = html;
+  $('#playerModal').classList.add('open');
+}
+
+function renderBoard() {
+  const box = $('#boardBox');
+  if (!state.players.length) {
+    box.innerHTML = `<div class="empty">Nobody has joined yet.<br><br><button class="btn" id="bJoin">Be the first — join now</button>
+      <div style="margin-top:14px"><button class="btn ghost" id="bInvite">📲 Invite your friends</button></div></div>`;
+    $('#bJoin')?.addEventListener('click', openJoin);
+    $('#bInvite')?.addEventListener('click', invite);
+    return;
+  }
+  const { rows } = playerTotals();
+  const anyToday = rows.some((r) => r.todayPts > 0);
+  box.innerHTML = `<table class="lb">
+    <thead><tr><th></th><th class="nm">Player</th><th>Pts</th>${anyToday ? '<th>Today</th>' : ''}<th>Exact</th><th>Preds</th></tr></thead>
+    <tbody>${rows.map((r, i) => `<tr class="${r.id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(r.id)}" style="cursor:pointer">
+      <td class="rk">${i + 1}</td>
+      <td class="nm">${esc(r.name)}</td>
+      <td class="tot">${r.total}</td>
+      ${anyToday ? `<td>${r.todayPts ? `+${r.todayPts}` : '·'}</td>` : ''}
+      <td>${r.exacts}</td>
+      <td class="muted">${r.predicted}</td>
+    </tr>`).join('')}</tbody>
+  </table>
+  <div class="src-note">Tap a player to see all their predictions. Points: exact ${SCORING.exact} · goal difference ${SCORING.diff} · winner ${SCORING.outcome} · bonus picks +${SCORING.champion}/+${SCORING.topScorer} (Bonus tab). Ties: exact scores, then correct results.</div>`;
+}
+
+function render() {
+  renderUserChip();
+  renderHero();
+  if (state.view === 'matches') renderMatches();
+  if (state.view === 'groups') renderGroups();
+  if (state.view === 'board') renderBoard();
+  if (state.view === 'bonus') renderBonus();
+  if (state.view === 'bracket') renderBracket();
+}
+$('#boardBox').addEventListener('click', (e) => {
+  const row = e.target.closest('[data-pid]');
+  if (row) openPlayer(row.dataset.pid);
+});
+$('#bonusList').addEventListener('click', (e) => {
+  const row = e.target.closest('[data-pid]');
+  if (row) openPlayer(row.dataset.pid);
+});
+// Tap a bracket tie → jump to its card in Matches and flash it.
+function jumpToMatch(mid) {
+  state.filter = 'all';
+  document.querySelectorAll('.fchip').forEach((c) => c.classList.toggle('on', c.dataset.f === 'all'));
+  switchView('matches');
+  setTimeout(() => {
+    const card = document.querySelector(`#matchList [data-mid="${mid}"]`);
+    if (card) { card.scrollIntoView({ block: 'center' }); card.classList.add('flash'); setTimeout(() => card.classList.remove('flash'), 1600); }
+  }, 90);
+}
+$('#bracketBox').addEventListener('click', (e) => {
+  const tie = e.target.closest('[data-jump]');
+  if (tie) jumpToMatch(tie.dataset.jump);
+});
+$('#drawRounds').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-round]');
+  if (!b) return;
+  state.drawRound = b.dataset.round;
+  renderBracket();
+});
+let drawResizeT;
+window.addEventListener('resize', () => {
+  if (state.view !== 'bracket') return;
+  clearTimeout(drawResizeT);
+  drawResizeT = setTimeout(drawConnectors, 120);
+});
+$('#pmClose').onclick = () => $('#playerModal').classList.remove('open');
+
+/* ════════════════ UI wiring ════════════════ */
+
+function switchView(v) {
+  state.view = v;
+  document.querySelectorAll('.view').forEach((el) => el.classList.toggle('active', el.id === `view-${v}`));
+  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  render();
+  window.scrollTo({ top: 0 });
+}
+$('#tabs').addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b) switchView(b.dataset.v); });
+
+$('#filters').addEventListener('click', (e) => {
+  const b = e.target.closest('.fchip'); if (!b) return;
+  state.filter = b.dataset.f;
+  document.querySelectorAll('.fchip').forEach((c) => c.classList.toggle('on', c === b));
+  renderMatches();
+});
+
+$('#matchList').addEventListener('click', (e) => {
+  const methodBtn = e.target.closest('[data-method]');
+  if (methodBtn) {
+    if (!state.auth) { openJoin(); return; }
+    const mid = methodBtn.dataset.mid;
+    state.methodDraft.set(mid, methodBtn.dataset.method);
+    if (methodBtn.dataset.method !== 'PENS') state.soPickDraft.delete(mid);
+    renderMatches(); // reveal/hide the shootout picker
+    maybeSave(mid, true);
+    return;
+  }
+  const soBtn = e.target.closest('[data-sopick]');
+  if (soBtn) {
+    if (!state.auth) { openJoin(); return; }
+    const mid = soBtn.dataset.mid;
+    state.soPickDraft.set(mid, soBtn.dataset.sopick);
+    soBtn.parentElement.querySelectorAll('.adv-btn').forEach((b) => b.classList.toggle('on', b === soBtn));
+    maybeSave(mid, true);
+    return;
+  }
+  const edit = e.target.closest('[data-edit]');
+  if (edit) { state.editing.add(edit.dataset.edit); renderMatches(); return; }
+  const row = e.target.closest('[data-pid]');
+  if (row) { openPlayer(row.dataset.pid); return; }
+  const t = e.target.closest('[data-toggle]');
+  if (!t) return;
+  const id = t.dataset.toggle;
+  state.openOthers.has(id) ? state.openOthers.delete(id) : state.openOthers.add(id);
+  renderMatches();
+});
+$('#matchList').addEventListener('input', (e) => {
+  if (!e.target.classList.contains('pin')) return;
+  const card = e.target.closest('[data-mid]');
+  if (!card) return;
+  const span = card.querySelector('.savestate');
+  if (span) { span.textContent = ''; span.className = 'savestate'; }
+  if (!state.auth) { if (!$('#joinModal').classList.contains('open')) openJoin(); return; }
+  maybeSave(card.dataset.mid);
+});
+$('#matchList').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.classList.contains('pin')) {
+    const card = e.target.closest('[data-mid]');
+    if (card) maybeSave(card.dataset.mid, true);
+    e.target.blur();
+  }
+});
+$('#matchList').addEventListener('focusout', () => setTimeout(renderMatches, 350));
+$('#saveModalGo').onclick = () => {
+  localStorage.setItem(SAVE_FLAG, '1');
+  const ps = state.pendingSave;
+  state.pendingSave = null;
+  $('#saveModal').classList.remove('open');
+  if (ps) { commitSave(ps); toast('Prediction saved ✓ — autosaving from now on'); }
+};
+$('#saveModalCancel').onclick = () => { state.pendingSave = null; $('#saveModal').classList.remove('open'); };
+
+/* join modal */
+function openJoin() { $('#joinModal').classList.add('open'); setTimeout(() => $('#jName').focus(), 50); }
+function closeJoin() { $('#joinModal').classList.remove('open'); $('#jErr').textContent = ''; }
+$('#jSkip').onclick = closeJoin;
+$('#jGo').onclick = async () => {
+  const name = $('#jName').value.trim(), pin = $('#jPin').value.trim();
+  $('#jErr').textContent = '';
+  try {
+    const r = await join(name, pin);
+    closeJoin();
+    toast(r.existing ? `Welcome back, ${r.name}!` : `You're in, ${r.name}! 🎉`);
+    await loadMine();
+    render();
+  } catch (e) { $('#jErr').textContent = e.message; }
+};
+$('#jPin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#jGo').click(); });
+
+/* user menu */
+$('#userBtn').onclick = () => {
+  if (!state.auth) return openJoin();
+  $('#menuName').textContent = state.auth.name;
+  $('#menuSub').textContent = state.auth.is_admin ? 'Pool admin' : 'Pool member';
+  $('#mResetPin').style.display = state.auth.is_admin ? '' : 'none';
+  $('#mSetScorer').style.display = state.auth.is_admin ? '' : 'none';
+  $('#mSetDecided').style.display = state.auth.is_admin ? '' : 'none';
+  $('#menuModal').classList.add('open');
+};
+$('#menuClose').onclick = () => $('#menuModal').classList.remove('open');
+$('#mLogout').onclick = () => { $('#menuModal').classList.remove('open'); signOut(); toast('Signed out on this device'); };
+$('#mPicks').onclick = () => { $('#menuModal').classList.remove('open'); switchView('bonus'); };
+$('#mInvite').onclick = () => { $('#menuModal').classList.remove('open'); invite(); };
+$('#mResetPin').onclick = async () => {
+  const who = prompt('Player name to reset:'); if (!who) return;
+  const pin = prompt(`New PIN for ${who} (4–8 digits):`); if (!pin) return;
+  const { error } = await state.sb.rpc('wc_admin_reset_pin', { p_token: state.auth.token, p_player_name: who, p_new_pin: pin });
+  toast(error ? `Failed: ${error.message}` : `PIN reset for ${who}`);
+};
+$('#mSetScorer').onclick = async () => {
+  const name = prompt('Official top scorer (only needed if the automatic result is wrong/missing; comma-separate ties):');
+  if (name == null) return;
+  const { error } = await state.sb.rpc('wc_admin_set_setting', { p_token: state.auth.token, p_key: 'top_scorer', p_value: name.trim() || null });
+  toast(error ? `Failed: ${error.message}` : 'Official top scorer saved');
+  loadDb().then(render);
+};
+$('#mSetDecided').onclick = async () => {
+  const kos = state.matches.filter((m) => m.stage !== 'GROUP' && m.completed)
+    .sort((a, b) => b.date.localeCompare(a.date)).slice(0, 20);
+  if (!kos.length) return toast('No finished knockout matches yet');
+  const listTxt = kos.map((m, i) => `${i + 1}. ${m.home.name} ${m.hs}-${m.as} ${m.away.name} — now: ${METHOD_LABEL[methodOf(m)] || '?'}`).join('\n');
+  const pick = prompt(`Fix how a match was decided.\nWhich match? Enter a number:\n${listTxt}`);
+  if (pick == null) return;
+  const idx = parseInt(pick, 10) - 1;
+  if (!(idx >= 0 && idx < kos.length)) return toast('Invalid number');
+  const raw = prompt('Decided by? Type 90, ET, or PENS:');
+  if (raw == null) return;
+  const map = { '90': 'REGULAR', REGULAR: 'REGULAR', ET: 'EXTRA', EXTRA: 'EXTRA', PEN: 'PENS', PENS: 'PENS', PENALTIES: 'PENS' };
+  const method = map[raw.trim().toUpperCase()];
+  if (!method) return toast('Type 90, ET, or PENS');
+  const { error } = await state.sb.rpc('wc_admin_set_decided', { p_token: state.auth.token, p_match_id: kos[idx].id, p_method: method });
+  if (error) return toast(`Failed: ${error.message}`);
+  const prev = state.dbMatches.get(kos[idx].id) || { id: kos[idx].id };
+  state.dbMatches.set(kos[idx].id, { ...prev, decided_by: method });
+  $('#menuModal').classList.remove('open');
+  toast('Result method updated');
+  loadDb().then(render);
+};
+
+function invite() {
+  const text = `⚽ World Cup 2026 predictions pool — predict every match, live leaderboard, winner takes the glory. Join here: ${POOL_URL}`;
+  if (navigator.share) { navigator.share({ text }).catch(() => {}); return; }
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+}
+$('#inviteBtn2').onclick = invite;
+
+/* clicking modal backdrops closes them */
+for (const id of ['joinModal', 'menuModal', 'saveModal', 'playerModal']) {
+  document.getElementById(id).addEventListener('click', (e) => { if (e.target.id === id) e.target.classList.remove('open'); });
+}
+
+/* ════════════════ boot & loops ════════════════ */
+
+async function boot() {
+  loadAuth();
+  renderUserChip();
+  await loadBaseline();
+  render();
+
+  await initSb().catch(() => toast('Server unreachable — predictions disabled, scores still live.'));
+  if (state.sb) {
+    await Promise.all([loadDb(), loadMine()]);
+    render();
+    syncMatchesToDb();
+  }
+
+  if (!state.matches.length) { await espnBootstrap(); render(); }
+  espnLiveTick();
+
+  if (!state.auth) setTimeout(() => { if (!state.auth) openJoin(); }, 900);
+
+  setInterval(espnLiveTick, 60e3);
+  setInterval(async () => { if (document.hidden || !state.sb) return; await loadDb(); render(); }, 60e3);
+  setInterval(async () => { if (document.hidden) return; await loadBaseline(); syncMatchesToDb(); render(); }, 300e3);
+  setInterval(() => { if (!document.hidden && state.view === 'matches') renderHero(); }, 30e3);
+  document.addEventListener('visibilitychange', async () => {
+    if (document.hidden) return;
+    await Promise.all([loadBaseline(), state.sb ? loadDb() : null, state.sb ? loadMine() : null]);
+    espnLiveTick();
+    checkForUpdate();
+    render();
+  });
+
+  checkForUpdate();                   // snapshot this build
+  setInterval(checkForUpdate, 120e3); // then watch for a newer one every 2 min
+}
+
+/* Auto-update: the app is one page, so switching tabs never reloads it. Poll
+   our own HTML; if the deployed file changed, offer a one-tap refresh. */
+let __buildSnapshot = null;
+async function checkForUpdate() {
+  if (document.hidden) return;
+  try {
+    const r = await fetch(location.pathname, { cache: 'no-store' });
+    if (!r.ok) return;
+    const t = await r.text();
+    if (__buildSnapshot === null) { __buildSnapshot = t; return; }
+    if (t !== __buildSnapshot) document.getElementById('updateBar').classList.add('show');
+  } catch { /* offline — ignore */ }
+}
+document.getElementById('updateBtn').onclick = () => location.reload();
+
+boot();
+</script>
+</body>
+</html>
