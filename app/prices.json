@@ -1,11 +1,19 @@
 {
-  "updatedAt": "2026-07-26T08:57:02Z",
+  "updatedAt": "2026-07-26T10:48:22Z",
   "marketIndex": 175.58,
   "rawAveragePrice": 58.24,
   "topGainers": [
     {
+      "ticker": "CKAY",
+      "chg24h": 2.7
+    },
+    {
       "ticker": "JHEN",
       "chg24h": 2.22
+    },
+    {
+      "ticker": "CHRL",
+      "chg24h": 2.02
     },
     {
       "ticker": "LTTO",
@@ -14,24 +22,12 @@
     {
       "ticker": "ROSA",
       "chg24h": 1.02
-    },
-    {
-      "ticker": "CHRL",
-      "chg24h": 1.0
-    },
-    {
-      "ticker": "TYLA",
-      "chg24h": 0.93
     }
   ],
   "topLosers": [
     {
       "ticker": "PHBE",
       "chg24h": -2.22
-    },
-    {
-      "ticker": "WZKD",
-      "chg24h": -1.59
     },
     {
       "ticker": "AYRA",
@@ -44,13 +40,17 @@
     {
       "ticker": "TEMS",
       "chg24h": -0.81
+    },
+    {
+      "ticker": "GRAB",
+      "chg24h": -0.79
     }
   ],
   "sectorIndices": [
     {
       "sector": "Afropop",
       "avgPrice": 30.3,
-      "chg24h": -0.36,
+      "chg24h": 0.07,
       "members": [
         "TYLA",
         "REMA",
@@ -147,7 +147,7 @@
     {
       "sector": "Latin",
       "avgPrice": 63.94,
-      "chg24h": 0.05,
+      "chg24h": 0.13,
       "members": [
         "BNNY",
         "PESO",
@@ -169,7 +169,7 @@
     {
       "sector": "Pop",
       "avgPrice": 88.14,
-      "chg24h": -0.05,
+      "chg24h": 0.02,
       "members": [
         "SABR",
         "TSWF",
@@ -201,7 +201,7 @@
     {
       "sector": "R&B",
       "avgPrice": 50.26,
-      "chg24h": 0.18,
+      "chg24h": 0.25,
       "members": [
         "WKND",
         "SZA",
@@ -230,7 +230,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb78e45cfa4697ce3c437cb455",
       "fairPrice": 81.35,
       "price": 81.35,
-      "chg24h": -0.48,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 3503,
       "youtube": {
@@ -406,7 +406,7 @@
       "fairPrice": 115.91,
       "price": 115.91,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 6779,
       "youtube": {
         "subscribers": 559000,
@@ -456,7 +456,7 @@
       "fairPrice": 72.95,
       "price": 72.95,
       "chg24h": 0.53,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3696,
       "youtube": {
         "subscribers": 4570,
@@ -472,17 +472,17 @@
       "name": "Charli XCX",
       "genre": "Pop",
       "spotifyId": "25uiPmTg16RbhZWAqwLBy5",
-      "popularity": 84,
-      "popularityDelta": 0,
+      "popularity": 85,
+      "popularityDelta": 1,
       "followers": 7234615,
       "monthlyListeners": 29756695,
       "listenersSource": "ratio-calibrated",
       "image": "https://i.scdn.co/image/ab6761610000e5eb6fa76436a2bba83b9f1d6fd1",
       "fairPrice": 39.17,
       "price": 39.17,
-      "chg24h": 1.0,
+      "chg24h": 2.02,
       "volatility30d": 0.006,
-      "volume": 1614,
+      "volume": 2905,
       "youtube": {
         "subscribers": 10900,
         "views": 703400707,
@@ -531,7 +531,7 @@
       "fairPrice": 142.3,
       "price": 142.3,
       "chg24h": 0.27,
-      "volatility30d": 0.015,
+      "volatility30d": 0.014,
       "volume": 3993,
       "youtube": {
         "subscribers": 126000,
@@ -556,7 +556,7 @@
       "fairPrice": 124.74,
       "price": 124.74,
       "chg24h": -0.31,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3866,
       "youtube": {
         "subscribers": 283000,
@@ -580,7 +580,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebaf20f7db5288bce9beede034",
       "fairPrice": 175.41,
       "price": 175.41,
-      "chg24h": -0.22,
+      "chg24h": 0.0,
       "volatility30d": 0.003,
       "volume": 5825,
       "youtube": {
@@ -731,7 +731,7 @@
       "fairPrice": 63.94,
       "price": 63.94,
       "chg24h": -0.61,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3640,
       "youtube": {
         "subscribers": 14000,
@@ -806,7 +806,7 @@
       "fairPrice": 71.43,
       "price": 71.43,
       "chg24h": 0.55,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2893,
       "youtube": {
         "subscribers": 17800,
@@ -934,7 +934,7 @@
       "volatility30d": 0.0,
       "volume": 1394,
       "youtube": {
-        "subscribers": 962,
+        "subscribers": 963,
         "views": 141792,
         "videos": 16
       },
@@ -981,7 +981,7 @@
       "fairPrice": 73.66,
       "price": 73.66,
       "chg24h": -0.53,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2994,
       "youtube": {
         "subscribers": 306000,
@@ -1147,8 +1147,8 @@
       "name": "Gunna",
       "genre": "Hip-hop",
       "spotifyId": "2hlmm7s2ICUX0LVIhVFlZQ",
-      "popularity": 86,
-      "popularityDelta": 0,
+      "popularity": 87,
+      "popularityDelta": 1,
       "followers": 12231465,
       "monthlyListeners": 32752194,
       "listenersSource": "ratio-calibrated",
@@ -1157,7 +1157,7 @@
       "price": 43.43,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2098,
+      "volume": 3777,
       "youtube": {
         "subscribers": 1440,
         "views": 1075619550,
@@ -1231,7 +1231,7 @@
       "fairPrice": 21.99,
       "price": 21.99,
       "chg24h": 1.79,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1011,
       "youtube": {
         "subscribers": 2770000,
@@ -1331,7 +1331,7 @@
       "fairPrice": 57.17,
       "price": 57.17,
       "chg24h": -0.68,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1837,
       "youtube": {
         "subscribers": 2200,
@@ -1431,7 +1431,7 @@
       "fairPrice": 25.36,
       "price": 25.36,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 1770,
       "youtube": {
         "subscribers": 1770,
@@ -1531,7 +1531,7 @@
       "fairPrice": 17.71,
       "price": 17.71,
       "chg24h": 2.22,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1929,
       "youtube": {
         "subscribers": 28900,
@@ -1580,7 +1580,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebe4d94f7cbebb17504c25d419",
       "fairPrice": 53.8,
       "price": 53.8,
-      "chg24h": -0.72,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 2328,
       "youtube": {
@@ -1605,7 +1605,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb81f47f44084e0a09b5f0fa13",
       "fairPrice": 137.03,
       "price": 137.03,
-      "chg24h": -0.28,
+      "chg24h": 0.0,
       "volatility30d": 0.002,
       "volume": 6587,
       "youtube": {
@@ -1656,7 +1656,7 @@
       "fairPrice": 38.35,
       "price": 38.35,
       "chg24h": 1.02,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1889,
       "youtube": {
         "subscribers": 12200000,
@@ -1706,7 +1706,7 @@
       "fairPrice": 51.05,
       "price": 51.05,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 2717,
       "youtube": {
         "subscribers": 2720,
@@ -1905,11 +1905,11 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb6ba600ad0f41d8a3aa3f53b2",
       "fairPrice": 43.13,
       "price": 43.13,
-      "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "chg24h": 0.91,
+      "volatility30d": 0.004,
       "volume": 1603,
       "youtube": {
-        "subscribers": 723,
+        "subscribers": 722,
         "views": 679913855,
         "videos": 90
       },
@@ -1972,8 +1972,8 @@
       "name": "Tyla",
       "genre": "Afropop",
       "spotifyId": "25uiPmTg16RbhZWAqwLBy5",
-      "popularity": 84,
-      "popularityDelta": 0,
+      "popularity": 85,
+      "popularityDelta": 1,
       "followers": 7234615,
       "monthlyListeners": 29756695,
       "listenersSource": "ratio-calibrated",
@@ -1981,8 +1981,8 @@
       "fairPrice": 42.55,
       "price": 42.55,
       "chg24h": 0.93,
-      "volatility30d": 0.002,
-      "volume": 1614,
+      "volatility30d": 0.003,
+      "volume": 2905,
       "youtube": {
         "subscribers": 6000000,
         "views": 2710597276,
@@ -2031,7 +2031,7 @@
       "fairPrice": 24.54,
       "price": 24.54,
       "chg24h": -1.56,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1629,
       "youtube": {
         "subscribers": 4530,
@@ -2056,7 +2056,7 @@
       "fairPrice": 75.56,
       "price": 75.56,
       "chg24h": 0.52,
-      "volatility30d": 0.011,
+      "volatility30d": 0.01,
       "volume": 2483,
       "youtube": {
         "subscribers": 4530,
@@ -2080,7 +2080,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebe6ef803356b45ee5a9fa7a8a",
       "fairPrice": 24.2,
       "price": 24.2,
-      "chg24h": -1.59,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 2095,
       "youtube": {
@@ -2155,8 +2155,8 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebff101c2e561cfcff3f6195aa",
       "fairPrice": 14.65,
       "price": 14.65,
-      "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "chg24h": 2.7,
+      "volatility30d": 0.004,
       "volume": 885,
       "youtube": {
         "subscribers": 2600,
@@ -2181,7 +2181,7 @@
       "fairPrice": 47.88,
       "price": 47.88,
       "chg24h": -0.81,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1313,
       "youtube": {
         "subscribers": 1910,
@@ -2272,8 +2272,8 @@
       "name": "Hozier",
       "genre": "Alt",
       "spotifyId": "2FXC3k01G6Gw61bmprjgqS",
-      "popularity": 82,
-      "popularityDelta": 0,
+      "popularity": 83,
+      "popularityDelta": 1,
       "followers": 9627553,
       "monthlyListeners": 39367064,
       "listenersSource": "ratio-calibrated",
@@ -2282,7 +2282,7 @@
       "price": 52.34,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 1862,
+      "volume": 3351,
       "youtube": {
         "subscribers": 8240,
         "views": 1256028387,
@@ -2356,7 +2356,7 @@
       "fairPrice": 78.94,
       "price": 78.94,
       "chg24h": -0.49,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2026,
       "youtube": {
         "subscribers": 28800,
@@ -2456,7 +2456,7 @@
       "fairPrice": 31.77,
       "price": 31.77,
       "chg24h": 0.0,
-      "volatility30d": 0.004,
+      "volatility30d": 0.003,
       "volume": 1658,
       "youtube": {
         "subscribers": 1150,
@@ -2472,8 +2472,8 @@
       "name": "Mitski",
       "genre": "Indie",
       "spotifyId": "2uYWxilOVlUdk4oV9DvwqK",
-      "popularity": 80,
-      "popularityDelta": 0,
+      "popularity": 81,
+      "popularityDelta": 1,
       "followers": 11895630,
       "monthlyListeners": 19822878,
       "listenersSource": "ratio-calibrated",
@@ -2482,7 +2482,7 @@
       "price": 26.21,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2069,
+      "volume": 3725,
       "youtube": {
         "subscribers": 8920,
         "views": 902051711,
@@ -2506,7 +2506,7 @@
       "fairPrice": 16.97,
       "price": 16.97,
       "chg24h": -2.22,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1106,
       "youtube": {
         "subscribers": 1830,
@@ -2722,8 +2722,8 @@
       "name": "David Guetta",
       "genre": "Electronic",
       "spotifyId": "1Cs0zKBU1kc0i8ypK3B9ai",
-      "popularity": 90,
-      "popularityDelta": 0,
+      "popularity": 91,
+      "popularityDelta": 1,
       "followers": 28292425,
       "monthlyListeners": 86795501,
       "listenersSource": "ratio-calibrated",
@@ -2732,7 +2732,7 @@
       "price": 118.44,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3191,
+      "volume": 5745,
       "youtube": {
         "subscribers": 184000,
         "views": 3392136100,
@@ -2756,7 +2756,7 @@
       "fairPrice": 108.21,
       "price": 108.21,
       "chg24h": -0.36,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2928,
       "youtube": {
         "subscribers": 92500,
