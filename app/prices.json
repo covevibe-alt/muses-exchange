@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-27T23:04:51Z",
+  "updatedAt": "2026-07-28T00:55:15Z",
   "marketIndex": 175.59,
   "rawAveragePrice": 58.24,
   "topGainers": [
@@ -581,7 +581,7 @@
       "fairPrice": 175.2,
       "price": 175.2,
       "chg24h": -0.22,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 5826,
       "youtube": {
         "subscribers": 1610000,
@@ -722,8 +722,8 @@
       "name": "Camila Cabello",
       "genre": "Pop",
       "spotifyId": "4nDoRrQiYLoBzwC5BhVJzF",
-      "popularity": 81,
-      "popularityDelta": 0,
+      "popularity": 82,
+      "popularityDelta": 1,
       "followers": 36810190,
       "monthlyListeners": 47971040,
       "listenersSource": "ratio-calibrated",
@@ -732,7 +732,7 @@
       "price": 63.86,
       "chg24h": 0.0,
       "volatility30d": 0.005,
-      "volume": 3640,
+      "volume": 6553,
       "youtube": {
         "subscribers": 14000,
         "views": 1344484295,
@@ -911,7 +911,7 @@
       "youtube": {
         "subscribers": 1110000,
         "views": 5885339993,
-        "videos": 488
+        "videos": 484
       },
       "youtubeBoost": 0.2115,
       "chartPositions": null,
@@ -1381,7 +1381,7 @@
       "fairPrice": 88.86,
       "price": 88.86,
       "chg24h": -0.44,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 3630,
       "youtube": {
         "subscribers": 49600,
@@ -2231,7 +2231,7 @@
       "fairPrice": 105.96,
       "price": 105.96,
       "chg24h": -0.37,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 6821,
       "youtube": {
         "subscribers": 13800,
@@ -2409,7 +2409,7 @@
       "volatility30d": 0.0,
       "volume": 2941,
       "youtube": {
-        "subscribers": 1890,
+        "subscribers": 1900,
         "views": 468560735,
         "videos": 61
       },
