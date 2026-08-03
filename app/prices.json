@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-03T10:44:32Z",
+  "updatedAt": "2026-08-03T13:41:56Z",
   "marketIndex": 175.55,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -298,7 +298,7 @@
       "genre": "Pop",
       "spotifyId": "1McMsnEElThX1knmY4oliG",
       "popularity": 95,
-      "popularityDelta": -1,
+      "popularityDelta": 0,
       "followers": 55605733,
       "monthlyListeners": 66888136,
       "listenersSource": "ratio-calibrated",
@@ -306,8 +306,8 @@
       "fairPrice": 89.71,
       "price": 89.71,
       "chg24h": 0.0,
-      "volatility30d": 0.006,
-      "volume": 8053,
+      "volatility30d": 0.005,
+      "volume": 4474,
       "youtube": {
         "subscribers": 19500,
         "views": 2343025902,
@@ -381,7 +381,7 @@
       "fairPrice": 132.66,
       "price": 132.66,
       "chg24h": 0.59,
-      "volatility30d": 0.017,
+      "volatility30d": 0.018,
       "volume": 6410,
       "youtube": {
         "subscribers": 392000,
@@ -406,7 +406,7 @@
       "fairPrice": 115.67,
       "price": 115.67,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 6782,
       "youtube": {
         "subscribers": 559000,
@@ -431,7 +431,7 @@
       "fairPrice": 86.47,
       "price": 86.47,
       "chg24h": 0.45,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3588,
       "youtube": {
         "subscribers": 30900,
@@ -506,7 +506,7 @@
       "fairPrice": 77.6,
       "price": 77.6,
       "chg24h": -0.99,
-      "volatility30d": 0.005,
+      "volatility30d": 0.006,
       "volume": 3202,
       "youtube": {
         "subscribers": 264000,
@@ -531,7 +531,7 @@
       "fairPrice": 144.72,
       "price": 144.72,
       "chg24h": 0.27,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 4003,
       "youtube": {
         "subscribers": 126000,
@@ -606,7 +606,7 @@
       "fairPrice": 180.07,
       "price": 180.07,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 5575,
       "youtube": {
         "subscribers": 364000,
@@ -706,7 +706,7 @@
       "fairPrice": 48.52,
       "price": 48.52,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1897,
       "youtube": {
         "subscribers": 853,
@@ -881,7 +881,7 @@
       "fairPrice": 80.91,
       "price": 80.91,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 4004,
       "youtube": {
         "subscribers": 84300,
@@ -1473,7 +1473,7 @@
       "genre": "R&B",
       "spotifyId": "2HPaUgqeutzr3jx5a9WyDV",
       "popularity": 85,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 11894128,
       "monthlyListeners": 26640468,
       "listenersSource": "ratio-calibrated",
@@ -1482,7 +1482,7 @@
       "price": 35.1,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3725,
+      "volume": 2069,
       "youtube": {
         "subscribers": 70700,
         "views": 818431353,
@@ -1531,7 +1531,7 @@
       "fairPrice": 17.66,
       "price": 17.66,
       "chg24h": -2.17,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1930,
       "youtube": {
         "subscribers": 28900,
@@ -1681,7 +1681,7 @@
       "fairPrice": 73.98,
       "price": 73.98,
       "chg24h": 0.53,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 4875,
       "youtube": {
         "subscribers": 40700,
@@ -1731,7 +1731,7 @@
       "fairPrice": 70.84,
       "price": 70.84,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 3529,
       "youtube": {
         "subscribers": 9140,
@@ -1756,7 +1756,7 @@
       "fairPrice": 56.55,
       "price": 56.55,
       "chg24h": 0.69,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2987,
       "youtube": {
         "subscribers": 3700,
@@ -1781,7 +1781,7 @@
       "fairPrice": 69.71,
       "price": 69.71,
       "chg24h": 0.56,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3863,
       "youtube": {
         "subscribers": 126000,
@@ -1823,7 +1823,7 @@
       "genre": "Latin",
       "spotifyId": "1r4hJ1h58CWwUQe3MxPuau",
       "popularity": 88,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 41328796,
       "monthlyListeners": 49420974,
       "listenersSource": "ratio-calibrated",
@@ -1832,7 +1832,7 @@
       "price": 67.17,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 6943,
+      "volume": 3857,
       "youtube": {
         "subscribers": 162000,
         "views": 3350071957,
@@ -1856,7 +1856,7 @@
       "fairPrice": 59.23,
       "price": 59.23,
       "chg24h": 0.66,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 4243,
       "youtube": {
         "subscribers": 131000,
@@ -1873,7 +1873,7 @@
       "genre": "Latin",
       "spotifyId": "07YUOmWljBTXwIseAUd9TW",
       "popularity": 80,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 25071918,
       "monthlyListeners": 24006361,
       "listenersSource": "ratio-calibrated",
@@ -1882,7 +1882,7 @@
       "price": 32.02,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 5408,
+      "volume": 3004,
       "youtube": {
         "subscribers": 12600,
         "views": 1683993285,
@@ -1931,7 +1931,7 @@
       "fairPrice": 62.8,
       "price": 62.8,
       "chg24h": 0.62,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3177,
       "youtube": {
         "subscribers": 136000,
@@ -1981,7 +1981,7 @@
       "fairPrice": 43.35,
       "price": 43.35,
       "chg24h": 0.9,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1617,
       "youtube": {
         "subscribers": 6040000,
@@ -2006,7 +2006,7 @@
       "fairPrice": 35.09,
       "price": 35.09,
       "chg24h": -1.1,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2032,
       "youtube": {
         "subscribers": 5080,
@@ -2097,8 +2097,8 @@
       "name": "Davido",
       "genre": "Afropop",
       "spotifyId": "0Y3agQaa6g2r0YmHPOO9rh",
-      "popularity": 78,
-      "popularityDelta": 0,
+      "popularity": 79,
+      "popularityDelta": 1,
       "followers": 11553700,
       "monthlyListeners": 11423143,
       "listenersSource": "ratio-calibrated",
@@ -2107,7 +2107,7 @@
       "price": 14.84,
       "chg24h": 0.0,
       "volatility30d": 0.005,
-      "volume": 2039,
+      "volume": 3671,
       "youtube": {
         "subscribers": 14100,
         "views": 368292881,
@@ -2131,7 +2131,7 @@
       "fairPrice": 11.22,
       "price": 11.22,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1902,
       "youtube": {
         "subscribers": 4420,
@@ -2198,7 +2198,7 @@
       "genre": "Afropop",
       "spotifyId": "75VKfyoBlkmrJFDqo1o2VY",
       "popularity": 73,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 5548759,
       "monthlyListeners": 9306379,
       "listenersSource": "ratio-calibrated",
@@ -2207,7 +2207,7 @@
       "price": 12.03,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2544,
+      "volume": 1413,
       "youtube": {
         "subscribers": 1030,
         "views": 281285473,
@@ -2306,7 +2306,7 @@
       "fairPrice": 71.48,
       "price": 71.48,
       "chg24h": 0.55,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3558,
       "youtube": {
         "subscribers": 89400,
@@ -2381,7 +2381,7 @@
       "fairPrice": 8.35,
       "price": 8.35,
       "chg24h": 4.76,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 716,
       "youtube": {
         "subscribers": 208,
@@ -2581,7 +2581,7 @@
       "fairPrice": 42.85,
       "price": 42.85,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2657,
       "youtube": {
         "subscribers": 4310000,
@@ -2772,8 +2772,8 @@
       "name": "Fred again..",
       "genre": "Electronic",
       "spotifyId": "4oLeXFyACqeem2VImYeBFe",
-      "popularity": 80,
-      "popularityDelta": 0,
+      "popularity": 81,
+      "popularityDelta": 1,
       "followers": 2725544,
       "monthlyListeners": 18453023,
       "listenersSource": "ratio-calibrated",
@@ -2782,7 +2782,7 @@
       "price": 23.92,
       "chg24h": 1.64,
       "volatility30d": 0.006,
-      "volume": 991,
+      "volume": 1783,
       "youtube": {
         "subscribers": 482,
         "views": 322007780,
