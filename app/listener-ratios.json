@@ -1,6 +1,6 @@
 {
-  "calibratedAt": "2026-08-05",
-  "calibratedAtUtc": "2026-08-05T19:53:02Z",
+  "calibratedAt": "2026-08-06",
+  "calibratedAtUtc": "2026-08-06T03:34:31Z",
   "description": "Per-artist monthlyListeners/followers ratio.",
   "source": "kworb.net listeners table + Spotify Web API followers",
   "defaultRatio": 1.7391,
