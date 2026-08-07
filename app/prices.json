@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-07T11:48:28Z",
+  "updatedAt": "2026-08-07T13:09:22Z",
   "marketIndex": 175.54,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -356,7 +356,7 @@
       "fairPrice": 90.09,
       "price": 90.09,
       "chg24h": 0.43,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 4183,
       "youtube": {
         "subscribers": 10100,
@@ -506,7 +506,7 @@
       "fairPrice": 76.31,
       "price": 76.31,
       "chg24h": 0.0,
-      "volatility30d": 0.008,
+      "volatility30d": 0.007,
       "volume": 3204,
       "youtube": {
         "subscribers": 264000,
@@ -581,7 +581,7 @@
       "fairPrice": 173.04,
       "price": 173.04,
       "chg24h": -0.22,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 5840,
       "youtube": {
         "subscribers": 1610000,
@@ -681,7 +681,7 @@
       "fairPrice": 55.04,
       "price": 55.04,
       "chg24h": -0.7,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 1739,
       "youtube": {
         "subscribers": 4510,
@@ -709,7 +709,7 @@
       "volatility30d": 0.0,
       "volume": 1899,
       "youtube": {
-        "subscribers": 855,
+        "subscribers": 854,
         "views": 569894017,
         "videos": 293
       },
@@ -1731,10 +1731,10 @@
       "fairPrice": 71.04,
       "price": 71.04,
       "chg24h": 0.55,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 3531,
       "youtube": {
-        "subscribers": 9140,
+        "subscribers": 9130,
         "views": 4240140759,
         "videos": 219
       },
@@ -1781,7 +1781,7 @@
       "fairPrice": 69.9,
       "price": 69.9,
       "chg24h": 0.56,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 3865,
       "youtube": {
         "subscribers": 125000,
@@ -1909,7 +1909,7 @@
       "volatility30d": 0.005,
       "volume": 1608,
       "youtube": {
-        "subscribers": 726,
+        "subscribers": 725,
         "views": 687712431,
         "videos": 90
       },
@@ -2097,8 +2097,8 @@
       "name": "Davido",
       "genre": "Afropop",
       "spotifyId": "0Y3agQaa6g2r0YmHPOO9rh",
-      "popularity": 79,
-      "popularityDelta": 0,
+      "popularity": 80,
+      "popularityDelta": 1,
       "followers": 11592667,
       "monthlyListeners": 11610056,
       "listenersSource": "ratio-calibrated",
@@ -2107,7 +2107,7 @@
       "price": 15.04,
       "chg24h": 0.0,
       "volatility30d": 0.004,
-      "volume": 2043,
+      "volume": 3677,
       "youtube": {
         "subscribers": 14100,
         "views": 372716087,
@@ -2306,7 +2306,7 @@
       "fairPrice": 71.81,
       "price": 71.81,
       "chg24h": 0.54,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 3560,
       "youtube": {
         "subscribers": 89400,
@@ -2781,10 +2781,10 @@
       "fairPrice": 24.92,
       "price": 24.92,
       "chg24h": 0.0,
-      "volatility30d": 0.008,
+      "volatility30d": 0.007,
       "volume": 993,
       "youtube": {
-        "subscribers": 481,
+        "subscribers": 480,
         "views": 327507020,
         "videos": 388
       },
@@ -2831,7 +2831,7 @@
       "fairPrice": 71.92,
       "price": 71.92,
       "chg24h": 0.54,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 3560,
       "youtube": {
         "subscribers": 23800,
