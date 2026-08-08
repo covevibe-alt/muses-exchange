@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-08T12:53:24Z",
+  "updatedAt": "2026-08-08T13:47:56Z",
   "marketIndex": 175.52,
   "rawAveragePrice": 58.22,
   "topGainers": [
@@ -26,6 +26,10 @@
   ],
   "topLosers": [
     {
+      "ticker": "GRAB",
+      "chg24h": -0.8
+    },
+    {
       "ticker": "MRSH",
       "chg24h": 0.0
     },
@@ -39,10 +43,6 @@
     },
     {
       "ticker": "CHRS",
-      "chg24h": 0.0
-    },
-    {
-      "ticker": "GTTA",
       "chg24h": 0.0
     }
   ],
@@ -169,7 +169,7 @@
     {
       "sector": "Pop",
       "avgPrice": 87.72,
-      "chg24h": 0.0,
+      "chg24h": -0.03,
       "members": [
         "SABR",
         "TSWF",
@@ -705,15 +705,15 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb18e3675ebfda9c29cfb2b57e",
       "fairPrice": 48.19,
       "price": 48.19,
-      "chg24h": 0.0,
-      "volatility30d": 0.0,
+      "chg24h": -0.8,
+      "volatility30d": 0.002,
       "volume": 1899,
       "youtube": {
         "subscribers": 855,
-        "views": 570590338,
+        "views": 565154521,
         "videos": 291
       },
-      "youtubeBoost": 0.124,
+      "youtubeBoost": 0.1238,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -1231,7 +1231,7 @@
       "fairPrice": 22.26,
       "price": 22.26,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1015,
       "youtube": {
         "subscribers": 2790000,
@@ -1685,7 +1685,7 @@
       "volume": 4879,
       "youtube": {
         "subscribers": 40700,
-        "views": 5379045930,
+        "views": 5385347975,
         "videos": 1605
       },
       "youtubeBoost": 0.1679,
@@ -2081,7 +2081,7 @@
       "fairPrice": 23.34,
       "price": 23.34,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 2108,
       "youtube": {
         "subscribers": 25500,
@@ -2185,7 +2185,7 @@
       "volume": 1322,
       "youtube": {
         "subscribers": 1910,
-        "views": 479100227,
+        "views": 479329838,
         "videos": 67
       },
       "youtubeBoost": 0.1206,
@@ -2260,7 +2260,7 @@
       "volume": 4631,
       "youtube": {
         "subscribers": 458000,
-        "views": 3834827010,
+        "views": 3836815083,
         "videos": 1178
       },
       "youtubeBoost": 0.1877,
@@ -2635,7 +2635,7 @@
       "volume": 4666,
       "youtube": {
         "subscribers": 34400,
-        "views": 4917191757,
+        "views": 4918007213,
         "videos": 192
       },
       "youtubeBoost": 0.1661,
