@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-09T12:55:41Z",
+  "updatedAt": "2026-08-09T13:51:51Z",
   "marketIndex": 175.51,
   "rawAveragePrice": 58.22,
   "topGainers": [
@@ -67,7 +67,7 @@
     {
       "sector": "Alt",
       "avgPrice": 62.54,
-      "chg24h": 0.07,
+      "chg24h": 0.01,
       "members": [
         "BILL",
         "LANA",
@@ -169,7 +169,7 @@
     {
       "sector": "Pop",
       "avgPrice": 87.71,
-      "chg24h": 0.14,
+      "chg24h": 0.17,
       "members": [
         "SABR",
         "TSWF",
@@ -285,7 +285,7 @@
       "volume": 1742,
       "youtube": {
         "subscribers": 992,
-        "views": 722697138,
+        "views": 722986395,
         "videos": 109
       },
       "youtubeBoost": 0.1287,
@@ -485,7 +485,7 @@
       "volume": 1619,
       "youtube": {
         "subscribers": 10900,
-        "views": 715540548,
+        "views": 715921369,
         "videos": 651
       },
       "youtubeBoost": 0.1285,
@@ -510,7 +510,7 @@
       "volume": 3205,
       "youtube": {
         "subscribers": 264000,
-        "views": 1954106538,
+        "views": 1954283157,
         "videos": 1022
       },
       "youtubeBoost": 0.165,
@@ -560,7 +560,7 @@
       "volume": 3876,
       "youtube": {
         "subscribers": 283000,
-        "views": 3135903921,
+        "views": 3137038644,
         "videos": 1882
       },
       "youtubeBoost": 0.1754,
@@ -705,8 +705,8 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb18e3675ebfda9c29cfb2b57e",
       "fairPrice": 48.01,
       "price": 48.01,
-      "chg24h": -0.8,
-      "volatility30d": 0.005,
+      "chg24h": 0.0,
+      "volatility30d": 0.004,
       "volume": 1899,
       "youtube": {
         "subscribers": 856,
@@ -1135,10 +1135,10 @@
       "volume": 2161,
       "youtube": {
         "subscribers": 14900,
-        "views": 1613364962,
+        "views": 1613803305,
         "videos": 442
       },
-      "youtubeBoost": 0.1443,
+      "youtubeBoost": 0.1444,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -1435,7 +1435,7 @@
       "volume": 1773,
       "youtube": {
         "subscribers": 1770,
-        "views": 978456419,
+        "views": 978678214,
         "videos": 408
       },
       "youtubeBoost": 0.1346,
@@ -1459,8 +1459,8 @@
       "volatility30d": 0.005,
       "volume": 1790,
       "youtube": {
-        "subscribers": 17500,
-        "views": 495746982,
+        "subscribers": 17400,
+        "views": 496033886,
         "videos": 172
       },
       "youtubeBoost": 0.1213,
@@ -1681,7 +1681,7 @@
       "fairPrice": 75.67,
       "price": 75.67,
       "chg24h": 2.08,
-      "volatility30d": 0.018,
+      "volatility30d": 0.019,
       "volume": 4880,
       "youtube": {
         "subscribers": 40700,
@@ -2009,7 +2009,7 @@
       "volatility30d": 0.0,
       "volume": 2037,
       "youtube": {
-        "subscribers": 5090,
+        "subscribers": 5080,
         "views": 818889791,
         "videos": 301
       },
@@ -2085,7 +2085,7 @@
       "volume": 2109,
       "youtube": {
         "subscribers": 25500,
-        "views": 521068049,
+        "views": 521200532,
         "videos": 251
       },
       "youtubeBoost": 0.1223,
@@ -2135,7 +2135,7 @@
       "volume": 1910,
       "youtube": {
         "subscribers": 4420,
-        "views": 266151251,
+        "views": 266316469,
         "videos": 106
       },
       "youtubeBoost": 0.1091,
@@ -2228,17 +2228,17 @@
       "monthlyListeners": 78120542,
       "listenersSource": "ratio-calibrated",
       "image": "https://i.scdn.co/image/ab6761610000e5eb4a21b4760d2ecb7b0dcdc8da",
-      "fairPrice": 105.94,
-      "price": 105.94,
+      "fairPrice": 105.93,
+      "price": 105.93,
       "chg24h": 0.0,
       "volatility30d": 0.0,
       "volume": 6832,
       "youtube": {
         "subscribers": 13800,
-        "views": 5776429432,
+        "views": 5760253179,
         "videos": 766
       },
-      "youtubeBoost": 0.1693,
+      "youtubeBoost": 0.1692,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -2255,15 +2255,15 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebb99cacf8acd5378206767261",
       "fairPrice": 87.56,
       "price": 87.56,
-      "chg24h": 0.0,
-      "volatility30d": 0.0,
+      "chg24h": -0.44,
+      "volatility30d": 0.002,
       "volume": 4632,
       "youtube": {
         "subscribers": 458000,
-        "views": 3837307657,
+        "views": 3818477888,
         "videos": 1178
       },
-      "youtubeBoost": 0.1877,
+      "youtubeBoost": 0.1876,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -2353,17 +2353,17 @@
       "monthlyListeners": 59463612,
       "listenersSource": "ratio-calibrated",
       "image": "https://i.scdn.co/image/ab6761610000e5ebe412a782245eb20d9626c601",
-      "fairPrice": 78.49,
-      "price": 78.49,
+      "fairPrice": 78.5,
+      "price": 78.5,
       "chg24h": 0.5,
       "volatility30d": 0.005,
       "volume": 2038,
       "youtube": {
         "subscribers": 28800,
-        "views": 1180515836,
+        "views": 1181487928,
         "videos": 165
       },
-      "youtubeBoost": 0.1382,
+      "youtubeBoost": 0.1383,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -2397,8 +2397,8 @@
       "name": "The Mar\u00edas",
       "genre": "Indie",
       "spotifyId": "2dIgFjalVxs4ThymZ67YCE",
-      "popularity": 86,
-      "popularityDelta": 0,
+      "popularity": 87,
+      "popularityDelta": 1,
       "followers": 24200205,
       "monthlyListeners": 10251207,
       "listenersSource": "ratio-calibrated",
@@ -2407,7 +2407,7 @@
       "price": 13.32,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2952,
+      "volume": 5313,
       "youtube": {
         "subscribers": 1900,
         "views": 476078643,
@@ -2531,10 +2531,10 @@
       "fairPrice": 2.51,
       "price": 2.51,
       "chg24h": -14.29,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 647,
       "youtube": {
-        "subscribers": 450,
+        "subscribers": 449,
         "views": 36945352,
         "videos": 31
       },
@@ -2635,7 +2635,7 @@
       "volume": 4666,
       "youtube": {
         "subscribers": 34400,
-        "views": 4919192007,
+        "views": 4920062861,
         "videos": 192
       },
       "youtubeBoost": 0.1661,
@@ -2659,7 +2659,7 @@
       "volatility30d": 0.0,
       "volume": 2190,
       "youtube": {
-        "subscribers": 27900,
+        "subscribers": 27800,
         "views": 3052517334,
         "videos": 39
       },
@@ -2672,8 +2672,8 @@
       "name": "Stray Kids",
       "genre": "K-Pop",
       "spotifyId": "2dIgFjalVxs4ThymZ67YCE",
-      "popularity": 86,
-      "popularityDelta": 0,
+      "popularity": 87,
+      "popularityDelta": 1,
       "followers": 24200205,
       "monthlyListeners": 10251207,
       "listenersSource": "ratio-calibrated",
@@ -2682,7 +2682,7 @@
       "price": 13.76,
       "chg24h": 2.86,
       "volatility30d": 0.005,
-      "volume": 2952,
+      "volume": 5313,
       "youtube": {
         "subscribers": 69800,
         "views": 3083732814,
