@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-10T05:55:25Z",
+  "updatedAt": "2026-08-10T07:47:43Z",
   "marketIndex": 175.51,
   "rawAveragePrice": 58.22,
   "topGainers": [
@@ -331,7 +331,7 @@
       "fairPrice": 60.87,
       "price": 60.87,
       "chg24h": 0.64,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2014,
       "youtube": {
         "subscribers": 6720000,
@@ -881,7 +881,7 @@
       "fairPrice": 80.47,
       "price": 80.47,
       "chg24h": -0.48,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 4007,
       "youtube": {
         "subscribers": 84300,
@@ -935,7 +935,7 @@
       "volume": 1397,
       "youtube": {
         "subscribers": 968,
-        "views": 142535,
+        "views": 142551,
         "videos": 16
       },
       "youtubeBoost": 0.0,
@@ -1309,7 +1309,7 @@
       "volatility30d": 0.0,
       "volume": 2736,
       "youtube": {
-        "subscribers": 78100,
+        "subscribers": 78000,
         "views": 1815333181,
         "videos": 327
       },
@@ -1431,7 +1431,7 @@
       "fairPrice": 24.88,
       "price": 24.88,
       "chg24h": -1.54,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1773,
       "youtube": {
         "subscribers": 1770,
@@ -1778,17 +1778,17 @@
       "monthlyListeners": 51896211,
       "listenersSource": "ratio-calibrated",
       "image": "https://i.scdn.co/image/ab6761610000e5eb1c4284179078e2529b1630e2",
-      "fairPrice": 70.19,
-      "price": 70.19,
+      "fairPrice": 70.2,
+      "price": 70.2,
       "chg24h": 0.55,
       "volatility30d": 0.003,
       "volume": 3866,
       "youtube": {
-        "subscribers": 125000,
+        "subscribers": 126000,
         "views": 4371763410,
         "videos": 257
       },
-      "youtubeBoost": 0.1677,
+      "youtubeBoost": 0.1678,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -2406,7 +2406,7 @@
       "fairPrice": 13.42,
       "price": 13.42,
       "chg24h": 2.94,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2952,
       "youtube": {
         "subscribers": 1900,
