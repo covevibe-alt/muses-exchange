@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-10T10:43:42Z",
+  "updatedAt": "2026-08-10T11:49:15Z",
   "marketIndex": 175.51,
   "rawAveragePrice": 58.22,
   "topGainers": [
@@ -606,7 +606,7 @@
       "fairPrice": 180.15,
       "price": 180.15,
       "chg24h": 0.22,
-      "volatility30d": 0.01,
+      "volatility30d": 0.009,
       "volume": 5587,
       "youtube": {
         "subscribers": 364000,
@@ -1673,7 +1673,7 @@
       "genre": "Latin",
       "spotifyId": "790FomKkXshlbRYZFtlgla",
       "popularity": 91,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 66156894,
       "monthlyListeners": 56253207,
       "listenersSource": "ratio-calibrated",
@@ -1681,8 +1681,8 @@
       "fairPrice": 76.13,
       "price": 76.13,
       "chg24h": 0.51,
-      "volatility30d": 0.015,
-      "volume": 8784,
+      "volatility30d": 0.013,
+      "volume": 4880,
       "youtube": {
         "subscribers": 40700,
         "views": 5392443672,
@@ -2623,7 +2623,7 @@
       "genre": "K-Pop",
       "spotifyId": "41MozSoPIsD1dJM0CLPjZF",
       "popularity": 82,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 60503074,
       "monthlyListeners": 19863159,
       "listenersSource": "ratio-calibrated",
@@ -2632,7 +2632,7 @@
       "price": 26.84,
       "chg24h": 0.0,
       "volatility30d": 0.002,
-      "volume": 8401,
+      "volume": 4667,
       "youtube": {
         "subscribers": 34400,
         "views": 4920865129,
