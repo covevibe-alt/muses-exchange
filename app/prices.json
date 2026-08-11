@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-11T20:49:05Z",
+  "updatedAt": "2026-08-11T21:51:33Z",
   "marketIndex": 175.54,
   "rawAveragePrice": 58.23,
   "topGainers": [
@@ -256,7 +256,7 @@
       "fairPrice": 141.4,
       "price": 141.4,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 7641,
       "youtube": {
         "subscribers": 718000,
@@ -1072,8 +1072,8 @@
       "name": "J. Cole",
       "genre": "Hip-hop",
       "spotifyId": "6l3HvQ5sa6mXTsMTB19rO5",
-      "popularity": 86,
-      "popularityDelta": 0,
+      "popularity": 87,
+      "popularityDelta": 1,
       "followers": 28804965,
       "monthlyListeners": 36933726,
       "listenersSource": "ratio-calibrated",
@@ -1082,7 +1082,7 @@
       "price": 49.38,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3220,
+      "volume": 5796,
       "youtube": {
         "subscribers": 102000,
         "views": 2656183489,
@@ -1806,7 +1806,7 @@
       "fairPrice": 97.51,
       "price": 97.51,
       "chg24h": 0.4,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 3878,
       "youtube": {
         "subscribers": 90200,
@@ -2731,7 +2731,7 @@
       "fairPrice": 117.11,
       "price": 117.11,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 3196,
       "youtube": {
         "subscribers": 184000,
