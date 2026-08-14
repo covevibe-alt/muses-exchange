@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-14T11:45:21Z",
+  "updatedAt": "2026-08-14T13:11:59Z",
   "marketIndex": 175.57,
   "rawAveragePrice": 58.24,
   "topGainers": [
@@ -956,7 +956,7 @@
       "fairPrice": 88.06,
       "price": 88.06,
       "chg24h": 0.88,
-      "volatility30d": 0.01,
+      "volatility30d": 0.011,
       "volume": 4207,
       "youtube": {
         "subscribers": 65300,
@@ -1059,7 +1059,7 @@
       "volatility30d": 0.0,
       "volume": 1159,
       "youtube": {
-        "subscribers": 807,
+        "subscribers": 808,
         "views": 462936597,
         "videos": 189
       },
@@ -2756,7 +2756,7 @@
       "fairPrice": 106.46,
       "price": 106.46,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 2933,
       "youtube": {
         "subscribers": 92400,
@@ -2836,7 +2836,7 @@
       "youtube": {
         "subscribers": 23800,
         "views": 1502851738,
-        "videos": 724
+        "videos": 729
       },
       "youtubeBoost": 0.143,
       "chartPositions": null,
