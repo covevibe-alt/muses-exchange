@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-21T16:37:01Z",
+  "updatedAt": "2026-08-21T17:30:53Z",
   "marketIndex": 175.62,
   "rawAveragePrice": 58.25,
   "topGainers": [
@@ -706,7 +706,7 @@
       "fairPrice": 46.29,
       "price": 46.29,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1904,
       "youtube": {
         "subscribers": 861,
@@ -810,7 +810,7 @@
       "volume": 2898,
       "youtube": {
         "subscribers": 17800,
-        "views": 1631177673,
+        "views": 1631534490,
         "videos": 629
       },
       "youtubeBoost": 0.1446,
@@ -935,7 +935,7 @@
       "volume": 1399,
       "youtube": {
         "subscribers": 969,
-        "views": 143310,
+        "views": 143278,
         "videos": 16
       },
       "youtubeBoost": 0.0,
@@ -960,7 +960,7 @@
       "volume": 4209,
       "youtube": {
         "subscribers": 65200,
-        "views": 5935495007,
+        "views": 5937027497,
         "videos": 761
       },
       "youtubeBoost": 0.1698,
@@ -985,7 +985,7 @@
       "volume": 3005,
       "youtube": {
         "subscribers": 306000,
-        "views": 4920786573,
+        "views": 4922201681,
         "videos": 1337
       },
       "youtubeBoost": 0.1856,
@@ -1060,7 +1060,7 @@
       "volume": 1161,
       "youtube": {
         "subscribers": 923,
-        "views": 465350094,
+        "views": 465564212,
         "videos": 189
       },
       "youtubeBoost": 0.1201,
@@ -2410,7 +2410,7 @@
       "volume": 2959,
       "youtube": {
         "subscribers": 1910,
-        "views": 483526106,
+        "views": 483926626,
         "videos": 61
       },
       "youtubeBoost": 0.1208,
@@ -2535,7 +2535,7 @@
       "volume": 649,
       "youtube": {
         "subscribers": 449,
-        "views": 37234588,
+        "views": 37249596,
         "videos": 31
       },
       "youtubeBoost": 0.0707,
@@ -2584,7 +2584,7 @@
       "volatility30d": 0.0,
       "volume": 2667,
       "youtube": {
-        "subscribers": 4320000,
+        "subscribers": 4330000,
         "views": 2085193361,
         "videos": 65
       },
