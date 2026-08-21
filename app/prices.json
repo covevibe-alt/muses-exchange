@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-21T07:44:47Z",
+  "updatedAt": "2026-08-21T08:43:06Z",
   "marketIndex": 175.62,
   "rawAveragePrice": 58.25,
   "topGainers": [
@@ -20,14 +20,18 @@
       "chg24h": 1.14
     },
     {
-      "ticker": "ANUL",
-      "chg24h": 0.64
+      "ticker": "CMLA",
+      "chg24h": 0.6
     }
   ],
   "topLosers": [
     {
       "ticker": "CHRL",
       "chg24h": -0.95
+    },
+    {
+      "ticker": "GRAB",
+      "chg24h": -0.82
     },
     {
       "ticker": "NCKI",
@@ -40,10 +44,6 @@
     {
       "ticker": "BRNA",
       "chg24h": -0.5
-    },
-    {
-      "ticker": "HRST",
-      "chg24h": -0.44
     }
   ],
   "sectorIndices": [
@@ -67,7 +67,7 @@
     {
       "sector": "Alt",
       "avgPrice": 63.28,
-      "chg24h": 0.23,
+      "chg24h": 0.16,
       "members": [
         "BILL",
         "LANA",
@@ -147,7 +147,7 @@
     {
       "sector": "Latin",
       "avgPrice": 64.74,
-      "chg24h": 0.04,
+      "chg24h": 0.0,
       "members": [
         "BNNY",
         "PESO",
@@ -169,7 +169,7 @@
     {
       "sector": "Pop",
       "avgPrice": 87.49,
-      "chg24h": 0.0,
+      "chg24h": -0.03,
       "members": [
         "SABR",
         "TSWF",
@@ -705,7 +705,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eb18e3675ebfda9c29cfb2b57e",
       "fairPrice": 46.29,
       "price": 46.29,
-      "chg24h": 0.0,
+      "chg24h": -0.82,
       "volatility30d": 0.004,
       "volume": 1904,
       "youtube": {
@@ -1059,7 +1059,7 @@
       "volatility30d": 0.0,
       "volume": 1161,
       "youtube": {
-        "subscribers": 807,
+        "subscribers": 887,
         "views": 465350094,
         "videos": 189
       },
@@ -1334,7 +1334,7 @@
       "volatility30d": 0.0,
       "volume": 1856,
       "youtube": {
-        "subscribers": 2200,
+        "subscribers": 2210,
         "views": 1255774795,
         "videos": 316
       },
@@ -1855,7 +1855,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5eba23ceb177745632b517cb7b2",
       "fairPrice": 60.34,
       "price": 60.34,
-      "chg24h": 0.64,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 4256,
       "youtube": {
@@ -2355,7 +2355,7 @@
       "image": "https://i.scdn.co/image/ab6761610000e5ebe412a782245eb20d9626c601",
       "fairPrice": 80.68,
       "price": 80.68,
-      "chg24h": 0.48,
+      "chg24h": 0.0,
       "volatility30d": 0.005,
       "volume": 2050,
       "youtube": {
@@ -2372,8 +2372,8 @@
       "name": "Fontaines D.C.",
       "genre": "Alt",
       "spotifyId": "3SXwqSqAoBz9WCI9PDQzY6",
-      "popularity": 73,
-      "popularityDelta": 0,
+      "popularity": 74,
+      "popularityDelta": 1,
       "followers": 1453037,
       "monthlyListeners": 7115958,
       "listenersSource": "ratio-calibrated",
@@ -2382,7 +2382,7 @@
       "price": 8.82,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 723,
+      "volume": 1302,
       "youtube": {
         "subscribers": 209,
         "views": 58290909,
@@ -2836,7 +2836,7 @@
       "youtube": {
         "subscribers": 23800,
         "views": 1514777659,
-        "videos": 764
+        "videos": 767
       },
       "youtubeBoost": 0.1431,
       "chartPositions": null,
