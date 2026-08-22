@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-22T09:28:55Z",
+  "updatedAt": "2026-08-22T09:53:17Z",
   "marketIndex": 175.62,
   "rawAveragePrice": 58.25,
   "topGainers": [
@@ -573,7 +573,7 @@
       "genre": "Pop",
       "spotifyId": "1uNFoZAHBGtllmzznpCI3s",
       "popularity": 95,
-      "popularityDelta": -1,
+      "popularityDelta": 0,
       "followers": 95295943,
       "monthlyListeners": 121635742,
       "listenersSource": "ratio-calibrated",
@@ -582,7 +582,7 @@
       "price": 169.92,
       "chg24h": -0.22,
       "volatility30d": 0.005,
-      "volume": 10543,
+      "volume": 5857,
       "youtube": {
         "subscribers": 1610000,
         "views": 5574254412,
