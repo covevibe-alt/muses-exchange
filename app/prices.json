@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-24T19:31:36Z",
+  "updatedAt": "2026-08-24T20:32:44Z",
   "marketIndex": 175.62,
   "rawAveragePrice": 58.25,
   "topGainers": [
@@ -1473,7 +1473,7 @@
       "genre": "R&B",
       "spotifyId": "2HPaUgqeutzr3jx5a9WyDV",
       "popularity": 86,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 12033398,
       "monthlyListeners": 27515568,
       "listenersSource": "ratio-calibrated",
@@ -1482,7 +1482,7 @@
       "price": 35.73,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3746,
+      "volume": 2081,
       "youtube": {
         "subscribers": 70700,
         "views": 792304574,
@@ -2559,7 +2559,7 @@
       "volatility30d": 0.0,
       "volume": 957,
       "youtube": {
-        "subscribers": 450,
+        "subscribers": 449,
         "views": 193628645,
         "videos": 50
       },
