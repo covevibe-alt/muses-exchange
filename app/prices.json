@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-24T14:44:48Z",
+  "updatedAt": "2026-08-24T15:41:08Z",
   "marketIndex": 175.62,
   "rawAveragePrice": 58.25,
   "topGainers": [
@@ -1831,7 +1831,7 @@
       "fairPrice": 66.05,
       "price": 66.05,
       "chg24h": -0.58,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 3866,
       "youtube": {
         "subscribers": 162000,
@@ -2384,7 +2384,7 @@
       "volatility30d": 0.005,
       "volume": 725,
       "youtube": {
-        "subscribers": 210,
+        "subscribers": 211,
         "views": 58817195,
         "videos": 183
       },
@@ -2423,7 +2423,7 @@
       "genre": "Indie",
       "spotifyId": "3l0CmX0FuQjFxr8SK7Vqag",
       "popularity": 81,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 7364269,
       "monthlyListeners": 19479964,
       "listenersSource": "ratio-calibrated",
@@ -2432,7 +2432,7 @@
       "price": 24.62,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2931,
+      "volume": 1628,
       "youtube": {
         "subscribers": 1960,
         "views": 168740529,
