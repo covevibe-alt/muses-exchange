@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-25T18:41:56Z",
+  "updatedAt": "2026-08-25T19:33:40Z",
   "marketIndex": 175.62,
   "rawAveragePrice": 58.25,
   "topGainers": [
@@ -1748,7 +1748,7 @@
       "genre": "Latin",
       "spotifyId": "7iK8PXO48WeuP03g8YR51W",
       "popularity": 89,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 24988874,
       "monthlyListeners": 43190770,
       "listenersSource": "ratio-calibrated",
@@ -1757,7 +1757,7 @@
       "price": 57.43,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 5399,
+      "volume": 2999,
       "youtube": {
         "subscribers": 3910,
         "views": 3150612583,
@@ -2784,7 +2784,7 @@
       "volatility30d": 0.0,
       "volume": 998,
       "youtube": {
-        "subscribers": 483,
+        "subscribers": 484,
         "views": 300423271,
         "videos": 375
       },
