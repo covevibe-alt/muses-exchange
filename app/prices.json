@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-25T17:33:27Z",
+  "updatedAt": "2026-08-25T18:41:56Z",
   "marketIndex": 175.62,
   "rawAveragePrice": 58.25,
   "topGainers": [
@@ -1747,8 +1747,8 @@
       "name": "Myke Towers",
       "genre": "Latin",
       "spotifyId": "7iK8PXO48WeuP03g8YR51W",
-      "popularity": 88,
-      "popularityDelta": 0,
+      "popularity": 89,
+      "popularityDelta": 1,
       "followers": 24988874,
       "monthlyListeners": 43190770,
       "listenersSource": "ratio-calibrated",
@@ -1757,7 +1757,7 @@
       "price": 57.43,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2999,
+      "volume": 5399,
       "youtube": {
         "subscribers": 3910,
         "views": 3150612583,
@@ -1909,7 +1909,7 @@
       "volatility30d": 0.0,
       "volume": 1615,
       "youtube": {
-        "subscribers": 724,
+        "subscribers": 725,
         "views": 699051456,
         "videos": 89
       },
@@ -2285,7 +2285,7 @@
       "volume": 1866,
       "youtube": {
         "subscribers": 8240,
-        "views": 1273324416,
+        "views": 1273657928,
         "videos": 569
       },
       "youtubeBoost": 0.1397,
