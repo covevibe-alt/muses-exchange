@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-25T08:45:43Z",
+  "updatedAt": "2026-08-25T09:37:30Z",
   "marketIndex": 175.62,
   "rawAveragePrice": 58.25,
   "topGainers": [
@@ -531,7 +531,7 @@
       "fairPrice": 139.07,
       "price": 139.07,
       "chg24h": -0.55,
-      "volatility30d": 0.008,
+      "volatility30d": 0.009,
       "volume": 4027,
       "youtube": {
         "subscribers": 126000,
@@ -797,8 +797,8 @@
       "name": "Halsey",
       "genre": "Pop",
       "spotifyId": "26VFTg2z8YR0cCuwLzESi2",
-      "popularity": 83,
-      "popularityDelta": 0,
+      "popularity": 84,
+      "popularityDelta": 1,
       "followers": 23341838,
       "monthlyListeners": 54729608,
       "listenersSource": "ratio-calibrated",
@@ -807,7 +807,7 @@
       "price": 71.97,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2899,
+      "volume": 5218,
       "youtube": {
         "subscribers": 17800,
         "views": 1633454473,
@@ -1572,8 +1572,8 @@
       "name": "Daniel Caesar",
       "genre": "R&B",
       "spotifyId": "20wkVLutqVOYrc0kxFs7rA",
-      "popularity": 87,
-      "popularityDelta": 0,
+      "popularity": 88,
+      "popularityDelta": 1,
       "followers": 15443126,
       "monthlyListeners": 41117323,
       "listenersSource": "ratio-calibrated",
@@ -1582,7 +1582,7 @@
       "price": 53.26,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 2358,
+      "volume": 4244,
       "youtube": {
         "subscribers": 13700,
         "views": 679610065,
@@ -1831,7 +1831,7 @@
       "fairPrice": 65.97,
       "price": 65.97,
       "chg24h": -0.58,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 3867,
       "youtube": {
         "subscribers": 162000,
@@ -2056,10 +2056,10 @@
       "fairPrice": 73.65,
       "price": 73.65,
       "chg24h": -1.03,
-      "volatility30d": 0.008,
+      "volatility30d": 0.009,
       "volume": 2512,
       "youtube": {
-        "subscribers": 4540,
+        "subscribers": 4550,
         "views": 794969672,
         "videos": 505
       },
@@ -2497,8 +2497,8 @@
       "name": "Phoebe Bridgers",
       "genre": "Indie",
       "spotifyId": "1r1uxoy19fzMxunt3ONAkG",
-      "popularity": 83,
-      "popularityDelta": 0,
+      "popularity": 84,
+      "popularityDelta": 1,
       "followers": 3490447,
       "monthlyListeners": 14948886,
       "listenersSource": "ratio-calibrated",
@@ -2507,7 +2507,7 @@
       "price": 18.89,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 1121,
+      "volume": 2018,
       "youtube": {
         "subscribers": 1830,
         "views": 163836049,
