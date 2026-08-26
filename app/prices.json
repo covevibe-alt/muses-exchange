@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-26T14:52:28Z",
+  "updatedAt": "2026-08-26T16:19:40Z",
   "marketIndex": 175.61,
   "rawAveragePrice": 58.25,
   "topGainers": [
@@ -222,8 +222,8 @@
       "name": "Sabrina Carpenter",
       "genre": "Pop",
       "spotifyId": "74KM79TiuVKeVCqs8QtB0B",
-      "popularity": 90,
-      "popularityDelta": 0,
+      "popularity": 89,
+      "popularityDelta": -1,
       "followers": 34670439,
       "monthlyListeners": 56682701,
       "listenersSource": "ratio-calibrated",
@@ -232,7 +232,7 @@
       "price": 75.06,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3533,
+      "volume": 6359,
       "youtube": {
         "subscribers": 17800,
         "views": 2455109591,
@@ -310,7 +310,7 @@
       "volume": 4499,
       "youtube": {
         "subscribers": 19500,
-        "views": 2406542227,
+        "views": 2407976382,
         "videos": 620
       },
       "youtubeBoost": 0.1522,
@@ -510,7 +510,7 @@
       "volume": 3211,
       "youtube": {
         "subscribers": 264000,
-        "views": 2096463466,
+        "views": 2096969583,
         "videos": 1052
       },
       "youtubeBoost": 0.1663,
@@ -710,10 +710,10 @@
       "volume": 1906,
       "youtube": {
         "subscribers": 862,
-        "views": 576650769,
+        "views": 576976726,
         "videos": 289
       },
-      "youtubeBoost": 0.1242,
+      "youtubeBoost": 0.1243,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -835,7 +835,7 @@
       "volume": 1879,
       "youtube": {
         "subscribers": 1300,
-        "views": 331663363,
+        "views": 331815998,
         "videos": 132
       },
       "youtubeBoost": 0.1134,
@@ -960,10 +960,10 @@
       "volume": 4210,
       "youtube": {
         "subscribers": 65200,
-        "views": 5948973197,
+        "views": 5950406890,
         "videos": 771
       },
-      "youtubeBoost": 0.1698,
+      "youtubeBoost": 0.1699,
       "chartPositions": null,
       "chartBoost": 0.0
     },
@@ -1285,7 +1285,7 @@
       "volume": 3147,
       "youtube": {
         "subscribers": 95600,
-        "views": 2776292335,
+        "views": 2777034075,
         "videos": 349
       },
       "youtubeBoost": 0.155,
@@ -1435,7 +1435,7 @@
       "volume": 1776,
       "youtube": {
         "subscribers": 1770,
-        "views": 985167541,
+        "views": 985389044,
         "videos": 406
       },
       "youtubeBoost": 0.1347,
@@ -1485,7 +1485,7 @@
       "volume": 2083,
       "youtube": {
         "subscribers": 70700,
-        "views": 794121540,
+        "views": 794626402,
         "videos": 247
       },
       "youtubeBoost": 0.1305,
@@ -1560,7 +1560,7 @@
       "volume": 1868,
       "youtube": {
         "subscribers": 21500,
-        "views": 748067587,
+        "views": 748358532,
         "videos": 379
       },
       "youtubeBoost": 0.1293,
@@ -1710,7 +1710,7 @@
       "volume": 2727,
       "youtube": {
         "subscribers": 2730,
-        "views": 3049360703,
+        "views": 3050413020,
         "videos": 1121
       },
       "youtubeBoost": 0.1568,
@@ -1835,7 +1835,7 @@
       "volume": 3867,
       "youtube": {
         "subscribers": 162000,
-        "views": 3383194190,
+        "views": 3384492688,
         "videos": 296
       },
       "youtubeBoost": 0.1672,
@@ -1910,7 +1910,7 @@
       "volume": 1615,
       "youtube": {
         "subscribers": 725,
-        "views": 699360198,
+        "views": 699692424,
         "videos": 89
       },
       "youtubeBoost": 0.128,
@@ -1935,7 +1935,7 @@
       "volume": 3214,
       "youtube": {
         "subscribers": 136000,
-        "views": 6093114213,
+        "views": 6096677288,
         "videos": 430
       },
       "youtubeBoost": 0.1757,
@@ -1960,7 +1960,7 @@
       "volume": 3557,
       "youtube": {
         "subscribers": 832000,
-        "views": 6376089178,
+        "views": 6378620735,
         "videos": 184
       },
       "youtubeBoost": 0.208,
@@ -2372,8 +2372,8 @@
       "name": "Fontaines D.C.",
       "genre": "Alt",
       "spotifyId": "3SXwqSqAoBz9WCI9PDQzY6",
-      "popularity": 74,
-      "popularityDelta": 0,
+      "popularity": 75,
+      "popularityDelta": 1,
       "followers": 1464434,
       "monthlyListeners": 8011333,
       "listenersSource": "ratio-calibrated",
@@ -2382,7 +2382,7 @@
       "price": 9.94,
       "chg24h": 4.0,
       "volatility30d": 0.005,
-      "volume": 726,
+      "volume": 1307,
       "youtube": {
         "subscribers": 210,
         "views": 59248094,
@@ -2535,7 +2535,7 @@
       "volume": 649,
       "youtube": {
         "subscribers": 448,
-        "views": 37357850,
+        "views": 37372135,
         "videos": 31
       },
       "youtubeBoost": 0.0708,
@@ -2735,7 +2735,7 @@
       "volume": 3200,
       "youtube": {
         "subscribers": 184000,
-        "views": 3451454615,
+        "views": 3452361795,
         "videos": 1840
       },
       "youtubeBoost": 0.1698,
@@ -2785,7 +2785,7 @@
       "volume": 998,
       "youtube": {
         "subscribers": 483,
-        "views": 300722970,
+        "views": 300943885,
         "videos": 375
       },
       "youtubeBoost": 0.1115,
