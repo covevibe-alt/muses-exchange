@@ -200,13 +200,21 @@
   .adv-btn.on { background: var(--grad); color: #04081c; border-color: transparent; font-weight: 800; }
 
   /* ── League phase table ── */
-  .ltable-wrap { background: rgba(11,19,48,.7); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
-  .ltable { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .ltable-wrap { background: rgba(11,19,48,.7); border: 1px solid var(--line); border-radius: var(--r); }
+  /* border-spacing:0 rather than border-collapse:collapse so the header cells
+     can round off the card's top corners — collapse kills border-radius. */
+  .ltable { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+  /* The header pins under the app bar. Two things it depends on: the wrapper
+     must NOT create a scroll container (any `overflow` would make `top` offset
+     the header down INTO the first rows), and the background must be fully
+     opaque so rows pass behind it rather than through it. */
   .ltable th {
     font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: .7px;
     text-align: center; padding: 10px 5px; font-weight: 800;
-    background: rgba(4,8,28,.6); position: sticky; top: 53px; z-index: 5;
+    background: #0a1230; position: sticky; top: 53px; z-index: 5;
   }
+  .ltable th:first-child { border-top-left-radius: var(--r); }
+  .ltable th:last-child { border-top-right-radius: var(--r); }
   .ltable th.tm { text-align: left; padding-left: 12px; }
   .ltable td { padding: 8px 5px; text-align: center; border-top: 1px solid var(--line); }
   .ltable td.tm { text-align: left; font-weight: 700; padding-left: 12px; }
@@ -322,7 +330,6 @@
     .tabs button { flex: 0 0 auto; flex-direction: row; gap: 7px; font-size: 13.5px; padding: 8px 15px; border-radius: 999px; border: 1px solid transparent; }
     .tabs button:hover { color: var(--text); }
     .tabs button.on { background: rgba(17,27,66,.9); border-color: var(--line2); color: var(--cyan); }
-    .ltable th { top: 0; }
   }
 
   /* ── Modal / toast ── */
