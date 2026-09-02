@@ -1,0 +1,20 @@
+# Standalone Netlify site for the Champions League predictions pool.
+# The app is one self-contained HTML file, so there's nothing to build —
+# publish the directory as-is.
+[build]
+  publish = "."
+  command = ""
+
+# The page polls its own HTML to notice a new deploy and offer a refresh, so
+# it must never be served from a stale cache.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
