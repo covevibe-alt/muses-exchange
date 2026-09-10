@@ -570,6 +570,7 @@
     <div class="menu-list">
       <button id="mInvite">📲 Invite friends</button>
       <button id="mPicks">⭐ My bonus picks</button>
+      <button id="mNews">🔥 What's new</button>
       <button id="mResetPin" style="display:none">🛠️ Admin: reset a player's PIN</button>
       <button id="mSetScorer" style="display:none">🛠️ Admin: set official top scorer</button>
       <button id="mSetDecided" style="display:none">🛠️ Admin: fix how a match was decided</button>
@@ -591,6 +592,16 @@
 </div>
 
 <!-- Player detail -->
+<!-- One-time announcement, shown on entry until dismissed -->
+<div class="backdrop" id="newsModal">
+  <div class="modal" style="max-height:82vh;overflow-y:auto">
+    <h2>🔥 whatsup gays</h2>
+    <p class="sub">There's a new rule since you were last here.</p>
+    <div id="newsBody"></div>
+    <button class="btn" id="newsGo">Let's go</button>
+  </div>
+</div>
+
 <div class="backdrop" id="playerModal">
   <div class="modal" style="max-height:80vh;overflow-y:auto">
     <h2 id="pmName"></h2>
@@ -2049,6 +2060,41 @@ function invite() {
 }
 $('#inviteBtn2').onclick = invite;
 
+/* ── One-time announcement ──────────────────────────────────────────────────
+   Shown once per device on entry, then never again — bump NEWS_KEY to fire a
+   fresh one at everybody. Re-openable any time from the user menu. */
+const NEWS_KEY = 'ucl_news_goalfest_v1';
+function buildNews() {
+  const dl = bonusDeadlineMs();
+  const bonusOpen = dl !== null && Date.now() < dl;
+  // Only nag about bonus picks if we know who they are and they haven't made any.
+  const needsBonus = state.auth && bonusOpen && !state.myFinal;
+  return `<div class="card accent" style="margin-bottom:12px">
+      <h3>The goal-fest bonus</h3>
+      <p>Call the <b>exact score</b> of any match that ends with <b>six or more goals</b> in it — 5–1, 4–2, 7–2 — and you bag a flat <b>+${SCORING.goalfest}</b>.</p>
+      <p class="small">Only the exact score pays: the right winner or right goal difference gets you nothing here, and it isn't multiplied by the round. About one match in twenty-five qualifies and you still have to nail the scoreline, so it'll land once or twice all season — and probably decide the title when it does.</p>
+      <p class="small">Everything else scores exactly as before.</p>
+    </div>
+    ${needsBonus ? `<div class="card" style="margin-bottom:12px">
+      <h3>⭐ You haven't made your bonus picks</h3>
+      <p class="small">Champion (+${SCORING.champion}), league-phase winner (+${SCORING.leagueWinner}) and top scorer (+${SCORING.topScorer}) close <b>${esc(fmtDateTime.format(new Date(dl)))}</b>. They're on the Bonus tab.</p>
+    </div>` : ''}`;
+}
+function maybeShowNews(force = false) {
+  try { if (!force && localStorage.getItem(NEWS_KEY)) return false; } catch { /* no storage — just show it */ }
+  $('#newsBody').innerHTML = buildNews();
+  $('#newsModal').classList.add('open');
+  return true;
+}
+function closeNews() {
+  try { localStorage.setItem(NEWS_KEY, '1'); } catch { /* not fatal */ }
+  $('#newsModal').classList.remove('open');
+  if (!state.auth) openJoin();   // hand over to the join prompt we held back
+}
+$('#newsGo').onclick = closeNews;
+$('#newsModal').addEventListener('click', (e) => { if (e.target.id === 'newsModal') closeNews(); });
+$('#mNews').onclick = () => { $('#menuModal').classList.remove('open'); maybeShowNews(true); };
+
 for (const id of ['joinModal', 'menuModal', 'saveModal', 'playerModal']) {
   document.getElementById(id).addEventListener('click', (e) => { if (e.target.id === id) e.target.classList.remove('open'); });
 }
@@ -2070,7 +2116,10 @@ async function boot() {
   else espnBootstrap().then(() => { render(); syncMatchesToDb(); });
   espnLiveTick();
 
-  if (!state.auth) setTimeout(() => { if (!state.auth) openJoin(); }, 900);
+  // The announcement goes first and the join prompt waits behind it, so two
+  // modals never fight over the screen; closeNews() opens join if still needed.
+  const showedNews = maybeShowNews();
+  if (!state.auth && !showedNews) setTimeout(() => { if (!state.auth) openJoin(); }, 900);
 
   setInterval(espnLiveTick, 60e3);
   setInterval(async () => { if (document.hidden || !state.sb) return; await loadDb(); render(); }, 60e3);
