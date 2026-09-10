@@ -27,7 +27,7 @@ globalThis.localStorage = { getItem: () => null, setItem: () => {}, removeItem: 
 const exports = `
 export { state, SCORING, MULT, TIE_BONUS, matchTier, matchPoints, multOf, buildTies,
          tieAgg, tieWinnerId, tieBonus, tieOfSecondLeg, leagueRows, playerTotals,
-         finalMethodBonus, parseEspnEvent, stageFromText, stageFromDate, legFromText,
+         finalMethodBonus, goalfestBonus, GOALFEST_MIN, parseEspnEvent, stageFromText, stageFromDate, legFromText,
          matchdayFromText, officialLeagueWinner, finalSides, normName };
 `;
 const tmp = path.join(os.tmpdir(), `ucl-core-${process.pid}.mjs`);
@@ -181,6 +181,48 @@ eq('Ann exact count = 2 (l1, f1)', lb.find((r) => r.name === 'Ann').exacts, 2);
 eq('champion hit flagged', lb.find((r) => r.name === 'Ann').champHit, true);
 eq('runner-up flagged for Bob', lb.find((r) => r.name === 'Bob').runnerHit, true);
 eq('league-phase winner hit for Ann', lb.find((r) => r.name === 'Ann').lgHit, true);
+
+
+/* ── 8. the goal-fest bonus ─────────────────────────────────────────────── */
+console.log('8. Goal-fest bonus (exact score, 6+ goal match)');
+const GF = (hs, as, stage = 'LEAGUE') => M({
+  id: `gf${hs}${as}${stage}`, date: '2026-10-13T19:00Z', stage,
+  home: ARS, away: BAY, hs, as, winner: hs > as ? 'home' : as > hs ? 'away' : 'draw',
+});
+eq('threshold is 6 goals', C.GOALFEST_MIN, 6);
+eq('5-1 exact pays the bonus',        C.goalfestBonus({ h: 5, a: 1 }, GF(5, 1)), C.SCORING.goalfest);
+eq('4-2 exact pays the bonus',        C.goalfestBonus({ h: 4, a: 2 }, GF(4, 2)), C.SCORING.goalfest);
+eq('7-2 exact pays the bonus',        C.goalfestBonus({ h: 7, a: 2 }, GF(7, 2)), C.SCORING.goalfest);
+eq('6-goal match, wrong score = 0',   C.goalfestBonus({ h: 4, a: 2 }, GF(5, 1)), 0);
+eq('right winner + GD is not enough', C.goalfestBonus({ h: 6, a: 2 }, GF(5, 1)), 0);
+eq('3-2 is only 5 goals: no bonus',   C.goalfestBonus({ h: 3, a: 2 }, GF(3, 2)), null);
+eq('0-0 no bonus',                    C.goalfestBonus({ h: 0, a: 0 }, GF(0, 0)), null);
+eq('3-3 draw counts (6 goals)',       C.goalfestBonus({ h: 3, a: 3 }, GF(3, 3)), C.SCORING.goalfest);
+eq('no prediction = null',            C.goalfestBonus(null, GF(5, 1)), null);
+eq('unfinished match = null',
+   C.goalfestBonus({ h: 5, a: 1 }, { ...GF(5, 1), completed: false }), null);
+// The bonus is flat: it must NOT pick up the round multiplier.
+eq('flat in the final, not x5',       C.goalfestBonus({ h: 5, a: 1 }, GF(5, 1, 'FINAL')), C.SCORING.goalfest);
+eq('match points still multiply',     C.matchPoints({ h: 5, a: 1 }, GF(5, 1, 'FINAL')), C.SCORING.exact * 5);
+
+console.log('9. Goal fest through the full ranking');
+C.state.matches = [GF(5, 1), GF(3, 2)];
+C.buildTies();
+C.state.players = [{ id: 'gf1', name: 'Brave' }, { id: 'gf2', name: 'Safe' }];
+C.state.preds = new Map([
+  // Brave nails the 5-1 (5 x1 + 50) and misses the 3-2 entirely
+  ['gf51LEAGUE', [{ player_id: 'gf1', h: 5, a: 1 }, { player_id: 'gf2', h: 1, a: 0 }]],
+  // Safe nails the 3-2 (5 x1) but it is only a 5-goal game, so no bonus.
+  // Safe also called a home win on the 5-1 with 1-0, worth the outcome tier (2).
+  ['gf32LEAGUE', [{ player_id: 'gf1', h: 0, a: 1 }, { player_id: 'gf2', h: 3, a: 2 }]],
+]);
+C.state.finals = new Map();
+const gfRows = C.playerTotals().rows;
+eq('Brave: 5 + 50 = 55', gfRows.find((r) => r.name === 'Brave').total, 55);
+eq('Safe: 2 (outcome) + 5 (exact), no bonus on a 5-goal game', gfRows.find((r) => r.name === 'Safe').total, 7);
+eq('goal fests counted for Brave', gfRows.find((r) => r.name === 'Brave').goalfests, 1);
+eq('goal fests zero for Safe', gfRows.find((r) => r.name === 'Safe').goalfests, 0);
+eq('one bonus outranks a whole matchday', gfRows[0].name, 'Brave');
 
 console.log(`\n${fail === 0 ? '✅' : '❌'} ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

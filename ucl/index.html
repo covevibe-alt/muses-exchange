@@ -486,6 +486,13 @@
       <p class="small" style="margin-top:10px">Call a <b>draw</b> and it finishes level and you always get at least <b>3</b> — the goal difference is 0, so it matches by definition. That's deliberate: draws land in roughly one game in four but almost nobody backs them, so the hardest call in football pays properly.</p>
     </div>
 
+    <div class="card accent">
+      <h3>🔥 The goal-fest bonus</h3>
+      <p>Call the <b>exact score</b> of a match that finishes with <b>six or more goals</b> in it — 5–1, 4–2, 7–2 — and take a flat <b>+50</b>.</p>
+      <p class="small">Only the exact score pays. The right winner or the right goal difference gets you nothing here, and it isn't multiplied by the round. It's there to make a brave 4–3 worth calling instead of everyone parking on 1–0.</p>
+      <p class="small">It's a lottery ticket by design: roughly one match in twenty-five has six goals in it, and you still have to nail the scoreline. Expect it to land once or twice all season — and to decide the title when it does.</p>
+    </div>
+
     <div class="card">
       <h3>Round multiplier</h3>
       <p>The league phase is 144 of the season's 189 matches. Score every round the same and the final is worth half a percent of the pool — so match points are multiplied by the round:</p>
@@ -635,7 +642,11 @@ const SCORING = {
   method: 5, shootout: 3,                  // the final only
   champion: 30, runnerUp: 10,              // champion pick: hit, or lost the final
   leagueWinner: 10, topScorer: 15,
+  goalfest: 50,                            // exact score in a 6+ goal match
 };
+// A match needs this many goals in it (both teams combined) to pay the goal-fest
+// bonus. Six, so 5-1 and 4-2 count — the examples the rule was written around.
+const GOALFEST_MIN = 6;
 const MULT = { LEAGUE: 1, PO: 2, R16: 2, QF: 3, SF: 4, FINAL: 5 };
 const TIE_BONUS = { PO: 4, R16: 4, QF: 6, SF: 8 };   // correct "who goes through"
 
@@ -739,6 +750,19 @@ function matchPoints(p, m) {
 function ptsClass(p, m) {
   const t = matchTier(p, m);
   return t === SCORING.exact ? 'hi' : t === SCORING.diff ? 'mid' : t === SCORING.outcome ? 'lo' : 'zero';
+}
+
+/* The goal-fest bonus: nail the EXACT score of a match with six or more goals
+   in it and take a flat +50, to make a brave 4-3 worth calling instead of
+   everyone parking on 1-0. Only exact pays — the right winner or the right
+   goal difference gets nothing here — and it is deliberately NOT multiplied by
+   the round, since at x5 the final alone would be worth 250.
+   null = doesn't apply (unfinished, or fewer than six goals), 0 = the match
+   qualified but the score was missed, else the bonus. */
+function goalfestBonus(p, m) {
+  if (!m.completed || m.hs == null || m.as == null || !p) return null;
+  if (m.hs + m.as < GOALFEST_MIN) return null;
+  return (p.h === m.hs && p.a === m.as) ? SCORING.goalfest : 0;
 }
 
 function methodOf(m) {
@@ -898,7 +922,7 @@ function playerTotals() {
   const fin = finalMatch();
 
   const rows = state.players.map((pl) => {
-    let total = 0, exacts = 0, correct = 0, todayPts = 0, predicted = 0;
+    let total = 0, exacts = 0, correct = 0, todayPts = 0, predicted = 0, goalfests = 0;
     for (const m of state.matches) {
       const p = (state.preds.get(m.id) || []).find((x) => x.player_id === pl.id);
       if (!p) continue;
@@ -907,6 +931,8 @@ function playerTotals() {
       if (tier == null) continue;
       let pts = tier * multOf(m);
       if (m.stage === 'FINAL') { const b = finalMethodBonus(p, m); if (b) pts += b; }
+      const gf = goalfestBonus(p, m);
+      if (gf) { pts += gf; goalfests++; }
       total += pts;
       if (tier === SCORING.exact) exacts++;
       if (tier > 0) correct++;
@@ -932,7 +958,7 @@ function playerTotals() {
     if (scorers.size && f?.top_scorer && scorers.has(normName(f.top_scorer))) {
       total += SCORING.topScorer; scorerHit = true;
     }
-    return { ...pl, total, exacts, correct, todayPts, predicted, fin: f, champHit, runnerHit, scorerHit, lgHit };
+    return { ...pl, total, exacts, correct, todayPts, predicted, goalfests, fin: f, champHit, runnerHit, scorerHit, lgHit };
   });
   rows.sort((a, b) => b.total - a.total || b.exacts - a.exacts
     || b.correct - a.correct || a.name.localeCompare(b.name));
@@ -1525,6 +1551,12 @@ function matchCard(m) {
         extraLines += `<div class="mypick" style="margin-top:4px">Shootout: <b>${esc(nm)}</b> ${note}</div>`;
       }
     }
+    const gf = goalfestBonus(mine, m);
+    if (gf != null) {
+      extraLines += gf > 0
+        ? `<div class="mypick" style="margin-top:6px">🔥 Goal fest (${m.hs + m.as} goals) — exact score <span class="pts hi">+${SCORING.goalfest}</span></div>`
+        : `<div class="mypick" style="margin-top:6px"><span class="muted">🔥 ${m.hs + m.as}-goal match — an exact score here was worth +${SCORING.goalfest}</span></div>`;
+    }
     predictBlock = `<div class="mypick">${mine ? `Your prediction: <b>${mine.h}–${mine.a}</b> ${chip}` : `<span class="muted">You didn't predict this one</span>`}</div>${extraLines}`;
   }
 
@@ -1549,10 +1581,11 @@ function matchCard(m) {
           const mark = b == null ? '' : b > 0 ? ` <b style="color:var(--green)">✓ +${b}</b>` : ' <span style="color:var(--dim)">✗</span>';
           sub = `<span class="osub">${METHOD_LABEL[p.method]}${mark}</span>`;
         }
+        const gfChip = goalfestBonus(p, m) ? `<span class="pts hi">🔥 +${SCORING.goalfest}</span>` : '';
         return `<div class="orow ${p.player_id === state.auth?.player_id ? 'me' : ''}" data-pid="${esc(p.player_id)}" style="cursor:pointer">
           <span class="oinfo"><span class="onm">${esc(byId.get(p.player_id) || '?')}</span>${sub}</span>
           <span class="osc">${p.h}–${p.a}</span>
-          ${pts == null ? '' : `<span class="pts ${ptsClass(p, m)}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
+          ${gfChip}${pts == null ? '' : `<span class="pts ${ptsClass(p, m)}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
       }).join('');
       othersBlock = `<button class="others-toggle" data-toggle="${m.id}">${open ? '▲ Hide' : `▼ Everyone's predictions (${list.length})`}</button>
         <div class="others ${open ? 'open' : ''}">${rows}</div>`;
@@ -1703,6 +1736,7 @@ function renderBoard() {
   </table>
   <div class="src-note">Tap a player to see everything they've filled in.<br>
     Exact ${SCORING.exact} · goal difference ${SCORING.diff} · winner ${SCORING.outcome}, multiplied by the round (×1 league phase up to ×5 the final).<br>
+    🔥 Exact score in a ${GOALFEST_MIN}+ goal match: <b>+${SCORING.goalfest}</b>.<br>
     Ties broken on exact scores, then correct results.</div>`;
 }
 
@@ -1793,7 +1827,8 @@ function openPlayer(pid) {
   const { rows } = playerTotals();
   const r = rows.find((x) => x.id === pid) || { total: 0, exacts: 0, predicted: 0 };
   $('#pmName').textContent = pl.name;
-  $('#pmStats').textContent = `${r.total} points · ${r.exacts} exact · ${r.predicted} predictions revealed`;
+  $('#pmStats').textContent = `${r.total} points · ${r.exacts} exact · ${r.predicted} predictions revealed`
+    + (r.goalfests ? ` · 🔥 ${r.goalfests} goal fest${r.goalfests > 1 ? 's' : ''}` : '');
   let html = '';
   if (finalsLocked() && r.fin) {
     html += `<div class="card" style="padding:11px 13px;margin-bottom:10px">
@@ -1813,7 +1848,8 @@ function openPlayer(pid) {
       const mult = multOf(m);
       return `<div class="orow">
         <span class="oinfo"><span class="onm">${esc(m.home.name)} <b>${res}</b> ${esc(m.away.name)}</span>
-        ${mult > 1 ? `<span class="osub">${esc(STAGE_LABEL[m.stage])} · ×${mult}</span>` : ''}</span>
+        ${goalfestBonus(p, m) ? `<span class="osub">🔥 goal fest +${SCORING.goalfest}</span>`
+          : mult > 1 ? `<span class="osub">${esc(STAGE_LABEL[m.stage])} · ×${mult}</span>` : ''}</span>
         <span class="osc">${p.h}–${p.a}</span>
         ${pts == null ? '' : `<span class="pts ${ptsClass(p, m)}">${pts ? `+${pts}` : '0'}</span>`}</div>`;
     }).join('');
