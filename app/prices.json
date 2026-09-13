@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-13T17:59:11Z",
+  "updatedAt": "2026-09-13T20:41:45Z",
   "marketIndex": 175.64,
   "rawAveragePrice": 58.26,
   "topGainers": [
@@ -347,8 +347,8 @@
       "name": "Dua Lipa",
       "genre": "Pop",
       "spotifyId": "6M2wZ9GZgrQXHCFfjv46we",
-      "popularity": 89,
-      "popularityDelta": 0,
+      "popularity": 90,
+      "popularityDelta": 1,
       "followers": 48930285,
       "monthlyListeners": 75010127,
       "listenersSource": "ratio-calibrated",
@@ -357,7 +357,7 @@
       "price": 99.98,
       "chg24h": 0.38,
       "volatility30d": 0.016,
-      "volume": 4197,
+      "volume": 7555,
       "youtube": {
         "subscribers": 10200,
         "views": 3468420347,
@@ -709,7 +709,7 @@
       "volatility30d": 0.005,
       "volume": 1915,
       "youtube": {
-        "subscribers": 871,
+        "subscribers": 872,
         "views": 588873537,
         "videos": 289
       },
@@ -756,7 +756,7 @@
       "fairPrice": 77.84,
       "price": 77.84,
       "chg24h": -0.49,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 4144,
       "youtube": {
         "subscribers": 78700,
@@ -781,7 +781,7 @@
       "fairPrice": 25.15,
       "price": 25.15,
       "chg24h": -1.49,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 1862,
       "youtube": {
         "subscribers": 20400,
@@ -1031,7 +1031,7 @@
       "fairPrice": 63.09,
       "price": 63.09,
       "chg24h": 0.61,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 3558,
       "youtube": {
         "subscribers": 477000,
@@ -1059,7 +1059,7 @@
       "volatility30d": 0.004,
       "volume": 1165,
       "youtube": {
-        "subscribers": 924,
+        "subscribers": 925,
         "views": 473604032,
         "videos": 189
       },
@@ -1431,7 +1431,7 @@
       "fairPrice": 24.34,
       "price": 24.34,
       "chg24h": 1.59,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 1780,
       "youtube": {
         "subscribers": 1770,
@@ -1522,8 +1522,8 @@
       "name": "Jhen\u00e9 Aiko",
       "genre": "R&B",
       "spotifyId": "5ZS223C6JyBfXasXxrRqOk",
-      "popularity": 80,
-      "popularityDelta": 0,
+      "popularity": 81,
+      "popularityDelta": 1,
       "followers": 10501275,
       "monthlyListeners": 14237629,
       "listenersSource": "ratio-calibrated",
@@ -1531,12 +1531,12 @@
       "fairPrice": 18.63,
       "price": 18.63,
       "chg24h": 6.52,
-      "volatility30d": 0.01,
-      "volume": 1944,
+      "volatility30d": 0.011,
+      "volume": 3500,
       "youtube": {
         "subscribers": 28900,
         "views": 1158585276,
-        "videos": 619
+        "videos": 613
       },
       "youtubeBoost": 0.1379,
       "chartPositions": null,
@@ -1909,7 +1909,7 @@
       "volatility30d": 0.0,
       "volume": 1622,
       "youtube": {
-        "subscribers": 730,
+        "subscribers": 731,
         "views": 710660490,
         "videos": 89
       },
@@ -2006,7 +2006,7 @@
       "fairPrice": 35.16,
       "price": 35.16,
       "chg24h": 1.1,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 2064,
       "youtube": {
         "subscribers": 5110,
@@ -2331,7 +2331,7 @@
       "fairPrice": 34.65,
       "price": 34.65,
       "chg24h": -1.1,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 1991,
       "youtube": {
         "subscribers": 22000,
@@ -2381,7 +2381,7 @@
       "fairPrice": 12.08,
       "price": 12.08,
       "chg24h": 3.23,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 739,
       "youtube": {
         "subscribers": 214,
@@ -2456,7 +2456,7 @@
       "fairPrice": 31.6,
       "price": 31.6,
       "chg24h": -1.2,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 1677,
       "youtube": {
         "subscribers": 1150,
@@ -2756,7 +2756,7 @@
       "fairPrice": 105.58,
       "price": 105.58,
       "chg24h": -0.36,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 2940,
       "youtube": {
         "subscribers": 92400,
@@ -2831,7 +2831,7 @@
       "fairPrice": 74.18,
       "price": 74.18,
       "chg24h": 0.52,
-      "volatility30d": 0.007,
+      "volatility30d": 0.008,
       "volume": 3566,
       "youtube": {
         "subscribers": 23800,
