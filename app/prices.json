@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-29T11:12:35Z",
+  "updatedAt": "2026-09-29T16:57:23Z",
   "marketIndex": 175.68,
   "rawAveragePrice": 58.27,
   "topGainers": [
@@ -256,7 +256,7 @@
       "fairPrice": 144.95,
       "price": 144.95,
       "chg24h": 0.27,
-      "volatility30d": 0.03,
+      "volatility30d": 0.031,
       "volume": 7704,
       "youtube": {
         "subscribers": 718000,
@@ -356,7 +356,7 @@
       "fairPrice": 104.01,
       "price": 104.01,
       "chg24h": 0.37,
-      "volatility30d": 0.006,
+      "volatility30d": 0.007,
       "volume": 4204,
       "youtube": {
         "subscribers": 10200,
@@ -456,10 +456,10 @@
       "fairPrice": 73.52,
       "price": 73.52,
       "chg24h": -0.52,
-      "volatility30d": 0.003,
+      "volatility30d": 0.004,
       "volume": 3730,
       "youtube": {
-        "subscribers": 4600,
+        "subscribers": 4590,
         "views": 3893092150,
         "videos": 649
       },
@@ -481,7 +481,7 @@
       "fairPrice": 37.7,
       "price": 37.7,
       "chg24h": 0.0,
-      "volatility30d": 0.015,
+      "volatility30d": 0.016,
       "volume": 1634,
       "youtube": {
         "subscribers": 11000,
@@ -656,7 +656,7 @@
       "fairPrice": 136.64,
       "price": 136.64,
       "chg24h": 0.0,
-      "volatility30d": 0.008,
+      "volatility30d": 0.007,
       "volume": 4192,
       "youtube": {
         "subscribers": 146000,
@@ -1047,8 +1047,8 @@
       "name": "Doechii",
       "genre": "Hip-hop",
       "spotifyId": "4E2rKHVDssGJm2SCDOMMJB",
-      "popularity": 78,
-      "popularityDelta": 0,
+      "popularity": 77,
+      "popularityDelta": -1,
       "followers": 3787358,
       "monthlyListeners": 24024348,
       "listenersSource": "ratio-calibrated",
@@ -1057,7 +1057,7 @@
       "price": 31.03,
       "chg24h": 0.0,
       "volatility30d": 0.005,
-      "volume": 1168,
+      "volume": 2102,
       "youtube": {
         "subscribers": 927,
         "views": 478702743,
@@ -1259,9 +1259,9 @@
       "volatility30d": 0.0,
       "volume": 2084,
       "youtube": {
-        "subscribers": 7440000,
+        "subscribers": 7450000,
         "views": 4089340148,
-        "videos": 379
+        "videos": 380
       },
       "youtubeBoost": 0.2374,
       "chartPositions": null,
@@ -1331,7 +1331,7 @@
       "fairPrice": 54.53,
       "price": 54.53,
       "chg24h": 0.0,
-      "volatility30d": 0.006,
+      "volatility30d": 0.005,
       "volume": 1883,
       "youtube": {
         "subscribers": 2230,
@@ -1406,7 +1406,7 @@
       "fairPrice": 27.89,
       "price": 27.89,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.003,
       "volume": 2023,
       "youtube": {
         "subscribers": 27900,
@@ -1681,7 +1681,7 @@
       "fairPrice": 92.73,
       "price": 92.73,
       "chg24h": 0.0,
-      "volatility30d": 0.012,
+      "volatility30d": 0.011,
       "volume": 4920,
       "youtube": {
         "subscribers": 40800,
@@ -1756,7 +1756,7 @@
       "fairPrice": 59.96,
       "price": 59.96,
       "chg24h": 0.0,
-      "volatility30d": 0.003,
+      "volatility30d": 0.002,
       "volume": 3019,
       "youtube": {
         "subscribers": 4000,
@@ -1806,7 +1806,7 @@
       "fairPrice": 97.22,
       "price": 97.22,
       "chg24h": 0.0,
-      "volatility30d": 0.005,
+      "volatility30d": 0.004,
       "volume": 3900,
       "youtube": {
         "subscribers": 90200,
@@ -1981,7 +1981,7 @@
       "fairPrice": 40.96,
       "price": 40.96,
       "chg24h": 0.94,
-      "volatility30d": 0.013,
+      "volatility30d": 0.014,
       "volume": 1634,
       "youtube": {
         "subscribers": 6110000,
@@ -2006,7 +2006,7 @@
       "fairPrice": 36.56,
       "price": 36.56,
       "chg24h": 0.0,
-      "volatility30d": 0.006,
+      "volatility30d": 0.005,
       "volume": 2078,
       "youtube": {
         "subscribers": 5120,
@@ -2281,7 +2281,7 @@
       "fairPrice": 52.06,
       "price": 52.06,
       "chg24h": 0.74,
-      "volatility30d": 0.004,
+      "volatility30d": 0.005,
       "volume": 1872,
       "youtube": {
         "subscribers": 8240,
@@ -2559,7 +2559,7 @@
       "volatility30d": 0.0,
       "volume": 964,
       "youtube": {
-        "subscribers": 451,
+        "subscribers": 452,
         "views": 198715330,
         "videos": 50
       },
@@ -2647,8 +2647,8 @@
       "name": "NewJeans",
       "genre": "K-Pop",
       "spotifyId": "6HvZYsbFfjnjFrWF950C9d",
-      "popularity": 80,
-      "popularityDelta": 0,
+      "popularity": 79,
+      "popularityDelta": -1,
       "followers": 13610292,
       "monthlyListeners": 13640235,
       "listenersSource": "ratio-calibrated",
@@ -2657,7 +2657,7 @@
       "price": 18.2,
       "chg24h": 0.0,
       "volatility30d": 0.002,
-      "volume": 2214,
+      "volume": 3984,
       "youtube": {
         "subscribers": 27800,
         "views": 3125942257,
