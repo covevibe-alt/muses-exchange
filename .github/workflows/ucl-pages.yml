@@ -1,0 +1,59 @@
+name: Publish UCL pool to Pages
+
+# The Champions League pool is served from two places: Netlify (which builds
+# itself from main) and the GitHub Pages mirror at
+# covevibe-alt.github.io/muses-exchange/ucl/. Pages serves the gh-pages branch,
+# which used to be updated by hand — so the mirror silently fell behind main
+# every time someone forgot. This copies the app across on every change to it,
+# which is the only thing gh-pages needs from main.
+#
+# Only fires when ucl/index.html actually changes, so the half-hourly price
+# commits don't trigger a republish.
+
+on:
+  push:
+    branches: [main]
+    paths: ['ucl/index.html']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  # Never two republishes at once — they would race on the gh-pages commit.
+  group: ucl-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+
+      - name: Copy the app onto gh-pages
+        run: |
+          set -euo pipefail
+          git config user.name "Muse Pages Bot"
+          git config user.email "bot@muses.exchange"
+
+          git fetch origin gh-pages
+          git worktree add /tmp/ghp origin/gh-pages --detach
+          mkdir -p /tmp/ghp/ucl
+          cp ucl/index.html /tmp/ghp/ucl/index.html
+
+          cd /tmp/ghp
+          git checkout -B gh-pages
+          if git diff --quiet -- ucl/index.html; then
+            echo "gh-pages already matches main — nothing to publish."
+            exit 0
+          fi
+          git add ucl/index.html
+          git commit -m "Publish UCL pool from ${GITHUB_SHA:0:7}"
+          # Retry once: another workflow may have pushed to gh-pages first.
+          git push origin gh-pages || {
+            git fetch origin gh-pages
+            git rebase origin/gh-pages
+            git push origin gh-pages
+          }
