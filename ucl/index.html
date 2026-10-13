@@ -698,6 +698,7 @@ const state = {
   pendingSave: null,
   settings: new Map(),
   fetchedAt: null,
+  feedError: null,        // last ESPN failure, surfaced under the match list
   scrolled: false,
 };
 
@@ -1112,19 +1113,44 @@ async function espnFetch(range) {
   return ok;
 }
 
-// The season runs Aug -> Jul; fetched in two halves because a single window
-// this wide can get truncated.
-function seasonHalves() {
+// The season runs Aug -> Jul.
+const ymd = (d) => d.toISOString().slice(0, 10).replaceAll('-', '');
+function seasonSpan() {
   const now = new Date();
   const y = now.getUTCFullYear();
   const s = now.getUTCMonth() + 1 >= 7 ? y : y - 1;
-  return [`${s}0801-${s + 1}0131`, `${s + 1}0201-${s + 1}0731`];
+  return [new Date(Date.UTC(s, 7, 1)), new Date(Date.UTC(s + 1, 6, 31))];
+}
+// Month-sized windows across a span, for the fallback below.
+function monthWindows(from, to) {
+  const out = [];
+  let d = new Date(from);
+  while (d < to) {
+    const next = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1));
+    out.push(`${ymd(d)}-${ymd(new Date(Math.min(next.getTime(), to.getTime()) - 864e5))}`);
+    d = next;
+  }
+  return out;
 }
 async function espnBootstrap() {
-  let ok = false;
-  for (const half of seasonHalves()) {
-    try { if (await espnFetch(half)) ok = true; } catch { /* keep the other half */ }
+  const [from, to] = seasonSpan();
+  const mid = new Date(Date.UTC(from.getUTCFullYear() + 1, 0, 31));
+  let ok = false, lastErr = null;
+  // Two wide windows cover the season in two requests when ESPN plays along.
+  for (const w of [`${ymd(from)}-${ymd(mid)}`, `${ymd(new Date(mid.getTime() + 864e5))}-${ymd(to)}`]) {
+    try { if (await espnFetch(w)) ok = true; } catch (e) { lastErr = e; }
   }
+  // ESPN answers a window it considers too wide with an EMPTY event list rather
+  // than an error, which is indistinguishable from "nothing new" — so a silent
+  // nothing means walk the season in month-sized windows instead. Without this
+  // the page runs on its stale cache forever and never says why.
+  if (!ok) {
+    for (const w of monthWindows(from, to)) {
+      try { if (await espnFetch(w)) ok = true; } catch (e) { lastErr = e; }
+    }
+  }
+  state.feedError = ok ? null
+    : (lastErr ? String(lastErr.message || lastErr) : 'the feed returned no matches');
   if (ok) saveCache();
   return ok;
 }
@@ -1163,7 +1189,12 @@ async function espnLiveTick() {
   const fmt = (x) => x.toISOString().slice(0, 10).replaceAll('-', '');
   const d = new Date();
   const a = new Date(d.getTime() - 36e5 * 36), b = new Date(d.getTime() + 36e5 * 24);
-  if (await espnFetch(`${fmt(a)}-${fmt(b)}`).catch(() => false)) { saveCache(); render(); }
+  try {
+    if (await espnFetch(`${fmt(a)}-${fmt(b)}`)) { state.feedError = null; saveCache(); render(); }
+  } catch (e) {
+    state.feedError = String(e?.message || e);
+    if (state.view === 'matches') renderMatches();   // surface it instead of failing mute
+  }
 }
 
 /* ── Supabase ── */
@@ -1426,6 +1457,36 @@ function syncFilterChips() {
   document.querySelectorAll('#filters .fchip').forEach((c) => c.classList.toggle('on', c.dataset.f === state.filter));
 }
 
+/* Feed health. The page paints from a localStorage cache, so a failing ESPN
+   fetch used to look exactly like "nothing happened today" — stale scores, no
+   explanation. Say how old the data is, say when the feed is broken, and give
+   people a retry they can press themselves. */
+function feedNote() {
+  const ms = state.fetchedAt ? Date.now() - new Date(state.fetchedAt).getTime() : null;
+  const mins = ms == null ? null : Math.round(ms / 60000);
+  const age = mins == null ? 'never' : mins < 1 ? 'just now' : mins < 60 ? `${mins} min ago`
+    : mins < 1440 ? `${Math.round(mins / 60)}h ago` : `${Math.round(mins / 1440)}d ago`;
+  // The live poll runs every minute while anything is on, so scores older than
+  // a quarter of an hour mean it is failing rather than idling.
+  const stale = !!state.feedError || mins == null || mins > 15;
+  const head = stale
+    ? `<b style="color:var(--gold)">⚠️ Scores may be out of date</b> · last updated ${esc(age)}`
+    : `Scores update automatically · last updated ${esc(age)}`;
+  const why = state.feedError
+    ? `<br><span style="color:var(--mut)">Couldn't reach the results feed: ${esc(state.feedError)}</span>` : '';
+  return `${head} · source: ESPN${why}
+    <br><button class="chip btnish" id="feedRefresh" style="margin-top:8px">↻ Refresh scores now</button>
+    <br>An unofficial pool for friends. Not affiliated with UEFA.`;
+}
+async function refreshFeedNow() {
+  const b = $('#feedRefresh');
+  if (b) { b.textContent = 'Refreshing…'; b.disabled = true; }
+  await espnBootstrap();
+  await espnLiveTick();
+  render();
+  toast(state.feedError ? "Still can't reach the feed" : 'Scores refreshed');
+}
+
 function renderMatches() {
   const list = $('#matchList');
   if (document.activeElement?.classList?.contains('pin')) return; // don't yank the keyboard away
@@ -1434,9 +1495,17 @@ function renderMatches() {
     const h = card.querySelector('.pin.h'), a = card.querySelector('.pin.a');
     if (h && a && (h.value !== '' || a.value !== '')) drafts.set(card.dataset.mid, { h: h.value, a: a.value });
   }
+  // Write the feed note BEFORE the empty-list bail-out: no fixtures at all is
+  // exactly when the reader most needs to know the feed is the thing that broke.
+  $('#srcNote').innerHTML = feedNote();
+  $('#feedRefresh')?.addEventListener('click', refreshFeedNow);
+
   const visible = state.matches.filter(matchVisible);
   if (!visible.length) {
-    list.innerHTML = `<div class="empty">${state.matches.length ? 'Nothing here with this filter.' : 'Fixtures loading…'}</div>`;
+    list.innerHTML = `<div class="empty">${
+      state.matches.length ? 'Nothing here with this filter.'
+        : state.feedError ? "Couldn't load the fixtures — the results feed didn't answer. Try Refresh below."
+        : 'Fixtures loading…'}</div>`;
     return;
   }
   const today = todayKey();
@@ -1456,10 +1525,6 @@ function renderMatches() {
     if (h && d.h !== '') h.value = d.h;
     if (a && d.a !== '') a.value = d.a;
   }
-  $('#srcNote').innerHTML = (state.fetchedAt
-    ? `Scores update automatically · feed refreshed ${new Date(state.fetchedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · source: ESPN`
-    : 'Scores update automatically · source: ESPN')
-    + '<br>An unofficial pool for friends. Not affiliated with UEFA.';
 
   if (!state.scrolled && state.filter === 'all') {
     state.scrolled = true;
