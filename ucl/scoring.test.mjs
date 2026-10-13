@@ -89,6 +89,37 @@ eq('venue',     `${p.venue} ${p.city}`, 'Emirates Stadium London');
 eq('own goals + non-goals excluded from scorers', p.scorers, [{ n: 'Bukayo Saka' }]);
 eq('decidedBy regular', p.decidedBy, 'REGULAR');
 
+/* ── 2b. score + status shapes ESPN has actually returned ───────────────── */
+console.log('2b. Score and status shape tolerance');
+const ev2 = (hScore, aScore, status) => ({
+  id: '700999', date: '2026-10-13T19:00Z',
+  competitions: [{
+    notes: [{ headline: 'UEFA Champions League - League Phase: Matchday 2' }],
+    competitors: [
+      { homeAway: 'home', score: hScore, team: { id: '1', displayName: 'Arsenal', shortDisplayName: 'Arsenal' } },
+      { homeAway: 'away', score: aScore, team: { id: '2', displayName: 'Bayern', shortDisplayName: 'Bayern' } }],
+    status: { type: status },
+  }],
+});
+const sc = (h, a, st) => { const p = C.parseEspnEvent(ev2(h, a, st)); return [p.hs, p.as, p.completed]; };
+const DONE = { completed: true, state: 'post' };
+eq('score as string',  sc('3', '1', DONE), [3, 1, true]);
+eq('score as number',  sc(3, 1, DONE), [3, 1, true]);
+// ESPN has shipped this shape on some endpoints; it used to blank every score.
+eq('score as {value}', sc({ value: 3, displayValue: '3' }, { value: 1, displayValue: '1' }, DONE), [3, 1, true]);
+eq('score as {displayValue} only', sc({ displayValue: '3' }, { displayValue: '1' }, DONE), [3, 1, true]);
+eq('0-0 is a score, not absent', sc('0', '0', DONE), [0, 0, true]);
+eq('missing score stays null', sc(null, null, { completed: false, state: 'pre' }), [null, null, false]);
+// A finished match whose `completed` flag is absent still has to score.
+eq('post state counts as completed', sc('2', '2', { state: 'post' }), [2, 2, true]);
+eq('completed flag alone works',     sc('2', '2', { completed: true }), [2, 2, true]);
+eq('pre state is not completed',     sc('0', '0', { state: 'pre' }), [0, 0, false]);
+eq('in-progress is not completed',   sc('1', '0', { state: 'in' }), [1, 0, false]);
+// the raw values must survive for the Feed check diagnostic
+const rawEv = C.parseEspnEvent(ev2({ value: 3 }, '1', DONE));
+eq('raw score kept verbatim', [rawEv.raw.h, rawEv.raw.a], [{ value: 3 }, '1']);
+eq('raw state kept', rawEv.raw.state, 'post');
+
 /* ── 3. build a season and check the scoring ────────────────────────── */
 console.log('3. Match points and round multipliers');
 const T = (id, name) => ({ id, name, abbr: name.slice(0, 3).toUpperCase(), logo: '' });

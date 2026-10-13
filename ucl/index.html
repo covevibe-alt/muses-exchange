@@ -571,6 +571,7 @@
       <button id="mInvite">📲 Invite friends</button>
       <button id="mPicks">⭐ My bonus picks</button>
       <button id="mNews">🔥 What's new</button>
+      <button id="mDiag">🩺 Feed check (why aren't scores updating?)</button>
       <button id="mResetPin" style="display:none">🛠️ Admin: reset a player's PIN</button>
       <button id="mSetScorer" style="display:none">🛠️ Admin: set official top scorer</button>
       <button id="mSetDecided" style="display:none">🛠️ Admin: fix how a match was decided</button>
@@ -599,6 +600,17 @@
     <p class="sub">There's a new rule since you were last here.</p>
     <div id="newsBody"></div>
     <button class="btn" id="newsGo">Let's go</button>
+  </div>
+</div>
+
+<!-- Feed check: what ESPN actually sent vs what we parsed -->
+<div class="backdrop" id="diagModal">
+  <div class="modal" style="max-width:520px;max-height:82vh;overflow-y:auto">
+    <h2>🩺 Feed check</h2>
+    <p class="sub">What the results feed sent, and what the app made of it.</p>
+    <div id="diagBody"></div>
+    <button class="btn" id="diagCopy">Copy for Claude</button>
+    <button class="skip" id="diagClose">Close</button>
   </div>
 </div>
 
@@ -1036,15 +1048,29 @@ function parseEspnEvent(ev) {
     if (isTbdTeam(out)) out.tbd = true;
     return out;
   };
-  const num = (v) => { const n = parseInt(v, 10); return Number.isFinite(n) ? n : null; };
+  // ESPN has returned `score` as a string ("2"), as a number, and lately as an
+  // object ({ value, displayValue }) depending on endpoint and season. Accept
+  // all three: a shape change here blanks every scoreline and awards nobody
+  // any points, while fixtures keep rendering — which looks exactly like
+  // "the scores aren't updating".
+  const num = (v) => {
+    if (v == null) return null;
+    if (typeof v === 'object') v = v.value ?? v.displayValue ?? v.display ?? null;
+    const n = parseInt(v, 10);
+    return Number.isFinite(n) ? n : null;
+  };
   let home = null, away = null, hW = false, aW = false, hs = null, as = null, soH = null, soA = null;
+  let rawH = null, rawA = null;   // kept verbatim for the Feed check diagnostic
   for (const c of comp.competitors || []) {
     const t = team(c);
-    if (c.homeAway === 'home') { home = t; hs = num(c.score); soH = num(c.shootoutScore); hW = !!c.winner; }
-    if (c.homeAway === 'away') { away = t; as = num(c.score); soA = num(c.shootoutScore); aW = !!c.winner; }
+    if (c.homeAway === 'home') { home = t; rawH = c.score; hs = num(c.score); soH = num(c.shootoutScore); hW = !!c.winner; }
+    if (c.homeAway === 'away') { away = t; rawA = c.score; as = num(c.score); soA = num(c.shootoutScore); aW = !!c.winner; }
   }
   const st = comp.status || ev.status || {}; const ty = st.type || {};
-  const completed = !!ty.completed;
+  // `completed` has moved around between ESPN's endpoints; a post state means
+  // finished too. Without this a finished match keeps its score but never
+  // scores anybody, because matchTier() bails on !m.completed.
+  const completed = !!ty.completed || String(ty.state || '').toLowerCase() === 'post';
   let winner = null, advances = null;
   if (completed && hs != null && as != null) {
     winner = hs > as ? 'home' : as > hs ? 'away' : 'draw';
@@ -1078,6 +1104,10 @@ function parseEspnEvent(ev) {
     hs, as, so: (soH != null || soA != null) ? { h: soH, a: soA } : null,
     winner, advances, decidedBy,
     scorers: goalScorers.length ? goalScorers : null,
+    // Exactly what the feed sent for score and status, so the Feed check in
+    // the menu can show parse failures instead of me guessing at them.
+    raw: { h: rawH, a: rawA, state: ty.state ?? null, completed: ty.completed ?? null,
+           detail: ty.shortDetail || ty.detail || '', name: ty.name || '' },
   };
 }
 
@@ -2160,7 +2190,47 @@ $('#newsGo').onclick = closeNews;
 $('#newsModal').addEventListener('click', (e) => { if (e.target.id === 'newsModal') closeNews(); });
 $('#mNews').onclick = () => { $('#menuModal').classList.remove('open'); maybeShowNews(true); };
 
-for (const id of ['joinModal', 'menuModal', 'saveModal', 'playerModal']) {
+/* ── Feed check ─────────────────────────────────────────────────────────────
+   The scores come from ESPN in the reader's browser, which means a parse
+   failure is invisible to anyone who can't open that browser. This prints, per
+   match, what the feed sent against what the app made of it — so "no score"
+   with a populated raw value is a parser bug, and "no score" with an empty raw
+   value is the feed itself. */
+function diagText() {
+  const recent = state.matches
+    .filter((m) => new Date(m.date).getTime() < Date.now() + 36e5)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 10);
+  const head = [
+    `matches loaded: ${state.matches.length}`,
+    `last feed update: ${state.fetchedAt ? new Date(state.fetchedAt).toISOString() : 'never'}`,
+    `feed error: ${state.feedError || 'none'}`,
+    `app build: ${document.querySelector('title')?.textContent || ''}`,
+  ].join('\n');
+  const rows = recent.map((m) => {
+    const r = m.raw || {};
+    return [
+      `${m.home.name} v ${m.away.name}  (${m.date})`,
+      `  parsed: ${m.hs == null ? 'NO SCORE' : `${m.hs}-${m.as}`} · completed=${m.completed} · stage=${m.stage}`,
+      `  feed:   score=${JSON.stringify(r.h)}/${JSON.stringify(r.a)} state=${JSON.stringify(r.state)} completed=${JSON.stringify(r.completed)} name=${JSON.stringify(r.name)}`,
+    ].join('\n');
+  }).join('\n');
+  return `${head}\n\n${rows || '(no past matches loaded)'}`;
+}
+function openDiag() {
+  const txt = diagText();
+  $('#diagBody').innerHTML =
+    `<pre style="white-space:pre-wrap;word-break:break-word;font-size:11.5px;line-height:1.5;color:var(--mut);background:rgba(4,8,28,.6);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:12px">${esc(txt)}</pre>`;
+  $('#diagModal').classList.add('open');
+}
+$('#mDiag').onclick = () => { $('#menuModal').classList.remove('open'); openDiag(); };
+$('#diagClose').onclick = () => $('#diagModal').classList.remove('open');
+$('#diagCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText(diagText()); toast('Copied — paste it to Claude'); }
+  catch { toast('Copy failed — screenshot it instead'); }
+};
+
+for (const id of ['joinModal', 'menuModal', 'saveModal', 'playerModal', 'diagModal']) {
   document.getElementById(id).addEventListener('click', (e) => { if (e.target.id === id) e.target.classList.remove('open'); });
 }
 
