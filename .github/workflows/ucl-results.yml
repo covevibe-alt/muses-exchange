@@ -1,0 +1,70 @@
+name: Fetch UCL results
+
+# Keeps app/ucl-data.json (+ .js) fresh for the /ucl predictions pool.
+#
+# The pool used to read ESPN straight from the reader's browser, which meant
+# results existed only in whichever browser managed a successful fetch. When
+# that call failed, every browser silently served its own stale cache: fixtures
+# rendered, results never arrived, nobody scored, and nothing on screen said
+# why. This pulls the schedule and results on GitHub's runners and commits the
+# answer, so the page has a server-side source of truth and the browser's own
+# ESPN call is only a live-score optimisation on top.
+#
+# Every 30 minutes through the season (Sep-May, plus Jan knockout draws).
+# Minutes are offset from fetch-prices.yml and wc2026-results.yml to avoid
+# push races; the push retry in the fetcher step handles the rest.
+
+on:
+  schedule:
+    - cron: '5,35 * * 1-5,9-12 *'
+  workflow_dispatch:
+  # Also run when the fetcher or the page changes — bootstraps the data file
+  # immediately after a fix lands instead of waiting for the next half hour.
+  push:
+    paths:
+      - 'app/ucl-fetch.py'
+      - 'ucl/index.html'
+      - '.github/workflows/ucl-results.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ucl-results
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch fixtures and results
+        working-directory: app
+        run: python ucl-fetch.py
+
+      - name: Commit updated data
+        run: |
+          set -euo pipefail
+          git config user.name "UCL Results Bot"
+          git config user.email "bot@muses.exchange"
+          git add app/ucl-data.json app/ucl-data.js
+          if git diff --staged --quiet; then
+            echo "No result changes — skipping commit."
+            exit 0
+          fi
+          git commit -m "chore: update UCL results $(date -u +%Y-%m-%dT%H:%MZ) [skip netlify]"
+          # Retry once: another workflow may have pushed to main first.
+          git push || {
+            git pull --rebase origin main
+            git push
+          }
