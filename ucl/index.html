@@ -1066,7 +1066,12 @@ function parseEspnEvent(ev) {
     if (c.homeAway === 'home') { home = t; rawH = c.score; hs = num(c.score); soH = num(c.shootoutScore); hW = !!c.winner; }
     if (c.homeAway === 'away') { away = t; rawA = c.score; as = num(c.score); soA = num(c.shootoutScore); aW = !!c.winner; }
   }
-  const st = comp.status || ev.status || {}; const ty = st.type || {};
+  // Same class of bug the results bot hit: ESPN hands back a scalar where an
+  // object is expected. JS won't throw on it, it just silently reads undefined
+  // — which would quietly mark every finished match unfinished.
+  const isObj = (v) => !!v && typeof v === 'object';
+  const st = isObj(comp.status) ? comp.status : (isObj(ev.status) ? ev.status : {});
+  const ty = isObj(st.type) ? st.type : {};
   // `completed` has moved around between ESPN's endpoints; a post state means
   // finished too. Without this a finished match keeps its score but never
   // scores anybody, because matchTier() bails on !m.completed.
