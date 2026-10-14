@@ -1162,6 +1162,36 @@ function monthWindows(from, to) {
   }
   return out;
 }
+/* The committed results feed — app/ucl-data.json, rewritten every 30 minutes
+   by .github/workflows/ucl-results.yml. This is the source of truth for
+   results. The browser's own ESPN call below is a live-score optimisation on
+   top of it, so when that call fails (blocked, CORS, a shape change at ESPN)
+   the pool still shows results and still scores. Raw GitHub first: it's always
+   the latest bot commit and needs no host deploy, and the relative paths cover
+   the Netlify site and the Pages mirror. */
+const DATA_URLS = [
+  'https://raw.githubusercontent.com/covevibe-alt/muses-exchange/main/app/ucl-data.json',
+  '../app/ucl-data.json',
+  'app/ucl-data.json',
+];
+async function loadBaseline() {
+  if (window.UCL_DATA?.matches?.length) mergeMatches(window.UCL_DATA.matches);
+  for (const src of DATA_URLS) {
+    try {
+      const r = await fetch(src, { cache: 'no-store' });
+      if (!r.ok) continue;
+      const j = await r.json();
+      if (j?.matches?.length && mergeMatches(j.matches)) {
+        if (j.fetchedAt) state.fetchedAt = j.fetchedAt;
+        state.feedError = null;
+        saveCache();
+        return true;
+      }
+    } catch { /* try the next source */ }
+  }
+  return false;
+}
+
 async function espnBootstrap() {
   const [from, to] = seasonSpan();
   const mid = new Date(Date.UTC(from.getUTCFullYear() + 1, 0, 31));
@@ -2247,8 +2277,12 @@ async function boot() {
     render();
   }
 
-  if (!state.matches.length) { await espnBootstrap(); render(); syncMatchesToDb(); }
-  else espnBootstrap().then(() => { render(); syncMatchesToDb(); });
+  // Committed results first — that one is reliable. ESPN on top of it for live
+  // scores, and if ESPN is unreachable the pool still has results to show.
+  await loadBaseline();
+  render();
+  syncMatchesToDb();
+  espnBootstrap().then(() => { render(); syncMatchesToDb(); });
   espnLiveTick();
 
   // The announcement goes first and the join prompt waits behind it, so two
@@ -2258,11 +2292,17 @@ async function boot() {
 
   setInterval(espnLiveTick, 60e3);
   setInterval(async () => { if (document.hidden || !state.sb) return; await loadDb(); render(); }, 60e3);
-  setInterval(async () => { if (document.hidden) return; await espnBootstrap(); syncMatchesToDb(); render(); }, 900e3);
+  setInterval(async () => {
+    if (document.hidden) return;
+    await loadBaseline();          // committed results first, ESPN layered on
+    await espnBootstrap();
+    syncMatchesToDb();
+    render();
+  }, 900e3);
   setInterval(() => { if (!document.hidden && state.view === 'matches') renderHero(); }, 30e3);
   document.addEventListener('visibilitychange', async () => {
     if (document.hidden) return;
-    await Promise.all([state.sb ? loadDb() : null, state.sb ? loadMine() : null]);
+    await Promise.all([loadBaseline(), state.sb ? loadDb() : null, state.sb ? loadMine() : null]);
     espnLiveTick();
     checkForUpdate();
     render();
