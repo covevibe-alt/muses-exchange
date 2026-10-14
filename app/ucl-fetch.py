@@ -36,7 +36,7 @@ JSON_PATH = HERE / "ucl-data.json"
 JS_PATH = HERE / "ucl-data.js"
 
 BASE = ("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/"
-        "scoreboard?dates={window}&limit=400")
+        "scoreboard")
 
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
@@ -56,27 +56,45 @@ MATCHDAY_RE = re.compile(r"matchday\s*(\d+)", re.I)
 PLACEHOLDER_RE = re.compile(r"winner|runner|loser|\btbd\b|to be determined", re.I)
 
 
-def season_windows():
-    """Month-sized windows covering the current Aug -> Jul season."""
-    now = datetime.now(timezone.utc)
-    start_year = now.year if now.month >= 7 else now.year - 1
-    windows, cursor = [], datetime(start_year, 8, 1, tzinfo=timezone.utc)
-    end = datetime(start_year + 1, 7, 31, tzinfo=timezone.utc)
-    while cursor < end:
-        nxt = datetime(cursor.year + (cursor.month // 12),
-                       (cursor.month % 12) + 1, 1, tzinfo=timezone.utc)
-        last = min(nxt, end) - timedelta(days=1)
-        windows.append(f"{cursor:%Y%m%d}-{last:%Y%m%d}")
-        cursor = nxt
-    return windows
-
-
-def fetch_window(window):
-    url = BASE.format(window=window)
+def fetch(params=""):
+    """One scoreboard call. Returns (payload, error_string)."""
+    url = f"{BASE}?limit=400{params}"
     req = urllib.request.Request(url, headers={"User-Agent": UA,
                                                "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=45) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=45) as resp:
+            return json.loads(resp.read().decode("utf-8")), None
+    except Exception as exc:  # noqa: BLE001
+        return None, f"{type(exc).__name__}: {exc}"
+
+
+def calendar_days(payload):
+    """Match dates ESPN itself advertises for the season.
+
+    ESPN stopped accepting the `dates=YYYYMMDD-YYYYMMDD` range form on this
+    endpoint — it answers 400 Bad Request — so the season can't be pulled in a
+    few wide calls any more. The bare scoreboard response carries the league's
+    own calendar of matchday dates; fetch those one day at a time instead of
+    guessing at a format ESPN may change again.
+    """
+    days = set()
+
+    def walk(node):
+        if isinstance(node, str):
+            if re.match(r"^\d{4}-\d{2}-\d{2}", node):
+                days.add(node[:10].replace("-", ""))
+        elif isinstance(node, dict):
+            for key in ("startDate", "endDate", "date"):
+                if isinstance(node.get(key), str):
+                    walk(node[key])
+            walk(node.get("entries"))
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    for league in payload.get("leagues") or []:
+        walk(league.get("calendar"))
+    return sorted(days)
 
 
 def parse_date(raw):
@@ -266,27 +284,63 @@ def load_existing():
         return {}
 
 
+def parse_all(payload):
+    out = []
+    for event in (payload or {}).get("events") or []:
+        try:
+            match = parse_event(event)
+        except Exception as exc:  # noqa: BLE001
+            print(f"WARN: skipping unparseable event {event.get('id')}: {exc}")
+            continue
+        if match:
+            out.append(match)
+    return out
+
+
 def main():
     parsed, failures = [], []
-    for window in season_windows():
-        try:
-            payload = fetch_window(window)
-        except Exception as exc:  # noqa: BLE001
-            failures.append(f"{window}: {exc}")
+
+    # 1. Bare scoreboard: whatever is on now, plus the league's own calendar.
+    payload, err = fetch()
+    if err:
+        print(f"WARN: bare scoreboard failed: {err}")
+        failures.append(f"bare: {err}")
+    days = []
+    if payload:
+        got = parse_all(payload)
+        print(f"bare scoreboard: {len(payload.get('events') or [])} events")
+        parsed.extend(got)
+        days = calendar_days(payload)
+        print(f"calendar advertises {len(days)} matchday dates"
+              + (f" ({days[0]}..{days[-1]})" if days else ""))
+
+    # 2. One call per advertised matchday. Single days are the only `dates`
+    #    form ESPN still honours here; ranges answer 400.
+    for day in days:
+        p2, e2 = fetch(f"&dates={day}")
+        if e2:
+            failures.append(f"{day}: {e2}")
             continue
-        events = payload.get("events") or []
-        print(f"{window}: {len(events)} events")
-        for event in events:
-            try:
-                match = parse_event(event)
-            except Exception as exc:  # noqa: BLE001
-                print(f"WARN: skipping unparseable event {event.get('id')}: {exc}")
+        got = parse_all(p2)
+        if got:
+            print(f"{day}: {len(got)} events")
+        parsed.extend(got)
+
+    # 3. No calendar (shape changed again?) — sweep the days around now so the
+    #    current matchday at least lands.
+    if not days:
+        print("WARN: no calendar found, sweeping +/- 5 days")
+        now = datetime.now(timezone.utc)
+        for delta in range(-5, 6):
+            day = f"{now + timedelta(days=delta):%Y%m%d}"
+            p3, e3 = fetch(f"&dates={day}")
+            if e3:
+                failures.append(f"{day}: {e3}")
                 continue
-            if match:
-                parsed.append(match)
+            parsed.extend(parse_all(p3))
 
     if failures:
-        print(f"WARN: {len(failures)} window(s) failed: {'; '.join(failures[:3])}")
+        print(f"WARN: {len(failures)} call(s) failed: {'; '.join(failures[:3])}")
     if not parsed:
         print("WARN: ESPN returned no parseable events, keeping existing data")
         return 0
