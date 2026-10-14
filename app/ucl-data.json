@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-10-14T20:58:05Z",
+ "fetchedAt": "2026-10-14T23:53:08Z",
  "matches": [
   {
    "id": "401915426",
@@ -1468,7 +1468,7 @@
      "n": "Pedrinho"
     },
     {
-     "n": "Vinicius Augusto"
+     "n": "Vinícius Tobias"
     },
     {
      "n": "Gleiker Mendoza"
@@ -1550,15 +1550,15 @@
     "abbr": "FCP",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/437.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "90'+6'",
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
    "clock": "90'+6'",
    "hs": 3,
    "as": 2,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
    "scorers": [
     {
