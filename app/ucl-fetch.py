@@ -26,6 +26,7 @@ Run by .github/workflows/ucl-results.yml. No API key required. Safe by design:
 import json
 import re
 import sys
+import time
 import unicodedata
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -54,6 +55,17 @@ STAGE_PATTERNS = [
 LEG_RE = re.compile(r"leg\s*([12])\b|\b([12])(?:st|nd)\s*leg", re.I)
 MATCHDAY_RE = re.compile(r"matchday\s*(\d+)", re.I)
 PLACEHOLDER_RE = re.compile(r"winner|runner|loser|\btbd\b|to be determined", re.I)
+
+
+def dig(obj, *keys):
+    """Nested lookup that tolerates ESPN handing back a scalar where a previous
+    season handed back an object. `event.season.type` is an int on the current
+    payload, and `(1).get("name")` took down every event in the feed."""
+    for key in keys:
+        if not isinstance(obj, dict):
+            return None
+        obj = obj.get(key)
+    return obj
 
 
 def fetch(params=""):
@@ -145,10 +157,14 @@ def to_int(value):
 
 
 def parse_team(competitor):
-    team = competitor.get("team") or {}
+    team = competitor.get("team")
+    if not isinstance(team, dict):
+        team = {}
     logo = team.get("logo")
     if not logo:
-        logo = ((team.get("logos") or [{}])[0]).get("href")
+        logos = team.get("logos") or []
+        first = logos[0] if logos else None
+        logo = first.get("href") if isinstance(first, dict) else None
     name = (team.get("shortDisplayName") or team.get("displayName")
             or team.get("name") or "TBD")
     out = {
@@ -189,7 +205,7 @@ def parse_event(event):
         f"{n.get('headline', '')} {n.get('text', '')}"
         for n in notes if isinstance(n, dict))
     label = " ".join([notes_text,
-                      ((event.get("season") or {}).get("type") or {}).get("name") or "",
+                      dig(event, "season", "type", "name") or "",
                       event.get("name") or "", event.get("shortName") or ""])
 
     home, away = {}, {}
@@ -205,12 +221,18 @@ def parse_event(event):
             away = parsed
 
     status = comp.get("status") or event.get("status") or {}
-    stype = status.get("type") or {}
+    if not isinstance(status, dict):
+        status = {}
+    stype = status.get("type")
+    if not isinstance(stype, dict):
+        stype = {}
     state = stype.get("state") or "pre"
     # `completed` is absent on some payloads where the state already says post.
     completed = bool(stype.get("completed")) or str(state).lower() == "post"
 
-    venue = comp.get("venue") or {}
+    venue = comp.get("venue")
+    if not isinstance(venue, dict):
+        venue = {}
     stage = stage_from_event(label, iso_date)
 
     leg_match = LEG_RE.search(label)
@@ -259,7 +281,7 @@ def parse_event(event):
         "leg": leg,
         "matchday": matchday,
         "venue": venue.get("fullName") or "",
-        "city": ((venue.get("address") or {}).get("city")) or "",
+        "city": dig(venue, "address", "city") or "",
         "home": home or {"id": "", "name": "TBD", "abbr": "", "logo": "", "tbd": True},
         "away": away or {"id": "", "name": "TBD", "abbr": "", "logo": "", "tbd": True},
         "state": state,
@@ -305,18 +327,42 @@ def main():
     if err:
         print(f"WARN: bare scoreboard failed: {err}")
         failures.append(f"bare: {err}")
-    days = []
     if payload:
         got = parse_all(payload)
-        print(f"bare scoreboard: {len(payload.get('events') or [])} events")
+        print(f"bare scoreboard: {len(payload.get('events') or [])} events, {len(got)} parsed")
         parsed.extend(got)
-        days = calendar_days(payload)
-        print(f"calendar advertises {len(days)} matchday dates"
-              + (f" ({days[0]}..{days[-1]})" if days else ""))
 
-    # 2. One call per advertised matchday. Single days are the only `dates`
-    #    form ESPN still honours here; ranges answer 400.
-    for day in days:
+    existing = load_existing()
+    now = datetime.now(timezone.utc)
+    days = set()
+
+    # The calendar turned out to list phase boundaries rather than matchdays,
+    # so it's a hint, not the plan.
+    if payload:
+        days |= set(calendar_days(payload))
+
+    # Always re-check the days around now: live matches and ones that have just
+    # finished are the whole point of running every half hour.
+    days |= {f"{now + timedelta(days=d):%Y%m%d}" for d in range(-7, 8)}
+
+    # Keep every fixture we already know about refreshed — that set is exactly
+    # the days this competition plays on, learned rather than guessed.
+    days |= {m["date"][:10].replace("-", "") for m in existing.values() if m.get("date")}
+
+    # Cold start: no file yet, so sweep the season to date. ~90 calls once,
+    # then the line above keeps subsequent runs down to the days that matter.
+    if not existing:
+        season_start = datetime(now.year if now.month >= 7 else now.year - 1,
+                                8, 1, tzinfo=timezone.utc)
+        cursor = season_start
+        while cursor <= now + timedelta(days=14):
+            days.add(f"{cursor:%Y%m%d}")
+            cursor += timedelta(days=1)
+        print(f"cold start: sweeping {len(days)} days from {season_start:%Y-%m-%d}")
+
+    # 2. One call per day. Single days are the only `dates` form ESPN still
+    #    honours here; ranges answer 400 Bad Request.
+    for day in sorted(days):
         p2, e2 = fetch(f"&dates={day}")
         if e2:
             failures.append(f"{day}: {e2}")
@@ -325,19 +371,7 @@ def main():
         if got:
             print(f"{day}: {len(got)} events")
         parsed.extend(got)
-
-    # 3. No calendar (shape changed again?) — sweep the days around now so the
-    #    current matchday at least lands.
-    if not days:
-        print("WARN: no calendar found, sweeping +/- 5 days")
-        now = datetime.now(timezone.utc)
-        for delta in range(-5, 6):
-            day = f"{now + timedelta(days=delta):%Y%m%d}"
-            p3, e3 = fetch(f"&dates={day}")
-            if e3:
-                failures.append(f"{day}: {e3}")
-                continue
-            parsed.extend(parse_all(p3))
+        time.sleep(0.15)   # be a polite guest
 
     if failures:
         print(f"WARN: {len(failures)} call(s) failed: {'; '.join(failures[:3])}")
