@@ -1133,42 +1133,12 @@ function mergeMatches(parsed) {
   return true;
 }
 
-async function espnFetch(range) {
-  const r = await fetch(`${ESPN}?dates=${range}&limit=1000`, { cache: 'no-store' });
-  if (!r.ok) throw new Error(`espn ${r.status}`);
-  const json = await r.json();
-  const parsed = (json.events || []).map((e) => { try { return parseEspnEvent(e); } catch { return null; } }).filter(Boolean);
-  const ok = mergeMatches(parsed);
-  if (ok) state.fetchedAt = new Date().toISOString();
-  return ok;
-}
-
-// The season runs Aug -> Jul.
-const ymd = (d) => d.toISOString().slice(0, 10).replaceAll('-', '');
-function seasonSpan() {
-  const now = new Date();
-  const y = now.getUTCFullYear();
-  const s = now.getUTCMonth() + 1 >= 7 ? y : y - 1;
-  return [new Date(Date.UTC(s, 7, 1)), new Date(Date.UTC(s + 1, 6, 31))];
-}
-// Month-sized windows across a span, for the fallback below.
-function monthWindows(from, to) {
-  const out = [];
-  let d = new Date(from);
-  while (d < to) {
-    const next = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1));
-    out.push(`${ymd(d)}-${ymd(new Date(Math.min(next.getTime(), to.getTime()) - 864e5))}`);
-    d = next;
-  }
-  return out;
-}
 /* The committed results feed — app/ucl-data.json, rewritten every 30 minutes
    by .github/workflows/ucl-results.yml. This is the source of truth for
    results. The browser's own ESPN call below is a live-score optimisation on
-   top of it, so when that call fails (blocked, CORS, a shape change at ESPN)
-   the pool still shows results and still scores. Raw GitHub first: it's always
-   the latest bot commit and needs no host deploy, and the relative paths cover
-   the Netlify site and the Pages mirror. */
+   top of it, so when that call fails the pool still shows results and still
+   scores. Raw GitHub first: always the latest bot commit, no host deploy
+   needed; the relative paths cover muses.exchange/ucl and the Pages mirror. */
 const DATA_URLS = [
   'https://raw.githubusercontent.com/covevibe-alt/muses-exchange/main/app/ucl-data.json',
   '../app/ucl-data.json',
@@ -1192,27 +1162,18 @@ async function loadBaseline() {
   return false;
 }
 
-async function espnBootstrap() {
-  const [from, to] = seasonSpan();
-  const mid = new Date(Date.UTC(from.getUTCFullYear() + 1, 0, 31));
-  let ok = false, lastErr = null;
-  // Two wide windows cover the season in two requests when ESPN plays along.
-  for (const w of [`${ymd(from)}-${ymd(mid)}`, `${ymd(new Date(mid.getTime() + 864e5))}-${ymd(to)}`]) {
-    try { if (await espnFetch(w)) ok = true; } catch (e) { lastErr = e; }
-  }
-  // ESPN answers a window it considers too wide with an EMPTY event list rather
-  // than an error, which is indistinguishable from "nothing new" — so a silent
-  // nothing means walk the season in month-sized windows instead. Without this
-  // the page runs on its stale cache forever and never says why.
-  if (!ok) {
-    for (const w of monthWindows(from, to)) {
-      try { if (await espnFetch(w)) ok = true; } catch (e) { lastErr = e; }
-    }
-  }
-  state.feedError = ok ? null
-    : (lastErr ? String(lastErr.message || lastErr) : 'the feed returned no matches');
-  if (ok) saveCache();
-  return ok;
+/* ESPN no longer accepts the `dates=YYYYMMDD-YYYYMMDD` range form on this
+   endpoint — it answers 400 Bad Request — which is what had been killing every
+   fetch, here and in the results bot. Single days still work, and the season
+   no longer needs fetching from the browser at all: the committed feed above
+   carries it. So the browser only asks about the days that can be in play. */
+const ymd = (d) => d.toISOString().slice(0, 10).replaceAll('-', '');
+async function espnDay(day) {
+  const r = await fetch(`${ESPN}?dates=${day}&limit=400`, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`espn ${r.status}`);
+  const json = await r.json();
+  const parsed = (json.events || []).map((e) => { try { return parseEspnEvent(e); } catch { return null; } }).filter(Boolean);
+  return mergeMatches(parsed);
 }
 
 /* Local cache: the schedule barely changes, so a cold open paints instantly
@@ -1246,13 +1207,19 @@ async function espnLiveTick() {
     return isLive(m) || (!m.completed && now >= k - 10 * 60e3 && now <= k + 24 * 3600e3);
   });
   if (!need) return;
-  const fmt = (x) => x.toISOString().slice(0, 10).replaceAll('-', '');
-  const d = new Date();
-  const a = new Date(d.getTime() - 36e5 * 36), b = new Date(d.getTime() + 36e5 * 24);
-  try {
-    if (await espnFetch(`${fmt(a)}-${fmt(b)}`)) { state.feedError = null; saveCache(); render(); }
-  } catch (e) {
-    state.feedError = String(e?.message || e);
+  const nowMs = Date.now();
+  const days = [-1, 0, 1].map((k) => ymd(new Date(nowMs + k * 864e5)));
+  let ok = false, lastErr = null;
+  for (const day of days) {
+    try { if (await espnDay(day)) ok = true; } catch (e) { lastErr = e; }
+  }
+  if (ok) {
+    state.fetchedAt = new Date().toISOString();
+    state.feedError = null;
+    saveCache();
+    render();
+  } else if (lastErr) {
+    state.feedError = String(lastErr?.message || lastErr);
     if (state.view === 'matches') renderMatches();   // surface it instead of failing mute
   }
 }
@@ -1541,7 +1508,7 @@ function feedNote() {
 async function refreshFeedNow() {
   const b = $('#feedRefresh');
   if (b) { b.textContent = 'Refreshing…'; b.disabled = true; }
-  await espnBootstrap();
+  await loadBaseline();
   await espnLiveTick();
   render();
   toast(state.feedError ? "Still can't reach the feed" : 'Scores refreshed');
@@ -2282,7 +2249,7 @@ async function boot() {
   await loadBaseline();
   render();
   syncMatchesToDb();
-  espnBootstrap().then(() => { render(); syncMatchesToDb(); });
+  espnLiveTick();
   espnLiveTick();
 
   // The announcement goes first and the join prompt waits behind it, so two
@@ -2295,7 +2262,7 @@ async function boot() {
   setInterval(async () => {
     if (document.hidden) return;
     await loadBaseline();          // committed results first, ESPN layered on
-    await espnBootstrap();
+    await espnLiveTick();
     syncMatchesToDb();
     render();
   }, 900e3);
