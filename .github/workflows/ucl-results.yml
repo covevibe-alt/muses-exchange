@@ -57,6 +57,10 @@ jobs:
           set -euo pipefail
           git config user.name "UCL Results Bot"
           git config user.email "bot@muses.exchange"
+          if [ ! -f app/ucl-data.json ]; then
+            echo "::error::No data file produced — the ESPN fetch failed and there is no previous data to fall back on."
+            exit 1
+          fi
           git add app/ucl-data.json app/ucl-data.js
           if git diff --staged --quiet; then
             echo "No result changes — skipping commit."
