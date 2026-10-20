@@ -711,7 +711,8 @@ const state = {
   settings: new Map(),
   fetchedAt: null,
   feedError: null,        // last ESPN failure, surfaced under the match list
-  scrolled: false,
+  scrolledTo: null,       // day key the list was auto-scrolled to
+  userScrolled: false,    // once the reader scrolls, we stop moving the view
 };
 
 /* ── tiny utils ── */
@@ -1541,12 +1542,21 @@ function renderMatches() {
     return;
   }
   const today = todayKey();
+  // Where the list should open. Matchdays are weeks apart, so anchoring on
+  // "today" only works on the handful of days football is actually played —
+  // every other day there is no such header and the reader lands on the
+  // opening night of the season. Anchor on the first day that hasn't happened
+  // yet instead (today included, so live matches win), falling back to the
+  // last day once the season is over.
+  const dayKeys = [...new Set(visible.map((m) => dayKey(m.date)))];
+  const anchorDay = dayKeys.find((k) => k >= today) ?? dayKeys[dayKeys.length - 1];
   let html = '', lastDay = '';
   for (const m of visible) {
     const dk = dayKey(m.date);
     if (dk !== lastDay) {
       lastDay = dk;
-      html += `<div class="day-h" ${dk === today ? 'data-today="1"' : ''}>${dk === today ? `<span class="today">Today · </span>` : ''}${esc(fmtDay.format(new Date(m.date)))}</div>`;
+      const marks = `${dk === today ? ' data-today="1"' : ''}${dk === anchorDay ? ' data-anchor="1"' : ''}`;
+      html += `<div class="day-h"${marks}>${dk === today ? `<span class="today">Today · </span>` : ''}${esc(fmtDay.format(new Date(m.date)))}</div>`;
     }
     html += matchCard(m);
   }
@@ -1558,10 +1568,17 @@ function renderMatches() {
     if (a && d.a !== '') a.value = d.a;
   }
 
-  if (!state.scrolled && state.filter === 'all') {
-    state.scrolled = true;
-    const t = list.querySelector('[data-today="1"]');
-    if (t) setTimeout(() => t.scrollIntoView({ block: 'start' }), 60);
+  // Re-anchor whenever the target day changes, which matters because the first
+  // render often runs against a months-old cache: it would anchor on the last
+  // day that cache knew about, and a one-shot flag would then be spent before
+  // the committed feed arrived with the real fixtures. Stops for good as soon
+  // as the reader scrolls themselves — never yank the view out from under them.
+  if (!state.userScrolled && state.filter === 'all' && state.scrolledTo !== anchorDay) {
+    const t = list.querySelector('[data-anchor="1"]');
+    if (t) {
+      state.scrolledTo = anchorDay;
+      setTimeout(() => t.scrollIntoView({ block: 'start' }), 60);
+    }
   }
 }
 
@@ -1985,6 +2002,11 @@ function switchView(v) {
   render();
   window.scrollTo({ top: 0 });
 }
+// A real scroll gesture hands control to the reader for the rest of the visit.
+for (const evt of ['wheel', 'touchmove', 'keydown']) {
+  window.addEventListener(evt, () => { state.userScrolled = true; }, { passive: true, once: true });
+}
+
 $('#tabs').addEventListener('click', (e) => { const b = e.target.closest('button[data-v]'); if (b) switchView(b.dataset.v); });
 
 $('#filters').addEventListener('click', (e) => {
