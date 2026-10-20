@@ -21,6 +21,9 @@ on:
   # Also run when the fetcher or the page changes — bootstraps the data file
   # immediately after a fix lands instead of waiting for the next half hour.
   push:
+    # main only: without this the bot fires on feature branches too and commits
+    # its data file onto them, which lands result commits inside unrelated PRs.
+    branches: [main]
     paths:
       - 'app/ucl-fetch.py'
       - 'ucl/index.html'
