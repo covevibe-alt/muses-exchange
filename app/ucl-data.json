@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-10-20T17:29:21Z",
+ "fetchedAt": "2026-10-20T20:49:50Z",
  "matches": [
   {
    "id": "401915426",
@@ -1709,14 +1709,14 @@
     "abbr": "SLP",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/494.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "44'",
-   "clock": "44'",
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
    "hs": 2,
-   "as": 1,
+   "as": 2,
    "so": null,
-   "winner": null,
+   "winner": "draw",
    "advances": null,
    "decidedBy": null,
    "scorers": [
@@ -1728,6 +1728,9 @@
     },
     {
      "n": "Lukás Provod"
+    },
+    {
+     "n": "Pavel Kacor"
     }
    ]
   },
@@ -1753,15 +1756,15 @@
     "abbr": "DOR",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/124.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "43'",
-   "clock": "43'",
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+2'",
    "hs": 1,
-   "as": 1,
+   "as": 2,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
    "scorers": [
     {
@@ -1769,6 +1772,9 @@
     },
     {
      "n": "Aden Mccarthy"
+    },
+    {
+     "n": "Serhou Guirassy"
     }
    ]
   },
@@ -1794,17 +1800,24 @@
     "abbr": "ATM",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/1068.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "detail": "90'+3'",
+   "clock": "90'+3'",
+   "hs": 1,
+   "as": 1,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Jamie Leweling"
+    },
+    {
+     "n": "Julián Álvarez"
+    }
+   ]
   },
   {
    "id": "401915397",
@@ -1828,17 +1841,39 @@
     "abbr": "VIL",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/102.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "detail": "90'",
+   "clock": "90'",
+   "hs": 4,
+   "as": 3,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Georges Mikautadze"
+    },
+    {
+     "n": "Sergi Cardona"
+    },
+    {
+     "n": "Alexis Mac Allister"
+    },
+    {
+     "n": "Ronald Araújo"
+    },
+    {
+     "n": "Alexis Mac Allister"
+    },
+    {
+     "n": "Florian Wirtz"
+    },
+    {
+     "n": "Tani Oluwaseyi"
+    }
+   ]
   },
   {
    "id": "401915398",
@@ -1862,17 +1897,21 @@
     "abbr": "PSV",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/148.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "detail": "90'+2'",
+   "clock": "90'+2'",
    "hs": 0,
-   "as": 0,
+   "as": 1,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Guus Til"
+    }
+   ]
   },
   {
    "id": "401915399",
@@ -1896,17 +1935,33 @@
     "abbr": "BAR",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/83.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "detail": "86'",
+   "clock": "86'",
+   "hs": 3,
+   "as": 2,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Désiré Doué"
+    },
+    {
+     "n": "Xavi Espart"
+    },
+    {
+     "n": "Lucas Hernández"
+    },
+    {
+     "n": "Lamine Yamal"
+    },
+    {
+     "n": "Vitinha"
+    }
+   ]
   },
   {
    "id": "401915400",
@@ -1930,17 +1985,33 @@
     "abbr": "BODO",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/2980.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "detail": "89'",
+   "clock": "89'",
+   "hs": 4,
+   "as": 2,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Matteo Politano"
+    },
+    {
+     "n": "Jens Petter Hauge"
+    },
+    {
+     "n": "Scott McTominay"
+    },
+    {
+     "n": "Andreas Helmersen"
+    },
+    {
+     "n": "Scott McTominay"
+    }
+   ]
   },
   {
    "id": "401915401",
@@ -1964,17 +2035,36 @@
     "abbr": "AEK",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/887.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "detail": "90'+1'",
+   "clock": "90'+1'",
+   "hs": 5,
+   "as": 1,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Elliot Anderson"
+    },
+    {
+     "n": "Phil Foden"
+    },
+    {
+     "n": "Stavros Pilios"
+    },
+    {
+     "n": "Rayan Cherki"
+    },
+    {
+     "n": "Phil Foden"
+    },
+    {
+     "n": "Phil Foden"
+    }
+   ]
   },
   {
    "id": "401915402",
@@ -1998,17 +2088,30 @@
     "abbr": "SLB",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/521.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+2'",
+   "hs": 4,
    "as": 0,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Mario Hermoso"
+    },
+    {
+     "n": "Nahuel Molina"
+    },
+    {
+     "n": "Niccolò Pisilli"
+    },
+    {
+     "n": "Donyell Malen"
+    }
+   ]
   },
   {
    "id": "401915395",
