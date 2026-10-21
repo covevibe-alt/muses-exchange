@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-10-21T19:33:07Z",
+ "fetchedAt": "2026-10-21T22:42:52Z",
  "matches": [
   {
    "id": "401915426",
@@ -2241,19 +2241,28 @@
     "abbr": "ARS",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/359.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "32'",
-   "clock": "32'",
-   "hs": 0,
-   "as": 1,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
+   "hs": 2,
+   "as": 2,
    "so": null,
-   "winner": null,
+   "winner": "draw",
    "advances": null,
    "decidedBy": null,
    "scorers": [
     {
      "n": "Eberechi Eze"
+    },
+    {
+     "n": "Alphonso Davies"
+    },
+    {
+     "n": "Harry Kane"
+    },
+    {
+     "n": "Declan Rice"
     }
    ]
   },
@@ -2279,17 +2288,33 @@
     "abbr": "RBL",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/11420.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "31'",
-   "clock": "31'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
+   "hs": 4,
+   "as": 1,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Bernardo Silva"
+    },
+    {
+     "n": "Arda Güler"
+    },
+    {
+     "n": "Kylian Mbappé"
+    },
+    {
+     "n": "Tidiam Gomis"
+    },
+    {
+     "n": "Yan Diomande"
+    }
+   ]
   },
   {
    "id": "401915388",
@@ -2313,17 +2338,27 @@
     "abbr": "RCL",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/175.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "32'",
-   "clock": "32'",
-   "hs": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+2'",
+   "hs": 3,
    "as": 0,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Hans Vanaken"
+    },
+    {
+     "n": "Joaquin Seys"
+    },
+    {
+     "n": "Carlos Forbs"
+    }
+   ]
   },
   {
    "id": "401915389",
@@ -2347,17 +2382,21 @@
     "abbr": "FEY",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/142.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "33'",
-   "clock": "33'",
-   "hs": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+5'",
+   "hs": 1,
    "as": 0,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Isco"
+    }
+   ]
   },
   {
    "id": "401915390",
@@ -2381,17 +2420,21 @@
     "abbr": "SHK",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/493.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "31'",
-   "clock": "31'",
-   "hs": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+4'",
+   "hs": 1,
    "as": 0,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Carlos Augusto"
+    }
+   ]
   },
   {
    "id": "401915391",
@@ -2415,15 +2458,15 @@
     "abbr": "LAS",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/4411.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "31'",
-   "clock": "31'",
-   "hs": 1,
-   "as": 1,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+8'",
+   "hs": 2,
+   "as": 3,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
    "scorers": [
     {
@@ -2431,6 +2474,15 @@
     },
     {
      "n": "Christoph Lang"
+    },
+    {
+     "n": "Sasa Kalajdzic"
+    },
+    {
+     "n": "Krystof Danek"
+    },
+    {
+     "n": "Luis Suárez"
     }
    ]
   },
@@ -2456,19 +2508,25 @@
     "abbr": "VFK",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/510.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "32'",
-   "clock": "32'",
-   "hs": 1,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+5'",
+   "hs": 3,
+   "as": 1,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
    "scorers": [
     {
      "n": "Ross Barkley"
+    },
+    {
+     "n": "Emiliano Buendía"
+    },
+    {
+     "n": "Peter Christiansen"
     }
    ]
   }
