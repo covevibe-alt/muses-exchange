@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-20T23:00:47Z",
+  "updatedAt": "2026-10-21T01:51:41Z",
   "marketIndex": 175.68,
   "rawAveragePrice": 58.27,
   "topGainers": [
@@ -331,7 +331,7 @@
       "fairPrice": 60.35,
       "price": 60.35,
       "chg24h": 0.64,
-      "volatility30d": 0.019,
+      "volatility30d": 0.02,
       "volume": 2045,
       "youtube": {
         "subscribers": 6800000,
@@ -773,7 +773,7 @@
       "genre": "Pop",
       "spotifyId": "3WGpXCj9YhhfX11TToZcXP",
       "popularity": 79,
-      "popularityDelta": 1,
+      "popularityDelta": 0,
       "followers": 9685970,
       "monthlyListeners": 21299448,
       "listenersSource": "ratio-calibrated",
@@ -782,7 +782,7 @@
       "price": 27.64,
       "chg24h": 0.0,
       "volatility30d": 0.0,
-      "volume": 3361,
+      "volume": 1867,
       "youtube": {
         "subscribers": 20400,
         "views": 587042196,
@@ -1281,7 +1281,7 @@
       "fairPrice": 49.61,
       "price": 49.61,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 3162,
       "youtube": {
         "subscribers": 95600,
@@ -1759,7 +1759,7 @@
       "volatility30d": 0.005,
       "volume": 3029,
       "youtube": {
-        "subscribers": 4000,
+        "subscribers": 4010,
         "views": 3245675734,
         "videos": 0
       },
@@ -1931,7 +1931,7 @@
       "fairPrice": 66.56,
       "price": 66.56,
       "chg24h": 0.0,
-      "volatility30d": 0.008,
+      "volatility30d": 0.009,
       "volume": 3292,
       "youtube": {
         "subscribers": 136000,
@@ -2181,7 +2181,7 @@
       "fairPrice": 45.35,
       "price": 45.35,
       "chg24h": 0.0,
-      "volatility30d": 0.002,
+      "volatility30d": 0.0,
       "volume": 1369,
       "youtube": {
         "subscribers": 1930,
@@ -2197,8 +2197,8 @@
       "name": "Fireboy DML",
       "genre": "Afropop",
       "spotifyId": "75VKfyoBlkmrJFDqo1o2VY",
-      "popularity": 73,
-      "popularityDelta": 0,
+      "popularity": 74,
+      "popularityDelta": 1,
       "followers": 5833799,
       "monthlyListeners": 9153814,
       "listenersSource": "ratio-calibrated",
@@ -2207,7 +2207,7 @@
       "price": 11.74,
       "chg24h": 3.33,
       "volatility30d": 0.004,
-      "volume": 1449,
+      "volume": 2609,
       "youtube": {
         "subscribers": 1030,
         "views": 293948740,
@@ -2256,7 +2256,7 @@
       "fairPrice": 95.85,
       "price": 95.85,
       "chg24h": 0.4,
-      "volatility30d": 0.03,
+      "volatility30d": 0.031,
       "volume": 4709,
       "youtube": {
         "subscribers": 458000,
@@ -2381,7 +2381,7 @@
       "fairPrice": 14.47,
       "price": 14.47,
       "chg24h": 2.7,
-      "volatility30d": 0.015,
+      "volatility30d": 0.016,
       "volume": 767,
       "youtube": {
         "subscribers": 223,
@@ -2434,7 +2434,7 @@
       "volatility30d": 0.004,
       "volume": 1646,
       "youtube": {
-        "subscribers": 1970,
+        "subscribers": 1980,
         "views": 183865851,
         "videos": 0
       },
@@ -2781,7 +2781,7 @@
       "fairPrice": 35.84,
       "price": 35.84,
       "chg24h": 0.0,
-      "volatility30d": 0.008,
+      "volatility30d": 0.009,
       "volume": 1011,
       "youtube": {
         "subscribers": 492,
