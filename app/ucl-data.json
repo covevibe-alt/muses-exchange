@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-10-26T22:36:24Z",
+ "fetchedAt": "2026-10-27T02:00:13Z",
  "matches": [
   {
    "id": "401915426",
@@ -2529,6 +2529,312 @@
      "n": "Peter Christiansen"
     }
    ]
+  },
+  {
+   "id": "401915310",
+   "date": "2026-11-03T17:45:00Z",
+   "stage": "LEAGUE",
+   "leg": null,
+   "matchday": null,
+   "venue": "Stamford Bridge",
+   "city": "London",
+   "home": {
+    "id": "493",
+    "name": "Shakhtar",
+    "full": "Shakhtar Donetsk",
+    "abbr": "SHK",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/493.png"
+   },
+   "away": {
+    "id": "2250",
+    "name": "Sporting",
+    "full": "Sporting CP",
+    "abbr": "SCP",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/2250.png"
+   },
+   "state": "pre",
+   "completed": false,
+   "detail": "Scheduled",
+   "clock": "0'",
+   "hs": 0,
+   "as": 0,
+   "so": null,
+   "winner": null,
+   "advances": null,
+   "decidedBy": null,
+   "scorers": null
+  },
+  {
+   "id": "401915311",
+   "date": "2026-11-03T17:45:00Z",
+   "stage": "LEAGUE",
+   "leg": null,
+   "matchday": null,
+   "venue": "RAMS Park",
+   "city": "Istanbul",
+   "home": {
+    "id": "432",
+    "name": "Galatasaray",
+    "full": "Galatasaray",
+    "abbr": "GAL",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/432.png"
+   },
+   "away": {
+    "id": "134",
+    "name": "Stuttgart",
+    "full": "VfB Stuttgart",
+    "abbr": "VFB",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/134.png"
+   },
+   "state": "pre",
+   "completed": false,
+   "detail": "Scheduled",
+   "clock": "0'",
+   "hs": 0,
+   "as": 0,
+   "so": null,
+   "winner": null,
+   "advances": null,
+   "decidedBy": null,
+   "scorers": null
+  },
+  {
+   "id": "401915307",
+   "date": "2026-11-03T20:00:00Z",
+   "stage": "LEAGUE",
+   "leg": null,
+   "matchday": null,
+   "venue": "De Kuip",
+   "city": "Rotterdam",
+   "home": {
+    "id": "142",
+    "name": "Feyenoord",
+    "full": "Feyenoord Rotterdam",
+    "abbr": "FEY",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/142.png"
+   },
+   "away": {
+    "id": "110",
+    "name": "Inter Milan",
+    "full": "Internazionale",
+    "abbr": "INT",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/110.png"
+   },
+   "state": "pre",
+   "completed": false,
+   "detail": "Scheduled",
+   "clock": "0'",
+   "hs": 0,
+   "as": 0,
+   "so": null,
+   "winner": null,
+   "advances": null,
+   "decidedBy": null,
+   "scorers": null
+  },
+  {
+   "id": "401915308",
+   "date": "2026-11-03T20:00:00Z",
+   "stage": "LEAGUE",
+   "leg": null,
+   "matchday": null,
+   "venue": "Old Trafford",
+   "city": "Manchester",
+   "home": {
+    "id": "360",
+    "name": "Man Utd",
+    "full": "Manchester United",
+    "abbr": "MAN",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/360.png"
+   },
+   "away": {
+    "id": "104",
+    "name": "AS Roma",
+    "full": "AS Roma",
+    "abbr": "ROMA",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/104.png"
+   },
+   "state": "pre",
+   "completed": false,
+   "detail": "Scheduled",
+   "clock": "0'",
+   "hs": 0,
+   "as": 0,
+   "so": null,
+   "winner": null,
+   "advances": null,
+   "decidedBy": null,
+   "scorers": null
+  },
+  {
+   "id": "401915309",
+   "date": "2026-11-03T20:00:00Z",
+   "stage": "LEAGUE",
+   "leg": null,
+   "matchday": null,
+   "venue": "Estadio de la Cerámica",
+   "city": "Villarreal",
+   "home": {
+    "id": "102",
+    "name": "Villarreal",
+    "full": "Villarreal",
+    "abbr": "VIL",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/102.png"
+   },
+   "away": {
+    "id": "160",
+    "name": "PSG",
+    "full": "Paris Saint-Germain",
+    "abbr": "PSG",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/160.png"
+   },
+   "state": "pre",
+   "completed": false,
+   "detail": "Scheduled",
+   "clock": "0'",
+   "hs": 0,
+   "as": 0,
+   "so": null,
+   "winner": null,
+   "advances": null,
+   "decidedBy": null,
+   "scorers": null
+  },
+  {
+   "id": "401915384",
+   "date": "2026-11-03T20:00:00Z",
+   "stage": "LEAGUE",
+   "leg": null,
+   "matchday": null,
+   "venue": "Aspmyra Stadion",
+   "city": "Bodø/Glimt",
+   "home": {
+    "id": "2980",
+    "name": "Bodo/Glimt",
+    "full": "Bodo/Glimt",
+    "abbr": "BODO",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/2980.png"
+   },
+   "away": {
+    "id": "166",
+    "name": "Lille",
+    "full": "Lille",
+    "abbr": "LILL",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/166.png"
+   },
+   "state": "pre",
+   "completed": false,
+   "detail": "Scheduled",
+   "clock": "0'",
+   "hs": 0,
+   "as": 0,
+   "so": null,
+   "winner": null,
+   "advances": null,
+   "decidedBy": null,
+   "scorers": null
+  },
+  {
+   "id": "401915385",
+   "date": "2026-11-03T20:00:00Z",
+   "stage": "LEAGUE",
+   "leg": null,
+   "matchday": null,
+   "venue": "Raiffeisen Arena (Linz)",
+   "city": "Linz",
+   "home": {
+    "id": "4411",
+    "name": "LASK Linz",
+    "full": "LASK Linz",
+    "abbr": "LAS",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/4411.png"
+   },
+   "away": {
+    "id": "521",
+    "name": "S Bratislava",
+    "full": "Slovan Bratislava",
+    "abbr": "SLB",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/521.png"
+   },
+   "state": "pre",
+   "completed": false,
+   "detail": "Scheduled",
+   "clock": "0'",
+   "hs": 0,
+   "as": 0,
+   "so": null,
+   "winner": null,
+   "advances": null,
+   "decidedBy": null,
+   "scorers": null
+  },
+  {
+   "id": "401915386",
+   "date": "2026-11-03T20:00:00Z",
+   "stage": "LEAGUE",
+   "leg": null,
+   "matchday": null,
+   "venue": "Riyadh Air Metropolitano",
+   "city": "Madrid",
+   "home": {
+    "id": "1068",
+    "name": "Atlético",
+    "full": "Atlético Madrid",
+    "abbr": "ATM",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/1068.png"
+   },
+   "away": {
+    "id": "132",
+    "name": "Bayern",
+    "full": "Bayern Munich",
+    "abbr": "MUN",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/132.png"
+   },
+   "state": "pre",
+   "completed": false,
+   "detail": "Scheduled",
+   "clock": "0'",
+   "hs": 0,
+   "as": 0,
+   "so": null,
+   "winner": null,
+   "advances": null,
+   "decidedBy": null,
+   "scorers": null
+  },
+  {
+   "id": "401915387",
+   "date": "2026-11-03T20:00:00Z",
+   "stage": "LEAGUE",
+   "leg": null,
+   "matchday": null,
+   "venue": "Spotify Camp Nou",
+   "city": "Barcelona",
+   "home": {
+    "id": "83",
+    "name": "Barcelona",
+    "full": "Barcelona",
+    "abbr": "BAR",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/83.png"
+   },
+   "away": {
+    "id": "362",
+    "name": "Aston Villa",
+    "full": "Aston Villa",
+    "abbr": "AVL",
+    "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/362.png"
+   },
+   "state": "pre",
+   "completed": false,
+   "detail": "Scheduled",
+   "clock": "0'",
+   "hs": 0,
+   "as": 0,
+   "so": null,
+   "winner": null,
+   "advances": null,
+   "decidedBy": null,
+   "scorers": null
   }
  ]
 }
