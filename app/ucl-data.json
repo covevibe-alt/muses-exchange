@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-11-03T16:29:39Z",
+ "fetchedAt": "2026-11-03T21:56:54Z",
  "matches": [
   {
    "id": "401915426",
@@ -2552,17 +2552,21 @@
     "abbr": "SCP",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/2250.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
    "hs": 0,
-   "as": 0,
+   "as": 1,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Issa Doumbia"
+    }
+   ]
   },
   {
    "id": "401915311",
@@ -2586,17 +2590,24 @@
     "abbr": "VFB",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/134.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+4'",
+   "hs": 2,
    "as": 0,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Alexey Batrakov"
+    },
+    {
+     "n": "Alexey Batrakov"
+    }
+   ]
   },
   {
    "id": "401915307",
@@ -2620,17 +2631,27 @@
     "abbr": "INT",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/110.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+4'",
    "hs": 0,
-   "as": 0,
+   "as": 3,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Yann Bisseck"
+    },
+    {
+     "n": "Pio Esposito"
+    },
+    {
+     "n": "Piotr Zielinski"
+    }
+   ]
   },
   {
    "id": "401915308",
@@ -2654,17 +2675,33 @@
     "abbr": "ROMA",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/104.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+5'",
+   "hs": 3,
+   "as": 2,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Matìas Soulè"
+    },
+    {
+     "n": "Donyell Malen"
+    },
+    {
+     "n": "Bruno Fernandes"
+    },
+    {
+     "n": "Matheus Cunha"
+    },
+    {
+     "n": "Matheus Cunha"
+    }
+   ]
   },
   {
    "id": "401915309",
@@ -2688,17 +2725,36 @@
     "abbr": "PSG",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/160.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+2'",
    "hs": 0,
-   "as": 0,
+   "as": 6,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "João Neves"
+    },
+    {
+     "n": "Désiré Doué"
+    },
+    {
+     "n": "Senny Mayulu"
+    },
+    {
+     "n": "Fabián Ruiz"
+    },
+    {
+     "n": "Fabián Ruiz"
+    },
+    {
+     "n": "David Boly"
+    }
+   ]
   },
   {
    "id": "401915384",
@@ -2722,14 +2778,14 @@
     "abbr": "LILL",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/166.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
    "hs": 0,
    "as": 0,
    "so": null,
-   "winner": null,
+   "winner": "draw",
    "advances": null,
    "decidedBy": null,
    "scorers": null
@@ -2756,17 +2812,30 @@
     "abbr": "SLB",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/521.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
+   "hs": 4,
    "as": 0,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Kasper Jørgensen"
+    },
+    {
+     "n": "Kasper Jørgensen"
+    },
+    {
+     "n": "Robert Ljubicic"
+    },
+    {
+     "n": "Samuel Adeniran"
+    }
+   ]
   },
   {
    "id": "401915386",
@@ -2790,17 +2859,24 @@
     "abbr": "MUN",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/132.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
    "hs": 0,
-   "as": 0,
+   "as": 2,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Lennart Karl"
+    },
+    {
+     "n": "Konrad Laimer"
+    }
+   ]
   },
   {
    "id": "401915387",
@@ -2824,17 +2900,27 @@
     "abbr": "AVL",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/362.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
+   "hs": 3,
    "as": 0,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Lamine Yamal"
+    },
+    {
+     "n": "Raphinha"
+    },
+    {
+     "n": "Raphinha"
+    }
+   ]
   },
   {
    "id": "401915382",
