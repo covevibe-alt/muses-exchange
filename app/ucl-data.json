@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-11-04T17:57:02Z",
+ "fetchedAt": "2026-11-04T23:35:03Z",
  "matches": [
   {
    "id": "401915426",
@@ -1345,7 +1345,7 @@
      "n": "Anis Hadj Moussa"
     },
     {
-     "n": "Anastasios Douvikas"
+     "n": "Tasos Douvikas"
     }
    ]
   },
@@ -2156,7 +2156,7 @@
      "n": "Nico Paz"
     },
     {
-     "n": "Anastasios Douvikas"
+     "n": "Tasos Douvikas"
     },
     {
      "n": "Nico Paz"
@@ -2944,17 +2944,33 @@
     "abbr": "LIV",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/364.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "9'",
-   "clock": "9'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
+   "hs": 3,
+   "as": 2,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Trey Nyoni"
+    },
+    {
+     "n": "Mason Greenwood"
+    },
+    {
+     "n": "Alexander Isak"
+    },
+    {
+     "n": "Archie Brown"
+    },
+    {
+     "n": "Vedat Muriqi"
+    }
+   ]
   },
   {
    "id": "401915383",
@@ -2978,17 +2994,33 @@
     "abbr": "RMA",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/86.png"
    },
-   "state": "in",
-   "completed": false,
-   "detail": "9'",
-   "clock": "9'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+4'",
+   "hs": 2,
+   "as": 3,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Aboubakary Koita"
+    },
+    {
+     "n": "Jude Bellingham"
+    },
+    {
+     "n": "Stavros Pilios"
+    },
+    {
+     "n": "Kylian Mbappé"
+    },
+    {
+     "n": "Federico Valverde"
+    }
+   ]
   },
   {
    "id": "401915301",
@@ -3012,17 +3044,33 @@
     "abbr": "NAP",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/114.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
+   "hs": 4,
+   "as": 1,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Jan Bednarek"
+    },
+    {
+     "n": "Scott McTominay"
+    },
+    {
+     "n": "Gabri Veiga"
+    },
+    {
+     "n": "Jakub Kiwior"
+    },
+    {
+     "n": "Samu Aghehowa"
+    }
+   ]
   },
   {
    "id": "401915302",
@@ -3046,17 +3094,33 @@
     "abbr": "SAB",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/21922.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+5'",
+   "hs": 4,
+   "as": 1,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Orphé M'Bina"
+    },
+    {
+     "n": "Erik Botheim"
+    },
+    {
+     "n": "Zlatko Tripic"
+    },
+    {
+     "n": "Henrik Falchener"
+    },
+    {
+     "n": "Erik Botheim"
+    }
+   ]
   },
   {
    "id": "401915303",
@@ -3080,17 +3144,27 @@
     "abbr": "BRU",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/570.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
+   "hs": 1,
+   "as": 2,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Nicolo Tresoldi"
+    },
+    {
+     "n": "Kodai Sano"
+    },
+    {
+     "n": "Carlos Forbs"
+    }
+   ]
   },
   {
    "id": "401915304",
@@ -3114,17 +3188,27 @@
     "abbr": "BET",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/244.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+4'",
+   "hs": 2,
+   "as": 1,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Fábio Silva"
+    },
+    {
+     "n": "Aitor Ruibal"
+    },
+    {
+     "n": "Konstantinos Karetsas"
+    }
+   ]
   },
   {
    "id": "401915305",
@@ -3148,17 +3232,48 @@
     "abbr": "COMO",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/2572.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+3'",
+   "hs": 1,
+   "as": 9,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Tasos Douvikas"
+    },
+    {
+     "n": "Tasos Douvikas"
+    },
+    {
+     "n": "Nico Paz"
+    },
+    {
+     "n": "Lucas Da Cunha"
+    },
+    {
+     "n": "Marc-Oliver Kempf"
+    },
+    {
+     "n": "Tasos Douvikas"
+    },
+    {
+     "n": "Mattia Liberali"
+    },
+    {
+     "n": "Ruben Aguilar"
+    },
+    {
+     "n": "Martin Baturina"
+    },
+    {
+     "n": "Matteo Papaccioli"
+    }
+   ]
   },
   {
    "id": "401915306",
@@ -3182,17 +3297,30 @@
     "abbr": "MNC",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/382.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+5'",
+   "hs": 2,
+   "as": 3,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Ridle Baku"
+    },
+    {
+     "n": "Enzo Fernández"
+    },
+    {
+     "n": "Antonio Nusa"
+    },
+    {
+     "n": "Erling Haaland"
+    }
+   ]
   },
   {
    "id": "401915381",
@@ -3216,17 +3344,27 @@
     "abbr": "ARS",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/359.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
-   "as": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+6'",
+   "hs": 1,
+   "as": 2,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "away",
+   "advances": "away",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Noni Madueke"
+    },
+    {
+     "n": "Viktor Gyökeres"
+    },
+    {
+     "n": "Wiktor Nowak"
+    }
+   ]
   }
  ]
 }
