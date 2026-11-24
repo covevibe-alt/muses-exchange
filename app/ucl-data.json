@@ -1,5 +1,5 @@
 {
- "fetchedAt": "2026-11-24T10:21:49Z",
+ "fetchedAt": "2026-11-24T20:50:35Z",
  "matches": [
   {
    "id": "401915426",
@@ -3388,17 +3388,21 @@
     "abbr": "AVL",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/362.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+7'",
+   "hs": 1,
    "as": 0,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Deniz Gül"
+    }
+   ]
   },
   {
    "id": "401915380",
@@ -3422,15 +3426,15 @@
     "abbr": "LAS",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/4411.png"
    },
-   "state": "pre",
-   "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
+   "state": "post",
+   "completed": true,
+   "detail": "FT",
+   "clock": "90'+4'",
+   "hs": 1,
    "as": 0,
    "so": null,
-   "winner": null,
-   "advances": null,
+   "winner": "home",
+   "advances": "home",
    "decidedBy": null,
    "scorers": null
   },
@@ -3456,12 +3460,12 @@
     "abbr": "FCP",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/437.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "detail": "HT",
+   "clock": "45'+1'",
    "hs": 0,
-   "as": 0,
+   "as": 1,
    "so": null,
    "winner": null,
    "advances": null,
@@ -3490,17 +3494,21 @@
     "abbr": "DOR",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/124.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
+   "detail": "HT",
+   "clock": "45'",
+   "hs": 1,
    "as": 0,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Viktor Gyökeres"
+    }
+   ]
   },
   {
    "id": "401915296",
@@ -3524,10 +3532,10 @@
     "abbr": "AEK",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/887.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "detail": "45'+2'",
+   "clock": "45'+2'",
    "hs": 0,
    "as": 0,
    "so": null,
@@ -3558,17 +3566,21 @@
     "abbr": "BET",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/244.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "detail": "HT",
+   "clock": "45'",
    "hs": 0,
-   "as": 0,
+   "as": 1,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Cucho Hernández"
+    }
+   ]
   },
   {
    "id": "401915298",
@@ -3592,17 +3604,21 @@
     "abbr": "PSV",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/148.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "detail": "HT",
+   "clock": "45'+3'",
    "hs": 0,
-   "as": 0,
+   "as": 1,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "Ivan Perisic"
+    }
+   ]
   },
   {
    "id": "401915299",
@@ -3626,17 +3642,24 @@
     "abbr": "RCL",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/175.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
-   "hs": 0,
+   "detail": "HT",
+   "clock": "45'+1'",
+   "hs": 2,
    "as": 0,
    "so": null,
    "winner": null,
    "advances": null,
    "decidedBy": null,
-   "scorers": null
+   "scorers": [
+    {
+     "n": "David Raum"
+    },
+    {
+     "n": "Antonio Nusa"
+    }
+   ]
   },
   {
    "id": "401915379",
@@ -3660,10 +3683,10 @@
     "abbr": "NAP",
     "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/114.png"
    },
-   "state": "pre",
+   "state": "in",
    "completed": false,
-   "detail": "Scheduled",
-   "clock": "0'",
+   "detail": "HT",
+   "clock": "45'",
    "hs": 0,
    "as": 0,
    "so": null,
